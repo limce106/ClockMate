@@ -48,6 +48,7 @@
 |이름|표기법|예시|
 |:---:|:---:|:---:|
 |변수|camelCase|spawnPoint, isWalking|
+|매개변수|_camelCase|_spawnPoint, _isWalking|
 |메서드명|PascalCase|SpawnPlayer()|
 |클래스명|PascalCase|GameManager|
 |상수|UPPER_SNAKE_CASE|MAX_HEALTH|
