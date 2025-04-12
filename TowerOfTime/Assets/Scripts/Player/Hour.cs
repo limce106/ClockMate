@@ -4,13 +4,5 @@ using UnityEngine;
 
 public class Hour : PlayerBase
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
+    
 }
