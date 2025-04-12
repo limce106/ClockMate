@@ -12,7 +12,8 @@ public abstract class PlayerBase : MonoBehaviour
 {
     [field: SerializeField] public CharacterId CharacterId { get; private set; }
     [field: SerializeField] public PlayerInputHandler Input { get; private set; }
-    [field: SerializeField] public CharacterStatsSO Stats { get; private set; }
+    [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
+    public CharacterStatsSO Stats { get; private set; }
 
     public Rigidbody Rb {get; private set;}
     public bool IsGrounded {get; private set;}
@@ -34,6 +35,7 @@ public abstract class PlayerBase : MonoBehaviour
 
     protected virtual void Init()
     {
+        Stats = Instantiate(OriginalStats);
         Rb = GetComponent<Rigidbody>();
         
         IsGrounded = true;
@@ -125,6 +127,23 @@ public abstract class PlayerBase : MonoBehaviour
     public void ChangeState(IState newState)
     {
         _stateMachine.ChangeState(newState);
+    }
+
+    public virtual void EnableControl(bool enable)
+    {
+        if (Input != null)
+        {
+            Input.enabled = enable;
+        }
+    }
+    
+    // Stats를 외부에서 교체
+    public void OverrideStats(CharacterStatsSO newStats)
+    {
+        Stats.jumpPower = newStats.jumpPower;
+        Stats.doubleJumpPower = newStats.doubleJumpPower;
+        Stats.walkSpeed = newStats.walkSpeed;
+        Stats.climbSpeed = newStats.climbSpeed;
     }
 
 }
