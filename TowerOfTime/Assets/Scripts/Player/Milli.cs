@@ -4,13 +4,5 @@ using UnityEngine;
 
 public class Milli : PlayerBase
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
+    
 }
