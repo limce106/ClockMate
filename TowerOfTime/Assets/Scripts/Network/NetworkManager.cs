@@ -3,30 +3,62 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using PN = Photon.Pun.PhotonNetwork;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    private static NetworkManager instance;
+    public static NetworkManager Instance
+    {
+        get
+        {
+            if(instance == null)
+            {
+                var obj = FindObjectOfType<NetworkManager>();
+                if(obj != null)
+                    instance = obj;
+            }
+            return instance;
+        }
+    }
+
     void Awake()
     {
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
         // 자동 씬 동기화
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
-    private void Start()
+    void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public override void OnConnectedToMaster()
     {
+        PhotonNetwork.JoinLobby();
         Debug.Log("Connected to Master");
-        PhotonNetwork.JoinOrCreateRoom("MainRoom", new RoomOptions {MaxPlayers = 2}, TypedLobby.Default);
     }
 
-    public override void OnJoinedRoom()
+    public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("Joined Lobby");
-        // 두 플레이어가 사막 씬으로 이동
-        // PhotonNetwork.LoadLevel("Desert");
+        Debug.Log("Disconnected");
+    }
+
+    public void LeaveGame()
+    {
+        PN.Disconnect();
     }
 }
