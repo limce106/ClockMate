@@ -4,40 +4,27 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UIElements;
 
 public class MatchManager : MonoBehaviourPunCallbacks
 {
-    [Header("UI")]
+    [Header("Text")]
     public TMP_InputField joinCodeInputField;
+    public TMP_Text joinCodeText;
     public TMP_Text statusText;
 
+    [Header("Panel")]
+    public GameObject joinPanel;
+    public GameObject waitPanel;
+    public GameObject player1Panel;
+    public GameObject player2Panel;
+
+    private string joinCode;
     private const int MaxPlayer = 2;
     private const int MaxRetry = 3;
     private const int RoomCodeLen = 6;
 
     private static readonly char[] RoomCodeChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".ToCharArray();
-
-    void Awake()
-    {
-        // 자동 씬 동기화
-        PhotonNetwork.AutomaticallySyncScene = true;
-    }
-
-    void Start()
-    {
-        if (!PhotonNetwork.IsConnected)
-        {
-            PhotonNetwork.ConnectUsingSettings();
-            statusText.text = "서버에 연결 중...";
-        }
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        PhotonNetwork.JoinLobby();
-        statusText.text = "서버 연결 완료";
-        Debug.Log("Connected to Master");
-    }
 
     // 1. 친구와 함께하기
     public void OnClick_CreateRoom()
@@ -51,7 +38,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         while (retry > 0)
         {
-            string code = GenerateRoomCode();
+            joinCode = GenerateRoomCode();
             RoomOptions options = new RoomOptions
             {
                 MaxPlayers = MaxPlayer,
@@ -59,8 +46,8 @@ public class MatchManager : MonoBehaviourPunCallbacks
                 IsOpen = true
             };
 
-            PhotonNetwork.CreateRoom(code, options, TypedLobby.Default);
-            statusText.text = $"방 생성 중... 코드 {code}";
+            PhotonNetwork.CreateRoom(joinCode, options, TypedLobby.Default);
+            statusText.text = "방 생성 중...";
 
             // Photon 응답 지연 시간
             float elapsed = 0f;
@@ -94,7 +81,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
 
         PhotonNetwork.JoinRoom(code);
-        statusText.text = $"{code} 방에 입장 중...";
+        statusText.text = "방에 입장 중...";
     }
 
     private string GenerateRoomCode()
@@ -138,19 +125,53 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        statusText.text = $"방 입장. 현재 인원: {PhotonNetwork.CurrentRoom.PlayerCount}/{MaxPlayer}";
+        ShowWaitUI();
 
-        if (PhotonNetwork.CurrentRoom.PlayerCount == MaxPlayer)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            Debug.Log("모든 플레이어 입장 완료. 게임 시작");
-            // 두 플레이어가 사막 씬으로 이동
-            PhotonNetwork.LoadLevel("Desert");
+            photonView.RPC("SetPlayer2PanelActive", RpcTarget.All, true);
         }
     }
 
-    // 연결 실패 시
-    public override void OnDisconnected(DisconnectCause cause)
+    public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        statusText.text = "서버 연결 끊김: " + cause.ToString();
+        photonView.RPC("UpdateStatusText", RpcTarget.All, "E키를 눌러 게임을 시작하세요.");
+
+        RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
+        // 필요시 추후 씬 이름 수정 필요
+        RPCManager.Instance.photonView.RPC("SetSceneName", RpcTarget.All, "CharacterSelect");
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        photonView.RPC("SetPlayer2PanelActive", RpcTarget.All, false);
+        photonView.RPC("UpdateStatusText", RpcTarget.All, "상대가 나갔습니다. 상대를 기다리는 중...");
+
+        RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, false);
+    }
+
+    [PunRPC]
+    void SetPlayer2PanelActive(bool isActive)
+    {
+        player2Panel.SetActive(isActive);
+    }
+
+    [PunRPC]
+    void UpdateStatusText(string message)
+    {
+        statusText.text = message;
+    }
+
+    private void ShowWaitUI()
+    {
+        joinPanel.SetActive(false);
+        waitPanel.SetActive(true);
+
+        if (joinCode == null)
+        {
+            joinCode = PhotonNetwork.CurrentRoom.Name;
+        }
+        joinCodeText.text = joinCode;
+        statusText.text = "상대를 기다리는 중...";
     }
 }
