@@ -29,9 +29,10 @@ public abstract class PlayerBase : MonoBehaviour
     
     // 바닥 감지 Raycast 관련 설정 
     [Header("Ground Check Settings")]
-    [SerializeField] private float groundCheckDistance = 2f;
-    [SerializeField] private Vector3 groundCheckOffset = new Vector3(0, 0.1f, 0);
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private float groundCheckOffset = 0.6f;
+    [SerializeField] private LayerMask groundLayer = ~0; // 기본값: 모든 오브젝트
+    private GroundChecker _groundChecker;
 
     protected virtual void Init()
     {
@@ -46,6 +47,7 @@ public abstract class PlayerBase : MonoBehaviour
         JumpState = new JumpState(this);
         
         _stateMachine.ChangeState(IdleState);
+        _groundChecker = new GroundChecker(transform, GetHalfWidth(), groundCheckDistance, groundCheckOffset, groundLayer);
     }
 
     protected virtual void Awake()
@@ -58,38 +60,27 @@ public abstract class PlayerBase : MonoBehaviour
         UpdateGroundedStatus();
         _stateMachine.Update();
     }
+    
+    
 
     /// <summary>
     /// 바닥감지 (Raycast 기반)
     /// </summary>
     private void UpdateGroundedStatus()
     {
-        Vector3 origin = transform.position + groundCheckOffset;
-        Ray ray = new Ray(origin, Vector3.down);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, groundCheckDistance, groundLayer))
+        if (_groundChecker.IsGrounded())
         {
-            if (!IsGrounded) JumpCount = 0;
-            IsGrounded = true;
+            if (!IsGrounded)
+            {
+                JumpCount = 0;
+            }
 
-            Debug.DrawRay(origin, Vector3.down * groundCheckDistance, Color.green);
+            IsGrounded = true;
         }
         else
         {
             IsGrounded = false;
-            Debug.DrawRay(origin, Vector3.down * groundCheckDistance, Color.red);
         }
-    }
-    
-    /// <summary>
-    /// 이동 처리 (xz 축 이동, y 속도 유지)
-    /// </summary>
-    public void Move(Vector3 direction)
-    {
-        Vector3 move = direction * Stats.walkSpeed;
-
-        // 공중에서 방향 전환 가능하도록 현재 y 유지 + xz 보간도 고려 가능
-        Rb.velocity = new Vector3(move.x, Rb.velocity.y, move.z);
     }
 
     /// <summary>
@@ -103,7 +94,8 @@ public abstract class PlayerBase : MonoBehaviour
             JumpCount = 1;
             return true;
         }
-        else if (Stats.canDoubleJump && JumpCount < 2)
+
+        if (Stats.canDoubleJump && JumpCount < 2)
         {
             PerformJump(Stats.doubleJumpPower);
             JumpCount++;
@@ -118,7 +110,33 @@ public abstract class PlayerBase : MonoBehaviour
         transform.position += Vector3.up * 0.05f; // collider 겹침 방지, 살짝 띄우기
         Rb.velocity = new Vector3(Rb.velocity.x, 0f, Rb.velocity.z); // 점프 전 y 속도 제거
         Rb.AddForce(Vector3.up * power, ForceMode.Impulse);
-        IsGrounded = false;
+    }
+
+    /// <summary>
+    /// 플레이어 몸통 두께 기반으로 Ray Offset 자동 설정
+    /// </summary>
+    private float GetHalfWidth()
+    {
+        Collider col = GetComponent<Collider>();
+
+        if (col is CapsuleCollider capsule)
+        {
+            return capsule.radius * 0.95f;
+        }
+
+        Debug.LogWarning("플레이어 콜라이더 찾지 못함. Default halfWidth 사용");
+        return 0.25f; // 콜라이더 다를 시 기본값
+    }
+
+    /// <summary>
+    /// 이동 처리 (xz 축 이동, y 속도 유지)
+    /// </summary>
+    public void Move(Vector3 direction)
+    {
+        Vector3 move = direction * Stats.walkSpeed;
+
+        // 공중에서 방향 전환 가능하도록 현재 y 유지 + xz 보간도 고려 가능
+        Rb.velocity = new Vector3(move.x, Rb.velocity.y, move.z);
     }
 
     /// <summary>
