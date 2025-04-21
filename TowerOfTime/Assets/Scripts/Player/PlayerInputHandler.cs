@@ -1,31 +1,68 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
-/// 사용자 입력을 감지하고 처리
+/// 사용자 입력을 감지하고 PlayerBase로 전달하는 입력 처리기.
+/// Unity Input System 기반
 /// </summary>
+[RequireComponent(typeof(CharacterBase))]
 public class PlayerInputHandler : MonoBehaviour
 {
-    public Vector2 MoveInput { get; private set; } // wasd 
-    public bool JumpPressed { get; private set; } // space 키
-    public bool InteractPressed { get; private set; } // E 키
+    private CharacterBase _character;
+    private PlayerInputActions _inputActions;
 
-    /// <summary>
-    /// 카메라 기준 방향으로 회전된 입력 방향 벡터 반환
-    /// </summary>
-    public Vector3 GetDirectionRelativeTo(Transform reference)
+    private void Awake()
     {
-        Vector3 forward = reference.forward;
-        Vector3 right = reference.right;
-        forward.y = right.y = 0f; // 수평만 유지
-        return (forward * MoveInput.y + right * MoveInput.x).normalized;
+        _character = GetComponent<CharacterBase>();
+        _inputActions = new PlayerInputActions();
+        
+        InitInputActions();
     }
 
     void Update()
     {
-        MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
-        JumpPressed = Input.GetKeyDown(KeyCode.Space);
-        InteractPressed = Input.GetKeyDown(KeyCode.E);
+        HandleMoveInput();
     }
+
+    private void OnEnable()
+    {
+        _inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _inputActions.Disable();
+    }
+
+    private void InitInputActions()
+    {
+        _inputActions.Player.Jump.performed += OnJumpPressed;
+        _inputActions.Player.Interact.performed += OnInteractPressed;
+        _inputActions.Player.Ability.performed += OnAbilityPressed;
+    }
+
+    private void HandleMoveInput()
+    {
+        Vector2 input = _inputActions.Player.Move.ReadValue<Vector2>();
+        _character.UpdateMoveDirection(new Vector3(input.x, 0, input.y));
+        _character.TryChangeState(_character.MoveState);
+    }
+
+    private void OnJumpPressed(InputAction.CallbackContext context)
+    {
+        _character.TryChangeState(_character.JumpState);
+    }
+    
+    private void OnInteractPressed(InputAction.CallbackContext context)
+    {
+        //_character.TryChangeState(_character.InteractState);
+    }
+    
+    private void OnAbilityPressed(InputAction.CallbackContext context)
+    {
+        //_character.TryChangeState(_character.AbilityState);
+    }
+    
 }

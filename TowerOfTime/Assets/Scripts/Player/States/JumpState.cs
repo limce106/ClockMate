@@ -4,25 +4,28 @@ using UnityEngine;
 
 public class JumpState : IState
 {
-    private readonly PlayerBase _player;
+    private readonly CharacterBase _character;
 
-    public JumpState(PlayerBase player)
-    {
-        _player = player;
-    }
+    public JumpState(CharacterBase character) => _character = character;
     public void Enter()
     {
-        if (!_player.TryJump())
+        if (!_character.TryJump())
         {
-            _player.ChangeState(_player.IdleState); // 점프 실패 시 Idle 상태로 전환
+            _character.TryChangeState(_character.IdleState); // 점프 실패 시 Idle 상태로 전환
         }
+    }
+
+    public void FixedUpdate()
+    {
+        _character.Move();
     }
 
     public void Update()
     {
-        if (_player.IsGrounded)
+        // 캐릭터가 땅에 닿으면 다시 Idle 상태로 전환
+        if (_character.IsGrounded)
         {
-            _player.ChangeState(_player.IdleState);
+            _character.TryChangeState(_character.IdleState);
         }
     }
 
