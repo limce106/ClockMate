@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Milli : PlayerBase
+public class Milli : CharacterBase
 {
     
 }
