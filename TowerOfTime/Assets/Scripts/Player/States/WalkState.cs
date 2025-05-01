@@ -15,7 +15,7 @@
 
     public void FixedUpdate()
     {
-        _character.Move();
+        
     }
 
     public void Exit()
