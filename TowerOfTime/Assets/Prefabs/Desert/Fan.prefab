@@ -206,7 +206,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -222,8 +222,8 @@ GameObject:
   m_Component:
   - component: {fileID: 213034600044666383}
   - component: {fileID: 5835169192426956697}
-  - component: {fileID: 4789332954401782101}
   - component: {fileID: 36450128960683713}
+  - component: {fileID: 3839071484107717643}
   m_Layer: 0
   m_Name: Fan
   m_TagString: Untagged
@@ -275,8 +275,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &4789332954401782101
-SphereCollider:
+--- !u!114 &36450128960683713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020717845020790535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf9fe37cfe0b7d94b8cd87dfc101e57e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  windForce: 10
+  windRange: 5
+  targetFlyPoint: {fileID: 0}
+  isFanOn: 0
+  isInFanTrigger: 0
+  isFlying: 0
+  fanBlades: {fileID: 29596403452580767}
+--- !u!65 &3839071484107717643
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -294,23 +313,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &36450128960683713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1020717845020790535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf9fe37cfe0b7d94b8cd87dfc101e57e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  windForce: 10
-  windRange: 10
-  isFanOn: 0
-  windEffect: {fileID: 0}
-  fanBlades: {fileID: 145850415145253439}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
