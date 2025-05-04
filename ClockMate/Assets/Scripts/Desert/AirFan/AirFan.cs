@@ -18,7 +18,6 @@ public class AirFan : MonoBehaviour
     private float windRange = 5f;
 
     [Header("대각선으로 날려보내기")]
-    private Transform startFlyPoint;
     [SerializeField, Tooltip("대각선 바람일 때 목표 위치를 설정하세요.")]
     private Transform targetFlyPoint;
     private const float gravity = 9.8f;
@@ -29,12 +28,12 @@ public class AirFan : MonoBehaviour
     public FanState fanState = FanState.Idle;
 
     [SerializeField]
-    private bool isInFanTrigger = false;
+    private bool isMilliInTrigger = false;
     [SerializeField]
     private bool isFlying = false;
     private bool isUpwardFly = false;
 
-    //public ParticleSystem windEffect;
+    public ParticleSystem windEffect;
 
     void Start()
     {
@@ -57,12 +56,13 @@ public class AirFan : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Q)) 
-        {
-            SwitchFan();
-        }
+        // 테스트용
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    SwitchFan();
+        //}
 
-        switch(fanState)
+        switch (fanState)
         {
             case FanState.SpinningUp:
                 fanBlades.LerpFanBlades(AirFanBlade.maxRotationSpeed, FanState.Running);
@@ -80,17 +80,14 @@ public class AirFan : MonoBehaviour
 
         if (isUpwardFly)
         {
-            if((!isFlying && isInFanTrigger) || isFlying)
+            if((!isFlying && isMilliInTrigger) || isFlying)
             {
                 LaunchPlayerUpward();
             }
         }
         else
         {
-            if(!isFlying && isInFanTrigger)
-            {
-                StartCoroutine(LaunchPlayerParabola());
-            }
+            StartCoroutine(DelayLaunchPlayerParabola(0.7f));
         }
     }
 
@@ -120,6 +117,7 @@ public class AirFan : MonoBehaviour
         isFlying = true;
         playerRb.useGravity = false;
 
+        Transform startFlyPoint = player.transform;
         float distance = Vector3.Distance(startFlyPoint.position, targetFlyPoint.position);
         float flyAngle = 90f - transform.rotation.eulerAngles.x;
 
@@ -134,13 +132,8 @@ public class AirFan : MonoBehaviour
         float elapseTime = 0f;
         while (elapseTime < flightDuration)
         {
-            if(!isFanOn)
-            {
-                break;
-            }
-
             // 플레이어가 수동 조작으로 움직인 경우 낙하
-            if (playerRb.velocity.magnitude  > 0.1f)
+            if (!isFanOn || playerRb.velocity.magnitude  > 0.1f)
             {
                 Debug.Log("Player moved: Cancel Flying");
 
@@ -166,8 +159,20 @@ public class AirFan : MonoBehaviour
         EndFlying();
     }
 
+    private IEnumerator DelayLaunchPlayerParabola(float Delay)
+    {
+        yield return new WaitForSeconds(Delay);
+
+        if (!isFlying && isMilliInTrigger && isFanOn)
+        {
+            yield return LaunchPlayerParabola();
+        }
+    }
+
     private void EndFlying()
     {
+        player.transform.rotation = Quaternion.Euler(Vector3.zero);
+
         isFlying = false;
         playerRb.useGravity = true;
     }
@@ -178,13 +183,13 @@ public class AirFan : MonoBehaviour
         {
             isFanOn = false;
             fanState = FanState.SpinningDown;
-            //windEffect.Stop();
+            windEffect.Stop();
         }
         else
         {
             isFanOn = true;
             fanState = FanState.SpinningUp;
-            //windEffect.Play();
+            windEffect.Play();
         }
 
         fanBlades.startRotationSpeed = fanBlades.currentRotationSpeed;
@@ -196,24 +201,8 @@ public class AirFan : MonoBehaviour
         fanState = nextState;
     }
 
-    void OnTriggerEnter(Collider other)
+    public void SetMilliInTrigger(bool isInTrigger)
     {
-        if(other.name == "Milli")
-        {
-            isInFanTrigger = true;
-
-            if (!isUpwardFly)
-            {
-                startFlyPoint = player.transform;
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.name == "Milli")
-        {
-            isInFanTrigger = false;
-        }
+        isMilliInTrigger = isInTrigger;
     }
 }
