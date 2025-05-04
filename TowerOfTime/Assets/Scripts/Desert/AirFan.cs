@@ -6,6 +6,8 @@ public class AirFan : MonoBehaviour
 {
     private GameObject player;
     private Rigidbody playerRb;
+    [SerializeField]
+    private AirFanBlade fanBlades;
 
     [Header("수직으로 날려보내기")]
     // 바람 세기
@@ -21,25 +23,17 @@ public class AirFan : MonoBehaviour
     private Transform targetFlyPoint;
     private const float gravity = 9.8f;
 
-    [Header("환풍기 회전")]
     public bool isFanOn = false;
-    private float startRotationSpeed = 0f;
-    private float currentRotationSpeed = 0f;
-    public const float maxRotationSpeed = 100f;
-
-    private const float rotationTransitionTime = 1f;
-    private float rotationElapsedTime = 0f;
-
-    private enum FanState { Idle, SpinningUp, SpinningDown, Running }
-    private FanState fanState = FanState.Idle;
+    public enum FanState { Idle, SpinningUp, SpinningDown, Running }
+    [HideInInspector]
+    public FanState fanState = FanState.Idle;
 
     [SerializeField]
     private bool isInFanTrigger = false;
     [SerializeField]
     private bool isFlying = false;
     private bool isUpwardFly = false;
-    
-    public GameObject fanBlades;
+
     //public ParticleSystem windEffect;
 
     void Start()
@@ -56,7 +50,7 @@ public class AirFan : MonoBehaviour
             else
             {
                 isUpwardFly = false;
-                playerRb.useGravity = false;
+                
             }
         }
     }
@@ -71,15 +65,12 @@ public class AirFan : MonoBehaviour
         switch(fanState)
         {
             case FanState.SpinningUp:
-                LerpFanBlades(maxRotationSpeed, FanState.Running);
+                fanBlades.LerpFanBlades(AirFanBlade.maxRotationSpeed, FanState.Running);
                 break;
             case FanState.SpinningDown:
-                LerpFanBlades(0f, FanState.Idle);
-                playerRb.useGravity = true;
+                fanBlades.LerpFanBlades(0f, FanState.Idle);
                 break;
         }
-
-        RotateFanBlades();
     }
 
     void FixedUpdate()
@@ -127,6 +118,8 @@ public class AirFan : MonoBehaviour
     private IEnumerator LaunchPlayerParabola()
     {
         isFlying = true;
+        playerRb.useGravity = false;
+
         float distance = Vector3.Distance(startFlyPoint.position, targetFlyPoint.position);
         float flyAngle = 90f - transform.rotation.eulerAngles.x;
 
@@ -141,6 +134,21 @@ public class AirFan : MonoBehaviour
         float elapseTime = 0f;
         while (elapseTime < flightDuration)
         {
+            if(!isFanOn)
+            {
+                break;
+            }
+
+            // 플레이어가 수동 조작으로 움직인 경우 낙하
+            if (playerRb.velocity.magnitude  > 0.1f)
+            {
+                Debug.Log("Player moved: Cancel Flying");
+
+                EndFlying();
+
+                yield break;
+            }
+
             float timeRatio = elapseTime / flightDuration;
 
             float yOffset = (Vy * elapseTime) - (0.5f * gravity * elapseTime * elapseTime);
@@ -155,7 +163,13 @@ public class AirFan : MonoBehaviour
         }
 
         player.transform.position = targetFlyPoint.position;
+        EndFlying();
+    }
+
+    private void EndFlying()
+    {
         isFlying = false;
+        playerRb.useGravity = true;
     }
 
     public void SwitchFan()
@@ -173,42 +187,33 @@ public class AirFan : MonoBehaviour
             //windEffect.Play();
         }
 
-        startRotationSpeed = currentRotationSpeed;
-        rotationElapsedTime = 0f;
+        fanBlades.startRotationSpeed = fanBlades.currentRotationSpeed;
+        fanBlades.ClearRotationElapsedTime();
     }
 
-    void LerpFanBlades(float targetSpeed, FanState nextState)
+    public void SetFanState(FanState nextState)
     {
-        if (rotationElapsedTime < rotationTransitionTime)
-        {
-            rotationElapsedTime += Time.deltaTime;
-            float transitionRatio = rotationElapsedTime / rotationTransitionTime;
-            currentRotationSpeed = Mathf.Lerp(startRotationSpeed, targetSpeed, transitionRatio);
-        }
-        else
-        {
-            currentRotationSpeed = targetSpeed;
-            fanState = nextState;
-        }
-    }
-
-    void RotateFanBlades()
-    {
-        fanBlades.transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
+        fanState = nextState;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        isInFanTrigger = true;
-
-        if(!isUpwardFly)
+        if(other.name == "Milli")
         {
-            startFlyPoint = player.transform;
+            isInFanTrigger = true;
+
+            if (!isUpwardFly)
+            {
+                startFlyPoint = player.transform;
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        isInFanTrigger = false;
+        if (other.name == "Milli")
+        {
+            isInFanTrigger = false;
+        }
     }
 }
