@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 4655932381584995634}
   - component: {fileID: 430303314117721751}
   - component: {fileID: 4508778526542160363}
+  - component: {fileID: 3977854056313531948}
   m_Layer: 0
   m_Name: FanBlade
   m_TagString: Untagged
@@ -212,6 +213,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3977854056313531948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29596403452580767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c15f5ebc5308144ab412f9e66e41b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startRotationSpeed: 0
+  currentRotationSpeed: 0
+  airFan: {fileID: 36450128960683713}
 --- !u!1 &1020717845020790535
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,13 +303,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9fe37cfe0b7d94b8cd87dfc101e57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fanBlades: {fileID: 3977854056313531948}
   windForce: 10
   windRange: 5
   targetFlyPoint: {fileID: 0}
   isFanOn: 0
+  fanState: 0
   isInFanTrigger: 0
   isFlying: 0
-  fanBlades: {fileID: 29596403452580767}
 --- !u!65 &3839071484107717643
 BoxCollider:
   m_ObjectHideFlags: 0
