@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class AirFan : MonoBehaviour
 {
-    private GameObject player;
-    private Rigidbody playerRb;
+    private Milli milli;
+    private Rigidbody milliRb;
     [SerializeField]
     private AirFanBlade fanBlades;
 
@@ -35,12 +36,13 @@ public class AirFan : MonoBehaviour
 
     public ParticleSystem windEffect;
 
+    public FrontAirFanTrigger frontAirFanTrigger;
     void Start()
     {
-        player = GameObject.Find("Milli");
-        if (player != null )
+        milli = FindObjectOfType<Milli>();
+        if (milli != null )
         {
-            playerRb = player.GetComponent<Rigidbody>();
+            milliRb = milli.GetComponent<Rigidbody>();
 
             if (Mathf.Approximately(transform.rotation.eulerAngles.x, 0f))
             {
@@ -57,10 +59,11 @@ public class AirFan : MonoBehaviour
     void Update()
     {
         // 테스트용
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    SwitchFan();
-        //}
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            SwitchFan();
+        }
+        //
 
         switch (fanState)
         {
@@ -82,6 +85,11 @@ public class AirFan : MonoBehaviour
         {
             if((!isFlying && isMilliInTrigger) || isFlying)
             {
+                if(!isFlying)
+                {
+                    isFlying = true;
+                }
+
                 LaunchPlayerUpward();
             }
         }
@@ -93,31 +101,36 @@ public class AirFan : MonoBehaviour
 
     private void LaunchPlayerUpward()
     {
-        float currentY = playerRb.position.y;
-        float targetY = transform.position.y + windRange;
-        float deltaY = targetY - currentY;
+        bool inXZRange = frontAirFanTrigger.IsPlayerInXZRange(milli.transform.position);
+        if (!inXZRange)
+            return;
 
-        if (deltaY > 0.05f)
+        float distanceToFan = milli.transform.position.y - transform.position.y;
+
+        //if (milli.CurrentStateName == "JumpState")
+        //{
+        //    return;
+        //}
+
+        if (distanceToFan < windRange)
         {
-            float forceRatio = Mathf.Clamp01(deltaY / windRange);
+            float forceRatio = Mathf.Clamp01(1f - (distanceToFan / windRange));
             float upwardForce = forceRatio * windForce;
-            playerRb.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
+
+            milliRb.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
         }
         else
         {
-            // 목표 높이에 도달하면 둥둥 떠 있는 움직임 적용
-            float hoverOffset = Mathf.Sin(Time.time * 1f * 2 * Mathf.PI) * 0.5f;
-            Vector3 hoverPosition = new Vector3(playerRb.position.x, targetY + hoverOffset, playerRb.position.z);
-            playerRb.MovePosition(hoverPosition);
+            milliRb.velocity = new Vector3(milliRb.velocity.x, 0, milliRb.velocity.z);
         }
     }
 
     private IEnumerator LaunchPlayerParabola()
     {
         isFlying = true;
-        playerRb.useGravity = false;
+        milliRb.useGravity = false;
 
-        Transform startFlyPoint = player.transform;
+        Transform startFlyPoint = milli.transform;
         float distance = Vector3.Distance(startFlyPoint.position, targetFlyPoint.position);
         float flyAngle = 90f - transform.rotation.eulerAngles.x;
 
@@ -128,12 +141,12 @@ public class AirFan : MonoBehaviour
         float flightDuration = distance / Vx;
         Quaternion targetRotation = Quaternion.LookRotation(targetFlyPoint.position - startFlyPoint.position);
 
-        Vector3 startPosition = player.transform.position;
+        Vector3 startPosition = milli.transform.position;
         float elapseTime = 0f;
         while (elapseTime < flightDuration)
         {
             // 플레이어가 수동 조작으로 움직인 경우 낙하
-            if (!isFanOn || playerRb.velocity.magnitude  > 0.1f)
+            if (!isFanOn || milliRb.velocity.magnitude  > 0.1f)
             {
                 Debug.Log("Player moved: Cancel Flying");
 
@@ -146,16 +159,16 @@ public class AirFan : MonoBehaviour
 
             float yOffset = (Vy * elapseTime) - (0.5f * gravity * elapseTime * elapseTime);
             Vector3 horizontalMovement = Vector3.forward * Vx * elapseTime;
-            Vector3 newPosition = startPosition + player.transform.TransformDirection(horizontalMovement) + Vector3.up * yOffset;
+            Vector3 newPosition = startPosition + milli.transform.TransformDirection(horizontalMovement) + Vector3.up * yOffset;
 
-            player.transform.position = newPosition;
-            player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, Time.deltaTime * 5f);
+            milli.transform.position = newPosition;
+            milli.transform.rotation = Quaternion.Slerp(milli.transform.rotation, targetRotation, Time.deltaTime * 5f);
 
             elapseTime += Time.deltaTime;
             yield return null;
         }
 
-        player.transform.position = targetFlyPoint.position;
+        milli.transform.position = targetFlyPoint.position;
         EndFlying();
     }
 
@@ -171,10 +184,10 @@ public class AirFan : MonoBehaviour
 
     private void EndFlying()
     {
-        player.transform.rotation = Quaternion.Euler(Vector3.zero);
+        milli.transform.rotation = Quaternion.Euler(Vector3.zero);
 
         isFlying = false;
-        playerRb.useGravity = true;
+        milliRb.useGravity = true;
     }
 
     public void SwitchFan()
