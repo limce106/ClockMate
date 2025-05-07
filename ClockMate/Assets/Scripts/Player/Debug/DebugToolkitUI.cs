@@ -13,22 +13,20 @@ public class DebugToolkitUI : MonoBehaviour
     [SerializeField] private Slider _jumpPowerSlider;
     [SerializeField] private Slider _doubleJumpPowerSlider;
     [SerializeField] private Slider _walkSpeedSlider;
-    [SerializeField] private Slider _climbSpeedSlider;
 
     [Header("슬라이더 수치 표시 텍스트")]
     [SerializeField] private Text _jumpText;
     [SerializeField] private Text _doubleJumpText;
     [SerializeField] private Text _walkText;
-    [SerializeField] private Text _climbText;
 
-    private PlayerBase _target;
+    private CharacterBase _target;
     private CharacterStatsSO _runtimeStats;     // 수정용 복사본
     private CharacterStatsSO _originalSnapshot; // 마지막 저장값 복사본 (.asset과는 무관)
 
     /// <summary>
     /// 캐릭터가 바뀔 때 호출
     /// </summary>
-    public void Init(PlayerBase character)
+    public void Init(CharacterBase character)
     {
         _target = character;
 
@@ -59,7 +57,6 @@ public class DebugToolkitUI : MonoBehaviour
         stats.jumpPower = Mathf.Round(_jumpPowerSlider.value * 10f) / 10f;
         stats.doubleJumpPower = Mathf.Round(_doubleJumpPowerSlider.value * 10f) / 10f;
         stats.walkSpeed = Mathf.Round(_walkSpeedSlider.value * 10f) / 10f;
-        stats.climbSpeed = Mathf.Round(_climbSpeedSlider.value * 10f) / 10f;
     }
 
     /// <summary>
@@ -70,7 +67,6 @@ public class DebugToolkitUI : MonoBehaviour
         _jumpPowerSlider.value = stats.jumpPower;
         _doubleJumpPowerSlider.value = stats.doubleJumpPower;
         _walkSpeedSlider.value = stats.walkSpeed;
-        _climbSpeedSlider.value = stats.climbSpeed;
         UpdateTexts();
     }
 
@@ -82,7 +78,6 @@ public class DebugToolkitUI : MonoBehaviour
         _jumpText.text = $"JumpPower: {_runtimeStats.jumpPower:0.0}";
         _doubleJumpText.text = $"DoubleJumpPower: {_runtimeStats.doubleJumpPower:0.0}";
         _walkText.text = $"WalkSpeed: {_runtimeStats.walkSpeed:0.0}";
-        _climbText.text = $"ClimbSpeed: {_runtimeStats.climbSpeed:0.0}";
     }
 
     /// <summary>
@@ -121,6 +116,5 @@ public class DebugToolkitUI : MonoBehaviour
         to.jumpPower = from.jumpPower;
         to.doubleJumpPower = from.doubleJumpPower;
         to.walkSpeed = from.walkSpeed;
-        to.climbSpeed = from.climbSpeed;
     }
 }

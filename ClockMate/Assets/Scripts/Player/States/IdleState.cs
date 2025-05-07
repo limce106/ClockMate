@@ -1,33 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class IdleState : IState
 {
-    private readonly PlayerBase _player;
+    private readonly CharacterBase _character;
 
-    public IdleState(PlayerBase player)
-    {
-        _player = player;
-    }
+    public IdleState(CharacterBase character) =>_character = character;
     public void Enter()
+    {
+        // 애니메이션 추가
+    }
+
+    public void FixedUpdate()
     {
         
     }
 
     public void Update()
     {
-        Vector3 dir = _player.Input.GetDirectionRelativeTo(Camera.main.transform);
-        _player.Move(dir);
-
-        if (_player.Input.JumpPressed)
-        {
-            _player.ChangeState(_player.JumpState);
-        }
-        else if (_player.Input.InteractPressed)
-        {
-            _player.OnInteract();
-        }
+        
     }
 
     public void Exit()

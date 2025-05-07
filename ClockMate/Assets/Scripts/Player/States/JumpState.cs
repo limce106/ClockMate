@@ -4,22 +4,27 @@ using UnityEngine;
 
 public class JumpState : IState
 {
-    private readonly PlayerBase _player;
+    private readonly CharacterBase _character;
+    private float _waitTime; // 땅 감지 너무 빠르게 하지 않게 
 
-    public JumpState(PlayerBase player)
-    {
-        _player = player;
-    }
+    public JumpState(CharacterBase character) => _character = character;
     public void Enter()
     {
-        _player.TryJump();
+        _waitTime = 0f;
+    }
+
+    public void FixedUpdate()
+    {
+        
     }
 
     public void Update()
     {
-        if (_player.IsGrounded)
+        _waitTime += Time.deltaTime;
+        // 캐릭터가 땅에 닿으면 다시 Idle 상태로 전환
+        if (_waitTime > 0.1f && _character.IsGrounded)
         {
-            _player.ChangeState(_player.IdleState);
+            _character.ChangeState(_character.IdleState);
         }
     }
 
