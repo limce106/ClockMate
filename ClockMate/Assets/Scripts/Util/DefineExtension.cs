@@ -20,17 +20,17 @@ namespace DefineExtension
     }
     public static class MapExtension
     {
-        public static MapModuleBase GetMapModule(this Map.MapName mapName)
-        {
-            return mapName switch
-            {
-                Map.MapName.Desert => new DesertMapModule(),
-                //Map.MapName.Glacier => new GlacierMapModule(),
-                //Map.MapName.Forest => new ForestMapModule(),
-                //Map.MapName.ClockTower => new ClockTowerMapModule(),
-                _ => null
-            };
-        }
+        // public static MapModuleBase GetMapModule(this Map.MapName mapName)
+        // {
+        //     return mapName switch
+        //     {
+        //         Map.MapName.Desert => new DesertMapModule(),
+        //         //Map.MapName.Glacier => new GlacierMapModule(),
+        //         //Map.MapName.Forest => new ForestMapModule(),
+        //         //Map.MapName.ClockTower => new ClockTowerMapModule(),
+        //         _ => null
+        //     };
+        // }
 
         public static Map.MapName GetNextMap(this Map.MapName mapName)
         {
