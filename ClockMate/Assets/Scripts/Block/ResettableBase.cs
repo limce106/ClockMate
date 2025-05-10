@@ -15,7 +15,7 @@ public abstract class ResettableBase : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 초기 상태 저장
+	/// 초기 상태 저장하는 로직을 상속받은 자식 블럭 클래스에서 각자 구현
 	/// </summary>
 	protected abstract void SaveInitialState();
 
@@ -28,7 +28,7 @@ public abstract class ResettableBase : MonoBehaviour
 	}
 	
 	/// <summary>
-	/// 초기화 로직
+	/// 초기화 로직을 상속받은 자식 블럭 클래스에서 각자 구현
 	/// </summary>
 	public abstract void ResetObject();
 }
