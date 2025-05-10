@@ -17,13 +17,14 @@ public class PressurePlate : ResettableBase
     private Coroutine _pressCoroutine;
     
     [Header("Pressure Plate Properties")]
-    [SerializeField] private float pressOffsetY = -0.2f;
+    [SerializeField] private float pressOffsetY = 0.5f;
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private Color pressedColor = Color.green;
     [SerializeField] private CharacterName character;
   
     private Vector3 _endPoint;
     private bool _isPressed;
+    private bool _isLocked;
     public bool IsFullyPressed { get; private set; }
     
     protected override void Init()
@@ -33,8 +34,9 @@ public class PressurePlate : ResettableBase
         {
             _materialInstance = _meshRenderer.material;
         }
-        _endPoint = transform.position + new Vector3(0f, pressOffsetY, 0f);
+        _endPoint = transform.position + new Vector3(0f, -pressOffsetY, 0f);
         _isPressed = false;
+        _isLocked = false;
         IsFullyPressed = false;
     }
     
@@ -49,7 +51,7 @@ public class PressurePlate : ResettableBase
 
     private void OnTriggerExit(Collider other)
     {
-        if (!IsValidCharacter(other) || !_isPressed) return;
+        if (!IsValidCharacter(other) || !_isPressed || _isLocked) return;
 
         Debug.Log("발판에서 내려옴");
         other.transform.SetParent(null); // 부모 해제
@@ -84,6 +86,11 @@ public class PressurePlate : ResettableBase
         return true;
     }
 
+    public void LockState()
+    {
+        _isLocked = true;
+    }
+
     private void SetPressed(bool state)
     {
         if (_isPressed == state) return;
@@ -96,7 +103,7 @@ public class PressurePlate : ResettableBase
         }
         _pressCoroutine = StartCoroutine(PressRoutine(_isPressed));
     }
-    
+
     private IEnumerator PressRoutine(bool pressed)
     {
         Vector3 target = pressed ? _endPoint : _initialPosition;
@@ -114,6 +121,7 @@ public class PressurePlate : ResettableBase
             _materialInstance.color = pressedColor;
         }
     }
+
     protected override void SaveInitialState()
     {
         _initialPosition = transform.position;
@@ -134,5 +142,7 @@ public class PressurePlate : ResettableBase
             _pressCoroutine = null;
         }
         _isPressed = false;
+        _isLocked = false;
+        IsFullyPressed = false;
     }
 }
