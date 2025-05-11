@@ -60,7 +60,7 @@ public class PlayerInputHandler : MonoBehaviour
         if (input.sqrMagnitude < 0.01f)
         {
             _isMoving = false;
-            _character.ChangeState(_character.IdleState);
+            _character.ChangeState<IdleState>();
         }
     }
 
@@ -68,25 +68,25 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!_actionsAvailable[CharacterAction.Move]) return;
         _isMoving = true;
-        _character.ChangeState(_character.WalkState);
+        _character.ChangeState<WalkState>();
     }
 
 
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
         if (!_actionsAvailable[CharacterAction.Jump] || !_character.CanJump()) return;
-        _character.ChangeState(_character.JumpState);
+        _character.ChangeState<JumpState>();
         _character.PerformJump();
     }
     
     private void OnInteractPressed(InputAction.CallbackContext context)
     {
-        //_character.ChangeState(_character.InteractState);
+        //_character.ChangeState<InteractState>();
     }
     
     private void OnAbilityPressed(InputAction.CallbackContext context)
     {
-        //_character.ChangeState(_character.AbilityState);
+        //_character.ChangeState<AbilityState>();
     }
 
     public void ActivateInputActions(HashSet<CharacterAction> availableActions)
