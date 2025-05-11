@@ -24,7 +24,7 @@ public class JumpState : IState
         // 캐릭터가 땅에 닿으면 다시 Idle 상태로 전환
         if (_waitTime > 0.1f && _character.IsGrounded)
         {
-            _character.ChangeState(_character.IdleState);
+            _character.ChangeState<IdleState>();
         }
     }
 
