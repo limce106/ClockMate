@@ -27,6 +27,9 @@ public class PressurePlate : ResettableBase
     private bool _isLocked;
     public bool IsFullyPressed { get; private set; }
     
+    private Vector3 _lastPlatePosition;
+    private Transform _attachedTransform;
+    
     protected override void Init()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
@@ -45,16 +48,23 @@ public class PressurePlate : ResettableBase
         if (!IsValidCharacter(other) || !IsValidDirection(other)) return;
 
         Debug.Log("위에서 발판 밟음");
-        other.transform.SetParent(transform); // 캐릭터가 발판 따라가게
+        // 캐릭터가 발판 따라가게
+        _attachedTransform = other.GetComponentInParent<CharacterBase>().transform;
+        _lastPlatePosition = transform.position;
+        
         SetPressed(true); // 발판 내려가게
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!IsValidCharacter(other) || !_isPressed || _isLocked) return;
+        if (!IsValidCharacter(other) || _isLocked) return;
 
+        if (_attachedTransform != null && other.transform.root == _attachedTransform)
+        {
+            _attachedTransform = null;
+        }
+        
         Debug.Log("발판에서 내려옴");
-        other.transform.SetParent(null); // 부모 해제
         if (IsFullyPressed)
         {
             IsFullyPressed = false;
@@ -62,7 +72,16 @@ public class PressurePlate : ResettableBase
         }
         SetPressed(false); // 발판 올라가게
     }
+    private void FixedUpdate()
+    {
+        if (_attachedTransform is not null)
+        {
+            Vector3 delta = transform.position - _lastPlatePosition;
+            _attachedTransform.position += delta;
+        }
 
+        _lastPlatePosition = transform.position;
+    }
     private bool IsValidCharacter(Collider other)
     {
         var characterComponent = other.GetComponentInParent<CharacterBase>();
