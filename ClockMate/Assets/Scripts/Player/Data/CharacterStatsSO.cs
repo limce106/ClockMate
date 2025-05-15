@@ -13,9 +13,6 @@ public class CharacterStatsSO : ScriptableObject
     public float jumpPower = 5f;
     public float doubleJumpPower = 4f;
     
-    [Header("벽 타기")]
-    public float climbSpeed = 2f;
-    
     [Header("운반 중 속도 패널티")]
     [Range(0f, 1f)]
     public float carrySpeedPenalty = 0.5f;

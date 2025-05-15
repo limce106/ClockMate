@@ -7,8 +7,8 @@ public class CharacterSwitcher : MonoBehaviour
 {
     [SerializeField] private bool autoAssign = true; // 연결 자동/수동 여부
     
-    [SerializeField] private PlayerBase _hour;
-    [SerializeField] private PlayerBase _milli;
+    [SerializeField] private CharacterBase _hour;
+    [SerializeField] private CharacterBase _milli;
     
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private Transform _cameraFollowTarget;
@@ -16,8 +16,6 @@ public class CharacterSwitcher : MonoBehaviour
     [SerializeField] private Text _currentCharacterText;
 
     [SerializeField] private DebugToolkitUI _debugUI;
-
-    private PlayerBase _current;
 
     private void Awake()
     {
@@ -28,11 +26,14 @@ public class CharacterSwitcher : MonoBehaviour
     private void AutoAssign()
     {
         if (_hour == null)
-            _hour = FindObjectOfType<Hour>();
+        {
+            _hour = GameObject.Find("Hour").GetComponent<Hour>();
+        }
 
         if (_milli == null)
-            _milli = FindObjectOfType<Milli>();
-
+        {
+            _milli = GameObject.Find("Milli").GetComponent<Milli>();
+        }
         if (_mainCamera == null)
             _mainCamera = Camera.main;
 
@@ -55,12 +56,10 @@ public class CharacterSwitcher : MonoBehaviour
     
     public void SwitchToMilli() => ActivateCharacter(_milli);
 
-    private void ActivateCharacter(PlayerBase target)
+    private void ActivateCharacter(CharacterBase target)
     {
-        _hour.EnableControl(target == _hour);
-        _milli.EnableControl(target == _milli);
-        
-        _current = target;
+        _hour.gameObject.GetComponent<PlayerInputHandler>().enabled = (target == _hour);
+        _milli.gameObject.GetComponent<PlayerInputHandler>().enabled = (target == _milli);
         
         // 카메라 추적 대상 변경
         if (_cameraFollowTarget != null)
@@ -72,7 +71,7 @@ public class CharacterSwitcher : MonoBehaviour
         // 활성화된 캐릭터 텍스트 갱신
         if (_currentCharacterText != null)
         {
-            _currentCharacterText.text = $"Current: {target.CharacterId}";
+            _currentCharacterText.text = $"Current: {target.name}";
         }
         
         // 디버그 UI 타겟 갱신
