@@ -1,4 +1,4 @@
-# TowerOfTime
+# ClockMate
 2025 SWU Capstone Design Project
 
 ---
