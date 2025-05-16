@@ -38,7 +38,7 @@ public class AirFanBlade : MonoBehaviour
 
     void RotateFanBlades()
     {
-        transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.up, currentRotationSpeed * Time.deltaTime);
     }
 
     public void ClearRotationElapsedTime()
