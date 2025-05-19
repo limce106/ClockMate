@@ -192,7 +192,6 @@ MonoBehaviour:
   isFanOn: 0
   fanState: 0
   isMilliInTrigger: 0
-  isFlying: 0
   isUpwardFly: 0
   windEffect: {fileID: 2612003360748328541}
   frontAirFanTrigger: {fileID: 2293936452734066732}
@@ -304,7 +303,7 @@ GameObject:
   - component: {fileID: 8330785177129648797}
   - component: {fileID: 8022374951369419131}
   - component: {fileID: 1977704066680565063}
-  - component: {fileID: 817638925973368868}
+  - component: {fileID: 2931016397176768493}
   - component: {fileID: 1786096147515365541}
   m_Layer: 0
   m_Name: FanBlade
@@ -378,7 +377,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &817638925973368868
+--- !u!136 &2931016397176768493
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -393,11 +392,11 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5000001
+  m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
