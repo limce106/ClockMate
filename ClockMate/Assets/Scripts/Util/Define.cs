@@ -31,7 +31,8 @@
             Desert,
             Glacier,
             Forest,
-            ClockTower
+            ClockTower,
+            Test_Yuna
         }
     }
 

@@ -17,7 +17,7 @@ public class CharacterSwitcher : MonoBehaviour
 
     [SerializeField] private DebugToolkitUI _debugUI;
 
-    private void Awake()
+    private void OnEnable()
     {
         if (!autoAssign) return;
         AutoAssign();
