@@ -48,7 +48,7 @@ public class AirFanBlade : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(airFan.isFanOn && collision.gameObject.tag == "Player")
+        if(airFan.isFanOn && collision.gameObject.CompareTag("Player"))
         {
             Destroy(collision.gameObject);
         }
