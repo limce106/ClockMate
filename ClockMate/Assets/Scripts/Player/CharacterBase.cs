@@ -28,9 +28,7 @@ public abstract class CharacterBase : MonoBehaviour
     private int _jumpCount;
     private int _maxJumpCount;
 
-    public IState IdleState {get; private set;}
-    public IState JumpState {get; private set;}
-    public IState WalkState {get; private set;}
+    private Dictionary<Type, IState> _states;
 
     // 바닥 감지 관련 설정 
     [Header("Ground Check Settings")]
@@ -60,10 +58,9 @@ public abstract class CharacterBase : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _maxJumpCount = Stats.canDoubleJump ? 2 : 1;
 
-        IdleState = new IdleState(this);
-        JumpState = new JumpState(this);
-        WalkState = new WalkState(this);
-        _stateMachine = new StateMachine(IdleState);
+        _states = new Dictionary<Type, IState>();
+        _states.Add(typeof(IdleState), new IdleState(this));
+        _stateMachine = new StateMachine(_states[typeof(IdleState)]);
 
         _groundChecker = new GroundChecker(GetComponent<Collider>(), groundCheckDistance, groundLayer);
     }
@@ -115,9 +112,22 @@ public abstract class CharacterBase : MonoBehaviour
     /// <summary>
     /// 상태 전환
     /// </summary>
-    public void ChangeState(IState newState)
+    public void ChangeState<T>() where T : IState
     {
-        _stateMachine.ChangeStateTo(newState);
+        var type = typeof(T);
+
+        if (!_states.TryGetValue(type, out var state))
+        {
+            // 생성자 중 CharacterBase 하나 받는 걸 찾음
+            var ctor = type.GetConstructor(new[] { typeof(CharacterBase) });
+            if (ctor == null)
+                throw new Exception($"{type} 클래스에 맞는 생성자가 없음");
+
+            state = (IState)ctor.Invoke(new object[] { this });
+            _states[type] = state;
+        }
+
+        _stateMachine.ChangeStateTo(state);
     }
     
     // Stats를 외부에서 교체, 디버그용
