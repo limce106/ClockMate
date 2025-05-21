@@ -17,14 +17,18 @@ public class PressurePlate : ResettableBase
     private Coroutine _pressCoroutine;
     
     [Header("Pressure Plate Properties")]
-    [SerializeField] private float pressOffsetY = -0.2f;
+    [SerializeField] private float pressOffsetY = 0.5f;
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private Color pressedColor = Color.green;
     [SerializeField] private CharacterName character;
   
     private Vector3 _endPoint;
     private bool _isPressed;
+    private bool _isLocked;
     public bool IsFullyPressed { get; private set; }
+    
+    private Vector3 _lastPlatePosition;
+    private Transform _attachedTransform;
     
     protected override void Init()
     {
@@ -33,8 +37,9 @@ public class PressurePlate : ResettableBase
         {
             _materialInstance = _meshRenderer.material;
         }
-        _endPoint = transform.position + new Vector3(0f, pressOffsetY, 0f);
+        _endPoint = transform.position + new Vector3(0f, -pressOffsetY, 0f);
         _isPressed = false;
+        _isLocked = false;
         IsFullyPressed = false;
     }
     
@@ -43,16 +48,23 @@ public class PressurePlate : ResettableBase
         if (!IsValidCharacter(other) || !IsValidDirection(other)) return;
 
         Debug.Log("위에서 발판 밟음");
-        other.transform.SetParent(transform); // 캐릭터가 발판 따라가게
+        // 캐릭터가 발판 따라가게
+        _attachedTransform = other.GetComponentInParent<CharacterBase>().transform;
+        _lastPlatePosition = transform.position;
+        
         SetPressed(true); // 발판 내려가게
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!IsValidCharacter(other) || !_isPressed) return;
+        if (!IsValidCharacter(other) || _isLocked) return;
 
+        if (_attachedTransform != null && other.transform.root == _attachedTransform)
+        {
+            _attachedTransform = null;
+        }
+        
         Debug.Log("발판에서 내려옴");
-        other.transform.SetParent(null); // 부모 해제
         if (IsFullyPressed)
         {
             IsFullyPressed = false;
@@ -60,7 +72,16 @@ public class PressurePlate : ResettableBase
         }
         SetPressed(false); // 발판 올라가게
     }
+    private void FixedUpdate()
+    {
+        if (_attachedTransform is not null)
+        {
+            Vector3 delta = transform.position - _lastPlatePosition;
+            _attachedTransform.position += delta;
+        }
 
+        _lastPlatePosition = transform.position;
+    }
     private bool IsValidCharacter(Collider other)
     {
         var characterComponent = other.GetComponentInParent<CharacterBase>();
@@ -84,6 +105,11 @@ public class PressurePlate : ResettableBase
         return true;
     }
 
+    public void LockState()
+    {
+        _isLocked = true;
+    }
+
     private void SetPressed(bool state)
     {
         if (_isPressed == state) return;
@@ -96,7 +122,7 @@ public class PressurePlate : ResettableBase
         }
         _pressCoroutine = StartCoroutine(PressRoutine(_isPressed));
     }
-    
+
     private IEnumerator PressRoutine(bool pressed)
     {
         Vector3 target = pressed ? _endPoint : _initialPosition;
@@ -114,6 +140,7 @@ public class PressurePlate : ResettableBase
             _materialInstance.color = pressedColor;
         }
     }
+
     protected override void SaveInitialState()
     {
         _initialPosition = transform.position;
@@ -134,5 +161,7 @@ public class PressurePlate : ResettableBase
             _pressCoroutine = null;
         }
         _isPressed = false;
+        _isLocked = false;
+        IsFullyPressed = false;
     }
 }
