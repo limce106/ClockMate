@@ -1,66 +1,72 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class AirFan : MonoBehaviour
 {
-    private GameObject player;
-    private Rigidbody playerRb;
+    private static Milli milli;
+    private static Rigidbody milliRb;
     [SerializeField]
     private AirFanBlade fanBlades;
 
+    [Header("공통")]
+    // 바람이 적용되는 최대 높이(절대적 높이)
+    public float windHeight;
+    [SerializeField]
+    private bool isMilliInTrigger = false;
+    public static bool isFlying = false;   // 추후 플레이어 날기 구현 완료 시, 밀리의 날기 여부로 변경하기
+    public bool isUpwardFly = false;
+
+    public ParticleSystem windEffect;
+    public FrontAirFanTrigger frontAirFanTrigger;
+
     [Header("수직으로 날려보내기")]
-    // 바람 세기
-    [SerializeField]
-    private float windForce = 10f;
-    // 바람의 최대 범위
-    [SerializeField]
-    private float windRange = 5f;
+    // 오버슛 방지용, 중력과 물리 힘으로 인한 초과 상승을 방지하기 위해 초기 속도를 줄이는 계수
+    private const float overshootPreventFactor = 0.8f;
 
     [Header("대각선으로 날려보내기")]
     [SerializeField, Tooltip("대각선 바람일 때 목표 위치를 설정하세요.")]
     private Transform targetFlyPoint;
-    private const float gravity = 9.8f;
+    private const float MinFallTime = 0.1f;
+    private const float VelocityThreshold = 0.1f;
+    private const float RotationSpeedWhileFlying = 5f;
 
+    [Header("환풍기 상태")]
     public bool isFanOn = false;
     public enum FanState { Idle, SpinningUp, SpinningDown, Running }
     [HideInInspector]
     public FanState fanState = FanState.Idle;
 
-    [SerializeField]
-    private bool isMilliInTrigger = false;
-    [SerializeField]
-    private bool isFlying = false;
-    private bool isUpwardFly = false;
-
-    public ParticleSystem windEffect;
-
-    void Start()
+    void Awake()
     {
-        player = GameObject.Find("Milli");
-        if (player != null )
+        if (!milli)
         {
-            playerRb = player.GetComponent<Rigidbody>();
+            milli = FindObjectOfType<Milli>();
+        }
+        if (milli && !milliRb)
+        {
+            milliRb = milli.GetComponent<Rigidbody>();
+        }
 
-            if (Mathf.Approximately(transform.rotation.eulerAngles.x, 0f))
-            {
-                isUpwardFly = true;
-            }
-            else
-            {
-                isUpwardFly = false;
-                
-            }
+        if (transform.rotation == Quaternion.identity)
+        {
+            isUpwardFly = true;
+        }
+        else
+        {
+            isUpwardFly = false;
         }
     }
 
     void Update()
     {
         // 테스트용
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    SwitchFan();
-        //}
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            SwitchFan();
+        }
+        //
 
         switch (fanState)
         {
@@ -80,106 +86,111 @@ public class AirFan : MonoBehaviour
 
         if (isUpwardFly)
         {
-            if((!isFlying && isMilliInTrigger) || isFlying)
+            if ((!isFlying && isMilliInTrigger) || isFlying)
             {
+                if (!isFlying)
+                {
+                    isFlying = true;
+                }
+
                 LaunchPlayerUpward();
             }
-        }
-        else
-        {
-            StartCoroutine(DelayLaunchPlayerParabola(0.7f));
         }
     }
 
     private void LaunchPlayerUpward()
     {
-        float currentY = playerRb.position.y;
-        float targetY = transform.position.y + windRange;
-        float deltaY = targetY - currentY;
-
-        if (deltaY > 0.05f)
+        // 환풍기를 벗어나면 바람의 영향을 받지 않는다.
+        bool inXZRange = frontAirFanTrigger.IsPlayerInXZRange(milli.transform.position);
+        if (!inXZRange)
         {
-            float forceRatio = Mathf.Clamp01(deltaY / windRange);
-            float upwardForce = forceRatio * windForce;
-            playerRb.AddForce(Vector3.up * upwardForce, ForceMode.Acceleration);
+            EndFlying();
+            return;
         }
-        else
+
+        float currentHeight = milli.transform.position.y;
+        float remainingHeight = windHeight - transform.position.y;
+
+        if (remainingHeight > 0f)
         {
-            // 목표 높이에 도달하면 둥둥 떠 있는 움직임 적용
-            float hoverOffset = Mathf.Sin(Time.time * 1f * 2 * Mathf.PI) * 0.5f;
-            Vector3 hoverPosition = new Vector3(playerRb.position.x, targetY + hoverOffset, playerRb.position.z);
-            playerRb.MovePosition(hoverPosition);
+            float gravity = Mathf.Abs(Physics.gravity.y);
+            float gravityForce = milliRb.mass * gravity;
+            float initialVelocity = Mathf.Sqrt(2 * gravity * remainingHeight) * overshootPreventFactor;
+
+            milliRb.velocity = new Vector3(milliRb.velocity.x, initialVelocity, milliRb.velocity.z);
+
+            isFlying = true;
+        }
+        //else
+        //{
+        //    milliRb.velocity = new Vector3(milliRb.velocity.x, 0f, milliRb.velocity.z);
+        //    milliRb.AddForce(-Physics.gravity * milliRb.mass);
+        //}
+
+        if (!milli.CanJump())
+        {
+            milli.ResetJumpCount();
         }
     }
 
-    private IEnumerator LaunchPlayerParabola()
+    public IEnumerator LaunchPlayerParabola()
     {
-        isFlying = true;
-        playerRb.useGravity = false;
-
-        Transform startFlyPoint = player.transform;
-        float distance = Vector3.Distance(startFlyPoint.position, targetFlyPoint.position);
-        float flyAngle = 90f - transform.rotation.eulerAngles.x;
-
-        float veloctiy = distance / (Mathf.Sin(2 * flyAngle * Mathf.Deg2Rad) / gravity);
-        float Vx = Mathf.Sqrt(veloctiy) * Mathf.Cos(flyAngle * Mathf.Deg2Rad);
-        float Vy = Mathf.Sqrt(veloctiy) * Mathf.Sin(flyAngle * Mathf.Deg2Rad);
-
-        float flightDuration = distance / Vx;
-        Quaternion targetRotation = Quaternion.LookRotation(targetFlyPoint.position - startFlyPoint.position);
-
-        Vector3 startPosition = player.transform.position;
-        float elapseTime = 0f;
-        while (elapseTime < flightDuration)
+        if (!targetFlyPoint)
         {
-            // 플레이어가 수동 조작으로 움직인 경우 낙하
-            if (!isFanOn || playerRb.velocity.magnitude  > 0.1f)
+            yield break;
+        }
+
+        isFlying = true;
+        milliRb.velocity = Vector3.zero;
+
+        Vector3 start = milli.transform.position;
+        float gravity = Mathf.Abs(Physics.gravity.y);
+
+        Vector3 horizontal = new Vector3(targetFlyPoint.position.x - start.x, 0, targetFlyPoint.position.z - start.z);
+        float horizontalDistance = horizontal.magnitude;
+
+        float heightDiff = targetFlyPoint.position.y - start.y;
+        float apexHeight = Mathf.Max(windHeight, heightDiff + windHeight);
+
+        float vy = Mathf.Sqrt(2 * gravity * apexHeight);
+        float timeUp = vy / gravity;
+        float timeDown = Mathf.Sqrt(2 * Mathf.Max(apexHeight - heightDiff, MinFallTime) / gravity);
+        float totalTime = timeUp + timeDown;
+
+        Vector3 horizontalVelocity = horizontal / totalTime;
+        Vector3 launchVelocity = horizontalVelocity + Vector3.up * vy;
+        milliRb.velocity = launchVelocity;
+
+        float elapsedTime = 0f;
+        while (elapsedTime < totalTime)
+        {
+            // 환풍기가 꺼지거나 플레이어가 움직이면 날아가기를 멈춘다
+            if (!isFanOn || milliRb.velocity.magnitude > VelocityThreshold)
             {
-                Debug.Log("Player moved: Cancel Flying");
-
                 EndFlying();
-
                 yield break;
             }
 
-            float timeRatio = elapseTime / flightDuration;
+            Quaternion targetRotation = Quaternion.LookRotation(targetFlyPoint.position - start);
+            milliRb.MoveRotation(Quaternion.Slerp(milliRb.rotation, targetRotation, Time.deltaTime * RotationSpeedWhileFlying));
 
-            float yOffset = (Vy * elapseTime) - (0.5f * gravity * elapseTime * elapseTime);
-            Vector3 horizontalMovement = Vector3.forward * Vx * elapseTime;
-            Vector3 newPosition = startPosition + player.transform.TransformDirection(horizontalMovement) + Vector3.up * yOffset;
-
-            player.transform.position = newPosition;
-            player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, Time.deltaTime * 5f);
-
-            elapseTime += Time.deltaTime;
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        player.transform.position = targetFlyPoint.position;
+        milliRb.velocity = Vector3.zero;
+        milli.transform.position = targetFlyPoint.position;
         EndFlying();
-    }
-
-    private IEnumerator DelayLaunchPlayerParabola(float Delay)
-    {
-        yield return new WaitForSeconds(Delay);
-
-        if (!isFlying && isMilliInTrigger && isFanOn)
-        {
-            yield return LaunchPlayerParabola();
-        }
     }
 
     private void EndFlying()
     {
-        player.transform.rotation = Quaternion.Euler(Vector3.zero);
-
         isFlying = false;
-        playerRb.useGravity = true;
     }
 
     public void SwitchFan()
     {
-        if(isFanOn)
+        if (isFanOn)
         {
             isFanOn = false;
             fanState = FanState.SpinningDown;

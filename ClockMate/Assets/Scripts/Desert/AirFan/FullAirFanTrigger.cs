@@ -7,7 +7,7 @@ public class FullAirFanTrigger : MonoBehaviour
     private bool isHourInTrigger = false;
     private AirFan airFan;
 
-    void Start()
+    void Awake()
     {
         airFan = GetComponentInParent<AirFan>();
     }
