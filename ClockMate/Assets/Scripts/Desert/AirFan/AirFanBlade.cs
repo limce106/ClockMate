@@ -38,7 +38,7 @@ public class AirFanBlade : MonoBehaviour
 
     void RotateFanBlades()
     {
-        transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.up, currentRotationSpeed * Time.deltaTime);
     }
 
     public void ClearRotationElapsedTime()
@@ -48,7 +48,7 @@ public class AirFanBlade : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(airFan.isFanOn && collision.gameObject.tag == "Player")
+        if(airFan.isFanOn && collision.gameObject.CompareTag("Player"))
         {
             Destroy(collision.gameObject);
         }
