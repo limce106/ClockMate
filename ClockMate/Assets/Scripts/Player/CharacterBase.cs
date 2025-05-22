@@ -86,6 +86,15 @@ public abstract class CharacterBase : MonoBehaviour
         JumpCount++;
     }
 
+    public void ResetJumpCount()
+    {
+        if(JumpCount > 0)
+        {
+            JumpCount = 0;
+
+        }
+    }
+
     /// <summary>
     /// 상하좌우 이동 로직 (xz 축 이동, y 속도 유지)
     /// </summary>
