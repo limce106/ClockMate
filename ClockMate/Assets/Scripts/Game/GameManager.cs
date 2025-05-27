@@ -7,6 +7,7 @@ using static Define.Character;
 
 public class GameManager : MonoSingleton<GameManager>
 {
+    public CharacterName SelectedCharacter { get; private set; }
     public Dictionary<CharacterName, CharacterBase> Characters { get; private set; }
     public BoStage CurrentStage { get; private set; }
     private UILoading _uiLoading;
@@ -126,5 +127,10 @@ public class GameManager : MonoSingleton<GameManager>
         {
             character.gameObject.SetActive(active);
         }
+    }
+
+    public void SetSelectedCharacter(CharacterName character)
+    {
+        SelectedCharacter = character;
     }
 }
