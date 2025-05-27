@@ -132,8 +132,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         }
         else if (!localSelected && otherSelected)
         {
-            // statusText.text = "상대방이 캐릭터 선택 완료했습니다.";
-            statusText.text = "";
+            statusText.text = "상대방이 캐릭터 선택 완료했습니다.";
         }
         else if (localSelected && !otherSelected)
         {

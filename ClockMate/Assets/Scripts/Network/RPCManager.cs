@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
+using JetBrains.Annotations;
 
 public class RPCManager : MonoBehaviourPunCallbacks
 {
@@ -94,7 +95,7 @@ public class RPCManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void MarkReady(int actorNumber)
     {
-        playerReadyStatus[actorNumber] = true;
+        PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, true);
         TryLoadSceneIfReady();
         Debug.Log("준비 완료");
     }
@@ -102,8 +103,15 @@ public class RPCManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void UnmarkReady(int actorNumber)
     {
-        playerReadyStatus[actorNumber] = false;
+        PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, false);
         Debug.Log("준비 해제");
+    }
+
+    // playerReadyStatus는 반드시 SyncReadyStatus를 통해서만 수정할 것
+    [PunRPC]
+    void SyncReadyStatus(int actorNumber, bool isReady)
+    {
+        playerReadyStatus[actorNumber] = isReady;
     }
 
     void TryLoadSceneIfReady()
@@ -130,5 +138,11 @@ public class RPCManager : MonoBehaviourPunCallbacks
                 return false;
         }
         return true;
+    }
+
+    public static Dictionary<int, bool> GetPlayerReadyStatus()
+    {
+        // 복사 반환하여 원본에 영향 없도록 함
+        return new Dictionary<int, bool>(playerReadyStatus);
     }
 }
