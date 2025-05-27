@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.SceneManagement;
+using JetBrains.Annotations;
 
 public class RPCManager : MonoBehaviourPunCallbacks
 {
@@ -21,7 +23,8 @@ public class RPCManager : MonoBehaviourPunCallbacks
     }
 
     private PhotonView PV;
-    private static HashSet<int> readPlayers = new HashSet<int>(2);
+    private static Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
+    private bool isLocalPlayerReady = false;
     private bool canAcceptReady = false;
     private string sceneName = "";
 
@@ -42,13 +45,39 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (!PhotonNetwork.InRoom || !canAcceptReady || !PV)
+        if (!PhotonNetwork.InRoom || !canAcceptReady)
             return;
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            PV.RPC("MarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+            if(isLocalPlayerReady)
+            {
+                PV.RPC("UnmarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+                isLocalPlayerReady = false;
+            }
+            else
+            {
+                PV.RPC("MarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+                isLocalPlayerReady = true;
+            }
         }
+    }
+
+    new protected void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    new protected void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        playerReadyStatus.Clear();
+        canAcceptReady = false;
+        isLocalPlayerReady = false;
     }
 
     [PunRPC]
@@ -66,15 +95,54 @@ public class RPCManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void MarkReady(int actorNumber)
     {
-        if (readPlayers.Contains(actorNumber))
+        PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, true);
+        TryLoadSceneIfReady();
+        Debug.Log("준비 완료");
+    }
+
+    [PunRPC]
+    void UnmarkReady(int actorNumber)
+    {
+        PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, false);
+        Debug.Log("준비 해제");
+    }
+
+    // playerReadyStatus는 반드시 SyncReadyStatus를 통해서만 수정할 것
+    [PunRPC]
+    void SyncReadyStatus(int actorNumber, bool isReady)
+    {
+        playerReadyStatus[actorNumber] = isReady;
+    }
+
+    void TryLoadSceneIfReady()
+    {
+        if (!PhotonNetwork.IsMasterClient || !AllPlayersReady())
             return;
 
-        readPlayers.Add(actorNumber);
-
-        if (readPlayers.Count == PhotonNetwork.CurrentRoom.MaxPlayers && PhotonNetwork.IsMasterClient)
+        if (string.IsNullOrEmpty(sceneName))
         {
-            PhotonNetwork.LoadLevel(sceneName);
-            readPlayers.Clear();
+            Debug.LogWarning("Scene name not set. Cannot load scene.");
+            return;
         }
+
+        PhotonNetwork.LoadLevel(sceneName);
+    }
+
+    bool AllPlayersReady()
+    {
+        foreach(var player in PhotonNetwork.CurrentRoom.Players)
+        {
+            int actorNumber = player.Value.ActorNumber;
+
+            if(!playerReadyStatus.ContainsKey(actorNumber) || !playerReadyStatus[actorNumber])
+                return false;
+        }
+        return true;
+    }
+
+    public static Dictionary<int, bool> GetPlayerReadyStatus()
+    {
+        // 복사 반환하여 원본에 영향 없도록 함
+        return new Dictionary<int, bool>(playerReadyStatus);
     }
 }
