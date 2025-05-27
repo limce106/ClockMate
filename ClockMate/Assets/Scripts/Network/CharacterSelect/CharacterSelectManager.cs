@@ -72,7 +72,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         UpdateStatusText();
     }
 
-    int GetCharacterIndex(CharacterSlot character)
+    public int GetCharacterIndex(CharacterSlot character)
     {
         for (int i = 0; i < characters.Length; i++)
         {
