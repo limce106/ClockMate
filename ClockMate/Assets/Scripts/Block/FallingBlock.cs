@@ -46,6 +46,7 @@ public class FallingBlock : ResettableBase, IPunObservable
         // 밟은 순간의 애니메이션 재생 코드 추가 (필요하다면!)
         Debug.Log("블럭 밟음");
 
+        // 서버에 연결됐고 방에 들어왔다면
         if(PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom)
         {
             if (photonView.IsMine)
@@ -123,6 +124,9 @@ public class FallingBlock : ResettableBase, IPunObservable
         isFalling = false;
     }
 
+    /// <summary>
+    /// 포톤 네트워크를 통해 블록의 상태(위치, 색상, 활성화 여부, 낙하 상태)를 동기화
+    /// </summary>
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
