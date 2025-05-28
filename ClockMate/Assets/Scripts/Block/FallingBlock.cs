@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
-public class FallingBlock : ResettableBase
+public class FallingBlock : ResettableBase, IPunObservable
 {
+    // 서버 관련 필드
+    private PhotonView photonView;
+    private bool isFalling; // 떨어짐 상태 동기화용 변수
+
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
     private Color _initialColor;
-    
+
     private MeshRenderer _meshRenderer;
     private Material _materialInstance;
 
     private Vector3 _destroyPoint;
-    
+
     private Coroutine _fallCoroutine;
-    
+
     [Header("Falling Block Properties")]
     [SerializeField] private float fallDelay = 1.5f;
     [SerializeField] private float fallSpeed = 7f;
@@ -24,6 +29,8 @@ public class FallingBlock : ResettableBase
 
     protected override void Init()
     {
+        photonView = GetComponent<PhotonView>();
+
         _meshRenderer = GetComponent<MeshRenderer>();
         if (_meshRenderer != null)
         {
@@ -38,8 +45,31 @@ public class FallingBlock : ResettableBase
         if (_fallCoroutine != null || !other.collider.CompareTag("Player")) return;
         // 밟은 순간의 애니메이션 재생 코드 추가 (필요하다면!)
         Debug.Log("블럭 밟음");
+
+        // 서버에 연결됐고 방에 들어왔다면
+        if(PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom)
+        {
+            if (photonView.IsMine)
+            {
+                photonView.RPC("RPC_StartFalling", RpcTarget.All);
+            }
+        }
+        else
+        {
+            StartFallingLocally();
+        }
+    }
+
+    private void StartFallingLocally()
+    {
         _materialInstance.color = delayColor;
         _fallCoroutine = StartCoroutine(FallRoutine());
+    }
+
+    [PunRPC]
+    public void RPC_StartFalling()
+    {
+        StartFallingLocally();
     }
 
     private IEnumerator FallRoutine()
@@ -47,6 +77,7 @@ public class FallingBlock : ResettableBase
         yield return new WaitForSeconds(fallDelay);
 
         Debug.Log("블럭 추락 시작");
+        isFalling = true;
         _materialInstance.color = fallingColor;
         // 떨어지는 순간의 애니메이션 재생 (이것도 필요시)
 
@@ -59,6 +90,7 @@ public class FallingBlock : ResettableBase
             }
             Debug.Log("블럭 비활성화");
             gameObject.SetActive(false); // 비활성화
+            isFalling = false;
             yield break;
         }
     }
@@ -87,6 +119,34 @@ public class FallingBlock : ResettableBase
         {
             StopCoroutine(_fallCoroutine);
             _fallCoroutine = null;
+        }
+
+        isFalling = false;
+    }
+
+    /// <summary>
+    /// 포톤 네트워크를 통해 블록의 상태(위치, 색상, 활성화 여부, 낙하 상태)를 동기화
+    /// </summary>
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(_materialInstance.color);
+            stream.SendNext(isFalling);
+            stream.SendNext(gameObject.activeSelf);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+            _materialInstance.color = (Color)stream.ReceiveNext();
+            isFalling = (bool)stream.ReceiveNext();
+            bool isActive = (bool)stream.ReceiveNext();
+
+            if (gameObject.activeSelf != isActive)
+            {
+                gameObject.SetActive(isActive);
+            }
         }
     }
 }
