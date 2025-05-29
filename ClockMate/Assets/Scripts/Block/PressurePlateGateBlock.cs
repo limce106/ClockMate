@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Pun;
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -79,6 +80,7 @@ public class PressurePlateGateBlock : ResettableBase
         _openPosition = _closedPosition + direction * openOffsetX;
     }
 
+    [PunRPC]
     public override void ResetObject()
     {
         if (_openCoroutine != null)

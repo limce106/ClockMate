@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,9 +13,13 @@ public class ResetTestManager : MonoSingleton<ResetTestManager>
     
     public void ResetAllBlocks()
     {
+        PhotonView photonView = GetComponent<PhotonView>();
         foreach (ResettableBase resettable in _resettableList)
         {
-            resettable.ResetObject();
+            if(!photonView)
+            {
+                photonView.RPC("ResetObject", RpcTarget.AllBuffered);
+            }
         }
         Debug.Log("초기화 완료");
         cbResetFinished?.Invoke();
