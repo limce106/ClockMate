@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
 
@@ -148,6 +149,7 @@ public class PressurePlate : ResettableBase
         _initialColor = _materialInstance.color;
     }
 
+    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;

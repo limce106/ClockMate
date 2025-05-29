@@ -2,9 +2,12 @@ using System.Collections;
 using Define;
 using DefineExtension;
 using UnityEngine;
+using Photon.Pun;
 
 public class MovingBlock : ResettableBase
 {
+    private PhotonView photonView;
+
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
 
@@ -25,9 +28,14 @@ public class MovingBlock : ResettableBase
     protected override void Awake()
     {
         base.Awake();
+        photonView = GetComponent<PhotonView>();
+
         if (startAutomatically)
         {
-            StartMoving();
+            if (photonView && photonView.IsMine)
+                photonView.RPC("RPC_StartMoving", RpcTarget.AllBuffered);
+            else
+                StartMoving();
         }
     }
 
@@ -43,7 +51,10 @@ public class MovingBlock : ResettableBase
         other.transform.SetParent(transform); // 캐릭터도 블럭 따라 움직이도록 설정
         if (!startAutomatically) // 캐릭터가 밟으면 움직임 시작하도록
         {
-            StartMoving();
+            if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+                photonView.RPC("RPC_StartMoving", RpcTarget.AllBuffered);
+            else
+                StartMoving();
         }
     }
 
@@ -58,6 +69,12 @@ public class MovingBlock : ResettableBase
         if (_moveCoroutine != null) return;
         
         _moveCoroutine = StartCoroutine(MoveRoutine());
+    }
+
+    [PunRPC]
+    private void RPC_StartMoving()
+    {
+        StartMoving();
     }
 
     private IEnumerator MoveRoutine()
@@ -92,6 +109,7 @@ public class MovingBlock : ResettableBase
     }
 
 
+    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;

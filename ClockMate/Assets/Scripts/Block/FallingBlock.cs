@@ -47,12 +47,9 @@ public class FallingBlock : ResettableBase, IPunObservable
         Debug.Log("블럭 밟음");
 
         // 서버에 연결됐고 방에 들어왔다면
-        if(PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom)
+        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
-            if (photonView.IsMine)
-            {
-                photonView.RPC("RPC_StartFalling", RpcTarget.All);
-            }
+            photonView.RPC("RPC_StartFalling", RpcTarget.All);
         }
         else
         {
@@ -104,6 +101,7 @@ public class FallingBlock : ResettableBase, IPunObservable
     }
 
     // 초기화 로직
+    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
