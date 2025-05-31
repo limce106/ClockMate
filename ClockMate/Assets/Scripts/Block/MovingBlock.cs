@@ -52,9 +52,14 @@ public class MovingBlock : ResettableBase
         if (!startAutomatically) // 캐릭터가 밟으면 움직임 시작하도록
         {
             if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+            {
                 photonView.RPC("RPC_StartMoving", RpcTarget.AllBuffered);
+
+            }
             else
+            {
                 StartMoving();
+            }
         }
     }
 
