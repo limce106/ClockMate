@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -116,6 +115,21 @@ public abstract class CharacterBase : MonoBehaviour
 
         // 물리 엔진을 통해 부드럽게 가속도 적용 (y축은 유지)
         _rb.AddForce(new Vector3(clampedChange.x, 0f, clampedChange.z), ForceMode.VelocityChange);
+        
+        // 움직이는 방향을 바라보도록 회전
+        RotateToDirectionOfMovement(direction);
+    }
+
+    /// <summary>
+    /// 이동하는 방향으로 회전
+    /// </summary>
+    private void RotateToDirectionOfMovement(Vector3 direction)
+    {
+        if (!(direction.sqrMagnitude > 0.01f)) return;
+        
+        // 정지 상태가 아니라면
+        Quaternion targetRotation = Quaternion.LookRotation(direction); // 이동 방향 바라보는 회전값
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
     }
 
     /// <summary>
