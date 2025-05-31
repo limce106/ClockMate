@@ -61,4 +61,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PN.Disconnect();
     }
+
+    public bool IsInRoomAndReady()
+    {
+        return Instance && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom;
+    }
 }

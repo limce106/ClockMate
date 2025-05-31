@@ -47,12 +47,9 @@ public class FallingBlock : ResettableBase, IPunObservable
         Debug.Log("블럭 밟음");
 
         // 서버에 연결됐고 방에 들어왔다면
-        if(PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom)
+        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
-            if (photonView.IsMine)
-            {
-                photonView.RPC("RPC_StartFalling", RpcTarget.All);
-            }
+            photonView.RPC("RPC_StartFalling", RpcTarget.All);
         }
         else
         {
@@ -104,6 +101,7 @@ public class FallingBlock : ResettableBase, IPunObservable
     }
 
     // 초기화 로직
+    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
@@ -132,14 +130,26 @@ public class FallingBlock : ResettableBase, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(transform.position);
-            stream.SendNext(_materialInstance.color);
+
+            Color color = _materialInstance.color;
+            stream.SendNext(color.r);
+            stream.SendNext(color.g);
+            stream.SendNext(color.b);
+            stream.SendNext(color.a);
+
             stream.SendNext(isFalling);
             stream.SendNext(gameObject.activeSelf);
         }
         else
         {
             transform.position = (Vector3)stream.ReceiveNext();
-            _materialInstance.color = (Color)stream.ReceiveNext();
+
+            float r = (float)stream.ReceiveNext();
+            float g = (float)stream.ReceiveNext();
+            float b = (float)stream.ReceiveNext();
+            float a = (float)stream.ReceiveNext();
+            _materialInstance.color = new Color(r, g, b, a);
+
             isFalling = (bool)stream.ReceiveNext();
             bool isActive = (bool)stream.ReceiveNext();
 
