@@ -172,12 +172,22 @@ public class PressurePlate : ResettableBase, IPunObservable
         if(stream.IsWriting)
         {
             stream.SendNext(transform.position);
-            stream.SendNext(_materialInstance.color);
+
+            Color color = _materialInstance.color;
+            stream.SendNext(color.r);
+            stream.SendNext(color.g);
+            stream.SendNext(color.b);
+            stream.SendNext(color.a);
         }
         else
         {
             transform.position = (Vector3)stream.ReceiveNext();
-            _materialInstance.color = (Color)stream.ReceiveNext();
+
+            float r = (float)stream.ReceiveNext();
+            float g = (float)stream.ReceiveNext();
+            float b = (float)stream.ReceiveNext();
+            float a = (float)stream.ReceiveNext();
+            _materialInstance.color = new Color(r, g, b, a);
         }
     }
 }
