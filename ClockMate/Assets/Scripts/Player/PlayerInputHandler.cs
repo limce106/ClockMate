@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static Define.Character;
@@ -15,22 +13,13 @@ public class PlayerInputHandler : MonoBehaviour
     private CharacterBase _character;
     private PlayerInputActions _inputActions;
     private bool _isMoving;
+    private Camera _camera;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
 
     private void Awake()
     {
-        _character = GetComponent<CharacterBase>();
-        _inputActions = new PlayerInputActions();
-        _isMoving = false;
-
-        _actionsAvailable = new Dictionary<CharacterAction, bool>
-        {
-            { CharacterAction.Move, true },
-            { CharacterAction.Jump, true }
-        };
-
-        InitInputActions();
+        Init();        
     }
 
     private void OnEnable()
@@ -41,6 +30,22 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnDisable()
     {
         _inputActions.Disable();
+    }
+
+    private void Init()
+    {
+        _character = GetComponent<CharacterBase>();
+        _inputActions = new PlayerInputActions();
+        _isMoving = false;
+        _camera = Camera.main;
+
+        _actionsAvailable = new Dictionary<CharacterAction, bool>
+        {
+            { CharacterAction.Move, true },
+            { CharacterAction.Jump, true }
+        };
+        
+        InitInputActions();
     }
 
     private void InitInputActions()
@@ -55,13 +60,30 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!_isMoving) return;
 
-        Vector2 input = _inputActions.Player.Move.ReadValue<Vector2>();
-        _character.Move(new Vector3(input.x, 0, input.y));
-        if (input.sqrMagnitude < 0.01f)
-        {
-            _isMoving = false;
-            _character.ChangeState<IdleState>();
-        }
+        HandleMovement();
+    }
+
+    /// <summary>
+    /// 사용자 입력을 읽고 카메라 기준으로 이동 벡터를 계산한 후 캐릭터 이동을 처리한다.
+    /// </summary>
+    private void HandleMovement()
+    {
+        Vector2 inputDirection = _inputActions.Player.Move.ReadValue<Vector2>().normalized;
+        
+        // 카메라 기준 이동 방향 벡터 (y축 제거 후 정규화)
+        Vector3 camForward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(_camera.transform.right, Vector3.up).normalized;
+        
+        // 카메라(화면) 기준 이동 방향 계산
+        Vector3 moveDirection = (camForward * inputDirection.y) + (camRight * inputDirection.x);
+        
+        // 캐릭터 이동 처리
+        _character.Move(moveDirection);
+        
+        // 입력이 거의 없으면 이동 상태 종료 처리
+        if (!(inputDirection.sqrMagnitude < 0.01f)) return;
+        _isMoving = false;
+        _character.ChangeState<IdleState>();
     }
 
     private void OnMovePressed(InputAction.CallbackContext context)
