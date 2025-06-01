@@ -138,8 +138,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
         photonView.RPC("UpdateStatusText", RpcTarget.All, "E키를 눌러 게임을 시작하세요.");
 
         RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
-        // 필요시 추후 씬 이름 수정 필요
-        RPCManager.Instance.photonView.RPC("SetSceneName", RpcTarget.All, "CharacterSelect");
+        RPCManager.OnSyncedAllReadyAction = () =>
+        {
+            PhotonNetwork.LoadLevel("CharacterSelect");
+        };
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
