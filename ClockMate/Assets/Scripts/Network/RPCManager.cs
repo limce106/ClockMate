@@ -119,6 +119,8 @@ public class RPCManager : MonoBehaviourPunCallbacks
     {
         OnSyncedAllReadyAction?.Invoke();
         OnSyncedAllReadyAction = null;
+
+        ResetReadyState();
     }
 
     bool AllPlayersReady()
