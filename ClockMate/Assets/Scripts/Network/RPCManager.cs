@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 using JetBrains.Annotations;
+using System;
 
 public class RPCManager : MonoBehaviourPunCallbacks
 {
@@ -26,7 +27,9 @@ public class RPCManager : MonoBehaviourPunCallbacks
     private static Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
     private bool isLocalPlayerReady = false;
     private bool canAcceptReady = false;
-    private string sceneName = "";
+
+    public static Action OnLocalAllReadyAction;
+    public static Action OnSyncedAllReadyAction;
 
     void Awake()
     {
@@ -63,23 +66,6 @@ public class RPCManager : MonoBehaviourPunCallbacks
         }
     }
 
-    new protected void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    new protected void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        playerReadyStatus.Clear();
-        canAcceptReady = false;
-        isLocalPlayerReady = false;
-    }
-
     [PunRPC]
     public void SetCanAcceptReady(bool value)
     {
@@ -87,16 +73,10 @@ public class RPCManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void SetSceneName(string name)
-    {
-        sceneName = name;
-    }
-
-    [PunRPC]
     void MarkReady(int actorNumber)
     {
         PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, true);
-        TryLoadSceneIfReady();
+        TryExecuteOnAllPlayersReady();
         Debug.Log("준비 완료");
     }
 
@@ -114,18 +94,31 @@ public class RPCManager : MonoBehaviourPunCallbacks
         playerReadyStatus[actorNumber] = isReady;
     }
 
-    void TryLoadSceneIfReady()
+    private void ResetReadyState()
     {
-        if (!PhotonNetwork.IsMasterClient || !AllPlayersReady())
+        playerReadyStatus.Clear();
+        canAcceptReady = false;
+        isLocalPlayerReady = false;
+    }
+
+    void TryExecuteOnAllPlayersReady()
+    {
+        if (!AllPlayersReady())
             return;
 
-        if (string.IsNullOrEmpty(sceneName))
-        {
-            Debug.LogWarning("Scene name not set. Cannot load scene.");
-            return;
-        }
+        OnLocalAllReadyAction?.Invoke();
+        OnLocalAllReadyAction = null;
 
-        PhotonNetwork.LoadLevel(sceneName);
+        PV.RPC("ExecuteSyncedAllPlayersReady", RpcTarget.All);
+
+        ResetReadyState();
+    }
+
+    [PunRPC]
+    private void ExecuteSyncedAllPlayersReady()
+    {
+        OnSyncedAllReadyAction?.Invoke();
+        OnSyncedAllReadyAction = null;
     }
 
     bool AllPlayersReady()

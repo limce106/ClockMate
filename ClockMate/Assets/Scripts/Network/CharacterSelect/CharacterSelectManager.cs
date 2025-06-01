@@ -36,7 +36,10 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
 
-        RPCManager.Instance.photonView.RPC("SetSceneName", RpcTarget.All, "Desert");
+        RPCManager.OnSyncedAllReadyAction = () =>
+        {
+            PhotonNetwork.LoadLevel("Desert");
+        };
     }
 
     void OnCharacterClicked(CharacterSlot character)
