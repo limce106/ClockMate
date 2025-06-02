@@ -73,6 +73,8 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
         UpdateButtonsInteractable();
         UpdateStatusText();
+
+        RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
     }
 
     public int GetCharacterIndex(CharacterSlot character)
