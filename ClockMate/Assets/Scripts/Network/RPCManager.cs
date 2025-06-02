@@ -140,4 +140,16 @@ public class RPCManager : MonoBehaviourPunCallbacks
         // 복사 반환하여 원본에 영향 없도록 함
         return new Dictionary<int, bool>(playerReadyStatus);
     }
+
+    [PunRPC]
+    public void ResetAllReadyStates()
+    {
+        ResetReadyState();
+        
+        foreach(var plyaer in PhotonNetwork.CurrentRoom.Players)
+        {
+            int actorNumber = plyaer.Value.ActorNumber;
+            PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, false);
+        }
+    }
 }
