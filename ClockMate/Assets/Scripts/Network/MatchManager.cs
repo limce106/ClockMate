@@ -4,7 +4,6 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.UIElements;
 
 public class MatchManager : MonoBehaviourPunCallbacks
 {
@@ -14,8 +13,9 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public TMP_Text statusText;
 
     [Header("Panel")]
-    public GameObject joinPanel;
-    public GameObject waitPanel;
+    public GameObject lobbyPanel;
+    public GameObject playTypePanel;
+    public GameObject connectPanel;
     public GameObject player1Panel;
     public GameObject player2Panel;
 
@@ -26,7 +26,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     private static readonly char[] RoomCodeChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".ToCharArray();
 
-    // 1. 친구와 함께하기
+    // 친구와 함께하기
     public void OnClick_CreateRoom()
     {
         StartCoroutine(TryCreateRoom());
@@ -103,7 +103,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
         Debug.LogWarning($"JoinRoom 실패: {message}");
     }
 
-    // 2.랜덤 매치
+    // 랜덤 매치(현재는 사용 안 함)
     public void OnClick_RandomMatch()
     {
         PhotonNetwork.JoinRandomRoom();
@@ -125,7 +125,12 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        ShowWaitUI();
+        ShowConnectUI();
+
+        if(PhotonNetwork.IsMasterClient && RPCManager.Instance == null)
+        {
+            PhotonNetwork.Instantiate("Prefabs/RPCManager", Vector3.zero, Quaternion.identity);
+        }
 
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
@@ -137,11 +142,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         photonView.RPC("UpdateStatusText", RpcTarget.All, "E키를 눌러 게임을 시작하세요.");
 
-        RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
-        RPCManager.OnSyncedAllReadyAction = () =>
-        {
-            PhotonNetwork.LoadLevel("CharacterSelect");
-        };
+        StartCoroutine(WaitAndSetupRPC());
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -164,10 +165,11 @@ public class MatchManager : MonoBehaviourPunCallbacks
         statusText.text = message;
     }
 
-    private void ShowWaitUI()
+    private void ShowConnectUI()
     {
-        joinPanel.SetActive(false);
-        waitPanel.SetActive(true);
+        lobbyPanel.SetActive(false);
+        playTypePanel.SetActive(false);
+        connectPanel.SetActive(true);
 
         if (joinCode == null)
         {
@@ -175,5 +177,32 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
         joinCodeText.text = joinCode;
         statusText.text = "상대를 기다리는 중...";
+    }
+
+    IEnumerator WaitAndSetupRPC()
+    {
+        float timeout = 3f;
+        float timer = 0f;
+
+        while((RPCManager.Instance == null || RPCManager.Instance.photonView == null) && timer < timeout)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        yield return null;
+
+        if (RPCManager.Instance != null)
+        {
+            RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
+            RPCManager.OnSyncedAllReadyAction = () =>
+            {
+                PhotonNetwork.LoadLevel("CharacterSelect");
+            };
+        }
+        else
+        {
+            Debug.Log("RPCManager 초기화 실패!");
+        }
     }
 }
