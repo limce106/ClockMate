@@ -38,7 +38,8 @@ public class CharacterSelectFinalizer : MonoBehaviour
             int actorNumber = player.Value.ActorNumber;
             bool isMasterClient = player.Value.IsMasterClient;
 
-            bool isReady = readyDict.TryGetValue(actorNumber, out isReady) && isReady;
+            bool isReady = false;
+            readyDict.TryGetValue(actorNumber, out isReady);
             UpdateReadyUI(actorNumber, isReady, isMasterClient);
         }
     }

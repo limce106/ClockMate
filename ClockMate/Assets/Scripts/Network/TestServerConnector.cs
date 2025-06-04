@@ -11,6 +11,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public TMP_Text statusText;
 
     private readonly string roomName = "ClockMate_TestServer";
+    public bool isSpawnPlayer = false;
     public bool spawnAllPlayer = false;
     public Vector3 milliSpawnPos = new Vector3 (-4.22f, 0.7f, 63f);
     public Vector3 hourSpawnPos = new Vector3 (-9.22f, 0.7f, 63f);
@@ -62,6 +63,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         statusText.text = "서버 연결O";
+
+        if (!isSpawnPlayer)
+            return;
 
         if (spawnAllPlayer)
         {

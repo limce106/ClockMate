@@ -25,7 +25,6 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
     private PhotonView PV;
     private static Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
-    private bool isLocalPlayerReady = false;
     private bool canAcceptReady = false;
 
     public static Action OnLocalAllReadyAction;
@@ -53,15 +52,17 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if(isLocalPlayerReady)
+            int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+
+            bool isReady = false;
+            playerReadyStatus.TryGetValue(actorNumber, out isReady);
+            if (isReady)
             {
-                PV.RPC("UnmarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-                isLocalPlayerReady = false;
+                PV.RPC("UnmarkReady", RpcTarget.MasterClient, actorNumber);
             }
             else
             {
-                PV.RPC("MarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-                isLocalPlayerReady = true;
+                PV.RPC("MarkReady", RpcTarget.MasterClient, actorNumber);
             }
         }
     }
@@ -94,11 +95,11 @@ public class RPCManager : MonoBehaviourPunCallbacks
         playerReadyStatus[actorNumber] = isReady;
     }
 
+    [PunRPC]
     private void ResetReadyState()
     {
         playerReadyStatus.Clear();
         canAcceptReady = false;
-        isLocalPlayerReady = false;
     }
 
     void TryExecuteOnAllPlayersReady()
@@ -109,9 +110,11 @@ public class RPCManager : MonoBehaviourPunCallbacks
         OnLocalAllReadyAction?.Invoke();
         OnLocalAllReadyAction = null;
 
-        PV.RPC("ExecuteSyncedAllPlayersReady", RpcTarget.All);
-
-        ResetReadyState();
+        if(PhotonNetwork.IsMasterClient)
+        {
+            PV.RPC("ExecuteSyncedAllPlayersReady", RpcTarget.All);
+            PV.RPC("ResetReadyState", RpcTarget.All);
+        }
     }
 
     [PunRPC]
@@ -119,8 +122,6 @@ public class RPCManager : MonoBehaviourPunCallbacks
     {
         OnSyncedAllReadyAction?.Invoke();
         OnSyncedAllReadyAction = null;
-
-        ResetReadyState();
     }
 
     bool AllPlayersReady()
