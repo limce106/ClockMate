@@ -6,6 +6,7 @@ using static Define.UI.UIType;
 public class UIInteraction : UIBase
 {
     [SerializeField] private Image imgInteractionPrefab;
+    [SerializeField] private int initialPoolSize = 10;
 
     private List<Image> _uiImagePool;
     private Dictionary<GameObject, Image> _objectToUIImage;
@@ -21,8 +22,8 @@ public class UIInteraction : UIBase
     private void Init()
     {
         UIType = Windowed;
-        _uiImagePool = new List<Image>(10);
-        for (int i = 0; i < _uiImagePool.Capacity; i++)
+        _uiImagePool = new List<Image>(initialPoolSize);
+        for (int i = 0; i < initialPoolSize; i++)
         {
             _uiImagePool.Add(Instantiate(imgInteractionPrefab, transform));
             _uiImagePool[i].gameObject.SetActive(false);
@@ -109,6 +110,9 @@ public class UIInteraction : UIBase
         return _mainCamera.ViewportToScreenPoint(clampedPoint);
     }
     
+    /// <summary>
+    /// 상호작용 가능 오브젝트로 선택되었는지 여부에 따라 UI 이미지 교체
+    /// </summary>
     public void SetImage(GameObject detectedObj, bool isSelected)
     {
         if (!_objectToUIImage.TryGetValue(detectedObj, out Image img)) return;
@@ -120,17 +124,25 @@ public class UIInteraction : UIBase
         }
     }
 
+    /// <summary>
+    /// 화면 내에 보이는지 여부를 반환
+    /// </summary>
     private bool IsInView(GameObject targetObj)
     {
         Vector3 screenPoint = _mainCamera.WorldToViewportPoint(targetObj.transform.position);
         return screenPoint is { z: > 0, x: >= 0 and <= 1, y: >= 0 and <= 1 };
     }
-
+    
     private Image GetImageFromPool()
     {
         if (_uiImagePool.Count == 0)
         {
-            Debug.LogError("UIInteraction Pool이 비어있음");
+            Debug.LogError("UIInteraction Pool이 부족하여 확장");
+            for (int i = 0; i < initialPoolSize; i++)
+            {
+                _uiImagePool.Add(Instantiate(imgInteractionPrefab, transform));
+                _uiImagePool[i].gameObject.SetActive(false);
+            }
         }
         Image img = _uiImagePool[^1];
         _uiImagePool.Remove(img);
