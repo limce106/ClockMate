@@ -10,6 +10,7 @@ using UnityEngine;
 public abstract class CharacterBase : MonoBehaviour
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
+    [field: SerializeField] private Collider col;
     
     public CharacterStatsSO Stats { get; private set; }
 
@@ -61,7 +62,7 @@ public abstract class CharacterBase : MonoBehaviour
         _states.Add(typeof(IdleState), new IdleState(this));
         _stateMachine = new StateMachine(_states[typeof(IdleState)]);
 
-        _groundChecker = new GroundChecker(GetComponent<Collider>(), groundCheckDistance, groundLayer);
+        _groundChecker = new GroundChecker(col, groundCheckDistance, groundLayer);
     }
 
 
