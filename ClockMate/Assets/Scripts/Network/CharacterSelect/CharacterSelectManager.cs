@@ -38,7 +38,8 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
         RPCManager.OnSyncedAllReadyAction = () =>
         {
-            PhotonNetwork.LoadLevel("Desert");
+            LoadingManager.Instance?.StartSyncedLoading();
+            GameManager.Instance?.CreateNewSaveData();
         };
     }
 

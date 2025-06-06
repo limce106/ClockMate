@@ -14,6 +14,6 @@ public class UIStartGameTest : UIBase
     private void TestBtnClick()
     {
         gameObject.SetActive(false);
-        GameManager.Instance.StartGame();
+        //GameManager.Instance.StartGame();
     }
 }

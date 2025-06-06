@@ -31,17 +31,15 @@ public class GameManager : MonoSingleton<GameManager>
         _isLoading = false;
     }
 
-    public void StartGame()
+    public void CreateNewSaveData()
     {
+        // 새 게임 시작 시 호출 필요
         if (!SaveManager.Instance.SaveDataExist())
         {
             // 저장된 데이터가 없으면 (새 게임이면)
             SaveManager.Instance.Save(1); // 사막 맵 stage 1으로 저장
             CurrentStage = new BoStage(1);
         }
-        
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        StartCoroutine(LoadSceneAsync(CurrentStage.Map.ToString()));
     }
 
     public void StageComplete()
@@ -56,7 +54,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 // 이번 맵의 마지막 스테이지일 경우
                 ResetTestManager.Instance.RemoveAllResettable();
-                StartCoroutine(LoadSceneAsync(nextStage.Map.ToString()));
+                LoadingManager.Instance?.StartSyncedLoading();
             }
             CurrentStage = nextStage;
         }
@@ -66,43 +64,50 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void InitStageAndCharacter()
     {
         CurrentStage?.Reset();
         SetCharacterActive(true);
-
-        if (_uiLoading != null)
-            UIManager.Instance.Close(_uiLoading);
     }
-    
-    private IEnumerator LoadSceneAsync(string sceneName)
-    {
-        if (_isLoading) yield break;
-        _isLoading = true;
-        SetCharacterActive(false);
-        
-        // 로딩 화면 UI 활성화
-        _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
 
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        operation.allowSceneActivation = false;
+    // 사용 안 함. 로딩은 LoadingManager에서.
+    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    //{
+    //    CurrentStage?.Reset();
+    //    SetCharacterActive(true);
 
-        // 로딩 진행도 90%까지 확인 (Unity 제한)
-        while (operation.progress < 0.9f)
-        {
-            _uiLoading.UpdateLoadingProgress(operation.progress);
-            yield return null;
-        }
+    //    if (_uiLoading != null)
+    //        UIManager.Instance.Close(_uiLoading);
+    //}
 
-        // 0.9f 도달 → 준비 완료
-        _uiLoading.UpdateLoadingProgress(1f);
+    //private IEnumerator LoadSceneAsync(string sceneName)
+    //{
+    //    if (_isLoading) yield break;
+    //    _isLoading = true;
+    //    SetCharacterActive(false);
 
-        yield return new WaitForSeconds(0.5f); // UX용 대기
+    //    // 로딩 화면 UI 활성화
+    //    _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
 
-        operation.allowSceneActivation = true; // 실제 씬 전환
-        _isLoading = false;
-    }
-    
+    //    AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+    //    operation.allowSceneActivation = false;
+
+    //    // 로딩 진행도 90%까지 확인 (Unity 제한)
+    //    while (operation.progress < 0.9f)
+    //    {
+    //        _uiLoading.UpdateLoadingProgress(operation.progress);
+    //        yield return null;
+    //    }
+
+    //    // 0.9f 도달 → 준비 완료
+    //    _uiLoading.UpdateLoadingProgress(1f);
+
+    //    yield return new WaitForSeconds(0.5f); // UX용 대기
+
+    //    operation.allowSceneActivation = true; // 실제 씬 전환
+    //    _isLoading = false;
+    //}
+
     private CharacterBase LoadCharacter(CharacterName characterName)
     {
         string path = $"Characters/{characterName}";

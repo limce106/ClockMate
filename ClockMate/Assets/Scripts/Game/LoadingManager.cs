@@ -1,0 +1,125 @@
+using Define;
+using Photon.Pun;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class LoadingManager : MonoBehaviourPunCallbacks
+{
+    public static LoadingManager Instance { get; private set; }
+
+    private UILoading _uiLoading;
+    private bool _isLoading = false;
+    private AsyncOperation currentLoadOperation;
+
+    private Dictionary<int, float> loadingProgress = new Dictionary<int, float>();
+    private HashSet<int> loadedPlayers = new HashSet<int>();
+
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if(Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    new private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    new private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if(_isLoading)
+        {
+            GameManager.Instance?.InitStageAndCharacter();
+        }
+        _isLoading = false;
+
+        if (_uiLoading != null)
+        {
+            _uiLoading.Close();
+        }
+    }
+
+    public void StartSyncedLoading()
+    {
+        if(_isLoading) 
+            return;
+
+        _isLoading = true;
+        _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
+
+        //string nextSceneName = GameManager.Instance?.CurrentStage.NextStage.ToString();
+
+        // 테스트용 코드: 현재는 새 세이브 데이터 생성 시 CurrentStage 값이 Test_Yuna가 됨.
+        // 테스트 코드로 인해, 함수 호출 시 진행상황과 상관없이 무조건 Desert 씬으로 이동하게 됨
+        // 테이블 수정 후 반드시 아래 코드는 삭제하고 위 코드 주석 풀 것!
+        string nextSceneName = "Desert";
+        //
+
+        if (nextSceneName == null)
+        {
+            Debug.Log("Next Scene Name Is Null!");
+            return;
+        }
+
+        StartCoroutine(LoadSceneAsync(nextSceneName));
+    }
+
+    private IEnumerator LoadSceneAsync(string nextSceneName)
+    {
+        currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
+        currentLoadOperation.allowSceneActivation = false;
+
+        int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+
+        while(!currentLoadOperation.isDone)
+        {
+            float progress = Mathf.Clamp01(currentLoadOperation.progress / 0.9f);
+            _uiLoading.UpdateLoadingProgress(progress);
+            
+            if(progress >= 1f)
+            {
+                photonView.RPC("NotifyPlayerLoaded", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    [PunRPC]
+    void NotifyPlayerLoaded(int actorNumber)
+    {
+        if(!loadedPlayers.Contains(actorNumber))
+        {
+            loadedPlayers.Add(actorNumber);
+        }
+
+        if (loadedPlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            photonView.RPC("ActivateLoadedScene", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    void ActivateLoadedScene()
+    {
+        if(currentLoadOperation != null)
+        {
+            currentLoadOperation.allowSceneActivation = true;
+        }
+    }
+}
