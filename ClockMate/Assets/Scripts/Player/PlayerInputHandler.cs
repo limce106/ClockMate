@@ -14,6 +14,7 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerInputActions _inputActions;
     private bool _isMoving;
     private Camera _camera;
+    private InteractionDetector _interactionDetector;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
 
@@ -38,11 +39,13 @@ public class PlayerInputHandler : MonoBehaviour
         _inputActions = new PlayerInputActions();
         _isMoving = false;
         _camera = Camera.main;
+        _interactionDetector = GetComponentInChildren<InteractionDetector>();
 
         _actionsAvailable = new Dictionary<CharacterAction, bool>
         {
             { CharacterAction.Move, true },
-            { CharacterAction.Jump, true }
+            { CharacterAction.Jump, true },
+            { CharacterAction.Interact, true },
         };
         
         InitInputActions();
@@ -103,7 +106,9 @@ public class PlayerInputHandler : MonoBehaviour
     
     private void OnInteractPressed(InputAction.CallbackContext context)
     {
+        if (!_actionsAvailable[CharacterAction.Interact]) return;
         //_character.ChangeState<InteractState>();
+        _interactionDetector.TryInteract();
     }
     
     private void OnAbilityPressed(InputAction.CallbackContext context)
