@@ -32,7 +32,7 @@ public class MovingBlock : ResettableBase
 
         if (startAutomatically)
         {
-            if (photonView && photonView.IsMine)
+            if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
                 photonView.RPC("RPC_StartMoving", RpcTarget.AllBuffered);
             else
                 StartMoving();
