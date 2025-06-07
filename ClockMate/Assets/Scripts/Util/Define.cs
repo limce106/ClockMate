@@ -11,7 +11,8 @@
         public enum CharacterAction
         {
             Move,
-            Jump
+            Jump,
+            Interact
         }
     }
     public static class UI
