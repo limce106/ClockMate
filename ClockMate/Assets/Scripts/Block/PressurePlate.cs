@@ -85,6 +85,8 @@ public class PressurePlate : ResettableBase, IPunObservable
     }
     private bool IsValidCharacter(Collider other)
     {
+        if (other.tag != "Player") return false;
+        
         var characterComponent = other.GetComponentInParent<CharacterBase>();
         if (characterComponent == null)
         {
@@ -97,7 +99,7 @@ public class PressurePlate : ResettableBase, IPunObservable
     private bool IsValidDirection(Collider other)
     {
         float yDifference = other.bounds.center.y - transform.position.y;
-        if (yDifference < 0.5f) // 상황에 따라 조정
+        if (yDifference < 0.4f) // 상황에 따라 조정
         {
             Debug.Log("위에서 밟은 것이 아님");
             return false;
