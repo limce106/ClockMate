@@ -36,7 +36,11 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
 
-        RPCManager.Instance.photonView.RPC("SetSceneName", RpcTarget.All, "Desert");
+        RPCManager.OnSyncedAllReadyAction = () =>
+        {
+            LoadingManager.Instance?.StartSyncedLoading();
+            GameManager.Instance?.CreateNewSaveData();
+        };
     }
 
     void OnCharacterClicked(CharacterSlot character)
@@ -70,6 +74,8 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
         UpdateButtonsInteractable();
         UpdateStatusText();
+
+        RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
     }
 
     public int GetCharacterIndex(CharacterSlot character)
