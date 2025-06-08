@@ -127,9 +127,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         ShowConnectUI();
 
-        if(PhotonNetwork.IsMasterClient && RPCManager.Instance == null)
+        if(PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Prefabs/RPCManager", Vector3.zero, Quaternion.identity);
+            if (RPCManager.Instance == null)
+                PhotonNetwork.Instantiate("Prefabs/RPCManager", Vector3.zero, Quaternion.identity);
         }
 
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
