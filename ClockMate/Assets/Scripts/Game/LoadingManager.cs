@@ -62,13 +62,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         _isLoading = true;
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
 
-        // string nextSceneName = GameManager.Instance?.CurrentStage.NextStage.ToString();
-
-        // 테스트용 코드
-        // 함수 호출 시 진행상황과 상관없이 무조건 Desert 씬으로 이동하게 됨
-        // 반드시 아래 코드는 삭제하고 위 코드 주석 풀 것!
-        string nextSceneName = "Desert";
-        //
+        string nextSceneName = GameManager.Instance?.CurrentStage.NextStage.Map.ToString();
 
         if (nextSceneName == null)
         {
