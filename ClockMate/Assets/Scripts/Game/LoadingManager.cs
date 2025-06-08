@@ -50,6 +50,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         if (_uiLoading != null)
         {
             _uiLoading.Close();
+            _uiLoading = null;
         }
     }
 

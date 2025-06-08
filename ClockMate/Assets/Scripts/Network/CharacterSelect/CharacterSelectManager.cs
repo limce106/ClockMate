@@ -38,8 +38,8 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
         RPCManager.OnSyncedAllReadyAction = () =>
         {
-            LoadingManager.Instance?.StartSyncedLoading();
             GameManager.Instance?.CreateNewSaveData();
+            LoadingManager.Instance?.StartSyncedLoading();
         };
     }
 
