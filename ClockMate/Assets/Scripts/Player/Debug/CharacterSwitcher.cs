@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,7 @@ public class CharacterSwitcher : MonoBehaviour
 
     [SerializeField] private DebugToolkitUI _debugUI;
 
+    private CharacterBase _currentCharacter;
     private void OnEnable()
     {
         if (!autoAssign) return;
@@ -57,6 +59,14 @@ public class CharacterSwitcher : MonoBehaviour
         ActivateCharacter(_hour);
     }
 
+    private void Update()
+    {
+        if (_currentCharacter != null)
+        {
+            _currentCharacterText.text = $"Current: {_currentCharacter.name} ({_currentCharacter.CurrentState})";
+        }
+    }
+
     public void SwitchToHour() => ActivateCharacter(_hour);
     
     public void SwitchToMilli() => ActivateCharacter(_milli);
@@ -73,11 +83,12 @@ public class CharacterSwitcher : MonoBehaviour
         // 활성화된 캐릭터 텍스트 갱신
         if (_currentCharacterText != null)
         {
-            _currentCharacterText.text = $"Current: {target.name}";
+            _currentCharacterText.text = $"Current: {target.name} ({target.CurrentState})";
         }
         
         // 디버그 UI 타겟 갱신
         _debugUI?.Init(target);
+        _currentCharacter = target;
     }
 
 }
