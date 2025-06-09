@@ -10,10 +10,13 @@ using UnityEngine;
 public abstract class CharacterBase : MonoBehaviour
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
+    [SerializeField] private Collider col;
     
     public CharacterStatsSO Stats { get; private set; }
-
+    public InteractionDetector InteractionDetector {get; private set;}
+    public PlayerInputHandler InputHandler {get; private set;}
     public bool IsGrounded => _groundChecker.IsGrounded();
+    public IState CurrentState => _stateMachine.CurrentState;
     
     private int JumpCount
     {
@@ -61,7 +64,9 @@ public abstract class CharacterBase : MonoBehaviour
         _states.Add(typeof(IdleState), new IdleState(this));
         _stateMachine = new StateMachine(_states[typeof(IdleState)]);
 
-        _groundChecker = new GroundChecker(GetComponent<Collider>(), groundCheckDistance, groundLayer);
+        _groundChecker = new GroundChecker(col, groundCheckDistance, groundLayer);
+        InteractionDetector = GetComponentInChildren<InteractionDetector>();
+        InputHandler = GetComponent<PlayerInputHandler>();
     }
 
 
@@ -159,11 +164,6 @@ public abstract class CharacterBase : MonoBehaviour
         Stats.jumpPower = newStats.jumpPower;
         Stats.doubleJumpPower = newStats.doubleJumpPower;
         Stats.walkSpeed = newStats.walkSpeed;
-    }
-
-    public void TryInteract()
-    {
-        // 상호작용 시도 로직
     }
 
     /// <summary>
