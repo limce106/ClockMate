@@ -26,7 +26,7 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (!airFan.isUpwardFly && airFan.isFanOn && !AirFan.isFlying)
+        if (!airFan.isUpwardFly && airFan.isFanOn && !AirFan.isFlying && other.name == "Milli")
         {
             StartCoroutine(airFan.LaunchPlayerParabola());
         }
