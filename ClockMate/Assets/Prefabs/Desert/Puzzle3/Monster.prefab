@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 3993524760784882369}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -125.73, y: -2.21, z: -33.68}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -125,12 +125,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   returnPoint: {fileID: 0}
-  viewMask:
-    serializedVersion: 2
-    m_Bits: 1
   horizontalViewAngle: 90
   verticalViewAngle: 60
   viewDistance: 7
+  hourTransform: {fileID: 0}
 --- !u!195 &7931137550456584010
 NavMeshAgent:
   m_ObjectHideFlags: 0

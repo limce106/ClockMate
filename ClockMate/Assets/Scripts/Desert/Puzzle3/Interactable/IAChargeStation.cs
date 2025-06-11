@@ -6,7 +6,6 @@ public class IAChargeStation : MonoBehaviour, IInteractable
     
     public bool CanInteract(CharacterBase character)
     {
-        //character.transform.Find("HoldPos").
         Holder holder = character.GetComponentInChildren<Holder>();
         return character is Hour && holder.IsHolding<IABattery>();
     }
@@ -39,7 +38,7 @@ public class IAChargeStation : MonoBehaviour, IInteractable
         ChargeLevel++;
     }
 
-    private void UseCharged()
+    public void UseCharged()
     {
         ChargeLevel--;
     }
