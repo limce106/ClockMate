@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class FrontAirFanTrigger : MonoBehaviour
@@ -17,7 +18,14 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.name == "Milli")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null )
+        {
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Milli;
+        }
+
+        if (characterIdentifier && isTargetCharacter)
         {
             StopCoroutine(airFan.LaunchPlayerParabola());
             airFan.SetMilliInTrigger(true);
@@ -26,15 +34,32 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (!airFan.isUpwardFly && airFan.isFanOn && !AirFan.isFlying && other.name == "Milli")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null)
         {
-            StartCoroutine(airFan.LaunchPlayerParabola());
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Milli;
+        }
+
+        if (characterIdentifier && isTargetCharacter)
+        {
+            if (!airFan.isUpwardFly && airFan.isFanOn && !AirFan.isFlying)
+            {
+                StartCoroutine(airFan.LaunchPlayerParabola());
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.name == "Milli")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null)
+        {
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Milli;
+        }
+
+        if (characterIdentifier && isTargetCharacter)
         {
             airFan.SetMilliInTrigger(false);
         }
