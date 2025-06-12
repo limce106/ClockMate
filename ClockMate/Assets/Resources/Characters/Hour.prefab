@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8966346061749762340}
   - component: {fileID: 1315512580563415922}
   m_Layer: 7
-  m_Name: Friction
+  m_Name: SideCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 4016171971697949959}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.01}
+  m_LocalScale: {x: 1.05, y: 1.05, z: 0.99}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 993844061374452170}
@@ -39,14 +39,14 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4016171971697949959}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: eb286e36d2ed0b0498ade45f9bb49a32, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 1
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -241,7 +241,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 10
+  m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4993076272803813451
 MonoBehaviour:
@@ -353,6 +353,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 77ff08f98fc182e4583ec7ec564327c0, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: b35d3e414a5b8484fb61aaa4d4d84db8, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 77ff08f98fc182e4583ec7ec564327c0, type: 3}
+      propertyPath: m_Materials.Array.data[4]
+      value: 
+      objectReference: {fileID: 2100000, guid: b35d3e414a5b8484fb61aaa4d4d84db8, type: 2}
     - target: {fileID: 919132149155446097, guid: 77ff08f98fc182e4583ec7ec564327c0, type: 3}
       propertyPath: m_Name
       value: Character Dummy
@@ -392,7 +400,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 468663825314040688}
-  m_Material: {fileID: 13400000, guid: eb286e36d2ed0b0498ade45f9bb49a32, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
