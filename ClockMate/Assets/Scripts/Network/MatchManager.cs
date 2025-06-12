@@ -196,9 +196,19 @@ public class MatchManager : MonoBehaviourPunCallbacks
         if (RPCManager.Instance != null)
         {
             RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
+
             RPCManager.OnSyncedAllReadyAction = () =>
             {
-                PhotonNetwork.LoadLevel("CharacterSelect");
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    if (PlayModeSelector.IsNewGameRoom)
+                    {
+                        RPCManager.Instance.photonView.RPC("DeleteAllSaveData", RpcTarget.All);
+                        Debug.Log("Delete Data");
+                    }
+
+                    PhotonNetwork.LoadLevel("CharacterSelect");
+                }
             };
         }
         else

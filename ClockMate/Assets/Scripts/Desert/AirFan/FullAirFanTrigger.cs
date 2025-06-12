@@ -22,7 +22,14 @@ public class FullAirFanTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.name == "Hour")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null)
+        {
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Hour;
+        }
+
+        if (characterIdentifier && isTargetCharacter)
         {
             isHourInTrigger = true;
         }
@@ -30,7 +37,15 @@ public class FullAirFanTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.name == "Hour")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null)
+        {
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Hour;
+        }
+
+
+        if (characterIdentifier && isTargetCharacter)
         {
             isHourInTrigger = false;
         }
@@ -38,7 +53,14 @@ public class FullAirFanTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.name == "Hour")
+        var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
+        bool isTargetCharacter = false;
+        if (characterIdentifier != null)
+        {
+            isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Hour;
+        }
+
+        if (characterIdentifier && isTargetCharacter)
         {
             isHourInTrigger = true;
         }
