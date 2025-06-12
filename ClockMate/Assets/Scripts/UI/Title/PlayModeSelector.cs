@@ -10,6 +10,8 @@ public class PlayModeSelector : MonoBehaviour
     private MatchManager matchManager;
     public Button continueButton;
 
+    public static bool IsNewGameRoom { get; private set; }
+
     private void Start()
     {
         if (SaveManager.Instance == null)
@@ -23,11 +25,7 @@ public class PlayModeSelector : MonoBehaviour
 
     public void OnClick_NewGame()
     {
-        if(SaveManager.Instance != null)
-        {
-            SaveManager.Instance.DeleteSaveData();
-        }
-
+        IsNewGameRoom = true;
         matchManager.OnClick_CreateRoom();
     }
     public void OnClick_Continue()
@@ -35,6 +33,7 @@ public class PlayModeSelector : MonoBehaviour
         if (SaveManager.Instance == null)
             return;
 
+        IsNewGameRoom = false;
         matchManager.OnClick_CreateRoom();
     }
 }

@@ -153,4 +153,10 @@ public class RPCManager : MonoBehaviourPunCallbacks
             PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, false);
         }
     }
+
+    [PunRPC]
+    public void DeleteAllSaveData()
+    {
+        SaveManager.Instance?.DeleteSaveData();
+    }
 }
