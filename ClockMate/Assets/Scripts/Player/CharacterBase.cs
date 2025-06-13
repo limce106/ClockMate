@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 /// FSM, 이동, 점프, 상호작용, 바닥감지 모두 처리
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public abstract class CharacterBase : MonoBehaviour
+public abstract class CharacterBase : MonoBehaviourPun
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
     [SerializeField] private Collider col;
@@ -41,6 +42,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Awake()
     {
+        GameManager.Instance?.RegisterCharacter(this);
         Init();
     }
 
@@ -190,4 +192,9 @@ public abstract class CharacterBase : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void SetCharacterActive(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+    }
 }
