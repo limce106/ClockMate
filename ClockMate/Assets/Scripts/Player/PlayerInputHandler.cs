@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using static Define.Character;
@@ -19,7 +20,13 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Awake()
     {
-        Init();        
+        Init();
+
+        PhotonView photonView = GetComponent<PhotonView>();
+        if (!photonView.IsMine)
+        {
+            enabled = false;
+        }      
     }
 
     private void OnEnable()
