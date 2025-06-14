@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,25 +11,36 @@ public class GameManager : MonoSingleton<GameManager>
     public CharacterName SelectedCharacter { get; private set; }
     public Dictionary<CharacterName, CharacterBase> Characters { get; private set; }
     public BoStage CurrentStage { get; private set; }
-    private UILoading _uiLoading;
-    private bool _isLoading;
 
     protected override void Init()
     {
+        Characters = new Dictionary<CharacterName, CharacterBase>();
+
         if (SaveManager.Instance.SaveDataExist())
         {
             // 저장 데이터가 존재하면 불러오기
             SaveData saveData = SaveManager.Instance.Load();
             CurrentStage = new BoStage(saveData.stageId);
         }
-        // 캐릭터 로딩
-        Characters = new Dictionary<CharacterName, CharacterBase>
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Desert" && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.IsLocal)
         {
-            { CharacterName.Hour, LoadCharacter(CharacterName.Hour) },
-            { CharacterName.Milli, LoadCharacter(CharacterName.Milli) }
-        };
-        SetCharacterActive(false);
-        _isLoading = false;
+            // 캐릭터 로딩
+            LoadCharacter(SelectedCharacter);
+        }
     }
 
     public void CreateNewSaveData()
@@ -54,7 +66,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 // 이번 맵의 마지막 스테이지일 경우
                 ResetTestManager.Instance.RemoveAllResettable();
-                LoadingManager.Instance?.StartSyncedLoading();
+                LoadingManager.Instance?.StartSyncedLoading(nextStage.Map.ToString());
             }
             CurrentStage = nextStage;
         }
@@ -64,78 +76,55 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
-    public void InitStageAndCharacter()
+    public void ResetStageAndCharacter()
     {
         CurrentStage?.Reset();
-        SetCharacterActive(true);
+        SetAllCharactersActive(true);
     }
-
-    // 사용 안 함. 로딩은 LoadingManager에서.
-    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    //{
-    //    CurrentStage?.Reset();
-    //    SetCharacterActive(true);
-
-    //    if (_uiLoading != null)
-    //        UIManager.Instance.Close(_uiLoading);
-    //}
-
-    //private IEnumerator LoadSceneAsync(string sceneName)
-    //{
-    //    if (_isLoading) yield break;
-    //    _isLoading = true;
-    //    SetCharacterActive(false);
-
-    //    // 로딩 화면 UI 활성화
-    //    _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
-
-    //    AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-    //    operation.allowSceneActivation = false;
-
-    //    // 로딩 진행도 90%까지 확인 (Unity 제한)
-    //    while (operation.progress < 0.9f)
-    //    {
-    //        _uiLoading.UpdateLoadingProgress(operation.progress);
-    //        yield return null;
-    //    }
-
-    //    // 0.9f 도달 → 준비 완료
-    //    _uiLoading.UpdateLoadingProgress(1f);
-
-    //    yield return new WaitForSeconds(0.5f); // UX용 대기
-
-    //    operation.allowSceneActivation = true; // 실제 씬 전환
-    //    _isLoading = false;
-    //}
 
     private CharacterBase LoadCharacter(CharacterName characterName)
     {
+        if (Characters.ContainsKey(characterName))
+            return Characters[characterName];
+
         string path = $"Characters/{characterName}";
-        CharacterBase prefab = Resources.Load<CharacterBase>(path);
 
-        if (prefab == null)
+        if(NetworkManager.Instance.IsInRoomAndReady())
         {
-            Debug.LogError($"[GameManager] 캐릭터 프리팹 로드 실패: {path}");
-            return null;
+            GameObject player = PhotonNetwork.Instantiate(path, Vector3.zero, Quaternion.identity, 0, new object[] { characterName });
+            CharacterBase character = player.GetComponent<CharacterBase>();
+            character.name = characterName.ToString();
+
+            int viewID = player.GetComponent<PhotonView>().ViewID;
+            RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, characterName, viewID);
+
+            return character;
         }
-
-        CharacterBase character = Instantiate(prefab);
-        character.name = characterName.ToString();
-        DontDestroyOnLoad(character.gameObject);
-        
-        return character;
-    }
-
-    public void SetCharacterActive(bool active)
-    {
-        foreach (CharacterBase character in Characters.Values)
+        else
         {
-            character.gameObject.SetActive(active);
+            Debug.LogError($"[GameManager] 캐릭터 프리팹 로드 실패: 네트워크 연결 불가");
+            return null;
         }
     }
 
     public void SetSelectedCharacter(CharacterName character)
     {
         SelectedCharacter = character;
+    }
+
+    public void RegisterCharacter(CharacterName character, CharacterBase characterBase)
+    {
+        if (!Characters.ContainsKey(character))
+        {
+            Characters.Add(character, characterBase);
+        }
+    }
+
+    public void SetAllCharactersActive(bool isActive)
+    {
+        foreach (CharacterBase character in Characters.Values)
+        {
+            character.photonView.RPC("SetCharacterActive", RpcTarget.All, isActive);
+        }
     }
 }

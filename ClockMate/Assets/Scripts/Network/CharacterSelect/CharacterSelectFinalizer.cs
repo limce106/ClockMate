@@ -13,7 +13,15 @@ public class CharacterSelectFinalizer : MonoBehaviour
     public GameObject Player1Ready;
     public GameObject Player2Ready;
 
-    private bool hasSavedCharacters = false;
+    private void Start()
+    {
+        RPCManager.OnSyncedAllReadyAction = () =>
+        {
+            SaveSelectedCharacter();
+            GameManager.Instance?.CreateNewSaveData();
+            LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
+        };
+    }
 
     void Update()
     {
@@ -21,12 +29,6 @@ public class CharacterSelectFinalizer : MonoBehaviour
             return;
 
         UpdateReadyUIForAllPlayers();
-
-        if (AreAllPlayersReady() && !hasSavedCharacters)
-        {
-            SaveSelectedCharacter();
-            hasSavedCharacters = true;
-        }
     }
 
     void UpdateReadyUIForAllPlayers()
@@ -54,20 +56,6 @@ public class CharacterSelectFinalizer : MonoBehaviour
         {
             Player2Ready?.SetActive(isReady);
         }
-    }
-
-    private bool AreAllPlayersReady()
-    {
-        var readyDict = RPCManager.GetPlayerReadyStatus();
-
-        foreach (var player in PhotonNetwork.CurrentRoom.Players)
-        {
-            int actorNumber = player.Value.ActorNumber;
-
-            if (!readyDict.TryGetValue(actorNumber, out bool isReady) || !isReady)
-                return false;
-        }
-        return true;
     }
 
     private void SaveSelectedCharacter()

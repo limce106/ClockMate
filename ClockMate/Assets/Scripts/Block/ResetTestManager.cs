@@ -16,7 +16,7 @@ public class ResetTestManager : MonoSingleton<ResetTestManager>
         PhotonView photonView = GetComponent<PhotonView>();
         foreach (ResettableBase resettable in _resettableList)
         {
-            if(!photonView)
+            if(photonView)
             {
                 photonView.RPC("ResetObject", RpcTarget.AllBuffered);
             }
