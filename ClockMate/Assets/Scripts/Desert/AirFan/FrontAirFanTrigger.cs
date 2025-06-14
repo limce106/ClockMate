@@ -18,6 +18,9 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.tag != "Player")
+            return;
+
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null )
@@ -34,6 +37,9 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (other.tag != "Player")
+            return;
+
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null)
@@ -52,6 +58,9 @@ public class FrontAirFanTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (other.tag != "Player")
+            return;
+
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null)
