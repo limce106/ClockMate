@@ -4,9 +4,12 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using PN = Photon.Pun.PhotonNetwork;
+using UnityEngine.SceneManagement;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    const string firstSceneName = "TitleMatch";
+
     private static NetworkManager instance;
     public static NetworkManager Instance
     {
@@ -52,13 +55,74 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Connected to Master");
     }
 
-    public override void OnDisconnected(DisconnectCause cause)
+    public bool IsInRoomAndReady()
     {
-        Debug.Log("Disconnected");
+        return Instance && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom;
     }
 
-    public void LeaveGame()
+    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        PN.Disconnect();
+        TryHandleDisconnect();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        TryHandleDisconnect();
+    }
+
+    void TryHandleDisconnect()
+    {
+        if (SceneManager.GetActiveScene().name != firstSceneName)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("ForceReturnToTitle", RpcTarget.All);
+            }
+
+            Debug.Log("Disconnected");
+        }
+    }
+
+    [PunRPC]
+    void ForceReturnToTitle()
+    {
+        StartCoroutine(ReturnToTitleAfterDisconnect());
+    }
+
+    IEnumerator ReturnToTitleAfterDisconnect()
+    {
+        PhotonNetwork.Disconnect();
+
+        while(PhotonNetwork.IsConnected)
+            yield return null;
+
+        SceneManager.LoadScene(firstSceneName);
+        CleanUpDuplicateManagers();
+    }
+
+    /// <summary>
+    /// 현재 갖고 있는 NetworkManager, LoadingManager와 타이틀 씬에 존재하는 동일 오브젝트가 충돌하여 PhotonView ID 중복 오류 발생 가능 
+    /// 따라서 타이틀 씬 이동 전 현재 NetworkManager, LoadingManager 제거
+    /// </summary>
+    private void CleanUpDuplicateManagers()
+    {
+        LoadingManager[] loadingManagers = FindObjectsOfType<LoadingManager>(true);
+        foreach (var loadingManager in loadingManagers)
+        {
+            if (loadingManager != LoadingManager.Instance)
+                Destroy(loadingManager.gameObject);
+        }
+
+        NetworkManager[] networkManagers = FindObjectsOfType<NetworkManager>(true);
+        foreach (var networkManager in networkManagers)
+        {
+            if (networkManager != NetworkManager.Instance)
+                Destroy(networkManager.gameObject);
+        }
+
+        if(LoadingManager.Instance)
+            Destroy(LoadingManager.Instance.gameObject);
+        if (NetworkManager.Instance)
+            Destroy(NetworkManager.Instance.gameObject);
     }
 }

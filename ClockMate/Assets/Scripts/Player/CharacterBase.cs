@@ -1,5 +1,5 @@
+using Photon.Pun;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,13 +8,16 @@ using UnityEngine;
 /// FSM, 이동, 점프, 상호작용, 바닥감지 모두 처리
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public abstract class CharacterBase : MonoBehaviour
+public abstract class CharacterBase : MonoBehaviourPun
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
+    [SerializeField] private Collider col;
     
     public CharacterStatsSO Stats { get; private set; }
-
+    public InteractionDetector InteractionDetector {get; private set;}
+    public PlayerInputHandler InputHandler {get; private set;}
     public bool IsGrounded => _groundChecker.IsGrounded();
+    public IState CurrentState => _stateMachine.CurrentState;
     
     private int JumpCount
     {
@@ -39,6 +42,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Awake()
     {
+        DontDestroyOnLoad(this.gameObject);
         Init();
     }
 
@@ -62,7 +66,9 @@ public abstract class CharacterBase : MonoBehaviour
         _states.Add(typeof(IdleState), new IdleState(this));
         _stateMachine = new StateMachine(_states[typeof(IdleState)]);
 
-        _groundChecker = new GroundChecker(GetComponent<Collider>(), groundCheckDistance, groundLayer);
+        _groundChecker = new GroundChecker(col, groundCheckDistance, groundLayer);
+        InteractionDetector = GetComponentInChildren<InteractionDetector>();
+        InputHandler = GetComponent<PlayerInputHandler>();
     }
 
 
@@ -116,6 +122,21 @@ public abstract class CharacterBase : MonoBehaviour
 
         // 물리 엔진을 통해 부드럽게 가속도 적용 (y축은 유지)
         _rb.AddForce(new Vector3(clampedChange.x, 0f, clampedChange.z), ForceMode.VelocityChange);
+        
+        // 움직이는 방향을 바라보도록 회전
+        RotateToDirectionOfMovement(direction);
+    }
+
+    /// <summary>
+    /// 이동하는 방향으로 회전
+    /// </summary>
+    private void RotateToDirectionOfMovement(Vector3 direction)
+    {
+        if (!(direction.sqrMagnitude > 0.01f)) return;
+        
+        // 정지 상태가 아니라면
+        Quaternion targetRotation = Quaternion.LookRotation(direction); // 이동 방향 바라보는 회전값
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
     }
 
     /// <summary>
@@ -147,11 +168,6 @@ public abstract class CharacterBase : MonoBehaviour
         Stats.walkSpeed = newStats.walkSpeed;
     }
 
-    public void TryInteract()
-    {
-        // 상호작용 시도 로직
-    }
-
     /// <summary>
     ///  능력 추가
     /// </summary>
@@ -176,4 +192,9 @@ public abstract class CharacterBase : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void SetCharacterActive(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+    }
 }
