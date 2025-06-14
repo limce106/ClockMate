@@ -111,18 +111,15 @@ public class MonsterController : MonoBehaviour
 
    #region Test
    
-   private Material _materialInstance;
+   [SerializeField] private SkinnedMeshRenderer meshRenderer;
 
    /// <summary>
    /// currentState에 따라 몬스터의 색을 변경한다.
    /// </summary>
    private void ChangeColorAccordingToState()
    {
-      if (_materialInstance is null && TryGetComponent<MeshRenderer>(out var meshRenderer))
-      {
-         _materialInstance = meshRenderer.material;
-      }
-      
+      Material materialInstance = meshRenderer.material;
+
       Color stateColor = _currentState switch
       {
          MStateChase => CanSeeHour() ? Color.red : Color.yellow,
@@ -130,9 +127,9 @@ public class MonsterController : MonoBehaviour
          _ => Color.black
       };
 
-      if (_materialInstance.color == stateColor) return;
+      if (materialInstance.color == stateColor) return;
       
-      _materialInstance.color = stateColor;
+      materialInstance.color = stateColor;
    }
 
    /// <summary>
