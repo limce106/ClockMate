@@ -42,7 +42,7 @@ public abstract class CharacterBase : MonoBehaviourPun
 
     protected virtual void Awake()
     {
-        GameManager.Instance?.RegisterCharacter(this);
+        DontDestroyOnLoad(this.gameObject);
         Init();
     }
 

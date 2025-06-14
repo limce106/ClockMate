@@ -36,7 +36,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Desert")
+        if (scene.name == "Desert" && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.IsLocal)
         {
             // 캐릭터 로딩
             LoadCharacter(SelectedCharacter);
@@ -66,7 +66,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 // 이번 맵의 마지막 스테이지일 경우
                 ResetTestManager.Instance.RemoveAllResettable();
-                LoadingManager.Instance?.StartSyncedLoading();
+                LoadingManager.Instance?.StartSyncedLoading(nextStage.Map.ToString());
             }
             CurrentStage = nextStage;
         }
@@ -84,6 +84,9 @@ public class GameManager : MonoSingleton<GameManager>
 
     private CharacterBase LoadCharacter(CharacterName characterName)
     {
+        if (Characters.ContainsKey(characterName))
+            return Characters[characterName];
+
         string path = $"Characters/{characterName}";
 
         if(NetworkManager.Instance.IsInRoomAndReady())
@@ -91,7 +94,11 @@ public class GameManager : MonoSingleton<GameManager>
             GameObject player = PhotonNetwork.Instantiate(path, Vector3.zero, Quaternion.identity, 0, new object[] { characterName });
             CharacterBase character = player.GetComponent<CharacterBase>();
             character.name = characterName.ToString();
-            DontDestroyOnLoad(player);
+
+            int viewID = player.GetComponent<PhotonView>().ViewID;
+            RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, characterName, viewID);
+
+            Debug.Log("생성: " + character.name);
 
             return character;
         }
@@ -107,12 +114,12 @@ public class GameManager : MonoSingleton<GameManager>
         SelectedCharacter = character;
     }
 
-    public void RegisterCharacter(CharacterBase characterBase)
+    public void RegisterCharacter(CharacterName character, CharacterBase characterBase)
     {
-        if (Characters.ContainsKey(SelectedCharacter))
-            return;
-
-        Characters.Add(SelectedCharacter, characterBase);
+        if (!Characters.ContainsKey(character))
+        {
+            Characters.Add(character, characterBase);
+        }
     }
 
     public void SetAllCharactersActive(bool isActive)

@@ -19,7 +19,7 @@ public class CharacterSelectFinalizer : MonoBehaviour
         {
             SaveSelectedCharacter();
             GameManager.Instance?.CreateNewSaveData();
-            LoadingManager.Instance?.StartSyncedLoading();
+            LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
         };
     }
 

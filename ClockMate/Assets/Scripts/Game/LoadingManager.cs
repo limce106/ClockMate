@@ -44,15 +44,13 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         StartCoroutine("EndLoading");
     }
 
-    public void StartSyncedLoading()
+    public void StartSyncedLoading(string nextSceneName)
     {
         if(_isLoading) 
             return;
 
         _isLoading = true;
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
-
-        string nextSceneName = GameManager.Instance?.CurrentStage.NextStage.Map.ToString();
 
         if (nextSceneName == null)
         {
