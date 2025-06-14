@@ -56,7 +56,7 @@ public class CharacterLifeManager : MonoSingleton<CharacterLifeManager>
         if (_deadCharacter is not null || GameManager.Instance.CurrentStage.IsReviveImpossible)
         {
             // 부활이 불가능한 상태라면 게임오버
-            GameManager.Instance.SetCharacterActive(false);
+            GameManager.Instance.SetAllCharactersActive(false);
             _uiGameOver = UIManager.Instance.Show<UIGameOver>("UIGameOver");
             return;
         } 

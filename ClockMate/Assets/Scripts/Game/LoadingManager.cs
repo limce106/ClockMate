@@ -41,28 +41,16 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(_isLoading)
-        {
-            GameManager.Instance?.InitStageAndCharacter();
-        }
-        _isLoading = false;
-
-        if (_uiLoading != null)
-        {
-            _uiLoading.Close();
-            _uiLoading = null;
-        }
+        StartCoroutine("EndLoading");
     }
 
-    public void StartSyncedLoading()
+    public void StartSyncedLoading(string nextSceneName)
     {
         if(_isLoading) 
             return;
 
         _isLoading = true;
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
-
-        string nextSceneName = GameManager.Instance?.CurrentStage.NextStage.Map.ToString();
 
         if (nextSceneName == null)
         {
@@ -115,6 +103,25 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         if(currentLoadOperation != null)
         {
             currentLoadOperation.allowSceneActivation = true;
+        }
+    }
+
+    IEnumerator EndLoading()
+    {
+        if (_isLoading)
+        {
+            yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
+            GameManager.Instance?.ResetStageAndCharacter();
+        }
+
+        yield return new WaitForSeconds(3f);
+
+        _isLoading = false;
+
+        if (_uiLoading != null)
+        {
+            _uiLoading.Close();
+            _uiLoading = null;
         }
     }
 }
