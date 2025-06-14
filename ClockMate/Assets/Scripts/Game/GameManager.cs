@@ -98,8 +98,6 @@ public class GameManager : MonoSingleton<GameManager>
             int viewID = player.GetComponent<PhotonView>().ViewID;
             RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, characterName, viewID);
 
-            Debug.Log("생성: " + character.name);
-
             return character;
         }
         else
