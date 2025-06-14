@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,7 +13,8 @@ public class IATurret : MonoBehaviour, IInteractable
 {
     [SerializeField] private IAChargeStation chargeStation;
     [SerializeField] private GameObject turretHead;
-    [SerializeField] private Transform muzzle;
+    [SerializeField] private Transform attackStartPos;
+    [SerializeField] private CinemachineVirtualCamera camera;
     
     [SerializeField] private float turretRotateSpeed = 8f;
     [SerializeField] private float yawMin = -60f;
@@ -52,6 +54,7 @@ public class IATurret : MonoBehaviour, IInteractable
         }
         
         _indicator = Instantiate(Resources.Load<GameObject>("UI/Indicator"), this.transform);
+        _indicator.transform.localPosition = new Vector3(0, 0.2f, 0);
         _indicator.SetActive(false);
     }
 
@@ -61,7 +64,7 @@ public class IATurret : MonoBehaviour, IInteractable
 
         HandleTurretRotation();
         UpdateAttackTarget();
-        // TODO 터렛 발사 처리
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TryFireWeapon();
@@ -69,9 +72,6 @@ public class IATurret : MonoBehaviour, IInteractable
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ExitTurret();
-            attackLineRenderer.enabled = false;
-            // 터렛 조작 나가기 UI 닫기
-            UIManager.Instance.Close(_uiNotice);
         }
 
     }
@@ -108,6 +108,7 @@ public class IATurret : MonoBehaviour, IInteractable
             collider.enabled = false;
         }
         
+        camera.Priority = 100;
         attackLineRenderer.enabled = true;
         
         // TODO 터렛 조작 UI 켜기
@@ -123,8 +124,11 @@ public class IATurret : MonoBehaviour, IInteractable
         _isOccupied = false;
         _character.InputHandler.enabled = true;
         _character = null;
-        // TODO 터렛 조작 UI 닫기
-        
+        camera.Priority = 0;
+        attackLineRenderer.enabled = false;
+
+        // 터렛 조작 나가기 UI 닫기
+        UIManager.Instance.Close(_uiNotice);
         
         // collider 다시 활성화
         if (TryGetComponent(out Collider collider))
@@ -183,8 +187,8 @@ public class IATurret : MonoBehaviour, IInteractable
 
     private void UpdateAttackTarget()
     {
-        Vector3 startPoint = muzzle.position;
-        Vector3 direction = muzzle.forward;
+        Vector3 startPoint = attackStartPos.position;
+        Vector3 direction = attackStartPos.forward;
 
         Ray ray = new Ray(startPoint, direction);
         RaycastHit hit;
@@ -197,7 +201,8 @@ public class IATurret : MonoBehaviour, IInteractable
             if (hit.collider.CompareTag("Monster"))
             {
                 hit.collider.TryGetComponent(out _currentTarget);
-                _indicator.transform.SetParent(hit.collider.transform, false);
+                Debug.Log("조준 상대" + _currentTarget.name);
+                _indicator.transform.SetParent(_currentTarget.transform, false);
                 _indicator.SetActive(true);
             }
             else
