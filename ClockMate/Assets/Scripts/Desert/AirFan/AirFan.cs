@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class AirFan : MonoBehaviour
 {
@@ -161,6 +160,9 @@ public class AirFan : MonoBehaviour
         Vector3 launchVelocity = horizontalVelocity + Vector3.up * vy;
         milliRb.velocity = launchVelocity;
 
+        Vector3 lookDir = targetFlyPoint.position - start;
+        milli.transform.forward = lookDir.normalized;
+
         float elapsedTime = 0f;
         while (elapsedTime < totalTime)
         {
@@ -170,9 +172,6 @@ public class AirFan : MonoBehaviour
                 EndFlying();
                 yield break;
             }
-
-            Quaternion targetRotation = Quaternion.LookRotation(targetFlyPoint.position - start);
-            milliRb.MoveRotation(Quaternion.Slerp(milliRb.rotation, targetRotation, Time.deltaTime * RotationSpeedWhileFlying));
 
             elapsedTime += Time.deltaTime;
             yield return null;
