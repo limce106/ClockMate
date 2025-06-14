@@ -14,7 +14,6 @@ public class PlayerInputHandler : MonoBehaviour
     private CharacterBase _character;
     private PlayerInputActions _inputActions;
     private bool _isMoving;
-    private Camera _camera;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
 
@@ -44,7 +43,6 @@ public class PlayerInputHandler : MonoBehaviour
         _character = GetComponent<CharacterBase>();
         _inputActions = new PlayerInputActions();
         _isMoving = false;
-        _camera = Camera.main;
 
         _actionsAvailable = new Dictionary<CharacterAction, bool>
         {
@@ -79,8 +77,8 @@ public class PlayerInputHandler : MonoBehaviour
         Vector2 inputDirection = _inputActions.Player.Move.ReadValue<Vector2>().normalized;
         
         // 카메라 기준 이동 방향 벡터 (y축 제거 후 정규화)
-        Vector3 camForward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
-        Vector3 camRight = Vector3.ProjectOnPlane(_camera.transform.right, Vector3.up).normalized;
+        Vector3 camForward = Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
         
         // 카메라(화면) 기준 이동 방향 계산
         Vector3 moveDirection = (camForward * inputDirection.y) + (camRight * inputDirection.x);
