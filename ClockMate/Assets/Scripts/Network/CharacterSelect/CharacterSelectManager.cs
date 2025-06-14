@@ -35,12 +35,6 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         {
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
-
-        RPCManager.OnSyncedAllReadyAction = () =>
-        {
-            GameManager.Instance?.CreateNewSaveData();
-            LoadingManager.Instance?.StartSyncedLoading();
-        };
     }
 
     void OnCharacterClicked(CharacterSlot character)

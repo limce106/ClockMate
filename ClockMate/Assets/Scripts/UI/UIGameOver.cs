@@ -12,7 +12,7 @@ public class UIGameOver : UIBase
     private void BtnClick()
     {
         GameManager.Instance.CurrentStage.Reset();
-        GameManager.Instance.SetCharacterActive(true);
+        GameManager.Instance.SetAllCharactersActive(true);
         UIManager.Instance.Close(this);
     }
 }
