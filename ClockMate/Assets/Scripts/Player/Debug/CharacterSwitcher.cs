@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,12 +11,14 @@ public class CharacterSwitcher : MonoBehaviour
     [SerializeField] private CharacterBase _milli;
     
     [SerializeField] private Camera _mainCamera;
-    [SerializeField] private Transform _cameraFollowTarget;
+    [SerializeField] private CinemachineVirtualCamera _followCamera;
+    [SerializeField] private CinemachineVirtualCamera _overallCamera;
 
     [SerializeField] private Text _currentCharacterText;
 
     [SerializeField] private DebugToolkitUI _debugUI;
 
+    private CharacterBase _currentCharacter;
     private void OnEnable()
     {
         if (!autoAssign) return;
@@ -37,9 +39,14 @@ public class CharacterSwitcher : MonoBehaviour
         if (_mainCamera == null)
             _mainCamera = Camera.main;
 
-        if (_cameraFollowTarget == null)
-            _cameraFollowTarget = GameObject.Find("CameraTarget")?.transform;
-
+        if (_followCamera == null)
+        {
+            _followCamera = GameObject.Find("VC_Follow").GetComponent<CinemachineVirtualCamera>();
+        }
+        if (_overallCamera == null)
+        {
+            _overallCamera = GameObject.Find("VC_Overall").GetComponent<CinemachineVirtualCamera>();
+        }
         if (_currentCharacterText == null)
             _currentCharacterText = GameObject.Find("Text_CurrentCharacter")?.GetComponent<Text>();
 
@@ -52,6 +59,14 @@ public class CharacterSwitcher : MonoBehaviour
         ActivateCharacter(_hour);
     }
 
+    private void Update()
+    {
+        if (_currentCharacter != null)
+        {
+            _currentCharacterText.text = $"Current: {_currentCharacter.name} ({_currentCharacter.CurrentState})";
+        }
+    }
+
     public void SwitchToHour() => ActivateCharacter(_hour);
     
     public void SwitchToMilli() => ActivateCharacter(_milli);
@@ -62,20 +77,18 @@ public class CharacterSwitcher : MonoBehaviour
         _milli.gameObject.GetComponent<PlayerInputHandler>().enabled = (target == _milli);
         
         // 카메라 추적 대상 변경
-        if (_cameraFollowTarget != null)
-        {
-            _cameraFollowTarget.position = target.transform.position;
-        }
-        _cameraFollowTarget.parent = target.transform;
+        _followCamera.Follow = target.transform;
+        _overallCamera.Follow = target.transform;
 
         // 활성화된 캐릭터 텍스트 갱신
         if (_currentCharacterText != null)
         {
-            _currentCharacterText.text = $"Current: {target.name}";
+            _currentCharacterText.text = $"Current: {target.name} ({target.CurrentState})";
         }
         
         // 디버그 UI 타겟 갱신
         _debugUI?.Init(target);
+        _currentCharacter = target;
     }
 
 }

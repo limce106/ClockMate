@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
 
-public class PressurePlate : ResettableBase
+public class PressurePlate : ResettableBase, IPunObservable
 {
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
@@ -84,6 +85,8 @@ public class PressurePlate : ResettableBase
     }
     private bool IsValidCharacter(Collider other)
     {
+        if (other.tag != "Player") return false;
+        
         var characterComponent = other.GetComponentInParent<CharacterBase>();
         if (characterComponent == null)
         {
@@ -96,7 +99,7 @@ public class PressurePlate : ResettableBase
     private bool IsValidDirection(Collider other)
     {
         float yDifference = other.bounds.center.y - transform.position.y;
-        if (yDifference < 0.2f) // 상황에 따라 조정
+        if (yDifference < 0.4f) // 상황에 따라 조정
         {
             Debug.Log("위에서 밟은 것이 아님");
             return false;
@@ -148,6 +151,7 @@ public class PressurePlate : ResettableBase
         _initialColor = _materialInstance.color;
     }
 
+    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
@@ -163,5 +167,29 @@ public class PressurePlate : ResettableBase
         _isPressed = false;
         _isLocked = false;
         IsFullyPressed = false;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if(stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+
+            Color color = _materialInstance.color;
+            stream.SendNext(color.r);
+            stream.SendNext(color.g);
+            stream.SendNext(color.b);
+            stream.SendNext(color.a);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+
+            float r = (float)stream.ReceiveNext();
+            float g = (float)stream.ReceiveNext();
+            float b = (float)stream.ReceiveNext();
+            float a = (float)stream.ReceiveNext();
+            _materialInstance.color = new Color(r, g, b, a);
+        }
     }
 }

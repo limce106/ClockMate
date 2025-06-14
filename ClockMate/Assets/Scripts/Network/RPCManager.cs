@@ -4,6 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 using JetBrains.Annotations;
+using System;
+using static Define.Character;
 
 public class RPCManager : MonoBehaviourPunCallbacks
 {
@@ -24,9 +26,10 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
     private PhotonView PV;
     private static Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
-    private bool isLocalPlayerReady = false;
     private bool canAcceptReady = false;
-    private string sceneName = "";
+
+    public static Action OnLocalAllReadyAction;
+    public static Action OnSyncedAllReadyAction;
 
     void Awake()
     {
@@ -50,34 +53,19 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if(isLocalPlayerReady)
+            int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+
+            bool isReady = false;
+            playerReadyStatus.TryGetValue(actorNumber, out isReady);
+            if (isReady)
             {
-                PV.RPC("UnmarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-                isLocalPlayerReady = false;
+                PV.RPC("UnmarkReady", RpcTarget.MasterClient, actorNumber);
             }
             else
             {
-                PV.RPC("MarkReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-                isLocalPlayerReady = true;
+                PV.RPC("MarkReady", RpcTarget.MasterClient, actorNumber);
             }
         }
-    }
-
-    new protected void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    new protected void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        playerReadyStatus.Clear();
-        canAcceptReady = false;
-        isLocalPlayerReady = false;
     }
 
     [PunRPC]
@@ -87,16 +75,10 @@ public class RPCManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void SetSceneName(string name)
-    {
-        sceneName = name;
-    }
-
-    [PunRPC]
     void MarkReady(int actorNumber)
     {
         PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, true);
-        TryLoadSceneIfReady();
+        TryExecuteOnAllPlayersReady();
         Debug.Log("준비 완료");
     }
 
@@ -114,18 +96,33 @@ public class RPCManager : MonoBehaviourPunCallbacks
         playerReadyStatus[actorNumber] = isReady;
     }
 
-    void TryLoadSceneIfReady()
+    [PunRPC]
+    private void ResetReadyState()
     {
-        if (!PhotonNetwork.IsMasterClient || !AllPlayersReady())
+        playerReadyStatus.Clear();
+        canAcceptReady = false;
+    }
+
+    void TryExecuteOnAllPlayersReady()
+    {
+        if (!AllPlayersReady())
             return;
 
-        if (string.IsNullOrEmpty(sceneName))
+        OnLocalAllReadyAction?.Invoke();
+        OnLocalAllReadyAction = null;
+
+        if(PhotonNetwork.IsMasterClient)
         {
-            Debug.LogWarning("Scene name not set. Cannot load scene.");
-            return;
+            PV.RPC("ExecuteSyncedAllPlayersReady", RpcTarget.All);
+            PV.RPC("ResetReadyState", RpcTarget.All);
         }
+    }
 
-        PhotonNetwork.LoadLevel(sceneName);
+    [PunRPC]
+    private void ExecuteSyncedAllPlayersReady()
+    {
+        OnSyncedAllReadyAction?.Invoke();
+        OnSyncedAllReadyAction = null;
     }
 
     bool AllPlayersReady()
@@ -144,5 +141,45 @@ public class RPCManager : MonoBehaviourPunCallbacks
     {
         // 복사 반환하여 원본에 영향 없도록 함
         return new Dictionary<int, bool>(playerReadyStatus);
+    }
+
+    [PunRPC]
+    public void ResetAllReadyStates()
+    {
+        ResetReadyState();
+        
+        foreach(var plyaer in PhotonNetwork.CurrentRoom.Players)
+        {
+            int actorNumber = plyaer.Value.ActorNumber;
+            PV.RPC("SyncReadyStatus", RpcTarget.All, actorNumber, false);
+        }
+    }
+
+    [PunRPC]
+    public void DeleteAllSaveData()
+    {
+        SaveManager.Instance?.DeleteSaveData();
+    }
+
+    [PunRPC]
+    public void RPC_RegisterCharacter(CharacterName character, int viewID)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+        {
+            CharacterBase characterBase = pv.GetComponent<CharacterBase>();
+            if (characterBase != null)
+            {
+                GameManager.Instance.RegisterCharacter(character, characterBase);
+            }
+            else
+            {
+                Debug.LogError($"[RPC_RegisterCharacter] CharacterBase 컴포넌트를 찾을 수 없음, ViewID: {viewID}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"[RPC_RegisterCharacter] PhotonView를 찾을 수 없음, ViewID: {viewID}");
+        }
     }
 }
