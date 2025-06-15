@@ -26,4 +26,9 @@ public class UINotice : UIBase
     {
         img.sprite = sprite;
     }
+
+    public void SetImageActive(bool value)
+    {
+        img.enabled = value;
+    }
 }
