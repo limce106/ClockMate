@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Photon.Pun;
 
 public class Stair : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class Stair : MonoBehaviour
 
     private void Awake()
     {
-        moveDistance = gameObject.transform.localScale.x;
+        moveDistance = CalculateTotalChildWidth();
         targetPos = transform.position + Vector3.right * moveDistance;
     }
 
@@ -42,5 +43,27 @@ public class Stair : MonoBehaviour
             transform.position = targetPos;
             shouldMove = false;
         }
+    }
+
+    private float CalculateTotalChildWidth()
+    {
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0)
+            return 0f;
+
+        float minX = float.MaxValue;
+        float maxX = float.MinValue;
+
+        foreach(Renderer renderer in renderers)
+        {
+            float childMinX = renderer.bounds.min.x;
+            float childMaxX = renderer.bounds.max.x;
+
+            minX = Mathf.Min(minX, childMinX);
+            maxX = Mathf.Max(maxX, childMaxX);
+        }
+
+        return maxX - minX;
     }
 }
