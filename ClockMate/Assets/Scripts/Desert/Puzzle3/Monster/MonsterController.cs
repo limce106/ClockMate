@@ -23,6 +23,7 @@ public class MonsterController : MonoBehaviour
    private LayerMask _viewMask; 
    private IMonsterState _currentState;
    private Dictionary<Type, IMonsterState> _states;
+   public event Action<MonsterController> OnMonsterDied;
    
    private void Awake()
    {
@@ -107,6 +108,13 @@ public class MonsterController : MonoBehaviour
    public bool IsReturnComplete()
    {
       return Vector3.Distance(transform.position, returnPoint.position) < 1.0f;
+   }
+
+   public void Die()
+   {
+      // 사망 처리
+      OnMonsterDied?.Invoke(this);
+      gameObject.SetActive(false);
    }
 
    #region Test
