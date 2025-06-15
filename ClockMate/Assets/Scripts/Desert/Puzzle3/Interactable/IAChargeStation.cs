@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class IAChargeStation : MonoBehaviour, IInteractable
 {   
-    [field: SerializeField] public int ChargeLevel { get; private set; }
-    
+    [SerializeField] private IATurret turret;
+
     public bool CanInteract(CharacterBase character)
     {
         Holder holder = character.GetComponentInChildren<Holder>();
@@ -35,11 +35,6 @@ public class IAChargeStation : MonoBehaviour, IInteractable
 
     private void Charge()
     {
-        ChargeLevel++;
-    }
-
-    public void UseCharged()
-    {
-        ChargeLevel--;
+        turret.Charge();
     }
 }

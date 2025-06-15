@@ -1,20 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// 터렛 상호작용.
-/// Milli만 조작 가능하며 조작 중에는 캐릭터 조작이 비활성화된다.
+/// Milli만 조작 가능하며 조작 중에는 캐릭터 조작이 비활성화된다.Q
 /// </summary>
 public class IATurret : MonoBehaviour, IInteractable
 {
-    [SerializeField] private IAChargeStation chargeStation;
     [SerializeField] private GameObject turretHead;
     [SerializeField] private Transform attackStartPos;
     [SerializeField] private CinemachineVirtualCamera camera;
+    [SerializeField] private int maxChargeLevel;
+    [field: SerializeField] public int ChargeLevel { get; private set; }
     
     [SerializeField] private float turretRotateSpeed = 8f;
     [SerializeField] private float yawMin = -60f;
@@ -32,6 +29,7 @@ public class IATurret : MonoBehaviour, IInteractable
     private CharacterBase _character; // 조작 중인 캐릭터
     private MonsterController _currentTarget;
     private UINotice _uiNotice;
+    private UITurretAcive _uiTurretActive;
     
     private Sprite _dropSprite;
     private string _dropString;
@@ -110,8 +108,9 @@ public class IATurret : MonoBehaviour, IInteractable
         
         camera.Priority = 100;
         attackLineRenderer.enabled = true;
-        
-        // TODO 터렛 조작 UI 켜기
+
+        _uiTurretActive = UIManager.Instance.Show<UITurretAcive>("UITurretActive");
+        _uiTurretActive.SetInitialChargeLv(ChargeLevel);
 
         return true;
     }
@@ -127,8 +126,13 @@ public class IATurret : MonoBehaviour, IInteractable
         camera.Priority = 0;
         attackLineRenderer.enabled = false;
 
-        // 터렛 조작 나가기 UI 닫기
+        // 터렛 UI 닫기
+        
+        _uiTurretActive.Reset();
+        UIManager.Instance.Close(_uiTurretActive);
         UIManager.Instance.Close(_uiNotice);
+        _uiTurretActive = null;
+        _uiNotice = null;
         
         // collider 다시 활성화
         if (TryGetComponent(out Collider collider))
@@ -229,7 +233,7 @@ public class IATurret : MonoBehaviour, IInteractable
     /// </summary>
     private void TryFireWeapon()
     {
-        if (chargeStation == null || chargeStation.ChargeLevel <= 0)
+        if (ChargeLevel <= 0)
         {
             Debug.Log("Charge가 부족하여 발사할 수 없습니다.");
             // 필요시 UI 피드백 처리
@@ -237,7 +241,6 @@ public class IATurret : MonoBehaviour, IInteractable
         }
 
         FireWeapon();
-        chargeStation.UseCharged(); // ChargeLevel 1 감소
     }
 
     /// <summary>
@@ -245,11 +248,20 @@ public class IATurret : MonoBehaviour, IInteractable
     /// </summary>
     private void FireWeapon()
     {
+        ChargeLevel--; // ChargeLevel 1 감소
+        _uiTurretActive.UpdateChargeImg(false);
+
         if (_currentTarget is not null)
         {
             _currentTarget.ChangeStateTo<MStateDead>();
         }
+        // TODO: 발사체 구현
+    }
 
-        // TODO: 발사 이펙트, 사운드, UI 피드백 추가
+    public void Charge()
+    {
+        if (ChargeLevel >= maxChargeLevel) return;
+        ChargeLevel++;
+        _uiTurretActive?.UpdateChargeImg(true);
     }
 }
