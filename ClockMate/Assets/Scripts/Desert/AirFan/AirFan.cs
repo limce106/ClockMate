@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class AirFan : MonoBehaviour
 {
+    public PhotonView photonView;
+
     private static Milli milli;
     private static Rigidbody milliRb;
     [SerializeField]
@@ -39,14 +42,7 @@ public class AirFan : MonoBehaviour
 
     void Awake()
     {
-        if (!milli)
-        {
-            milli = FindObjectOfType<Milli>();
-        }
-        if (milli && !milliRb)
-        {
-            milliRb = milli.GetComponent<Rigidbody>();
-        }
+        photonView = GetComponent<PhotonView>();
 
         if (transform.rotation == Quaternion.identity)
         {
@@ -63,9 +59,18 @@ public class AirFan : MonoBehaviour
         // 테스트용
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            SwitchFan();
+            if(NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+            {
+                photonView.RPC("RPC_SwitchFan", RpcTarget.All);
+            }
+            else
+            {
+                SwitchFan();
+            }
         }
         //
+
+        InitMilli();
 
         switch (fanState)
         {
@@ -97,6 +102,18 @@ public class AirFan : MonoBehaviour
         }
     }
 
+    private void InitMilli()
+    {
+        if (!milli)
+        {
+            milli = FindObjectOfType<Milli>();
+            if (milli != null)
+            {
+                milliRb = milli.GetComponent<Rigidbody>();
+            }
+        }
+    }
+
     private void LaunchPlayerUpward()
     {
         // 환풍기를 벗어나면 바람의 영향을 받지 않는다.
@@ -120,11 +137,6 @@ public class AirFan : MonoBehaviour
 
             isFlying = true;
         }
-        //else
-        //{
-        //    milliRb.velocity = new Vector3(milliRb.velocity.x, 0f, milliRb.velocity.z);
-        //    milliRb.AddForce(-Physics.gravity * milliRb.mass);
-        //}
 
         if (!milli.CanJump())
         {
@@ -204,6 +216,12 @@ public class AirFan : MonoBehaviour
 
         fanBlades.startRotationSpeed = fanBlades.currentRotationSpeed;
         fanBlades.ClearRotationElapsedTime();
+    }
+
+    [PunRPC]
+    public void RPC_SwitchFan()
+    {
+        SwitchFan();
     }
 
     public void SetFanState(FanState nextState)
