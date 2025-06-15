@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,15 +17,19 @@ public class FullAirFanTrigger : MonoBehaviour
     {
         if(isHourInTrigger && Input.GetKeyDown(KeyCode.E))
         {
-            airFan.SwitchFan();
+            if (NetworkManager.Instance.IsInRoomAndReady() && airFan.photonView.IsMine)
+            {
+                airFan.photonView.RPC("RPC_SwitchFan", RpcTarget.All);
+            }
+            else
+            {
+                airFan.SwitchFan();
+            }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "Player")
-            return;
-
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null)
@@ -40,16 +45,12 @@ public class FullAirFanTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag != "Player")
-            return;
-
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null)
         {
             isTargetCharacter = characterIdentifier.characterId == Define.Character.CharacterId.Hour;
         }
-
 
         if (characterIdentifier && isTargetCharacter)
         {
@@ -59,9 +60,6 @@ public class FullAirFanTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag != "Player")
-            return;
-
         var characterIdentifier = other.transform.root.GetComponent<PlayerIdentifier>();
         bool isTargetCharacter = false;
         if (characterIdentifier != null)
