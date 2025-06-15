@@ -10,8 +10,7 @@ public class MStateDead : IMonsterState
     public MStateDead(MonsterController monster) => _monster = monster;
     public void Enter()
     {
-        _monster.gameObject.SetActive(false);
-        // TODO 사망 처리, 키 드롭 
+        _monster.Die();
     }
 
     public void Update()
