@@ -128,7 +128,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387177157610492584}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0.17541517, y: 0.100514166, z: -0.018006526, w: 0.97918445}
   m_LocalPosition: {x: -0.019, y: 1.217, z: -0.021}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -272,7 +272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5649625288092557255}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.79347545, z: -0, w: 0.60860234}
+  m_LocalRotation: {x: 0, y: -0.7934755, z: 0, w: 0.6086022}
   m_LocalPosition: {x: -23.49, y: 13.17, z: 17.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -293,10 +293,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69364e0951661f4c9e0581547a2d425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chargeStation: {fileID: 0}
   turretHead: {fileID: 1387177157610492584}
   attackStartPos: {fileID: 1368463428059674266}
   camera: {fileID: 1365646774079195036}
+  maxChargeLevel: 3
+  <ChargeLevel>k__BackingField: 0
   turretRotateSpeed: 15
   yawMin: -60
   yawMax: 60
