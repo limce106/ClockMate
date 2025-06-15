@@ -109,7 +109,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7153930389098428894}
   - component: {fileID: 5228379244540245118}
-  - component: {fileID: 3182119752231126920}
+  - component: {fileID: 7090906768600645864}
   m_Layer: 0
   m_Name: InteractionDetector
   m_TagString: Untagged
@@ -150,8 +150,8 @@ MonoBehaviour:
   interactDistance: 5
   interactAngle: 60
   activeInteractObj: {fileID: 0}
---- !u!136 &3182119752231126920
-CapsuleCollider:
+--- !u!65 &7090906768600645864
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -165,14 +165,12 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 5
-  m_Height: 0.3
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 8, y: 2.5, z: 8}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6605623365497456390
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +368,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f2b072514e0789e4eaedfc48c8c5bcf1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 153f5dd613c465344b6ab3c516c2240b, type: 2}
     - target: {fileID: 919132149155446097, guid: f2b072514e0789e4eaedfc48c8c5bcf1, type: 3}
       propertyPath: m_Name
       value: Milli Mesh Temp
