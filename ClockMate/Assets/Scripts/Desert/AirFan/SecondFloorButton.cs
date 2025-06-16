@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,14 +34,18 @@ public class SecondFloorButton : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if(Input.GetKeyDown(KeyCode.E) && isPlayerColliding)
         {
-            if(isPlayerColliding)
+            stair.gameObject.SetActive(true);
+
+            if (NetworkManager.Instance.IsInRoomAndReady())
             {
-                stair.gameObject.SetActive(true);
+                stair.photonView.RPC("RPC_Move", RpcTarget.All);
+            }
+            else
+            {
                 stair.Move();
             }
-            
         }
     }
 }
