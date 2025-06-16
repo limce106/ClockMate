@@ -85,7 +85,7 @@ public class PressurePlate : ResettableBase, IPunObservable
     }
     private bool IsValidCharacter(Collider other)
     {
-        if (other.tag != "Player") return false;
+        if (!other.CompareTag("Player")) return false;
         
         var characterComponent = other.GetComponentInParent<CharacterBase>();
         if (characterComponent == null)
