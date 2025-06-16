@@ -6,17 +6,26 @@ public class SecondFloorButton : MonoBehaviour
 {
     private bool isPlayerColliding = false;
     public Stair stair;
-    private void OnCollisionEnter(Collision collision)
+
+    private void OnTriggerEnter(Collider other)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
             isPlayerColliding = true;
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
+        {
+            isPlayerColliding = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
         {
             isPlayerColliding = false;
         }
@@ -24,10 +33,14 @@ public class SecondFloorButton : MonoBehaviour
 
     void Update()
     {
-        if(isPlayerColliding && Input.GetKeyDown(KeyCode.E))
+        if(Input.GetKeyDown(KeyCode.E))
         {
-            stair.gameObject.SetActive(true);
-            stair.Move();
+            if(isPlayerColliding)
+            {
+                stair.gameObject.SetActive(true);
+                stair.Move();
+            }
+            
         }
     }
 }
