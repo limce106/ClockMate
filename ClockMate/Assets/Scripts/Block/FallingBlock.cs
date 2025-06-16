@@ -20,6 +20,7 @@ public class FallingBlock : ResettableBase, IPunObservable
 
     private Coroutine _fallCoroutine;
 
+    [SerializeField] private GameObject rootGO;
     [Header("Falling Block Properties")]
     [SerializeField] private float fallDelay = 1.5f;
     [SerializeField] private float fallSpeed = 7f;
@@ -37,7 +38,7 @@ public class FallingBlock : ResettableBase, IPunObservable
             _materialInstance = _meshRenderer.material;
         }
 
-        _destroyPoint = new Vector3(transform.position.x, transform.position.y - destroyYThreshold, transform.position.z);
+        _destroyPoint = new Vector3(rootGO.transform.position.x, rootGO.transform.position.y - destroyYThreshold, rootGO.transform.position.z);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -80,13 +81,13 @@ public class FallingBlock : ResettableBase, IPunObservable
 
         while (true)
         {
-            while (Vector3.Distance(transform.position, _destroyPoint) > 0.01f)
+            while (Vector3.Distance(rootGO.transform.position, _destroyPoint) > 0.01f)
             {
-                transform.position = Vector3.MoveTowards(transform.position, _destroyPoint, fallSpeed * Time.deltaTime);
+                rootGO.transform.position = Vector3.MoveTowards(rootGO.transform.position, _destroyPoint, fallSpeed * Time.deltaTime);
                 yield return null;
             }
             Debug.Log("블럭 비활성화");
-            gameObject.SetActive(false); // 비활성화
+            rootGO.SetActive(false); // 비활성화
             isFalling = false;
             yield break;
         }
@@ -95,8 +96,8 @@ public class FallingBlock : ResettableBase, IPunObservable
     // 초기 상태 저장
     protected override void SaveInitialState()
     {
-        _initialPosition = transform.position;
-        _initialRotation = transform.rotation;
+        _initialPosition = rootGO.transform.position;
+        _initialRotation = rootGO.transform.rotation;
         _initialColor = _materialInstance.color;
     }
 
@@ -105,10 +106,10 @@ public class FallingBlock : ResettableBase, IPunObservable
     public override void ResetObject()
     {
         if (this == null) return;
-        gameObject.SetActive(true);
+        rootGO.SetActive(true);
 
-        transform.position = _initialPosition;
-        transform.rotation = _initialRotation;
+        rootGO.transform.position = _initialPosition;
+        rootGO.transform.rotation = _initialRotation;
 
         if (_materialInstance != null)
             _materialInstance.color = _initialColor;
