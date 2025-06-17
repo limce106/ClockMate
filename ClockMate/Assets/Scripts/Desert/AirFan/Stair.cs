@@ -6,6 +6,8 @@ using Photon.Pun;
 
 public class Stair : MonoBehaviour
 {
+    public PhotonView photonView;
+
     private float moveDistance;
     public float moveSpeed = 2f;
 
@@ -17,6 +19,8 @@ public class Stair : MonoBehaviour
 
     private void Awake()
     {
+        photonView = GetComponent<PhotonView>();
+
         moveDistance = CalculateTotalChildWidth();
         targetPos = transform.position + Vector3.right * moveDistance;
     }
@@ -30,6 +34,12 @@ public class Stair : MonoBehaviour
     }
 
     public void Move()
+    {
+        shouldMove = true;
+    }
+
+    [PunRPC]
+    public void RPC_Move()
     {
         shouldMove = true;
     }
