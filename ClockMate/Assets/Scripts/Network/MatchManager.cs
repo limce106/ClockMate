@@ -10,15 +10,14 @@ public class MatchManager : MonoBehaviourPunCallbacks
     [Header("Text")]
     public TMP_InputField joinCodeInputField;
     public TMP_Text joinCodeText;
-    public TMP_Text statusText;
     public TMP_Text joinCodeStatusText;
+    public TMP_Text connectStatusText;
 
     [Header("Panel")]
     public GameObject lobbyPanel;
     public GameObject playTypePanel;
     public GameObject connectPanel;
-    public GameObject player1Panel;
-    public GameObject player2Panel;
+    public GameObject player2;
 
     private string joinCode;
     private const int MaxPlayer = 2;
@@ -48,7 +47,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
             };
 
             PhotonNetwork.CreateRoom(joinCode, options, TypedLobby.Default);
-            statusText.text = "방 생성 중...";
+            //statusText.text = "방 생성 중...";
 
             // Photon 응답 지연 시간
             float elapsed = 0f;
@@ -68,7 +67,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
             retry--;
         }
 
-        statusText.text = "방 생성 실패. 다시 시도해주세요.";
+        // statusText.text = "방 생성 실패. 다시 시도해주세요.";
     }
 
     public void OnClick_JoinWithCode()
@@ -82,7 +81,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
 
         PhotonNetwork.JoinRoom(code);
-        statusText.text = "방에 입장 중...";
+        // statusText.text = "방에 입장 중...";
     }
 
     private string GenerateRoomCode()
@@ -108,7 +107,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public void OnClick_RandomMatch()
     {
         PhotonNetwork.JoinRandomRoom();
-        statusText.text = "랜덤 매칭 중...";
+        //statusText.text = "랜덤 매칭 중...";
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -121,7 +120,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
         };
 
         PhotonNetwork.CreateRoom(null, options);
-        statusText.text = "새 방 생성 중...";
+        // statusText.text = "새 방 생성 중...";
     }
 
     public override void OnJoinedRoom()
@@ -150,7 +149,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         photonView.RPC("SetPlayer2PanelActive", RpcTarget.All, false);
-        photonView.RPC("UpdateStatusText", RpcTarget.All, "상대가 나갔습니다. 상대를 기다리는 중...");
+        photonView.RPC("UpdateStatusText", RpcTarget.All, "함께 모험 할 동료를 기다리는 중..");
 
         RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, false);
     }
@@ -158,13 +157,13 @@ public class MatchManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void SetPlayer2PanelActive(bool isActive)
     {
-        player2Panel.SetActive(isActive);
+        player2.SetActive(isActive);
     }
 
     [PunRPC]
     void UpdateStatusText(string message)
     {
-        statusText.text = message;
+        connectStatusText.text = message;
     }
 
     private void ShowConnectUI()
@@ -178,7 +177,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
             joinCode = PhotonNetwork.CurrentRoom.Name;
         }
         joinCodeText.text = joinCode;
-        statusText.text = "상대를 기다리는 중...";
+        connectStatusText.text = "함께 모험 할 동료를 기다리는 중..";
     }
 
     IEnumerator WaitAndSetupRPC()
