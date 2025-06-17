@@ -11,6 +11,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public TMP_InputField joinCodeInputField;
     public TMP_Text joinCodeText;
     public TMP_Text statusText;
+    public TMP_Text joinCodeStatusText;
 
     [Header("Panel")]
     public GameObject lobbyPanel;
@@ -76,7 +77,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         if (code.Length != RoomCodeLen)
         {
-            statusText.text = "코드는 6자리여야 합니다.";
+            joinCodeStatusText.text = "코드는 6자리여야 합니다.";
             return;
         }
 
@@ -99,7 +100,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        statusText.text = "초대 코드가 잘못 되었거나 방이 꽉 찼어요!";
+        joinCodeStatusText.text = "초대 코드가 잘못 되었거나 방이 꽉 찼어요!";
         Debug.LogWarning($"JoinRoom 실패: {message}");
     }
 
