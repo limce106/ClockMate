@@ -9,9 +9,10 @@ using TMPro;
 public class CharacterSlot
 {
     public Button characterButton;
-    public TMP_Text playerText;
+    public Image nonSelectableImg;
     public int selectedByActorNumber = -1;
-}
+    public string characterName;
+} 
 
 public class CharacterSelectManager : MonoBehaviourPunCallbacks
 {
@@ -19,6 +20,10 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     public CharacterSlot[] characters;
     public TMP_Text statusText;
+    public GameObject gameReady;
+
+    public Image player1CharacterImg;
+    public Image player2CharacterImg;
 
     private int localActorNumber;
 
@@ -41,7 +46,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
     {
         if(character.selectedByActorNumber == localActorNumber)
         {
-            photonView.RPC("DeselectCharacter", RpcTarget.All, GetCharacterIndex(character));
+            photonView.RPC("DeselectCharacter", RpcTarget.All, GetCharacterIndex(character), localActorNumber);
         }
         else if(character.selectedByActorNumber == -1 && !HasPlayerSelected(localActorNumber))
         {
@@ -53,18 +58,46 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
     void SelectCharacter(int index, int actorNumber)
     {
         characters[index].selectedByActorNumber = actorNumber;
-        characters[index].playerText.gameObject.SetActive(true);
-        characters[index].playerText.text = (actorNumber == PhotonNetwork.MasterClient.ActorNumber) ? "Player1" : "Player2";
+        characters[index].nonSelectableImg.gameObject.SetActive(true);
+
+        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + characters[index].characterName + "_Sticker");
+        if (characterSprite == null)
+        {
+            Debug.LogWarning($"Sprite for {characters[index].characterName} not found in Resources.");
+            return;
+        }
+
+        if(actorNumber == PhotonNetwork.MasterClient.ActorNumber)
+        {
+            player1CharacterImg.sprite = characterSprite;
+            player1CharacterImg.gameObject.SetActive(true);
+        }
+        else
+        {
+            player2CharacterImg.sprite = characterSprite;
+            player2CharacterImg.gameObject.SetActive(true);
+        }
 
         UpdateButtonsInteractable();
         UpdateStatusText();
     }
 
     [PunRPC]
-    void DeselectCharacter(int index)
+    void DeselectCharacter(int index, int actorNumber)
     {
         characters[index].selectedByActorNumber = -1;
-        characters[index].playerText.gameObject.SetActive(false);
+        characters[index].nonSelectableImg.gameObject.SetActive(false);
+
+        if (actorNumber == PhotonNetwork.MasterClient.ActorNumber)
+        {
+            player1CharacterImg.sprite = null;
+            player1CharacterImg.gameObject.SetActive(false);
+        }
+        else
+        {
+            player2CharacterImg.sprite = null;
+            player2CharacterImg.gameObject.SetActive(false);
+        }
 
         UpdateButtonsInteractable();
         UpdateStatusText();
@@ -132,7 +165,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         }
         else if (!localSelected && otherSelected)
         {
-            statusText.text = "상대방이 캐릭터 선택 완료했습니다.";
+            statusText.text = "상대방이 캐릭터 선택을 완료했습니다.";
         }
         else if (localSelected && !otherSelected)
         {
@@ -140,8 +173,17 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            statusText.text = "캐릭터 선택 완료! E키를 눌러 준비하세요.";
+            statusText.text = "모든 플레이어 캐릭터 선택 완료!";
             canAcceptReady = true;
+        }
+
+        if(canAcceptReady)
+        {
+            gameReady.SetActive(true);
+        }
+        else
+        {
+            gameReady.SetActive(false);
         }
 
         RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, canAcceptReady);
