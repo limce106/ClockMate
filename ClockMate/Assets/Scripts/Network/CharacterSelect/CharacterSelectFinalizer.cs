@@ -1,4 +1,4 @@
-using Photon.Pun;
+Ôªøusing Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,18 +13,35 @@ public class CharacterSelectFinalizer : MonoBehaviour
     public GameObject Player1Ready;
     public GameObject Player2Ready;
 
+    private bool isLoadingStarted = false;
+
     private void Start()
     {
         RPCManager.OnSyncedAllReadyAction = () =>
         {
-            SaveSelectedCharacter();
-            GameManager.Instance?.CreateNewSaveData();
-            LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
+            StartCoroutine(HandleAllReadySequence());
         };
+    }
+
+    private IEnumerator HandleAllReadySequence()
+    {
+        SaveSelectedCharacter();
+        isLoadingStarted = true;
+
+        Player1Ready?.SetActive(true);
+        Player2Ready?.SetActive(true);
+
+        yield return null;
+
+        GameManager.Instance?.CreateNewSaveData();
+        LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
     }
 
     void Update()
     {
+        if (isLoadingStarted)
+            return;
+
         if (!PhotonNetwork.InRoom)
             return;
 
@@ -51,10 +68,12 @@ public class CharacterSelectFinalizer : MonoBehaviour
         if (isMasterClient)
         {
             Player1Ready?.SetActive(isReady);
+            Debug.Log("Player1: " + isReady);
         }
         else
         {
             Player2Ready?.SetActive(isReady);
+            Debug.Log("Player2: " + isReady);
         }
     }
 
@@ -74,7 +93,7 @@ public class CharacterSelectFinalizer : MonoBehaviour
             CharacterName character = (CharacterName)index;
 
             GameManager.Instance.SetSelectedCharacter(character);
-            Debug.Log($"[CharacterSelectReadyUI] ≥ª º±≈√ ƒ≥∏Ø≈Õ ¿˙¿Âµ : {character}");
+            Debug.Log($"[CharacterSelectReadyUI] ÎÇ¥ ÏÑ†ÌÉù Ï∫êÎ¶≠ÌÑ∞ Ï†ÄÏû•Îê®: {character}");
             break;
         }
     }
