@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,10 @@ public abstract class CharacterBase : MonoBehaviourPun
     public PlayerInputHandler InputHandler {get; private set;}
     public bool IsGrounded => _groundChecker.IsGrounded();
     public IState CurrentState => _stateMachine.CurrentState;
+    
+    // 서버 관련 필드
+    private PhotonView _photonView;
+    private PhotonTransformView _photonTransformView;
     
     private int JumpCount
     {
@@ -44,6 +49,8 @@ public abstract class CharacterBase : MonoBehaviourPun
     {
         DontDestroyOnLoad(this.gameObject);
         Init();
+        _photonView = GetComponent<PhotonView>();
+        _photonTransformView = GetComponent<PhotonTransformView>();
     }
 
     protected void Update()
@@ -85,11 +92,33 @@ public abstract class CharacterBase : MonoBehaviourPun
     /// </summary>
     public void PerformJump()
     {
+        _photonTransformView.enabled = false; // 점프 직전에 transformView는 비활성화한다.
+        
         float jumpPower = (JumpCount == 0 ? Stats.jumpPower : Stats.doubleJumpPower) + 5f;
+        
+        // 로컬 점프 수행
         _rb.MovePosition(transform.position + Vector3.up * 0.05f); // collider 겹침 방지, 살짝 띄우기
         _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z); // 점프 전 y 속도(추락 속도) 제거
         _rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse); // 점프 힘 적용
         JumpCount++;
+        
+        // 다른 클라이언트에게 동기화
+        _photonView.RPC(nameof(RPC_SyncJump), RpcTarget.Others, transform.position, jumpPower);
+        
+        _photonTransformView.enabled = true;
+    }
+
+    [PunRPC]
+    public void RPC_SyncJump(Vector3 jumpStartPosition, float jumpPower)
+    {
+        if (_photonView.IsMine) return; // 내 캐릭터면 무시
+
+        // 강제로 위치 동기화
+        _rb.position = jumpStartPosition;
+        _rb.velocity = Vector3.zero;
+
+        // 점프 수행
+        _rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
     }
 
     public void ResetJumpCount()
@@ -110,7 +139,7 @@ public abstract class CharacterBase : MonoBehaviourPun
 
         // 공중 제어력 감소 & 속도 변경 제한
         float controlFactor = isGrounded ? 1f : 0.8f;
-        float maxVelocityChange = isGrounded ? 10f : 4f;
+        float maxVelocityChange = isGrounded ? 10f : 8f;
 
         // 현재 속도 및 목표 속도 계산
         Vector3 currentVelocity = _rb.velocity;
@@ -120,10 +149,10 @@ public abstract class CharacterBase : MonoBehaviourPun
         Vector3 desiredChange = targetVelocity - new Vector3(currentVelocity.x, 0f, currentVelocity.z);
         Vector3 clampedChange = Vector3.ClampMagnitude(desiredChange, maxVelocityChange);
 
-        // 물리 엔진을 통해 부드럽게 가속도 적용 (y축은 유지)
+        // 물리 엔진을 통해 가속도 적용 (y축은 유지)
         _rb.AddForce(new Vector3(clampedChange.x, 0f, clampedChange.z), ForceMode.VelocityChange);
         
-        // 움직이는 방향을 바라보도록 회전
+        // 움직이는 방향 바라보도록 회전
         RotateToDirectionOfMovement(direction);
     }
 
@@ -136,7 +165,7 @@ public abstract class CharacterBase : MonoBehaviourPun
         
         // 정지 상태가 아니라면
         Quaternion targetRotation = Quaternion.LookRotation(direction); // 이동 방향 바라보는 회전값
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
+        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
     /// <summary>
