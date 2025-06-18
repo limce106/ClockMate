@@ -114,7 +114,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             GameManager.Instance?.ResetStageAndCharacter();
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
 
         _isLoading = false;
 
