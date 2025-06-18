@@ -47,6 +47,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.ConnectUsingSettings();
         }
+
+        PhotonNetwork.SendRate = 60;
+        PhotonNetwork.SerializationRate = 60;
     }
 
     public override void OnConnectedToMaster()
