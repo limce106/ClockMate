@@ -96,7 +96,6 @@ public class PressurePlateGateBlock : ResettableBase
         _openPosition = _closedPosition + direction * openOffsetX;
     }
 
-    [PunRPC]
     public override void ResetObject()
     {
         if (_openCoroutine != null)

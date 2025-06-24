@@ -16,9 +16,13 @@ public class ResetTestManager : MonoSingleton<ResetTestManager>
         PhotonView photonView = GetComponent<PhotonView>();
         foreach (ResettableBase resettable in _resettableList)
         {
-            if(photonView)
+            if(NetworkManager.Instance.IsInRoomAndReady())
             {
-                photonView.RPC("ResetObject", RpcTarget.AllBuffered);
+                resettable.RPC_ResetObject();
+            }
+            else
+            {
+                resettable.ResetObject();
             }
         }
         Debug.Log("초기화 완료");

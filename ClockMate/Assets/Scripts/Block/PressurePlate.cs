@@ -151,7 +151,6 @@ public class PressurePlate : ResettableBase, IPunObservable
         _initialColor = _materialInstance.color;
     }
 
-    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
