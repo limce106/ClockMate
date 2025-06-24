@@ -108,10 +108,12 @@ public class PressurePlate : ResettableBase, IPunObservable
         return true;
     }
 
-    public void LockState()
+    public void SetLockState(bool isLocked)
     {
-        _isLocked = true;
+        _isLocked = isLocked;
     }
+
+
 
     private void SetPressed(bool state)
     {

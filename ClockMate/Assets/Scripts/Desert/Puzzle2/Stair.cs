@@ -29,7 +29,7 @@ public class Stair : MonoBehaviourPun
         if(linkedPlate.IsFullyPressed && !shouldMove)
         {
             gameObject.SetActive(true);
-            linkedPlate.LockState();
+            linkedPlate.SetLockState(true);
 
             if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady())
             {
