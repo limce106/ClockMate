@@ -6,7 +6,6 @@ using Photon.Pun;
 public class FallingBlock : ResettableBase, IPunObservable
 {
     // 서버 관련 필드
-    private PhotonView photonView;
     private bool isFalling; // 떨어짐 상태 동기화용 변수
 
     private Vector3 _initialPosition;
@@ -30,8 +29,6 @@ public class FallingBlock : ResettableBase, IPunObservable
 
     protected override void Init()
     {
-        photonView = GetComponent<PhotonView>();
-
         _meshRenderer = GetComponent<MeshRenderer>();
         if (_meshRenderer != null)
         {
@@ -102,7 +99,6 @@ public class FallingBlock : ResettableBase, IPunObservable
     }
 
     // 초기화 로직
-    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;

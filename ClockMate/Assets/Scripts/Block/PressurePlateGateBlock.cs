@@ -10,8 +10,6 @@ using UnityEngine;
 /// </summary>
 public class PressurePlateGateBlock : ResettableBase
 {
-    private PhotonView photonView;
-
     [Header("Door Properties")]
     [SerializeField] private PressurePlate[] linkedPlates;
     [SerializeField] private bool isDoorLeft = true;
@@ -26,7 +24,6 @@ public class PressurePlateGateBlock : ResettableBase
     
     protected override void Init()
     {
-        photonView = GetComponent<PhotonView>();
         _isOpened = false;
         _closedPosition = transform.position;
     }
@@ -64,7 +61,7 @@ public class PressurePlateGateBlock : ResettableBase
 
         foreach (PressurePlate plate in linkedPlates)
         {
-            plate.LockState(); // 발판 고정
+            plate.SetLockState(true); // 발판 고정
         }
 
         _isOpened = true;
@@ -96,7 +93,6 @@ public class PressurePlateGateBlock : ResettableBase
         _openPosition = _closedPosition + direction * openOffsetX;
     }
 
-    [PunRPC]
     public override void ResetObject()
     {
         if (_openCoroutine != null)

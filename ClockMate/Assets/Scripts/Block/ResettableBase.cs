@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
-public abstract class ResettableBase : MonoBehaviour
+public abstract class ResettableBase : MonoBehaviourPun
 {
 	protected virtual void Awake()
 	{
-		Init();
+        Init();
 		SaveInitialState();
 		Register();
 	}
@@ -31,4 +32,13 @@ public abstract class ResettableBase : MonoBehaviour
 	/// 초기화 로직을 상속받은 자식 블럭 클래스에서 각자 구현
 	/// </summary>
 	public abstract void ResetObject();
+
+	[PunRPC]
+    public void RPC_ResetObject()
+    {
+		if(photonView.IsMine)
+		{
+            photonView.RPC("ResetObject", RpcTarget.All);
+        }
+    }
 }
