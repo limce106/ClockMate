@@ -1,14 +1,10 @@
 ﻿using Photon.Pun;
 using UnityEngine;
 
-public abstract class ResettableBase : MonoBehaviour
+public abstract class ResettableBase : MonoBehaviourPun
 {
-	protected PhotonView photonView;
-
 	protected virtual void Awake()
 	{
-        photonView = GetComponent<PhotonView>();
-
         Init();
 		SaveInitialState();
 		Register();
