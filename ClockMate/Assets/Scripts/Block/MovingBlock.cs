@@ -6,8 +6,6 @@ using Photon.Pun;
 
 public class MovingBlock : ResettableBase
 {
-    private PhotonView photonView;
-
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
 
@@ -28,7 +26,6 @@ public class MovingBlock : ResettableBase
     protected override void Awake()
     {
         base.Awake();
-        photonView = GetComponent<PhotonView>();
 
         if (startAutomatically)
         {
@@ -114,7 +111,6 @@ public class MovingBlock : ResettableBase
     }
 
 
-    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
