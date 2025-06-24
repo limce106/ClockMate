@@ -30,7 +30,7 @@ public class FrontAirFanTrigger : MonoBehaviour
 
         if (characterIdentifier && isTargetCharacter)
         {
-            StopCoroutine(airFan.LaunchPlayerParabola());
+            airFan.EndFlying();
             airFan.SetMilliInTrigger(true);
         }
     }
@@ -51,7 +51,7 @@ public class FrontAirFanTrigger : MonoBehaviour
         {
             if (!airFan.isUpwardFly && airFan.isFanOn && !AirFan.isFlying)
             {
-                StartCoroutine(airFan.LaunchPlayerParabola());
+                airFan.LaunchParabola();
             }
         }
     }
