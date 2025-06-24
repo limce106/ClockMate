@@ -4,10 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Photon.Pun;
 
-public class Stair : MonoBehaviour
+public class Stair : MonoBehaviourPun
 {
-    public PhotonView photonView;
-
     private float moveDistance;
     public float moveSpeed = 2f;
 
@@ -17,17 +15,33 @@ public class Stair : MonoBehaviour
     private Vector3 targetPos;
     private bool shouldMove = false;
 
+    [SerializeField]
+    private PressurePlate linkedPlate;
+
     private void Awake()
     {
-        photonView = GetComponent<PhotonView>();
-
         moveDistance = CalculateTotalChildWidth();
         targetPos = transform.position + Vector3.right * moveDistance;
     }
 
     void Update()
     {
-        if(shouldMove)
+        if(linkedPlate.IsFullyPressed && !shouldMove)
+        {
+            gameObject.SetActive(true);
+            linkedPlate.LockState();
+
+            if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady())
+            {
+                photonView.RPC("RPC_Move", RpcTarget.All);
+            }
+            else
+            {
+                Move();
+            }
+        }
+
+        if (shouldMove)
         {
             MoveTowardsTarget();
         }
