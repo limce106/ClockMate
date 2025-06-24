@@ -26,6 +26,8 @@ public class PressurePlate : ResettableBase, IPunObservable
     private Vector3 _endPoint;
     private bool _isPressed;
     private bool _isLocked;
+
+    public bool IsPressed => _isPressed;
     public bool IsFullyPressed { get; private set; }
     
     private Vector3 _lastPlatePosition;
@@ -112,8 +114,6 @@ public class PressurePlate : ResettableBase, IPunObservable
     {
         _isLocked = isLocked;
     }
-
-
 
     private void SetPressed(bool state)
     {
