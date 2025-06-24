@@ -64,7 +64,7 @@ public class PressurePlateGateBlock : ResettableBase
 
         foreach (PressurePlate plate in linkedPlates)
         {
-            plate.LockState(); // 발판 고정
+            plate.SetLockState(true); // 발판 고정
         }
 
         _isOpened = true;
