@@ -101,10 +101,13 @@ public abstract class CharacterBase : MonoBehaviourPun
         _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z); // 점프 전 y 속도(추락 속도) 제거
         _rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse); // 점프 힘 적용
         JumpCount++;
-        
+
         // 다른 클라이언트에게 동기화
-        _photonView.RPC(nameof(RPC_SyncJump), RpcTarget.Others, transform.position, jumpPower);
-        
+        if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+        {
+            _photonView.RPC(nameof(RPC_SyncJump), RpcTarget.Others, transform.position, jumpPower);
+        }
+
         _photonTransformView.enabled = true;
     }
 
