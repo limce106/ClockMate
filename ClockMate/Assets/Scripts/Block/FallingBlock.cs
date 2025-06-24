@@ -102,7 +102,6 @@ public class FallingBlock : ResettableBase, IPunObservable
     }
 
     // 초기화 로직
-    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;

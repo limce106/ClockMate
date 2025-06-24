@@ -114,7 +114,6 @@ public class MovingBlock : ResettableBase
     }
 
 
-    [PunRPC]
     public override void ResetObject()
     {
         if (this == null) return;
