@@ -22,14 +22,9 @@ public class FanPlatform : MonoBehaviour
 
     void ExpandFrontTriggerOfPreviousFans()
     {
-        foreach(var fan in precedingFans)
+        foreach (var fan in precedingFans)
         {
-            var frontTrigger = fan.transform.Find("FrontTrigger")?.GetComponent<FrontAirFanTrigger>();
-
-            if(frontTrigger)
-            {
-                frontTrigger.ExpandFrontTrigger();
-            }
+            fan.setting.launchDistanceThreshold += 1f;
         }
     }
 }

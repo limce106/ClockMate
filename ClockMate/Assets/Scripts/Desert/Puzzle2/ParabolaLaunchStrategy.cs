@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "AirFan/ParabolaLaunchStrategy")]
 public class ParabolaLaunchStrategy : ILaunchStrategy
 {
     private const float MinFallTime = 0.1f;
@@ -11,20 +10,64 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
 
     private Transform target;
 
-    public ParabolaLaunchStrategy(Transform target)
+    private Coroutine runningCoroutine;
+    private MonoBehaviour coroutineRunner;
+
+    private AirFanSetting setting;
+
+    public ParabolaLaunchStrategy(Transform target, AirFanSetting setting, MonoBehaviour coroutineRunner)
     {
         this.target = target;
+        this.setting = setting;
+        this.coroutineRunner = coroutineRunner;
     }
 
-    public IEnumerator Launch(Milli milli, Rigidbody milliRb, AirFan airFan)
+    public bool CanLaunch(Milli milli, AirFan airFan)
     {
-        if(target == null)
-        {
-            Debug.LogWarning("ParabolaLaunchStrategySO: 타겟 설정 필요!");
-            airFan.EndFlying();
-            yield break;
-        }
+        if (target == null)
+            return false;
 
+        if (!airFan.isFanOn)
+            return false;
+
+        Transform fanTransform = airFan.transform.Find("Fan");
+        if (fanTransform == null)
+            return false;
+
+        Vector3 toPlayer = (milli.transform.position - airFan.transform.position).normalized;
+        Vector3 fanForward = airFan.transform.forward;
+
+        float dot = Vector3.Dot(fanForward, toPlayer);
+        float distance = Vector3.ProjectOnPlane(milli.transform.position - airFan.transform.position, airFan.transform.up).magnitude;
+
+        Debug.Log($"Dot: {dot}, Distance: {distance}, CanLaunch: {dot > 0.5f && distance <= 1f}");
+        // 플레이어가 환풍기 앞쪽에 있는지(내적)
+        return dot > 0.5f && distance <= setting.launchDistanceThreshold;
+    }
+
+    public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)
+    {
+        // 환풍기가 꺼지거나 플레이어가 움직이면 비행 중단
+        return !airFan.isFanOn || milliRb.velocity.magnitude > VelocityThreshold;
+    }
+
+    public void Launch(Milli milli, Rigidbody milliRb, AirFan airFan)
+    {
+        Stop();
+        runningCoroutine = coroutineRunner.StartCoroutine(LaunchCoroutine(milli, milliRb, airFan));
+    }
+
+    public void Stop()
+    {
+        if (runningCoroutine != null)
+        {
+            coroutineRunner.StopCoroutine(runningCoroutine);
+            runningCoroutine = null;
+        }
+    }
+
+    public IEnumerator LaunchCoroutine(Milli milli, Rigidbody milliRb, AirFan airFan)
+    {
         milliRb.velocity = Vector3.zero;
         Vector3 start = milli.transform.position;
         float gravity = Mathf.Abs(Physics.gravity.y);
@@ -53,8 +96,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         float elapsedTime = 0f;
         while (elapsedTime < totalTime)
         {
-            // 환풍기가 꺼지거나 플레이어가 움직이면 날아가기를 멈춘다
-            if (!airFan.isFanOn || milliRb.velocity.magnitude > VelocityThreshold)
+            if (ShouldStopFlying(milli, milliRb, airFan))
             {
                 airFan.EndFlying();
                 yield break;
@@ -67,5 +109,6 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         milliRb.velocity = Vector3.zero;
         milli.transform.position = target.position;
         airFan.EndFlying();
+        runningCoroutine = null;
     }
 }
