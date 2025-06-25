@@ -14,13 +14,10 @@ public class AirFan : MonoBehaviourPun
     [Header("공통")]
     public float windHeight;    // 바람이 적용되는 최대 높이(절대적 높이)
 
-    [SerializeField]
-    private bool isMilliInTrigger = false;
     public static bool isFlying = false;   // 추후 플레이어 날기 구현 완료 시, 밀리의 날기 여부로 변경하기
     public bool isUpwardFly = false;
 
     public ParticleSystem windEffect;
-    public FrontAirFanTrigger frontAirFanTrigger;
 
     [Header("환풍기 상태")]
     public bool isFanOn = false;
@@ -35,15 +32,27 @@ public class AirFan : MonoBehaviourPun
     [SerializeField, Tooltip("목표 위치. 포물선 환풍기만 설정할 것")]
     private Transform target;
 
-    void Awake()
+    public AirFanSetting setting = new AirFanSetting();
+
+    void Start()
     {
-        if (transform.rotation == Quaternion.identity)
+        InitStrategy();
+    }
+
+    private void InitStrategy()
+    {
+        if (launchStrategy != null)
+            return;
+
+        Transform fan = transform.Find("Fan");
+
+        if (fan.transform.rotation == Quaternion.identity)
         {
-            isUpwardFly = true;
+            launchStrategy = new VerticalLaunchStrategy(setting, this);
         }
         else
         {
-            isUpwardFly = false;
+            launchStrategy = new ParabolaLaunchStrategy(target, setting, this);
         }
     }
 
@@ -63,8 +72,6 @@ public class AirFan : MonoBehaviourPun
         }
         //
 
-        InitMilli();
-
         switch (fanState)
         {
             case FanState.SpinningUp:
@@ -81,17 +88,12 @@ public class AirFan : MonoBehaviourPun
         if (fanState != FanState.Running)
             return;
 
-        if (isUpwardFly)
+        InitMilli();
+
+        if (launchStrategy.CanLaunch(milli, this))
         {
-            if ((!isFlying && isMilliInTrigger) || isFlying)
-            {
-                if (!isFlying)
-                {
-                    isFlying = true;
-                    launchStrategy = new VerticalLaunchStrategy();
-                    StartCoroutine(launchStrategy.Launch(milli, milliRb, this));
-                }
-            }
+            isFlying = true;
+            launchStrategy.Launch(milli, milliRb, this);
         }
     }
 
@@ -105,24 +107,6 @@ public class AirFan : MonoBehaviourPun
                 milliRb = milli.GetComponent<Rigidbody>();
             }
         }
-    }
-
-    public void LaunchParabola()
-    {
-        if (target == null)
-        {
-            Debug.LogWarning("목표 위치 설정 안 됨!");
-            return;
-        }
-
-        if (parabolaCoroutine != null)
-        {
-            StopCoroutine(parabolaCoroutine);
-        }
-
-        launchStrategy = new ParabolaLaunchStrategy(target);
-        parabolaCoroutine = StartCoroutine(launchStrategy.Launch(milli, milliRb, this));
-        isFlying = true;
     }
 
     public void EndFlying()
@@ -164,10 +148,5 @@ public class AirFan : MonoBehaviourPun
     public void SetFanState(FanState nextState)
     {
         fanState = nextState;
-    }
-
-    public void SetMilliInTrigger(bool isInTrigger)
-    {
-        isMilliInTrigger = isInTrigger;
     }
 }
