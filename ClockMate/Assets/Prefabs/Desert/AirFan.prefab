@@ -183,11 +183,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fanBlades: {fileID: 3491728852288550668}
   windHeight: 5
-  isMilliInTrigger: 0
   isUpwardFly: 0
   windEffect: {fileID: 8656338399979338389}
-  frontAirFanTrigger: {fileID: 2293936452734066732}
-  isFanOn: 0
+  isFanOn: 1
   fanState: 0
   target: {fileID: 0}
 --- !u!114 &4304272029597336542
@@ -244,7 +242,6 @@ Transform:
   - {fileID: 2708126328348222450}
   - {fileID: 2668974927377848727}
   - {fileID: 1730976301852921913}
-  - {fileID: 6332129664706896343}
   - {fileID: 5211481172636066748}
   m_Father: {fileID: 213034600044666383}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -279,72 +276,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5820654293699998148}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8580270553498492085
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6332129664706896343}
-  - component: {fileID: 2828461281664402935}
-  - component: {fileID: 2293936452734066732}
-  m_Layer: 0
-  m_Name: FrontTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6332129664706896343
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8580270553498492085}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5820654293699998148}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2828461281664402935
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8580270553498492085}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &2293936452734066732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8580270553498492085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecfab228d57ae86458dc746660d646af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2486167259496234620
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -387,15 +318,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -411,6 +342,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3030413973051806783, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -303401056545153331, guid: 28c16b0786b41644abe2cbf59a4e17c3, type: 3}
