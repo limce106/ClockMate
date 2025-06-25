@@ -3,5 +3,8 @@ using UnityEngine;
 
 public interface ILaunchStrategy
 {
-    IEnumerator Launch(Milli milli, Rigidbody milliRb, AirFan airFan);
+    bool CanLaunch(Milli milli, AirFan airFan);
+    bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan);
+    void Launch(Milli milli, Rigidbody milliRb, AirFan airFan);
+    IEnumerator LaunchCoroutine(Milli milli, Rigidbody milliRb, AirFan airFan);
 }
