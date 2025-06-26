@@ -1,46 +1,44 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
+﻿using System.Collections;
+using DefineExtension;
 using Photon.Pun;
+using UnityEngine;
 
 public class FallingBlock : ResettableBase, IPunObservable
 {
     // 서버 관련 필드
-    private bool isFalling; // 떨어짐 상태 동기화용 변수
+    private bool _isFalling; // 떨어짐 상태 동기화용 변수
 
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
     private Color _initialColor;
 
-    private MeshRenderer _meshRenderer;
     private Material _materialInstance;
 
     private Vector3 _destroyPoint;
 
     private Coroutine _fallCoroutine;
 
-    [SerializeField] private GameObject rootGO;
     [Header("Falling Block Properties")]
     [SerializeField] private float fallDelay = 1.5f;
     [SerializeField] private float fallSpeed = 7f;
     [SerializeField] private float destroyYThreshold = 10f;
     [SerializeField] private Color delayColor = Color.red;
     [SerializeField] private Color fallingColor = Color.black;
+    [SerializeField] private MeshRenderer meshRenderer;
 
     protected override void Init()
     {
-        _meshRenderer = GetComponent<MeshRenderer>();
-        if (_meshRenderer != null)
+        if (meshRenderer != null)
         {
-            _materialInstance = _meshRenderer.material;
+            _materialInstance = meshRenderer.material;
         }
 
-        _destroyPoint = new Vector3(rootGO.transform.position.x, rootGO.transform.position.y - destroyYThreshold, rootGO.transform.position.z);
+        _destroyPoint = new Vector3(transform.position.x, transform.position.y - destroyYThreshold, transform.position.z);
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        if (_fallCoroutine != null || !other.collider.CompareTag("Player")) return;
+        if (_fallCoroutine != null || !other.collider.IsPlayerCollider()) return;
         // 밟은 순간의 애니메이션 재생 코드 추가 (필요하다면!)
         Debug.Log("블럭 밟음");
 
@@ -60,7 +58,7 @@ public class FallingBlock : ResettableBase, IPunObservable
         _materialInstance.color = delayColor;
         _fallCoroutine = StartCoroutine(FallRoutine());
     }
-
+    
     [PunRPC]
     public void RPC_StartFalling()
     {
@@ -72,20 +70,20 @@ public class FallingBlock : ResettableBase, IPunObservable
         yield return new WaitForSeconds(fallDelay);
 
         Debug.Log("블럭 추락 시작");
-        isFalling = true;
+        _isFalling = true;
         _materialInstance.color = fallingColor;
         // 떨어지는 순간의 애니메이션 재생 (이것도 필요시)
 
         while (true)
         {
-            while (Vector3.Distance(rootGO.transform.position, _destroyPoint) > 0.01f)
+            while (Vector3.Distance(transform.position, _destroyPoint) > 0.01f)
             {
-                rootGO.transform.position = Vector3.MoveTowards(rootGO.transform.position, _destroyPoint, fallSpeed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, _destroyPoint, fallSpeed * Time.deltaTime);
                 yield return null;
             }
             Debug.Log("블럭 비활성화");
-            rootGO.SetActive(false); // 비활성화
-            isFalling = false;
+            gameObject.SetActive(false); // 비활성화
+            _isFalling = false;
             yield break;
         }
     }
@@ -93,8 +91,8 @@ public class FallingBlock : ResettableBase, IPunObservable
     // 초기 상태 저장
     protected override void SaveInitialState()
     {
-        _initialPosition = rootGO.transform.position;
-        _initialRotation = rootGO.transform.rotation;
+        _initialPosition = transform.position;
+        _initialRotation = transform.rotation;
         _initialColor = _materialInstance.color;
     }
 
@@ -102,10 +100,10 @@ public class FallingBlock : ResettableBase, IPunObservable
     public override void ResetObject()
     {
         if (this == null) return;
-        rootGO.SetActive(true);
+        gameObject.SetActive(true);
 
-        rootGO.transform.position = _initialPosition;
-        rootGO.transform.rotation = _initialRotation;
+        transform.position = _initialPosition;
+        transform.rotation = _initialRotation;
 
         if (_materialInstance != null)
             _materialInstance.color = _initialColor;
@@ -116,7 +114,7 @@ public class FallingBlock : ResettableBase, IPunObservable
             _fallCoroutine = null;
         }
 
-        isFalling = false;
+        _isFalling = false;
     }
 
     /// <summary>
@@ -134,7 +132,7 @@ public class FallingBlock : ResettableBase, IPunObservable
             stream.SendNext(color.b);
             stream.SendNext(color.a);
 
-            stream.SendNext(isFalling);
+            stream.SendNext(_isFalling);
             stream.SendNext(gameObject.activeSelf);
         }
         else
@@ -147,7 +145,7 @@ public class FallingBlock : ResettableBase, IPunObservable
             float a = (float)stream.ReceiveNext();
             _materialInstance.color = new Color(r, g, b, a);
 
-            isFalling = (bool)stream.ReceiveNext();
+            _isFalling = (bool)stream.ReceiveNext();
             bool isActive = (bool)stream.ReceiveNext();
 
             if (gameObject.activeSelf != isActive)
