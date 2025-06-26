@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
@@ -87,16 +84,7 @@ public class PressurePlate : ResettableBase, IPunObservable
     }
     private bool IsValidCharacter(Collider other)
     {
-        if (!other.CompareTag("Player")) return false;
-        
-        var characterComponent = other.GetComponentInParent<CharacterBase>();
-        if (characterComponent == null)
-        {
-            Debug.Log("캐릭터 컴포넌트 없음");
-            return false;
-        }
-
-        return character.GetCharacterType().IsInstanceOfType(characterComponent);
+        return other.CompareTag(character.ToString());
     }
     private bool IsValidDirection(Collider other)
     {
