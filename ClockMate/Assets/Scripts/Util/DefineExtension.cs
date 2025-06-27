@@ -17,6 +17,11 @@ namespace DefineExtension
                 CharacterName.Milli => typeof(Milli),
             };
         }
+
+        public static bool IsPlayerCollider(this Collider collider)
+        {
+            return collider.CompareTag("Hour") || collider.CompareTag("Milli");
+        }
     }
     public static class MapExtension
     {

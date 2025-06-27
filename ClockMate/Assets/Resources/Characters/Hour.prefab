@@ -51,7 +51,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.65
+  m_Radius: 0.68
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <OriginalStats>k__BackingField: {fileID: 11400000, guid: 3f7de9f19b4a03e40975c9801b4a77f9, type: 2}
-  col: {fileID: 2353216784233167454}
+  col: {fileID: 2642364244734575435}
   groundCheckDistance: 0.2
   groundLayer:
     serializedVersion: 2
@@ -372,7 +372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_TagString
-      value: Player
+      value: Hour
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -383,15 +383,15 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2353216784233167454}
+      addedObject: {fileID: 2642364244734575435}
   m_SourcePrefab: {fileID: 100100000, guid: 82417853e1db55a4995316825402c7bc, type: 3}
 --- !u!1 &4887555613660152559 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 82417853e1db55a4995316825402c7bc, type: 3}
   m_PrefabInstance: {fileID: 5698597511521058750}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &2353216784233167454
-MeshCollider:
+--- !u!136 &2642364244734575435
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -408,10 +408,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5872077933228866730, guid: 82417853e1db55a4995316825402c7bc, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.057211235
+  m_Height: 0.1548511
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.02625767, z: -0.01315077}
 --- !u!4 &5233118187718858837 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
