@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: [REMOVED]
+    AppIdRealtime: 
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: kr
+    FixedRegion: 
     Server: 
     Port: 0
     ProxyServer: 
@@ -28,44 +28,17 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: asia
+  DevRegion: 
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CantHearYou
+  - ChangeColour
   - ClickRpc
   - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - UpdateStatusText
-  - SetPlayer2PanelActive
-  - MarkReady
-  - ReverseCharacters
-  - Log
-  - SetCanAcceptReady
-  - SetSceneName
-  - UnmarkReady
-  - DeselectCharacter
-  - SelectCharacter
-  - SyncReadyStatus
-  - RPC_StartFalling
-  - RPC_StartMoving
-  - RPC_OpenDoor
-  - ExecuteSyncedAllPlayersReady
-  - ResetAllReadyStates
-  - ResetReadyState
-  - ActivateLoadedScene
-  - NotifyPlayerLoaded
-  - ForceReturnToTitle
-  - DeleteAllSaveData
-  - SetCharacterActive
-  - RPC_RegisterCharacter
-  - RPC_SwitchFan
-  - RPC_Move
-  - RPC_SyncJump
-  - RPC_ResetObject
+  - HeresWhy
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
-  DevRegionSetOnce: 1
+  ShowSettings: 0
+  DevRegionSetOnce: 0
