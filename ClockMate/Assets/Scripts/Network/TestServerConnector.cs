@@ -10,6 +10,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 {
     private readonly string roomName = "ClockMate_TestServer";
 
+    public GameObject enterTestServerButton;
     public TMP_Text statusText;
     public GameObject puzzleHUD;
     public GameObject voiceManager;
@@ -64,7 +65,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        this.gameObject.SetActive(false);
+        enterTestServerButton.SetActive(false);
+        statusText.gameObject.SetActive(false);
 
         if (!isSpawnPlayer)
             return;
