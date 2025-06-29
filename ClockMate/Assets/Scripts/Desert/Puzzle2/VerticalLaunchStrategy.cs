@@ -20,6 +20,11 @@ public class VerticalLaunchStrategy : ILaunchStrategy
 
     public bool CanLaunch(Milli milli, AirFan airFan)
     {
+        if(milli == null)
+        {
+            return false;
+        }
+
         if (!airFan.isFanOn)
             return false;
 
