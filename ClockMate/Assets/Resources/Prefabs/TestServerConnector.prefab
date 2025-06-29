@@ -197,9 +197,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusText: {fileID: 3989182116284672024}
+  puzzleHUD: {fileID: 0}
+  voiceManager: {fileID: 4596313179013434218}
   isSpawnPlayer: 0
-  milliSpawnPos: {x: -4.22, y: 0.7, z: 63}
-  hourSpawnPos: {x: -9.22, y: 0.7, z: 63}
+  milliSpawnPos: {x: 0, y: 0, z: 0}
+  hourSpawnPos: {x: 0, y: 0, z: 0}
 --- !u!114 &8843518661837282172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -561,5 +563,10 @@ PrefabInstance:
 --- !u!4 &949411466418476187 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 356704454578192262, guid: 5970f68e3314c904ab5371035f6cdebd, type: 3}
+  m_PrefabInstance: {fileID: 711490113449814813}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4596313179013434218 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3897542250982940791, guid: 5970f68e3314c904ab5371035f6cdebd, type: 3}
   m_PrefabInstance: {fileID: 711490113449814813}
   m_PrefabAsset: {fileID: 0}

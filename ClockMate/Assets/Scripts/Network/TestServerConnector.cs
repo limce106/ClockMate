@@ -8,13 +8,15 @@ using UnityEngine.UIElements;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
-    public TMP_Text statusText;
-
     private readonly string roomName = "ClockMate_TestServer";
-    public bool isSpawnPlayer = false;
+
+    public TMP_Text statusText;
     public GameObject puzzleHUD;
-    public Vector3 milliSpawnPos = new Vector3 (-4.22f, 0.7f, 63f);
-    public Vector3 hourSpawnPos = new Vector3 (-9.22f, 0.7f, 63f);
+    public GameObject voiceManager;
+
+    public bool isSpawnPlayer = false;
+    public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
+    public Vector3 hourSpawnPos = new Vector3(0f, 0f, 0f);
 
     private void Start()
     {
@@ -76,7 +78,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
         }
 
-        if(puzzleHUD != null)
+        VoiceManager.Instance.InitVoiceClient();
+
+        if (puzzleHUD != null)
         {
             puzzleHUD.SetActive(true);
         }
