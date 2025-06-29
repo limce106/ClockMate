@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Voice.PUN;
 using Photon.Voice.Unity;
 using UnityEngine;
@@ -31,6 +32,26 @@ public class VoiceManager : MonoBehaviour
         }
 
         PunVoiceClient.Instance.PrimaryRecorder = recorder;
+    }
+
+    private void Start()
+    {
+        InitVoiceClient();
+    }
+
+    public void InitVoiceClient()
+    {
+        if (voiceClient.Client == null || !voiceClient.Client.IsConnected)
+        {
+            voiceClient.ConnectUsingSettings();
+        }
+
+        if (PhotonNetwork.InRoom)
+        {
+            recorder.TransmitEnabled = true;
+        }
+
+        Debug.Log("PunVoiceClient");
     }
 
     public void SetMicActive(bool isActive)
