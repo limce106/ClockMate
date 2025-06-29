@@ -40,7 +40,6 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         float dot = Vector3.Dot(fanForward, toPlayer);
         float distance = Vector3.ProjectOnPlane(milli.transform.position - airFan.transform.position, airFan.transform.up).magnitude;
 
-        Debug.Log($"Dot: {dot}, Distance: {distance}, CanLaunch: {dot > 0.5f && distance <= 1f}");
         // 플레이어가 환풍기 앞쪽에 있는지(내적)
         return dot > 0.5f && distance <= setting.launchDistanceThreshold;
     }

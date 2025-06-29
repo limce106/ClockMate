@@ -16,10 +16,10 @@ MonoBehaviour:
     AppIdRealtime: eec7d9b8-056d-4e75-910d-6820c82df37f
     AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 
+    AppIdVoice: 11596441-c883-49cb-ab84-d3ef923cdfff
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: kr
+    FixedRegion: 
     Server: 
     Port: 0
     ProxyServer: 
@@ -28,44 +28,45 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: asia
+  DevRegion: 
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CantHearYou
+  - ChangeColour
   - ClickRpc
   - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - UpdateStatusText
-  - SetPlayer2PanelActive
-  - MarkReady
-  - ReverseCharacters
-  - Log
-  - SetCanAcceptReady
-  - SetSceneName
-  - UnmarkReady
+  - HeresWhy
+  - ActivateLoadedScene
+  - DeleteAllSaveData
   - DeselectCharacter
-  - SelectCharacter
-  - SyncReadyStatus
-  - RPC_StartFalling
-  - RPC_StartMoving
-  - RPC_OpenDoor
+  - DestroySpaceship
   - ExecuteSyncedAllPlayersReady
+  - Fire
+  - ForceReturnToTitle
+  - MarkReady
+  - NotifyPlayerLoaded
   - ResetAllReadyStates
   - ResetReadyState
-  - ActivateLoadedScene
-  - NotifyPlayerLoaded
-  - ForceReturnToTitle
-  - DeleteAllSaveData
-  - SetCharacterActive
-  - RPC_RegisterCharacter
-  - RPC_SwitchFan
+  - RespawnSpaceship
   - RPC_Move
-  - RPC_SyncJump
+  - RPC_OpenDoor
+  - RPC_RegisterCharacter
   - RPC_ResetObject
+  - RPC_StartFalling
+  - RPC_StartMoving
+  - RPC_SwitchFan
+  - RPC_SyncJump
+  - SelectCharacter
+  - SetCanAcceptReady
+  - SetCharacterActive
+  - SetPlayer2PanelActive
+  - SyncReadyStatus
+  - UnmarkReady
+  - UpdateStatusText
+  - SetRemoteMicIcon
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
