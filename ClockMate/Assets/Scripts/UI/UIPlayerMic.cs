@@ -32,12 +32,10 @@ public class UIPlayerMic : MonoBehaviourPun
         if(PhotonNetwork.IsMasterClient)
         {
             micButton.interactable = micButton.gameObject.name.Contains("Hour");
-            Debug.Log("Hour Mic On");
         }
         else
         {
             micButton.interactable = micButton.gameObject.name.Contains("Milli");
-            Debug.Log("Milli Mic On");
         }
         //
 
