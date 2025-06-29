@@ -12,6 +12,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     private readonly string roomName = "ClockMate_TestServer";
     public bool isSpawnPlayer = false;
+    public GameObject puzzleHUD;
     public Vector3 milliSpawnPos = new Vector3 (-4.22f, 0.7f, 63f);
     public Vector3 hourSpawnPos = new Vector3 (-9.22f, 0.7f, 63f);
 
@@ -73,6 +74,11 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         else
         {
             PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
+        }
+
+        if(puzzleHUD != null)
+        {
+            puzzleHUD.SetActive(true);
         }
     }
 }
