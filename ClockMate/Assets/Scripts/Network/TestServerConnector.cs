@@ -8,12 +8,16 @@ using UnityEngine.UIElements;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
-    public TMP_Text statusText;
-
     private readonly string roomName = "ClockMate_TestServer";
+
+    public GameObject enterTestServerButton;
+    public TMP_Text statusText;
+    public GameObject puzzleHUD;
+    public GameObject voiceManager;
+
     public bool isSpawnPlayer = false;
-    public Vector3 milliSpawnPos = new Vector3 (-4.22f, 0.7f, 63f);
-    public Vector3 hourSpawnPos = new Vector3 (-9.22f, 0.7f, 63f);
+    public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
+    public Vector3 hourSpawnPos = new Vector3(0f, 0f, 0f);
 
     private void Start()
     {
@@ -61,7 +65,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        this.gameObject.SetActive(false);
+        enterTestServerButton.SetActive(false);
+        statusText.gameObject.SetActive(false);
 
         if (!isSpawnPlayer)
             return;
@@ -73,6 +78,13 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         else
         {
             PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
+        }
+
+        VoiceManager.Instance.InitVoiceClient();
+
+        if (puzzleHUD != null)
+        {
+            puzzleHUD.SetActive(true);
         }
     }
 }
