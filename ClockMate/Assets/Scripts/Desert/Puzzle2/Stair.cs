@@ -6,27 +6,27 @@ using Photon.Pun;
 
 public class Stair : MonoBehaviourPun
 {
-    private float moveDistance;
+    private float _moveDistance;
     public float moveSpeed = 2f;
 
     // 위치 비교 허용 오차
     private const float PositionThreshold = 0.01f;
 
-    private Vector3 targetPos;
-    private bool shouldMove = false;
+    private Vector3 _targetPos;
+    private bool _shouldMove = false;
 
     [SerializeField]
     private PressurePlate linkedPlate;
 
     private void Awake()
     {
-        moveDistance = CalculateTotalChildWidth();
-        targetPos = transform.position + Vector3.right * moveDistance;
+        _moveDistance = CalculateTotalChildWidth();
+        _targetPos = transform.position + Vector3.right * _moveDistance;
     }
 
     void Update()
     {
-        if(linkedPlate.IsFullyPressed && !shouldMove)
+        if(linkedPlate.IsFullyPressed && !_shouldMove)
         {
             gameObject.SetActive(true);
             linkedPlate.SetLockState(true);
@@ -41,7 +41,7 @@ public class Stair : MonoBehaviourPun
             }
         }
 
-        if (shouldMove)
+        if (_shouldMove)
         {
             MoveTowardsTarget();
         }
@@ -49,23 +49,23 @@ public class Stair : MonoBehaviourPun
 
     public void Move()
     {
-        shouldMove = true;
+        _shouldMove = true;
     }
 
     [PunRPC]
     public void RPC_Move()
     {
-        shouldMove = true;
+        _shouldMove = true;
     }
 
     private void MoveTowardsTarget()
     {
-        transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, _targetPos, moveSpeed * Time.deltaTime);
 
-        if(Vector3.Distance(transform.position, targetPos) < PositionThreshold)
+        if(Vector3.Distance(transform.position, _targetPos) < PositionThreshold)
         {
-            transform.position = targetPos;
-            shouldMove = false;
+            transform.position = _targetPos;
+            _shouldMove = false;
         }
     }
 

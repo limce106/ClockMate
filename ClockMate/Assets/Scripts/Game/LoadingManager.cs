@@ -11,10 +11,10 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private UILoading _uiLoading;
     private bool _isLoading = false;
-    private AsyncOperation currentLoadOperation;
+    private AsyncOperation _currentLoadOperation;
 
-    private Dictionary<int, float> loadingProgress = new Dictionary<int, float>();
-    private HashSet<int> loadedPlayers = new HashSet<int>();
+    private Dictionary<int, float> _loadingProgress = new Dictionary<int, float>();
+    private HashSet<int> _loadedPlayers = new HashSet<int>();
 
     private void Awake()
     {
@@ -63,14 +63,14 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private IEnumerator LoadSceneAsync(string nextSceneName)
     {
-        currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
-        currentLoadOperation.allowSceneActivation = false;
+        _currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
+        _currentLoadOperation.allowSceneActivation = false;
 
         int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
-        while(!currentLoadOperation.isDone)
+        while(!_currentLoadOperation.isDone)
         {
-            float progress = Mathf.Clamp01(currentLoadOperation.progress / 0.9f);
+            float progress = Mathf.Clamp01(_currentLoadOperation.progress / 0.9f);
             _uiLoading.UpdateLoadingProgress(progress);
             
             if(progress >= 1f)
@@ -86,12 +86,12 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void NotifyPlayerLoaded(int actorNumber)
     {
-        if(!loadedPlayers.Contains(actorNumber))
+        if(!_loadedPlayers.Contains(actorNumber))
         {
-            loadedPlayers.Add(actorNumber);
+            _loadedPlayers.Add(actorNumber);
         }
 
-        if (loadedPlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+        if (_loadedPlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
         {
             photonView.RPC("ActivateLoadedScene", RpcTarget.All);
         }
@@ -100,9 +100,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ActivateLoadedScene()
     {
-        if(currentLoadOperation != null)
+        if(_currentLoadOperation != null)
         {
-            currentLoadOperation.allowSceneActivation = true;
+            _currentLoadOperation.allowSceneActivation = true;
         }
     }
 

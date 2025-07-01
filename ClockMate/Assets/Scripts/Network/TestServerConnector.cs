@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
-    private readonly string roomName = "ClockMate_TestServer";
+    private readonly string RoomName = "ClockMate_TestServer";
 
     public GameObject enterTestServerButton;
     public TMP_Text statusText;
@@ -40,7 +40,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     public void EnterTestServerRoom()
     {
-        PhotonNetwork.JoinRoom(roomName);
+        PhotonNetwork.JoinRoom(RoomName);
     }
 
     void CreateRoom()
@@ -52,7 +52,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             IsOpen = true
         };
 
-        PhotonNetwork.CreateRoom(roomName, options, TypedLobby.Default);
+        PhotonNetwork.CreateRoom(RoomName, options, TypedLobby.Default);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)

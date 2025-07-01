@@ -1,3 +1,4 @@
+using Define;
 using Photon.Voice.PUN;
 using Photon.Voice.Unity;
 using Photon.Voice.Unity.Demos.DemoVoiceUI;
@@ -7,12 +8,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PuzzleHUD : MonoBehaviour
+public class PuzzleHUD : UIBase
 {
     public GameObject remoteSpeakerUI;   // 상대가 말하는 중 아이콘
     public Image remoteCharacterImg;
 
-    private PhotonVoiceView remoteSpeaker;  // 상대 스피커
+    private PhotonVoiceView _remoteSpeaker;  // 상대 스피커
+
+    private void Awake()
+    {
+        UIType = UI.UIType.FullScreen;
+    }
 
     void Start()
     {
@@ -30,7 +36,7 @@ public class PuzzleHUD : MonoBehaviour
         string remotePlayerName = GameManager.Instance?.GetRemotePlayerName();
         if (remotePlayerName != null)
         {
-            remoteSpeaker = GameObject.Find(remotePlayerName)?.GetComponent<PhotonVoiceView>();
+            _remoteSpeaker = GameObject.Find(remotePlayerName)?.GetComponent<PhotonVoiceView>();
         }
 
         Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + remotePlayerName + "_Sticker");
@@ -45,10 +51,10 @@ public class PuzzleHUD : MonoBehaviour
 
     private void UpdateRemoteSpeaking()
     {
-        if (remoteSpeaker == null)
+        if (_remoteSpeaker == null)
             return;
 
-        bool speaking = remoteSpeaker.IsSpeaking;
+        bool speaking = _remoteSpeaker.IsSpeaking;
 
         if (remoteSpeakerUI.activeSelf != speaking)
         {
