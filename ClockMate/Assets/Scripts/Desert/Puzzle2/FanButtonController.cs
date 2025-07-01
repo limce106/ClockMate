@@ -22,7 +22,7 @@ public class FanButtonController : MonoBehaviour
 
     void Update()
     {
-        bool currentPressedState = hourPlate.IsPressed;
+        bool currentPressedState = hourPlate.isPressed;
 
         if (currentPressedState != previousPressedState && currentPressedState == true)
         {
