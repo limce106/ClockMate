@@ -10,8 +10,8 @@ public class AirFanBlade : MonoBehaviour
     public float currentRotationSpeed = 0f;
     public const float maxRotationSpeed = 100f;
 
-    private const float rotationTransitionTime = 1f;
-    private float rotationElapsedTime = 0f;
+    private const float _rotationTransitionTime = 1f;
+    private float _rotationElapsedTime = 0f;
 
     [SerializeField]
     private AirFan airFan;
@@ -23,10 +23,10 @@ public class AirFanBlade : MonoBehaviour
 
     public void LerpFanBlades(float targetSpeed, AirFan.FanState nextState)
     {
-        if (rotationElapsedTime < rotationTransitionTime)
+        if (_rotationElapsedTime < _rotationTransitionTime)
         {
-            rotationElapsedTime += Time.deltaTime;
-            float transitionRatio = rotationElapsedTime / rotationTransitionTime;
+            _rotationElapsedTime += Time.deltaTime;
+            float transitionRatio = _rotationElapsedTime / _rotationTransitionTime;
             currentRotationSpeed = Mathf.Lerp(startRotationSpeed, targetSpeed, transitionRatio);
         }
         else
@@ -43,7 +43,7 @@ public class AirFanBlade : MonoBehaviour
 
     public void ClearRotationElapsedTime()
     {
-        rotationElapsedTime = 0f;
+        _rotationElapsedTime = 0f;
     }
 
     private void OnCollisionEnter(Collision collision)

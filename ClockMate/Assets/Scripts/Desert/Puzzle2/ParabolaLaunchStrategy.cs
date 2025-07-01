@@ -8,23 +8,23 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
     private const float MinFallTime = 0.1f;
     private const float VelocityThreshold = 0.1f;
 
-    private Transform target;
+    private Transform _target;
 
-    private Coroutine runningCoroutine;
-    private MonoBehaviour coroutineRunner;
+    private Coroutine _runningCoroutine;
+    private MonoBehaviour _coroutineRunner;
 
-    private AirFanSetting setting;
+    private AirFanSetting _setting;
 
     public ParabolaLaunchStrategy(Transform target, AirFanSetting setting, MonoBehaviour coroutineRunner)
     {
-        this.target = target;
-        this.setting = setting;
-        this.coroutineRunner = coroutineRunner;
+        this._target = target;
+        this._setting = setting;
+        this._coroutineRunner = coroutineRunner;
     }
 
     public bool CanLaunch(Milli milli, AirFan airFan)
     {
-        if (target == null)
+        if (_target == null)
             return false;
 
         if (!airFan.isFanOn)
@@ -41,7 +41,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         float distance = Vector3.ProjectOnPlane(milli.transform.position - airFan.transform.position, airFan.transform.up).magnitude;
 
         // 플레이어가 환풍기 앞쪽에 있는지(내적)
-        return dot > 0.5f && distance <= setting.launchDistanceThreshold;
+        return dot > 0.5f && distance <= _setting.launchDistanceThreshold;
     }
 
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)
@@ -53,15 +53,15 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
     public void Launch(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
         Stop();
-        runningCoroutine = coroutineRunner.StartCoroutine(LaunchCoroutine(milli, milliRb, airFan));
+        _runningCoroutine = _coroutineRunner.StartCoroutine(LaunchCoroutine(milli, milliRb, airFan));
     }
 
     public void Stop()
     {
-        if (runningCoroutine != null)
+        if (_runningCoroutine != null)
         {
-            coroutineRunner.StopCoroutine(runningCoroutine);
-            runningCoroutine = null;
+            _coroutineRunner.StopCoroutine(_runningCoroutine);
+            _runningCoroutine = null;
         }
     }
 
@@ -71,9 +71,9 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         Vector3 start = milli.transform.position;
         float gravity = Mathf.Abs(Physics.gravity.y);
 
-        Vector3 horizontal = new Vector3(target.position.x - start.x, 0, target.position.z - start.z);
+        Vector3 horizontal = new Vector3(_target.position.x - start.x, 0, _target.position.z - start.z);
 
-        float heightDiff = target.position.y - start.y;
+        float heightDiff = _target.position.y - start.y;
         float apexHeight = Mathf.Max(airFan.windHeight, heightDiff + airFan.windHeight);
 
         float vy = Mathf.Sqrt(2 * gravity * apexHeight);
@@ -85,7 +85,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         Vector3 launchVelocity = horizontalVelocity + Vector3.up * vy;
         milliRb.velocity = launchVelocity;
 
-        Vector3 lookDir = target.position - start;
+        Vector3 lookDir = _target.position - start;
         lookDir.y = 0;
         if (lookDir != Vector3.zero)
         {
@@ -106,8 +106,8 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         }
 
         milliRb.velocity = Vector3.zero;
-        milli.transform.position = target.position;
+        milli.transform.position = _target.position;
         airFan.EndFlying();
-        runningCoroutine = null;
+        _runningCoroutine = null;
     }
 }
