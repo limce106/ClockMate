@@ -47,11 +47,11 @@
 ## 변수명 규칙
 |이름|표기법|예시|
 |:---:|:---:|:---:|
-|변수|camelCase|spawnPoint, isWalking|
-|매개변수|_camelCase|_spawnPoint, _isWalking|
+|변수|_camelCase|_spawnPoint, _isWalking|
+|매개변수|camelCase|spawnPoint, isWalking|
 |메서드명|PascalCase|SpawnPlayer()|
 |클래스명|PascalCase|GameManager|
-|상수|UPPER_SNAKE_CASE|MAX_HEALTH|
+|상수|PascalCase|MaxHealth|
 
 ## 메인 가져오기
 ### 기존 변경사항 잠시 버려두기 (해당 하지 않으면 '메인 가져오기'로 ->)
