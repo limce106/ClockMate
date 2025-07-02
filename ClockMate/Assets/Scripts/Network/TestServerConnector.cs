@@ -80,8 +80,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
         }
 
-        VoiceManager.Instance.InitVoiceClient();
-
         if (puzzleHUD != null)
         {
             puzzleHUD.SetActive(true);
