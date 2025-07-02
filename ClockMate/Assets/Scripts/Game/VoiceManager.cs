@@ -31,8 +31,6 @@ public class VoiceManager : MonoBehaviour
         {
             recorder = GetComponent<Recorder>();
         }
-
-        PunVoiceClient.Instance.PrimaryRecorder = recorder;
     }
 
     public void SetMicActive(bool isActive)
