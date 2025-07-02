@@ -25,25 +25,30 @@ public class UISetting : UIBase
         string remotePlayerName = GameManager.Instance?.GetRemotePlayerName();
         if (remotePlayerName != null)
         {
-            _remoteAudio = GameObject.Find(remotePlayerName)?.GetComponent<AudioSource>();
+            _remoteAudio = GameObject.FindWithTag(remotePlayerName)?.GetComponent<AudioSource>();
         }
     }
 
     private void Start()
     {
-        InitSettingUI();
+        InitSetting();
     }
 
     private void OnEnable()
     {
-        InitSettingUI();
+        InitSetting();
     }
 
     /// <summary>
     /// 설정 UI 초기화
     /// </summary>
-    private void InitSettingUI()
+    private void InitSetting()
     {
+        remoteVoiceVolumeSlider.onValueChanged.AddListener((float value) =>
+        {
+            SetRemoteVoiceVolume(value);
+        });
+
         UpdateMicIcon(SettingManager.Instance.isMicOn);
         remoteVoiceVolumeSlider.value = SettingManager.Instance.remoteVoiceVolume;
     }
@@ -53,6 +58,9 @@ public class UISetting : UIBase
         micButton.image.sprite = isOn ? micOnSprite : micOffSprite;
     }
 
+    /// <summary>
+    /// 마이크 클릭 시 On/Off
+    /// </summary>
     public void ToggleMic()
     {
         SettingManager.Instance.isMicOn = !SettingManager.Instance.isMicOn;
@@ -61,9 +69,17 @@ public class UISetting : UIBase
         UpdateMicIcon(SettingManager.Instance.isMicOn);
     }
 
+    /// <summary>
+    /// 슬라이더 조절 시 상대 음성 크기 조정
+    /// </summary>
     public void SetRemoteVoiceVolume(float value)
     {
         SettingManager.Instance.remoteVoiceVolume = value;
         _remoteAudio.volume = value;
+    }
+
+    public void OnClick_Close()
+    {
+        UIManager.Instance?.Close(this);
     }
 }
