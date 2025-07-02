@@ -56,4 +56,9 @@ public class PuzzleHUD : UIBase
             remoteSpeakerUI.SetActive(speaking);
         }
     }
+
+    public void OnClick_Setting()
+    {
+        UISetting uiSetting = UIManager.Instance?.Show<UISetting>("UISetting");
+    }
 }
