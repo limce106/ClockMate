@@ -8,5 +8,5 @@ using UnityEngine;
 public class SettingManager : MonoSingleton<SettingManager>
 {
     public bool isMicOn = true;
-    public float remoteVoiceVolume = 0.5f;
+    public float remoteVoiceVolume = 1f;
 }
