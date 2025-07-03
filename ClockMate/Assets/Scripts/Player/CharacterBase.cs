@@ -67,15 +67,6 @@ public abstract class CharacterBase : MonoBehaviourPun
         {
             ChangeState<DeadState>();
         }
-
-        if (_photonVoiceView.IsSpeaking)
-        {
-            Debug.Log("상대방 말하는 중");
-        }
-        else
-        {
-            Debug.Log("말하지 않는 중");
-        }
     }
 
     protected virtual void FixedUpdate()
