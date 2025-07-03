@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define.Character;
 
 /// <summary>
 /// 아워, 밀리 공통 동작 처리: 
@@ -13,7 +14,7 @@ public abstract class CharacterBase : MonoBehaviourPun
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
     [SerializeField] private Collider col;
-    
+    public CharacterName Name { get; protected set; }
     public CharacterStatsSO Stats { get; private set; }
     public InteractionDetector InteractionDetector {get; private set;}
     public PlayerInputHandler InputHandler {get; private set;}
@@ -56,6 +57,11 @@ public abstract class CharacterBase : MonoBehaviourPun
     protected void Update()
     {
         _stateMachine.Update();
+        
+        if (transform.position.y < -10f)
+        {
+            ChangeState<DeadState>();
+        }
     }
 
     protected virtual void FixedUpdate()
