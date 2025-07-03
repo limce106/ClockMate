@@ -735,17 +735,25 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4729470130113693438, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
+      propertyPath: recorder
+      value: 
+      objectReference: {fileID: 319564738}
+    - target: {fileID: 4729470130113693438, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
+      propertyPath: voiceClient
+      value: 
+      objectReference: {fileID: 319564739}
     - target: {fileID: 5329784804039068032, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: samplingRate
       value: 48000
       objectReference: {fileID: 0}
     - target: {fileID: 5329784804039068032, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: debugEchoMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5329784804039068032, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: microphoneType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5329784804039068032, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: voiceDetection
@@ -760,8 +768,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8138778580125118131, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
+      propertyPath: primaryRecorder
+      value: 
+      objectReference: {fileID: 319564738}
+    - target: {fileID: 8138778580125118131, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: usePrimaryRecorder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1041,6 +1053,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 307271790}
   m_CullTransparentMesh: 1
+--- !u!114 &319564738 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5329784804039068032, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
+  m_PrefabInstance: {fileID: 244985325}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91175dcc15224463780e01a8a98b1b60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &319564739 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8138778580125118131, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
+  m_PrefabInstance: {fileID: 244985325}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81d9debcbaf99472bb70ffc2f99cb23f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &330073233
 GameObject:
   m_ObjectHideFlags: 0
