@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterManager: MonoBehaviour
+public class DesertPuzzel3Manager: MonoBehaviour
 {
-    // TODO: 몬스터 위치 스폰 위치 & 순찰 지점 확정 후 csv로 관리
     [SerializeField] private MonsterController[] monsters;
-
+    [SerializeField] private IABattery[] batteries;
+    [SerializeField] private float batteryRegenTime;
+    
     private int _monsterCount;
     private GameObject _keyPrefab;
 
@@ -23,6 +24,11 @@ public class MonsterManager: MonoBehaviour
         foreach (MonsterController monster in monsters)
         {
             monster.OnMonsterDied += HandleMonsterDeath;
+        }
+
+        foreach (IABattery battery in batteries)
+        {
+            battery.OnUse += StartRegenCoroutine;
         }
     }
 
@@ -44,6 +50,24 @@ public class MonsterManager: MonoBehaviour
         {
             Vector3 spawnPos = monster.transform.position;
             Instantiate(_keyPrefab, spawnPos + Vector3.up, Quaternion.identity);
+            foreach (IABattery battery in batteries)
+            {
+                battery.gameObject.SetActive(false);
+            }
+            StopAllCoroutines();
         }
+    }
+
+    private void StartRegenCoroutine(IABattery battery)
+    {
+        StartCoroutine(WaitAndActivate(battery.gameObject));
+    }
+    
+    private IEnumerator WaitAndActivate(GameObject batteryGO)
+    {
+        yield return new WaitForSeconds(batteryRegenTime);
+        
+        Debug.Log(batteryGO.name + " 리젠");
+        batteryGO.SetActive(true);
     }
 }

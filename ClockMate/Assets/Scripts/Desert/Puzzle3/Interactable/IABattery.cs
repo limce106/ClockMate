@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public class IABattery : MonoBehaviour, IInteractable
+public class IABattery : ResettableBase, IInteractable
 {
     private bool _isHeld;
 
@@ -12,10 +13,11 @@ public class IABattery : MonoBehaviour, IInteractable
     private Sprite _dropSprite;
     private string _dropString;
 
-    private void Awake()
-    {
-        Init();
-    }
+    private Transform _initialParent;
+    private Vector3 _initialPosition;
+    private Quaternion _initialRotation;
+
+    public event Action<IABattery> OnUse;
 
     private void Update()
     {
@@ -29,7 +31,7 @@ public class IABattery : MonoBehaviour, IInteractable
         }
     }
 
-    private void Init()
+    protected override void Init()
     {
         _isHeld = false;
         _uiManager = UIManager.Instance;
@@ -70,7 +72,7 @@ public class IABattery : MonoBehaviour, IInteractable
         Holder holder = character.GetComponentInChildren<Holder>();
         if (holder == null) return;
         
-        holder.SetHoldingObj(this.gameObject);
+        holder.SetHoldingObj(gameObject);
 
         if (TryGetComponent(out Rigidbody rb))
         {
@@ -108,11 +110,42 @@ public class IABattery : MonoBehaviour, IInteractable
         _isHeld = false;
     }
 
-    private void OnDestroy()
+    public void UseToCharge()
     {
-        if (_isHeld)
+        _uiManager.Close(_uiNotice);
+        ResetObject();
+        gameObject.SetActive(false);
+        OnUse?.Invoke(this);
+    }
+
+    protected override void SaveInitialState()
+    {
+        _initialPosition = transform.position;
+        _initialRotation = transform.rotation;
+        _initialParent = gameObject.transform.parent;
+    }
+
+    public override void ResetObject()
+    {
+        _isHeld = false;
+        _currentHolder = null;
+        gameObject.SetActive(true);
+        if (TryGetComponent(out Rigidbody rb))
         {
-            _uiManager.Close(_uiNotice);
+            rb.isKinematic = false;
         }
+
+        if (TryGetComponent(out Collider col))
+        {
+            col.enabled = true;
+        }
+        ReturnToInitialTransform();
+    }
+
+    private void ReturnToInitialTransform()
+    {
+        transform.position = _initialPosition;
+        transform.rotation = _initialRotation;
+        gameObject.transform.SetParent(_initialParent);
     }
 }
