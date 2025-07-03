@@ -1,4 +1,5 @@
 using UnityEngine;
+using static Define.Character;
 
 public class IAChargeStation : MonoBehaviour, IInteractable
 {   
@@ -7,7 +8,7 @@ public class IAChargeStation : MonoBehaviour, IInteractable
     public bool CanInteract(CharacterBase character)
     {
         Holder holder = character.GetComponentInChildren<Holder>();
-        return character is Hour && holder.IsHolding<IABattery>();
+        return character.Name == CharacterName.Hour && holder.IsHolding<IABattery>();
     }
 
     public void OnInteractAvailable()
@@ -23,18 +24,16 @@ public class IAChargeStation : MonoBehaviour, IInteractable
     public bool Interact(CharacterBase character)
     {
         Holder holder = character.GetComponentInChildren<Holder>();
+        if(!holder.IsHolding(out IABattery battery)) return false;
+        
+        battery.UseToCharge();
         holder.RemoveHoldingObj();
-        if (TryGetComponent(out Collider collider))
+        if (TryGetComponent(out Collider col))
         {
-            collider.enabled = false;
-            collider.enabled = true;
+            col.enabled = false;
+            col.enabled = true;
         }
-        Charge();
-        return true;
-    }
-
-    private void Charge()
-    {
         turret.Charge();
+        return true;
     }
 }

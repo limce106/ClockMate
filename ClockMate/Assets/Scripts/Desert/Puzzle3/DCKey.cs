@@ -26,7 +26,7 @@ public class DCKey : MonoBehaviour, IDoorCondition, IInteractable
     public bool Interact(CharacterBase character)
     {
         useKey = true;
-        _holder.RemoveHoldingObj();
+        _holder.DestroyHoldingObj();
         if (TryGetComponent(out Collider collider))
         {
             collider.enabled = false;
