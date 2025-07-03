@@ -1,8 +1,11 @@
 using Photon.Pun;
+using Photon.Voice.PUN;
+using Photon.Voice.Unity;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
+using static Define.Character;
 
 /// <summary>
 /// 아워, 밀리 공통 동작 처리: 
@@ -13,7 +16,8 @@ public abstract class CharacterBase : MonoBehaviourPun
 {
     [field: SerializeField] public CharacterStatsSO OriginalStats { get; private set; }
     [SerializeField] private Collider col;
-    
+    public CharacterName Name { get; protected set; }
+
     public CharacterStatsSO Stats { get; private set; }
     public InteractionDetector InteractionDetector {get; private set;}
     public PlayerInputHandler InputHandler {get; private set;}
@@ -23,7 +27,8 @@ public abstract class CharacterBase : MonoBehaviourPun
     // 서버 관련 필드
     private PhotonView _photonView;
     private PhotonTransformView _photonTransformView;
-    
+    private PhotonVoiceView _photonVoiceView;
+
     private int JumpCount
     {
         get => IsGrounded ? 0 : _jumpCount;
@@ -51,11 +56,26 @@ public abstract class CharacterBase : MonoBehaviourPun
         Init();
         _photonView = GetComponent<PhotonView>();
         _photonTransformView = GetComponent<PhotonTransformView>();
+        _photonVoiceView = GetComponent<PhotonVoiceView>();
     }
 
     protected void Update()
     {
         _stateMachine.Update();
+
+        if (transform.position.y < -10f)
+        {
+            ChangeState<DeadState>();
+        }
+
+        if (_photonVoiceView.IsSpeaking)
+        {
+            Debug.Log("상대방 말하는 중");
+        }
+        else
+        {
+            Debug.Log("말하지 않는 중");
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -105,7 +125,7 @@ public abstract class CharacterBase : MonoBehaviourPun
         // 다른 클라이언트에게 동기화
         if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
-            _photonView.RPC(nameof(RPC_SyncJump), RpcTarget.Others, transform.position, jumpPower);
+            photonView.RPC(nameof(RPC_SyncJump), RpcTarget.Others, transform.position, jumpPower);
         }
 
         _photonTransformView.enabled = true;
@@ -114,7 +134,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     [PunRPC]
     public void RPC_SyncJump(Vector3 jumpStartPosition, float jumpPower)
     {
-        if (_photonView.IsMine) return; // 내 캐릭터면 무시
+        if (photonView.IsMine) return; // 내 캐릭터면 무시
 
         // 강제로 위치 동기화
         _rb.position = jumpStartPosition;
