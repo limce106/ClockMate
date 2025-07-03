@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 public class PuzzleHUD : UIBase
@@ -15,10 +16,11 @@ public class PuzzleHUD : UIBase
 
     private PhotonVoiceView _remotePhotonVoiceView;  // 상대 스피커
 
+    private const float VoiceDetectionThreshold = 0.1f;
+
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
-        InitRemoteSpeaker();
     }
 
     void Update()
@@ -31,10 +33,15 @@ public class PuzzleHUD : UIBase
         string remotePlayerName = GameManager.Instance?.GetRemotePlayerName();
         if (remotePlayerName != null)
         {
-            _remotePhotonVoiceView = GameObject.Find(remotePlayerName)?.GetComponent<PhotonVoiceView>();
+            _remotePhotonVoiceView = GameObject.FindWithTag(remotePlayerName)?.GetComponent<PhotonVoiceView>();
+
+            if (_remotePhotonVoiceView == null)
+            {
+                return;
+            }
         }
 
-        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + remotePlayerName + "_Sticker");
+        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/" + remotePlayerName + "Icon");
         if (characterSprite == null)
         {
             Debug.LogWarning($"Sprite for {remotePlayerName} not found in Resources.");
@@ -47,13 +54,19 @@ public class PuzzleHUD : UIBase
     private void UpdateRemoteSpeaking()
     {
         if (_remotePhotonVoiceView == null)
+        {
+            InitRemoteSpeaker();
+        }
+
+        if (remoteCharacterImg.sprite == null)
             return;
 
-        bool speaking = _remotePhotonVoiceView.IsSpeaking;
+        float peakAmp = VoiceManager.Instance.recorder.LevelMeter.CurrentPeakAmp;
+        bool isSpeaking = peakAmp >= VoiceDetectionThreshold;
 
-        if (remoteSpeakerUI.activeSelf != speaking)
+        if (remoteSpeakerUI.activeSelf != isSpeaking)
         {
-            remoteSpeakerUI.SetActive(speaking);
+            remoteSpeakerUI.SetActive(isSpeaking);
         }
     }
 
