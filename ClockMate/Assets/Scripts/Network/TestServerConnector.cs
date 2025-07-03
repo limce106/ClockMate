@@ -74,10 +74,12 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
+            GameManager.Instance?.SetSelectedCharacter(Define.Character.CharacterName.Hour);
         }
         else
         {
             PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
+            GameManager.Instance?.SetSelectedCharacter(Define.Character.CharacterName.Milli);
         }
 
         if (puzzleHUD != null)
