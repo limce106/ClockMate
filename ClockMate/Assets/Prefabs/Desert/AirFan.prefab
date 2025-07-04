@@ -181,13 +181,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9fe37cfe0b7d94b8cd87dfc101e57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fanBlades: {fileID: 3491728852288550668}
+  _fanBlades: {fileID: 0}
   windHeight: 5
   isUpwardFly: 0
   windEffect: {fileID: 8656338399979338389}
   isFanOn: 1
   fanState: 0
-  target: {fileID: 0}
+  _target: {fileID: 0}
 --- !u!114 &4304272029597336542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cfe0947255dab14d9f51ff80738a39d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hourPlate: {fileID: 7219399041921118629}
+  _hourPlate: {fileID: 7219399041921118629}
 --- !u!114 &7219399041921118629 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4122056329848401219, guid: 3de50c4b70f5fe14aab27aae0931a549, type: 3}

@@ -5,11 +5,11 @@ using Photon.Pun;
 
 public class AirFan : MonoBehaviourPun
 {
-    private static Milli milli;
-    private static Rigidbody milliRb;
+    private static Milli _milli;
+    private static Rigidbody _milliRb;
 
     [SerializeField]
-    private AirFanBlade fanBlades;
+    private AirFanBlade _fanBlades;
 
     [Header("공통")]
     public float windHeight;    // 바람이 적용되는 최대 높이(절대적 높이)
@@ -26,11 +26,11 @@ public class AirFan : MonoBehaviourPun
     public FanState fanState = FanState.Idle;
 
     [Header("날려보내기 전략")]
-    private ILaunchStrategy launchStrategy;
-    private Coroutine parabolaCoroutine;
+    private ILaunchStrategy _launchStrategy;
+    private Coroutine _parabolaCoroutine;
 
     [SerializeField, Tooltip("목표 위치. 포물선 환풍기만 설정할 것")]
-    private Transform target;
+    private Transform _target;
 
     public AirFanSetting setting = new AirFanSetting();
 
@@ -41,18 +41,18 @@ public class AirFan : MonoBehaviourPun
 
     private void InitStrategy()
     {
-        if (launchStrategy != null)
+        if (_launchStrategy != null)
             return;
 
         Transform fan = transform.Find("Fan");
 
         if (fan.transform.rotation == Quaternion.identity)
         {
-            launchStrategy = new VerticalLaunchStrategy(setting, this);
+            _launchStrategy = new VerticalLaunchStrategy(setting, this);
         }
         else
         {
-            launchStrategy = new ParabolaLaunchStrategy(target, setting, this);
+            _launchStrategy = new ParabolaLaunchStrategy(_target, setting, this);
         }
     }
 
@@ -75,10 +75,10 @@ public class AirFan : MonoBehaviourPun
         switch (fanState)
         {
             case FanState.SpinningUp:
-                fanBlades.LerpFanBlades(AirFanBlade.maxRotationSpeed, FanState.Running);
+                _fanBlades.LerpFanBlades(AirFanBlade.maxRotationSpeed, FanState.Running);
                 break;
             case FanState.SpinningDown:
-                fanBlades.LerpFanBlades(0f, FanState.Idle);
+                _fanBlades.LerpFanBlades(0f, FanState.Idle);
                 break;
         }
     }
@@ -90,31 +90,31 @@ public class AirFan : MonoBehaviourPun
 
         InitMilli();
 
-        if (launchStrategy.CanLaunch(milli, this))
+        if (_launchStrategy.CanLaunch(_milli, this))
         {
             isFlying = true;
-            launchStrategy.Launch(milli, milliRb, this);
+            _launchStrategy.Launch(_milli, _milliRb, this);
         }
     }
 
     private void InitMilli()
     {
-        if (!milli)
+        if (!_milli)
         {
-            milli = FindObjectOfType<Milli>();
-            if (milli != null)
+            _milli = FindObjectOfType<Milli>();
+            if (_milli != null)
             {
-                milliRb = milli.GetComponent<Rigidbody>();
+                _milliRb = _milli.GetComponent<Rigidbody>();
             }
         }
     }
 
     public void EndFlying()
     {
-        if (parabolaCoroutine != null)
+        if (_parabolaCoroutine != null)
         {
-            StopCoroutine(parabolaCoroutine);
-            parabolaCoroutine = null;
+            StopCoroutine(_parabolaCoroutine);
+            _parabolaCoroutine = null;
         }
 
         isFlying = false;
@@ -135,8 +135,9 @@ public class AirFan : MonoBehaviourPun
             windEffect.Play();
         }
 
-        fanBlades.startRotationSpeed = fanBlades.currentRotationSpeed;
-        fanBlades.ClearRotationElapsedTime();
+        _fanBlades.startRotationSpeed = _fanBlades.currentRotationSpeed;
+        _fanBlades.startRotationSpeed = _fanBlades.currentRotationSpeed;
+        _fanBlades.ClearRotationElapsedTime();
     }
 
     [PunRPC]
