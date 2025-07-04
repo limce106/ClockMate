@@ -25,7 +25,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
     public Image player1CharacterImg;
     public Image player2CharacterImg;
 
-    private int localActorNumber;
+    private int _localActorNumber;
 
     private void Awake()
     {
@@ -34,7 +34,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        _localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
         foreach (var character in characters)
         {
@@ -44,13 +44,13 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     void OnCharacterClicked(CharacterSlot character)
     {
-        if(character.selectedByActorNumber == localActorNumber)
+        if(character.selectedByActorNumber == _localActorNumber)
         {
-            photonView.RPC("DeselectCharacter", RpcTarget.All, GetCharacterIndex(character), localActorNumber);
+            photonView.RPC("DeselectCharacter", RpcTarget.All, GetCharacterIndex(character), _localActorNumber);
         }
-        else if(character.selectedByActorNumber == -1 && !HasPlayerSelected(localActorNumber))
+        else if(character.selectedByActorNumber == -1 && !HasPlayerSelected(_localActorNumber))
         {
-            photonView.RPC("SelectCharacter", RpcTarget.All, GetCharacterIndex(character), localActorNumber);
+            photonView.RPC("SelectCharacter", RpcTarget.All, GetCharacterIndex(character), _localActorNumber);
         }
     }
 
@@ -130,14 +130,14 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
     void UpdateButtonsInteractable()
     {
         // 내가 아무 캐릭터도 선택하지 않음
-        bool hasSelected = HasPlayerSelected(localActorNumber);
+        bool hasSelected = HasPlayerSelected(_localActorNumber);
 
         foreach (var c in characters)
         {
             // 아직 선택 안 된 캐릭터
             bool isUnselected = c.selectedByActorNumber == -1;
             // 내가 선택한 캐릭터
-            bool isMySelection = c.selectedByActorNumber == localActorNumber;
+            bool isMySelection = c.selectedByActorNumber == _localActorNumber;
 
             c.characterButton.interactable = !hasSelected || isUnselected || isMySelection;
         }
@@ -145,12 +145,12 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     void UpdateStatusText()
     {
-        bool localSelected = HasPlayerSelected(localActorNumber);
+        bool localSelected = HasPlayerSelected(_localActorNumber);
         bool otherSelected = false;
 
         foreach(var c in characters)
         {
-            if(c.selectedByActorNumber != -1 && c.selectedByActorNumber != localActorNumber)
+            if(c.selectedByActorNumber != -1 && c.selectedByActorNumber != _localActorNumber)
             {
                 otherSelected = true;
                 break;

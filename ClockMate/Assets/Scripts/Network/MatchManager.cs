@@ -19,7 +19,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public GameObject connectPanel;
     public GameObject player2;
 
-    private string joinCode;
+    private string _joinCode;
     private const int MaxPlayer = 2;
     private const int MaxRetry = 3;
     private const int RoomCodeLen = 6;
@@ -38,7 +38,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         while (retry > 0)
         {
-            joinCode = GenerateRoomCode();
+            _joinCode = GenerateRoomCode();
             RoomOptions options = new RoomOptions
             {
                 MaxPlayers = MaxPlayer,
@@ -46,7 +46,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
                 IsOpen = true
             };
 
-            PhotonNetwork.CreateRoom(joinCode, options, TypedLobby.Default);
+            PhotonNetwork.CreateRoom(_joinCode, options, TypedLobby.Default);
             //statusText.text = "방 생성 중...";
 
             // Photon 응답 지연 시간
@@ -172,11 +172,11 @@ public class MatchManager : MonoBehaviourPunCallbacks
         playTypePanel.SetActive(false);
         connectPanel.SetActive(true);
 
-        if (joinCode == null)
+        if (_joinCode == null)
         {
-            joinCode = PhotonNetwork.CurrentRoom.Name;
+            _joinCode = PhotonNetwork.CurrentRoom.Name;
         }
-        joinCodeText.text = joinCode;
+        joinCodeText.text = _joinCode;
         connectStatusText.text = "함께 모험 할 동료를 기다리는 중..";
     }
 

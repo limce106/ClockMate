@@ -8,12 +8,12 @@ using static Define.Character;
 public class CharacterSelectFinalizer : MonoBehaviour
 {
     [SerializeField]
-    private CharacterSelectManager characterSelectManager;
+    private CharacterSelectManager _characterSelectManager;
 
     public GameObject Player1Ready;
     public GameObject Player2Ready;
 
-    private bool isLoadingStarted = false;
+    private bool _isLoadingStarted = false;
 
     private void Start()
     {
@@ -26,7 +26,7 @@ public class CharacterSelectFinalizer : MonoBehaviour
     private IEnumerator HandleAllReadySequence()
     {
         SaveSelectedCharacter();
-        isLoadingStarted = true;
+        _isLoadingStarted = true;
 
         Player1Ready?.SetActive(true);
         Player2Ready?.SetActive(true);
@@ -39,7 +39,7 @@ public class CharacterSelectFinalizer : MonoBehaviour
 
     void Update()
     {
-        if (isLoadingStarted)
+        if (_isLoadingStarted)
             return;
 
         if (!PhotonNetwork.InRoom)
@@ -79,17 +79,17 @@ public class CharacterSelectFinalizer : MonoBehaviour
 
     private void SaveSelectedCharacter()
     {
-        if (!characterSelectManager)
+        if (!_characterSelectManager)
             return;
 
         int localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
-        foreach (var slot in characterSelectManager.characters)
+        foreach (var slot in _characterSelectManager.characters)
         {
             if (slot.selectedByActorNumber != localActorNumber)
                 continue;
 
-            int index = characterSelectManager.GetCharacterIndex(slot);
+            int index = _characterSelectManager.GetCharacterIndex(slot);
             CharacterName character = (CharacterName)index;
 
             GameManager.Instance.SetSelectedCharacter(character);
