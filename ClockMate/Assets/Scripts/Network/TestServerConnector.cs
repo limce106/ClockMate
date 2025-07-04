@@ -82,9 +82,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             GameManager.Instance?.SetSelectedCharacter(Define.Character.CharacterName.Milli);
         }
 
-        if (puzzleHUD != null)
-        {
-            puzzleHUD.SetActive(true);
-        }
+        PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
     }
 }
