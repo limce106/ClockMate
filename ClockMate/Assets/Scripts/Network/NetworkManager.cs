@@ -8,28 +8,28 @@ using UnityEngine.SceneManagement;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    const string firstSceneName = "TitleMatch";
+    private const string firstSceneName = "TitleMatch";
 
-    private static NetworkManager instance;
+    private static NetworkManager _instance;
     public static NetworkManager Instance
     {
         get
         {
-            if(instance == null)
+            if(_instance == null)
             {
                 var obj = FindObjectOfType<NetworkManager>();
                 if(obj != null)
-                    instance = obj;
+                    _instance = obj;
             }
-            return instance;
+            return _instance;
         }
     }
 
     void Awake()
     {
-        if(instance == null)
+        if(_instance == null)
         {
-            instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else

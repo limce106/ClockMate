@@ -8,7 +8,7 @@ using static Define.Character;
 
 public class GameManager : MonoSingleton<GameManager>
 {
-    public CharacterName SelectedCharacter { get; private set; }
+    public CharacterName SelectedCharacter { get; private set; } = CharacterName.Hour;
     public Dictionary<CharacterName, CharacterBase> Characters { get; private set; }
     public BoStage CurrentStage { get; private set; }
 
@@ -125,6 +125,18 @@ public class GameManager : MonoSingleton<GameManager>
         foreach (CharacterBase character in Characters.Values)
         {
             character.photonView.RPC("SetCharacterActive", RpcTarget.All, isActive);
+        }
+    }
+
+    public string GetRemotePlayerName()
+    {
+        if (SelectedCharacter == CharacterName.Hour)
+        {
+            return "Milli";
+        }
+        else
+        {
+            return "Hour";
         }
     }
 }

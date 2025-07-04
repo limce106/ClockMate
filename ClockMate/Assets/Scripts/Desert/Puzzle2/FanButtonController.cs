@@ -5,46 +5,46 @@ using UnityEngine;
 
 public class FanButtonController : MonoBehaviour
 {
-    private AirFan airFan;
+    private AirFan _airFan;
 
     [SerializeField]
-    private PressurePlate hourPlate;
+    private PressurePlate _hourPlate;
 
-    private bool previousPressedState = false;  // PressurePlate 상태 감지를 위함
+    private bool _previousPressedState = false;  // PressurePlate 상태 감지를 위함
 
-    private float lastSwitchTime = 0f;
-    private float debounceDelay = 1f;   // 버튼 쿨타임
+    private float _lastSwitchTime = 0f;
+    private float _debounceDelay = 1f;   // 버튼 쿨타임
 
     private void Awake()
     {
-        airFan = GetComponentInParent<AirFan>();
+        _airFan = GetComponentInParent<AirFan>();
     }
 
     void Update()
     {
-        bool currentPressedState = hourPlate.IsPressed;
+        bool currentPressedState = _hourPlate.isPressed;
 
-        if (currentPressedState != previousPressedState && currentPressedState == true)
+        if (currentPressedState != _previousPressedState && currentPressedState == true)
         {
-            if (Time.time - lastSwitchTime > debounceDelay)
+            if (Time.time - _lastSwitchTime > _debounceDelay)
             {
                 TrySwitchFan();
-                lastSwitchTime = Time.time;
+                _lastSwitchTime = Time.time;
             }
         }
 
-        previousPressedState = currentPressedState;
+        _previousPressedState = currentPressedState;
     }
 
     private void TrySwitchFan()
     {
-        if (NetworkManager.Instance.IsInRoomAndReady() && airFan.photonView.IsMine)
+        if (NetworkManager.Instance.IsInRoomAndReady() && _airFan.photonView.IsMine)
         {
-            airFan.photonView.RPC("RPC_SwitchFan", RpcTarget.All);
+            _airFan.photonView.RPC("RPC_SwitchFan", RpcTarget.All);
         }
         else
         {
-            airFan.SwitchFan();
+            _airFan.SwitchFan();
         }
     }
 }

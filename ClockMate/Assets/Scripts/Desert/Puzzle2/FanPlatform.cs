@@ -5,16 +5,16 @@ using UnityEngine;
 public class FanPlatform : MonoBehaviour
 {
     [SerializeField]
-    private AirFan[] precedingFans;
-    private bool isPlayerReached = false;
+    private AirFan[] _precedingFans;
+    private bool _isPlayerReached = false;
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name == "Milli")
         {
-            if (!isPlayerReached)
+            if (!_isPlayerReached)
             {
-                isPlayerReached = true;
+                _isPlayerReached = true;
                 ExpandFrontTriggerOfPreviousFans();
             }
         }
@@ -22,7 +22,7 @@ public class FanPlatform : MonoBehaviour
 
     void ExpandFrontTriggerOfPreviousFans()
     {
-        foreach (var fan in precedingFans)
+        foreach (var fan in _precedingFans)
         {
             fan.setting.launchDistanceThreshold += 1f;
         }
