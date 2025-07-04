@@ -8,9 +8,16 @@ public class Holder : MonoBehaviour
     public bool IsHolding<T>() where T : IInteractable
     {
         if (_holdingObj is null) return false;
-        
-        _holdingObj.TryGetComponent(out IInteractable interactable);
-        return _holdingObj is not null && interactable.GetType() == typeof(T);
+        return _holdingObj.TryGetComponent(out T _interactable);
+    }
+    public bool IsHolding<T>(out T interactable) where T : IInteractable
+    {
+        if (_holdingObj is null)
+        {
+            interactable = default(T);
+            return false;
+        }
+        return _holdingObj.TryGetComponent(out interactable);
     }
     public bool IsHolding()
     {
@@ -31,13 +38,17 @@ public class Holder : MonoBehaviour
     {
         _holdingObj.transform.SetParent(_originalParent != null ? _originalParent : null);
         _holdingObj.transform.position = transform.position + transform.forward * 1.0f + Vector3.up * 0.5f;
-        _holdingObj = null;
-        _originalParent = null;
+        RemoveHoldingObj();
+    }
+
+    public void DestroyHoldingObj()
+    {
+        Destroy(_holdingObj);
+        RemoveHoldingObj();
     }
 
     public void RemoveHoldingObj()
     {
-        Destroy(_holdingObj);
         _holdingObj = null;
         _originalParent = null;
     }
