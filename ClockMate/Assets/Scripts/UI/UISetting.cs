@@ -74,6 +74,9 @@ public class UISetting : UIBase
     /// </summary>
     public void SetRemoteVoiceVolume(float value)
     {
+        if (_remoteAudio == null)
+            return;
+
         SettingManager.Instance.remoteVoiceVolume = value;
         _remoteAudio.volume = value;
     }
