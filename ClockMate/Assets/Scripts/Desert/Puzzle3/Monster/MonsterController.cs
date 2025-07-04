@@ -12,7 +12,6 @@ public class MonsterController : MonoBehaviour
 
    [SerializeField] private Transform returnPoint; // 플레이어 추격 중지 후 복귀할 지점
 
-   // TODO 시야 범위 확정 후 private 필드로 변경, Init()에서 초기화하기
    [SerializeField] private float horizontalViewAngle = 90f;
    [SerializeField] private float verticalViewAngle = 60f;
    [SerializeField] private float viewDistance = 15f;
@@ -43,10 +42,7 @@ public class MonsterController : MonoBehaviour
       ChangeStateTo<MStatePatrol>();
       _viewMask = LayerMask.GetMask("Player", "Default"); // 플레이어와 장애물 레이어
       
-      if (hourTransform == null)
-      {
-         hourTransform = GameManager.Instance.Characters[CharacterName.Hour].transform;
-      }
+      hourTransform = GameObject.FindGameObjectWithTag("Hour").transform;
    }
 
    /// <summary>
@@ -77,6 +73,8 @@ public class MonsterController : MonoBehaviour
    /// </summary>
    public bool CanSeeHour()
    {
+      if (!hourTransform.gameObject.activeSelf) return false;
+      
       Vector3 dirToHour = hourTransform.position - transform.position;
 
       // hour와의 수평/수직 시야각 계산
@@ -91,8 +89,13 @@ public class MonsterController : MonoBehaviour
       if (!inHorizontal || !inVertical || !inDistance) return false;
       
       // 시야 범위 내라면 장애물로 가려져있는지 확인
-      bool hitDetected = Physics.Raycast(transform.position, dirToHour.normalized, out RaycastHit hit, viewDistance, _viewMask);
-      return hitDetected && hit.transform.CompareTag("Player");
+      Vector3 eyePosition = transform.position + Vector3.up * 0.5f; // 몬스터 눈 높이
+      Vector3 targetCenter = hourTransform.position + Vector3.up * 1.0f; // 아워 몸 높이
+      dirToHour = targetCenter - eyePosition;
+      
+      bool hitDetected = Physics.Raycast(eyePosition, dirToHour.normalized, out RaycastHit hit, viewDistance, _viewMask);
+      Debug.DrawRay(eyePosition, dirToHour.normalized * viewDistance, Color.red);
+      return hitDetected && hit.transform.root.CompareTag("Hour");
    }
 
    public void ChaseHour()
@@ -115,6 +118,18 @@ public class MonsterController : MonoBehaviour
       // 사망 처리
       OnMonsterDied?.Invoke(this);
       gameObject.SetActive(false);
+   }
+
+   private void OnCollisionEnter(Collision other)
+   {
+      if (!other.gameObject.CompareTag("Hour")) return;
+
+      Hour hour = other.gameObject.GetComponent<Hour>();
+      hour.ChangeState<DeadState>();
+      if (_currentState is MStateChase)
+      {
+         ChangeStateTo<MStateReturn>();
+      }
    }
 
    #region Test

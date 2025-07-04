@@ -58,7 +58,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     {
         _stateMachine.Update();
         
-        if (transform.position.y < -10f)
+        if (transform.position.y < -10f && CurrentState is not DeadState)
         {
             ChangeState<DeadState>();
         }

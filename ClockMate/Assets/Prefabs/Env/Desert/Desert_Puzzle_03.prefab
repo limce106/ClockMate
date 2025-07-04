@@ -59,7 +59,7 @@ MonoBehaviour:
   - {fileID: 2824251947150711164}
   - {fileID: 1405029958225534778}
   - {fileID: 8934209926699644179}
-  batteryRegenTime: 1
+  batteryRegenTime: 30
 --- !u!1 &1085963901013212072
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,17 +506,6 @@ Transform:
   - {fileID: 5882673913140688003}
   - {fileID: 2297709206797784106}
   - {fileID: 2920451020920130178}
-  - {fileID: 5980914720370308468}
-  - {fileID: 4940888078957376830}
-  - {fileID: 6778747883273107032}
-  - {fileID: 3993909505121143149}
-  - {fileID: 2857722265584755754}
-  - {fileID: 1102270183470647794}
-  - {fileID: 428203629440588285}
-  - {fileID: 7797431153794623436}
-  - {fileID: 5072007797915563915}
-  - {fileID: 4888814308855374581}
-  - {fileID: 5373008215696551684}
   - {fileID: 2006207510962797932}
   - {fileID: 8306028454977680143}
   - {fileID: 7651715774427720304}
@@ -827,6 +816,17 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6281245838056674153}
+  - {fileID: 5980914720370308468}
+  - {fileID: 4940888078957376830}
+  - {fileID: 6778747883273107032}
+  - {fileID: 3993909505121143149}
+  - {fileID: 2857722265584755754}
+  - {fileID: 1102270183470647794}
+  - {fileID: 428203629440588285}
+  - {fileID: 7797431153794623436}
+  - {fileID: 5072007797915563915}
+  - {fileID: 4888814308855374581}
+  - {fileID: 5373008215696551684}
   m_Father: {fileID: 781682011582237813}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1381028010712722936
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 00d734daa3b5fd4428ced1016ccda5a2, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: dae25f6b7d35cbb4a955b42fb2fe8876, type: 2}
   m_BuildHeightMesh: 0
 --- !u!114 &7178572936258422276
 MonoBehaviour:
@@ -1154,7 +1154,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -1174,7 +1174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1266,7 +1266,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -1674,7 +1674,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -1694,7 +1694,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1781,7 +1781,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -4306,7 +4306,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -4326,7 +4326,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4418,7 +4418,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -7093,7 +7093,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -7113,7 +7113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7205,7 +7205,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -8487,7 +8487,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -8507,11 +8507,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.5804887
+      value: 6.580488
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8599,7 +8599,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -8824,7 +8824,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -8844,7 +8844,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8936,7 +8936,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -9278,7 +9278,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -9298,7 +9298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9390,7 +9390,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -10305,7 +10305,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -10325,7 +10325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10412,7 +10412,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -10708,7 +10708,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -10728,7 +10728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10820,7 +10820,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -10942,7 +10942,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -10962,7 +10962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11049,7 +11049,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
@@ -12071,7 +12071,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 781682011582237813}
+    m_TransformParent: {fileID: 9040881354614230479}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalScale.x
@@ -12091,7 +12091,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e4f5340a24374644875be13f14efcb9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12178,7 +12178,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 1, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
