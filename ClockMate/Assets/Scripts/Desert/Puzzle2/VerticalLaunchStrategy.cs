@@ -7,15 +7,15 @@ using UnityEngine.UIElements;
 public class VerticalLaunchStrategy : ILaunchStrategy
 {
     // 오버슛 방지용, 중력과 물리 힘으로 인한 초과 상승을 방지하기 위해 초기 속도를 줄이는 계수
-    private const float overshootPreventFactor = 0.8f;
+    private const float OvershootPreventFactor = 0.8f;
 
-    private MonoBehaviour coroutineRunner;
-    private AirFanSetting setting;
+    private MonoBehaviour _coroutineRunner;
+    private AirFanSetting _setting;
 
     public VerticalLaunchStrategy(AirFanSetting setting, MonoBehaviour coroutineRunner)
     {
-        this.setting = setting;
-        this.coroutineRunner = coroutineRunner;
+        this._setting = setting;
+        this._coroutineRunner = coroutineRunner;
     }
 
     public bool CanLaunch(Milli milli, AirFan airFan)
@@ -32,7 +32,7 @@ public class VerticalLaunchStrategy : ILaunchStrategy
         bool inXZRange = IsPlayerInXZRange(milli.transform.position, airFan);
 
 
-        return inXZRange && milli.transform.position.y <= airFan.transform.position.y + setting.launchDistanceThreshold;
+        return inXZRange && milli.transform.position.y <= airFan.transform.position.y + _setting.launchDistanceThreshold;
     }
 
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)
@@ -51,7 +51,7 @@ public class VerticalLaunchStrategy : ILaunchStrategy
 
     public void Launch(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
-        coroutineRunner.StartCoroutine(LaunchCoroutine(milli, milliRb, airFan));
+        _coroutineRunner.StartCoroutine(LaunchCoroutine(milli, milliRb, airFan));
     }
 
     public IEnumerator LaunchCoroutine(Milli milli, Rigidbody milliRb, AirFan airFan)
@@ -65,14 +65,14 @@ public class VerticalLaunchStrategy : ILaunchStrategy
             yield break;
         }
 
-        float initialVelocity = Mathf.Sqrt(2 * gravity * remainingHeight) * overshootPreventFactor;
+        float initialVelocity = Mathf.Sqrt(2 * gravity * remainingHeight) * OvershootPreventFactor;
         milliRb.velocity = new Vector3(milliRb.velocity.x, initialVelocity, milliRb.velocity.z);
 
         while (!ShouldStopFlying(milli, milliRb, airFan))
         {
             if (!milli.CanJump())
             {
-                coroutineRunner.StartCoroutine(ResetJumpCountAfterDelay(milli, 1f));
+                _coroutineRunner.StartCoroutine(ResetJumpCountAfterDelay(milli, 1f));
             }
 
             yield return null;

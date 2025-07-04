@@ -21,10 +21,8 @@ public class PressurePlate : ResettableBase, IPunObservable
     [SerializeField] private CharacterName character;
   
     private Vector3 _endPoint;
-    private bool _isPressed;
+    public bool isPressed { get; private set; }
     private bool _isLocked;
-
-    public bool IsPressed => _isPressed;
     public bool IsFullyPressed { get; private set; }
     
     private Vector3 _lastPlatePosition;
@@ -38,7 +36,7 @@ public class PressurePlate : ResettableBase, IPunObservable
             _materialInstance = _meshRenderer.material;
         }
         _endPoint = transform.position + new Vector3(0f, -pressOffsetY, 0f);
-        _isPressed = false;
+        isPressed = false;
         _isLocked = false;
         IsFullyPressed = false;
     }
@@ -105,15 +103,15 @@ public class PressurePlate : ResettableBase, IPunObservable
 
     private void SetPressed(bool state)
     {
-        if (_isPressed == state) return;
+        if (isPressed == state) return;
 
-        _isPressed = state;
+        isPressed = state;
 
         if (_pressCoroutine != null)
         {
             StopCoroutine(_pressCoroutine);
         }
-        _pressCoroutine = StartCoroutine(PressRoutine(_isPressed));
+        _pressCoroutine = StartCoroutine(PressRoutine(isPressed));
     }
 
     private IEnumerator PressRoutine(bool pressed)
@@ -153,7 +151,7 @@ public class PressurePlate : ResettableBase, IPunObservable
             StopCoroutine(_pressCoroutine);
             _pressCoroutine = null;
         }
-        _isPressed = false;
+        isPressed = false;
         _isLocked = false;
         IsFullyPressed = false;
     }
