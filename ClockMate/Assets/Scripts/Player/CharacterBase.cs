@@ -25,9 +25,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     public IState CurrentState => _stateMachine.CurrentState;
     
     // 서버 관련 필드
-    private PhotonView _photonView;
     private PhotonTransformView _photonTransformView;
-    private PhotonVoiceView _photonVoiceView;
 
     private int JumpCount
     {
@@ -54,9 +52,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     {
         DontDestroyOnLoad(this.gameObject);
         Init();
-        _photonView = GetComponent<PhotonView>();
         _photonTransformView = GetComponent<PhotonTransformView>();
-        _photonVoiceView = GetComponent<PhotonVoiceView>();
     }
 
     protected void Update()
