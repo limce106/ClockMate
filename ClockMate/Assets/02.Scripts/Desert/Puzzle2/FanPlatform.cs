@@ -10,7 +10,7 @@ public class FanPlatform : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "Milli")
+        if (collision.gameObject.tag == "Milli")
         {
             if (!_isPlayerReached)
             {
