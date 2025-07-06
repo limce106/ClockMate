@@ -32,7 +32,7 @@ public class PressurePlateGateBlock : ResettableBase
     {
         if (_isOpened) return;
 
-        if (linkedPlates != null && AllPlatesFullyPressed())
+        if (linkedPlates.Length > 0 && AllPlatesFullyPressed())
         {
             if(NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
             {
