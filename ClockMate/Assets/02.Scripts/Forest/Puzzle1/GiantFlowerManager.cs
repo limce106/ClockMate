@@ -10,14 +10,15 @@ public class GiantFlowerManager : MonoBehaviour
     public const float dropOffsetY = 5f;  // 하강 거리
     private float dropSpeed = 2.0f;         // 하강 속도
 
-    public PressurePlateGateBlock goalGate; // 마지막 꽃 수평 시 열릴 게이트
+    public PressurePlateGateBlock goalGateLeft; // 마지막 꽃 수평 시 열릴 게이트
+    public PressurePlateGateBlock goalGateRight;
 
     private int currentIndex = 0;
     private bool flowerLeveled = false;
 
     void Update()
     {
-        //HandleFlowerLevelCheck();
+        HandleFlowerLevelCheck();
     }
 
     private void HandleFlowerLevelCheck()
@@ -73,10 +74,11 @@ public class GiantFlowerManager : MonoBehaviour
 
     void TriggerFinalAction()
     {
-        if (goalGate == null)
+        if (goalGateLeft == null || goalGateRight == null)
             return;
 
         // 게이트 열기
-        goalGate.ForceOpenDoor();
+        goalGateLeft.ForceOpenDoor();
+        goalGateRight.ForceOpenDoor();
     }
 }
