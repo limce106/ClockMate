@@ -1,3 +1,4 @@
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 
@@ -27,14 +28,10 @@ public class Holder : MonoBehaviourPun
 
     public void SetHoldingObj<T>(T obj) where T : MonoBehaviourPun, IInteractable
     {
-        if (NetworkManager.Instance.IsInRoomAndReady())
-        {
-            photonView.RPC(nameof(RPC_SetHoldingObj), RpcTarget.All, obj.photonView.ViewID);    
-        }
-        else
-        {
-            LocalSetHoldingObj(obj.gameObject);
-        }
+        NetworkExtension.RunNetworkOrLocal(
+            () => LocalSetHoldingObj(obj.gameObject),
+            () => photonView.RPC(nameof(RPC_SetHoldingObj), RpcTarget.All, obj.photonView.ViewID)
+        );
     }
 
     private void LocalSetHoldingObj(GameObject obj)
@@ -68,14 +65,10 @@ public class Holder : MonoBehaviourPun
 
     public void DropHoldingObj()
     {
-        if (NetworkManager.Instance.IsInRoomAndReady())
-        {
-            photonView.RPC(nameof(RPC_DropHoldingObj), RpcTarget.All);
-        }
-        else
-        {
-            LocalDropHoldingObj();
-        }
+        NetworkExtension.RunNetworkOrLocal(
+            LocalDropHoldingObj,
+            () => photonView.RPC(nameof(RPC_DropHoldingObj), RpcTarget.All)
+        );
     }
 
     private void LocalDropHoldingObj()
