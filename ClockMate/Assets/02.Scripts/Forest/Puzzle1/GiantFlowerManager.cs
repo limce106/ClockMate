@@ -35,12 +35,12 @@ public class GiantFlowerManager : MonoBehaviour
             if(HasNextFlower())
             {
                 LowerNextFlower();
-                curFlower.Lock();
             }
             else
             {
                 TriggerFinalAction();
             }
+            curFlower.Lock();
 
             currentIndex++;
         }
