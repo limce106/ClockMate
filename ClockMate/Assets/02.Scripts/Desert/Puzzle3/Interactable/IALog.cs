@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 
@@ -25,14 +26,10 @@ public class IALog : MonoBehaviourPun, IInteractable
         // E키를 그만 누르거나 시간이 끝나면 원 위치로 복귀
         if (_isInteracting && Input.GetKeyUp(KeyCode.E))
         {
-            if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
-            {
-                photonView.RPC(nameof(RPC_DropLog), RpcTarget.All);    
-            }
-            else
-            {
-                Drop();
-            }
+            NetworkExtension.RunNetworkOrLocal(
+                Drop,
+                () => photonView.RPC(nameof(RPC_DropLog), RpcTarget.All)
+            );
         }
     }
 
@@ -61,14 +58,10 @@ public class IALog : MonoBehaviourPun, IInteractable
     public bool Interact(CharacterBase character)
     {
         // 들어올리기
-        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
-        {
-            photonView.RPC(nameof(RPC_MoveLog), RpcTarget.All, character.photonView.ViewID);    
-        }
-        else
-        {
-            StartMove(character);
-        }
+        NetworkExtension.RunNetworkOrLocal(
+            () => StartMove(character),
+            () => photonView.RPC(nameof(RPC_MoveLog), RpcTarget.All, character.photonView.ViewID)
+        );
         
         // 상호작용 중 UI 활성화
         // _uiNotice = _uiManager.Show<UINotice>("UINotice");
