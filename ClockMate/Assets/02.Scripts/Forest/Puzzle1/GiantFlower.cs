@@ -1,9 +1,10 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class GiantFlower : ResettableBase
+public class GiantFlower : ResettableBase, IPunObservable
 {
     [Header("설정")]
     public float sensitivity = 1.0f;    // 하중에 대한 민감도
@@ -152,5 +153,19 @@ public class GiantFlower : ResettableBase
         transform.position = _initialPosition;
         _isLocked = false;
         _playersOnFlower.Clear();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+            transform.rotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
