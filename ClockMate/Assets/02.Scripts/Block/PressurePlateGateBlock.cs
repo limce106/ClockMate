@@ -32,7 +32,7 @@ public class PressurePlateGateBlock : ResettableBase
     {
         if (_isOpened) return;
 
-        if (AllPlatesFullyPressed())
+        if (linkedPlates != null && AllPlatesFullyPressed())
         {
             if(NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
             {
@@ -85,6 +85,20 @@ public class PressurePlateGateBlock : ResettableBase
         }
 
         transform.position = _openPosition;
+    }
+
+    public void ForceOpenDoor()
+    {
+        if (_isOpened) return;
+
+        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+        {
+            photonView.RPC("RPC_OpenDoor", RpcTarget.All);
+        }
+        else
+        {
+            OpenDoor();
+        }
     }
 
     protected override void SaveInitialState()
