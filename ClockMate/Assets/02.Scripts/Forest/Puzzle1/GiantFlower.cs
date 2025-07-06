@@ -15,6 +15,7 @@ public class GiantFlower : ResettableBase
     public float milliWeight = 1.0f;
 
     private bool _isLocked = false;
+    private bool _hasTilted = false;
     private Vector3 _initialPosition;
 
     private const float LevelTolerance = 2f;    // 수평 허용 오차
@@ -28,6 +29,13 @@ public class GiantFlower : ResettableBase
 
         Vector2 totalTorque = CalculateTotalTorque();
         ApplyRotation(totalTorque);
+
+        if(!_hasTilted)
+        {
+            float tiltAmount = Quaternion.Angle(transform.rotation, Quaternion.identity);
+            if (tiltAmount > LevelTolerance)
+                _hasTilted = true;
+        }
     }
 
     Vector2 CalculateTotalTorque()
@@ -74,6 +82,9 @@ public class GiantFlower : ResettableBase
     /// </summary>
     public bool IsLevel()
     {
+        if (!_hasTilted)
+            return false;
+
         bool isHourOn = false;
         bool isMilliOn = false;
 
