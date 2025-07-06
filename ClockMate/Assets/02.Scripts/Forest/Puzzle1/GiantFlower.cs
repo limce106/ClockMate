@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class GiantFlower : MonoBehaviour
+public class GiantFlower : ResettableBase
 {
     [Header("설정")]
     public float sensitivity = 1.0f;    // 하중에 대한 민감도
     public float maxAngle = 20f;        // 최대 기울기 각도
-    private float rotationSpeed = 2.0f; // 기울어지는 각도
-    private bool isLocked = false;
+    private float _rotationSpeed = 30.0f; // 기울어지는 각도
 
     [Header("플레이어별 하중 가중치")]
     public float hourWeight = 1.5f;
     public float milliWeight = 1.0f;
 
+    private bool _isLocked = false;
+    private Vector3 _initialPosition;
+
     private const float LevelTolerance = 2f;    // 수평 허용 오차
 
-    private List<Transform> playersOnFlower = new List<Transform>();
+    private List<Transform> _playersOnFlower = new List<Transform>();
 
     void Update()
     {
-        if(isLocked) 
+        if(_isLocked) 
             return;
 
         Vector2 totalTorque = CalculateTotalTorque();
@@ -32,7 +34,7 @@ public class GiantFlower : MonoBehaviour
     {
         Vector2 totalTorque = Vector2.zero;
 
-        foreach (Transform player in playersOnFlower)
+        foreach (Transform player in _playersOnFlower)
         {
             float weight = 0f;
 
@@ -64,24 +66,36 @@ public class GiantFlower : MonoBehaviour
         float angleZ = Mathf.Clamp(totalTorque.x * sensitivity, -maxAngle, maxAngle);
         
         Quaternion targetRotation = Quaternion.Euler(angleX, 0f, -angleZ);
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRotation, Time.deltaTime * rotationSpeed);
+        transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, Time.deltaTime * _rotationSpeed);
     }
 
     /// <summary>
-    /// 수평인지 확인
+    /// 두 플레이어 모두 올라온 상태에서 수평인지 확인
     /// </summary>
     public bool IsLevel()
     {
-        Vector3 euler = transform.localEulerAngles;
-        euler.x = euler.x > 180f ? euler.x - 360f : euler.x;
-        euler.z = euler.z > 180f ? euler.z - 360f : euler.z;
+        bool isHourOn = false;
+        bool isMilliOn = false;
 
-        return Mathf.Abs(euler.x) < LevelTolerance && Mathf.Abs(euler.z) < LevelTolerance;
+        foreach (Transform player in _playersOnFlower)
+        {
+            if (player.CompareTag("Hour"))
+                isHourOn = true;
+            if (player.CompareTag("Milli"))
+                isMilliOn = true;
+        }
+
+        if (!isHourOn || !isMilliOn)
+            return false;
+
+        float angleDiff = Quaternion.Angle(transform.localRotation, Quaternion.identity);
+
+        return angleDiff < LevelTolerance;
     }
 
     public void Lock()
     {
-        isLocked = true;
+        _isLocked = true;
         transform.localEulerAngles = Vector3.zero;
     }
 
@@ -89,9 +103,9 @@ public class GiantFlower : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Hour") || collision.gameObject.CompareTag("Milli"))
         {
-            if(!playersOnFlower.Contains(collision.transform))
+            if(!_playersOnFlower.Contains(collision.transform))
             {
-                playersOnFlower.Add(collision.transform);
+                _playersOnFlower.Add(collision.transform);
             }
         }
     }
@@ -100,10 +114,32 @@ public class GiantFlower : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Hour") || collision.gameObject.CompareTag("Milli"))
         {
-            if (playersOnFlower.Contains(collision.transform))
+            if (_playersOnFlower.Contains(collision.transform))
             {
-                playersOnFlower.Remove(collision.transform);
+                _playersOnFlower.Remove(collision.transform);
             }
         }
+    }
+
+    protected override void SaveInitialState()
+    {
+        GiantFlowerManager giantFlowerManager = GameObject.Find("GiantFlowerManager").GetComponent<GiantFlowerManager>();
+        if (giantFlowerManager.giantFlowers[0] == this)
+        {
+            _initialPosition = transform.position;
+        }
+        else
+        {
+            _initialPosition = transform.position + Vector3.up * GiantFlowerManager.dropOffsetY;
+        }
+        _isLocked = false;
+        _playersOnFlower.Clear();
+    }
+
+    public override void ResetObject()
+    {
+        transform.position = _initialPosition;
+        _isLocked = false;
+        _playersOnFlower.Clear();
     }
 }
