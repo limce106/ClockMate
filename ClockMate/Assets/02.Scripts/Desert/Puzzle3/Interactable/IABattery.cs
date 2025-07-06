@@ -72,20 +72,8 @@ public class IABattery : ResettableBase, IInteractable
         Holder holder = character.GetComponentInChildren<Holder>();
         if (holder == null) return;
         
-        holder.SetHoldingObj(gameObject);
+        holder.SetHoldingObj(this);
 
-        if (TryGetComponent(out Rigidbody rb))
-        {
-            rb.isKinematic = true;
-        }
-
-        if (TryGetComponent(out Collider collider))
-        {
-            collider.enabled = false;
-        }
-        
-        // 필요시 이동 속도 감소 처리 추가
-        
         _currentHolder = holder;
         _isHeld = true;
     }
@@ -93,18 +81,6 @@ public class IABattery : ResettableBase, IInteractable
     private void TryDrop()
     {
         _currentHolder?.DropHoldingObj();
-
-        if (TryGetComponent(out Rigidbody rb))
-        {
-            rb.isKinematic = false;
-        }
-
-        if (TryGetComponent(out Collider collider))
-        {
-            collider.enabled = true;
-        }
-        
-        // 이동 속도 복구 등 추가 처리
         
         _currentHolder = null;
         _isHeld = false;
