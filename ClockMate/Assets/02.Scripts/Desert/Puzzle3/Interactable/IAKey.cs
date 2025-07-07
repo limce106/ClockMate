@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class IAKey : MonoBehaviour, IInteractable
+public class IAKey : MonoBehaviourPun, IInteractable
 {
      private bool _isHeld;
 
@@ -56,17 +57,7 @@ public class IAKey : MonoBehaviour, IInteractable
         Holder holder = character.GetComponentInChildren<Holder>();
         if (holder == null) return;
         
-        holder.SetHoldingObj(this.gameObject);
-
-        if (TryGetComponent(out Rigidbody rb))
-        {
-            rb.isKinematic = true;
-        }
-
-        if (TryGetComponent(out Collider collider))
-        {
-            collider.enabled = false;
-        }
+        holder.SetHoldingObj(this);
         
         _isHeld = true;
     }
