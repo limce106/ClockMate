@@ -22,6 +22,11 @@ public class InteractionDetector : MonoBehaviour
     private void Awake()
     {
         Init();
+        if (!_character.photonView.IsMine)
+        {
+            // 내 캐릭터가 아니라면 상호작용 감지 비활성화
+            gameObject.SetActive(false);
+        }
     }
 
     private void Update()
