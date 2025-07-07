@@ -135,17 +135,7 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     protected override void SaveInitialState()
     {
-        GiantFlowerManager giantFlowerManager = GameObject.Find("GiantFlowerManager").GetComponent<GiantFlowerManager>();
-        if (giantFlowerManager.giantFlowers[0] == this)
-        {
-            _initialPosition = transform.position;
-        }
-        else
-        {
-            _initialPosition = transform.position + Vector3.up * GiantFlowerManager.dropOffsetY;
-        }
-        _isLocked = false;
-        _playersOnFlower.Clear();
+        _initialPosition = transform.position;
     }
 
     public override void ResetObject()

@@ -53,7 +53,7 @@ public class GiantFlowerManager : MonoBehaviour
 
     private void LowerNextFlower()
     {
-        Transform nextFlower = giantFlowers[currentIndex + 1].transform;
+        Transform nextFlower = giantFlowers[currentIndex + 1].transform.parent;
         StartCoroutine(LowerFlower(nextFlower));
     }
 
