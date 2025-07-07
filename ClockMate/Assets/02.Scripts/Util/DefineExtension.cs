@@ -77,4 +77,19 @@ namespace DefineExtension
             };
         }
     }
+
+    public static class NetworkExtension
+    {
+        public static void RunNetworkOrLocal(Action localAction, Action networkAction, bool isMine = true)
+        {
+            if (NetworkManager.Instance.IsInRoomAndReady() && isMine)
+            {
+                networkAction?.Invoke();
+            }
+            else
+            {
+                localAction?.Invoke();
+            }
+        }
+    }
 }

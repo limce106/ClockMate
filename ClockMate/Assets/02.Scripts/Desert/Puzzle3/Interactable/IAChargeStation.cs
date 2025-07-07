@@ -1,7 +1,8 @@
+using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
 
-public class IAChargeStation : MonoBehaviour, IInteractable
+public class IAChargeStation : MonoBehaviourPun, IInteractable
 {   
     [SerializeField] private IATurret turret;
 
