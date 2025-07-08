@@ -16,8 +16,6 @@ public class PuzzleHUD : UIBase
 
     private PhotonVoiceView _remotePhotonVoiceView;  // 상대 스피커
 
-    private const float VoiceDetectionThreshold = 0.1f;
-
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
@@ -31,14 +29,9 @@ public class PuzzleHUD : UIBase
     private void InitRemoteSpeaker()
     {
         string remotePlayerName = GameManager.Instance?.GetRemotePlayerName();
-        if (remotePlayerName != null)
+        if (!string.IsNullOrEmpty(remotePlayerName))
         {
             _remotePhotonVoiceView = GameObject.FindWithTag(remotePlayerName)?.GetComponent<PhotonVoiceView>();
-
-            if (_remotePhotonVoiceView == null)
-            {
-                return;
-            }
         }
 
         Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/" + remotePlayerName + "Icon");
@@ -56,13 +49,15 @@ public class PuzzleHUD : UIBase
         if (_remotePhotonVoiceView == null)
         {
             InitRemoteSpeaker();
+
+            if (_remotePhotonVoiceView == null)
+                return;
         }
 
         if (remoteCharacterImg.sprite == null)
             return;
 
-        float peakAmp = VoiceManager.Instance.recorder.LevelMeter.CurrentPeakAmp;
-        bool isSpeaking = peakAmp >= VoiceDetectionThreshold;
+        bool isSpeaking = _remotePhotonVoiceView != null && _remotePhotonVoiceView.IsSpeaking;
 
         if (remoteSpeakerUI.activeSelf != isSpeaking)
         {
