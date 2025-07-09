@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class DesertPuzzel3Manager: MonoBehaviour
@@ -10,7 +11,6 @@ public class DesertPuzzel3Manager: MonoBehaviour
     [SerializeField] private float batteryRegenTime;
     
     private int _monsterCount;
-    private GameObject _keyPrefab;
 
     public void Awake()
     {
@@ -19,8 +19,6 @@ public class DesertPuzzel3Manager: MonoBehaviour
 
     private void Init()
     {
-        _keyPrefab = Resources.Load<GameObject>("Items/Key");
-        
         foreach (MonsterController monster in monsters)
         {
             monster.OnMonsterDied += HandleMonsterDeath;
@@ -48,8 +46,11 @@ public class DesertPuzzel3Manager: MonoBehaviour
 
         if (_monsterCount <= 0)
         {
-            Vector3 spawnPos = monster.transform.position;
-            Instantiate(_keyPrefab, spawnPos + Vector3.up, Quaternion.identity);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Vector3 spawnPos = monster.transform.position;       
+                PhotonNetwork.Instantiate("Items/Key", spawnPos + Vector3.up, Quaternion.identity);
+            }
             foreach (IABattery battery in batteries)
             {
                 battery.gameObject.SetActive(false);

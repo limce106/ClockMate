@@ -1,11 +1,13 @@
 using Cinemachine;
+using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
 /// 터렛 상호작용.
 /// Milli만 조작 가능하며 조작 중에는 캐릭터 조작이 비활성화된다.Q
 /// </summary>
-public class IATurret : MonoBehaviour, IInteractable
+public class IATurret : MonoBehaviourPun, IInteractable
 {
     [SerializeField] private GameObject turretHead;
     [SerializeField] private Transform attackStartPos;
@@ -110,7 +112,7 @@ public class IATurret : MonoBehaviour, IInteractable
         attackLineRenderer.enabled = true;
 
         _uiTurretActive = UIManager.Instance.Show<UITurretAcive>("UITurretActive");
-        _uiTurretActive.SetInitialChargeLv(ChargeLevel);
+        _uiTurretActive?.UpdateChargeImg(ChargeLevel);
 
         return true;
     }
@@ -177,7 +179,22 @@ public class IATurret : MonoBehaviour, IInteractable
         currentRotation.x = ClampAngle(currentRotation.x, pitchMin, pitchMax); // 상하 회전 제한
         
         // 터렛 head에 회전 적용
-        turretHead.transform.localEulerAngles = new Vector3(currentRotation.x, currentRotation.y, 0f);
+        Vector3 eulerAngles = new Vector3(currentRotation.x, currentRotation.y, 0f);
+        NetworkExtension.RunNetworkOrLocal(
+            () => LocalRotate(eulerAngles),
+            () => photonView.RPC(nameof(RPC_RotateTurret), RpcTarget.All, eulerAngles)
+        );
+    }
+    
+    private void LocalRotate(Vector3 eulerAngles)
+    {
+        turretHead.transform.localEulerAngles = eulerAngles;
+    }
+    
+    [PunRPC]
+    public void RPC_RotateTurret(Vector3 eulerAngles)
+    {
+        LocalRotate(eulerAngles);
     }
 
     /// <summary>
@@ -205,6 +222,10 @@ public class IATurret : MonoBehaviour, IInteractable
             if (hit.collider.CompareTag("Monster"))
             {
                 hit.collider.TryGetComponent(out _currentTarget);
+                if (NetworkManager.Instance.IsInRoomAndReady())
+                {
+                    photonView.RPC(nameof(RPC_SetTurretTarget), RpcTarget.Others, _currentTarget.photonView.ViewID);
+                }
                 Debug.Log("조준 상대" + _currentTarget.name);
                 _indicator.transform.SetParent(_currentTarget.transform, false);
                 _indicator.SetActive(true);
@@ -227,7 +248,19 @@ public class IATurret : MonoBehaviour, IInteractable
         attackLineRenderer.SetPosition(0, startPoint);
         attackLineRenderer.SetPosition(1, endPoint);
     }
+    
+    [PunRPC]
+    private void RPC_SetTurretTarget(int viewID)
+    {
+        PhotonView view = PhotonView.Find(viewID);
+        if (view == null) return;
 
+        MonsterController monster = view.GetComponent<MonsterController>();
+        if (monster == null) return;
+        
+        _currentTarget = monster;
+    }
+    
     /// <summary>
     /// 터렛 공격 시도
     /// </summary>
@@ -240,16 +273,19 @@ public class IATurret : MonoBehaviour, IInteractable
             return;
         }
 
-        FireWeapon();
+        NetworkExtension.RunNetworkOrLocal(
+            LocalFire,
+            () => photonView.RPC(nameof(RPC_FireTurret), RpcTarget.All)
+        );
     }
 
     /// <summary>
     /// 실제 터렛 공격 처리
     /// </summary>
-    private void FireWeapon()
+    private void LocalFire()
     {
         ChargeLevel--; // ChargeLevel 1 감소
-        _uiTurretActive.UpdateChargeImg(false);
+        _uiTurretActive?.UpdateChargeImg(ChargeLevel);
 
         if (_currentTarget is not null)
         {
@@ -257,11 +293,31 @@ public class IATurret : MonoBehaviour, IInteractable
         }
         // TODO: 발사체 구현
     }
+    
+    [PunRPC]
+    public void RPC_FireTurret()
+    {
+        LocalFire();
+    }
 
     public void Charge()
     {
+        NetworkExtension.RunNetworkOrLocal(
+            LocalCharge,
+            () => photonView.RPC(nameof(RPC_ChargeTurret), RpcTarget.All)
+        );
+    }
+    
+    private void LocalCharge()
+    {
         if (ChargeLevel >= maxChargeLevel) return;
         ChargeLevel++;
-        _uiTurretActive?.UpdateChargeImg(true);
+        _uiTurretActive?.UpdateChargeImg(ChargeLevel);
+    }
+    
+    [PunRPC]
+    public void RPC_ChargeTurret()
+    {
+        LocalCharge();
     }
 }
