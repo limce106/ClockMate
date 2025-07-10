@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 9218628959502805292}
   - component: {fileID: 4582025206772958291}
   - component: {fileID: 324803290029709050}
-  - component: {fileID: 3472472691421925923}
+  - component: {fileID: 7484148810946161522}
   m_Layer: 0
   m_Name: RollingStone
   m_TagString: Untagged
@@ -167,11 +167,12 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 7484148810946161522}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &3472472691421925923
+--- !u!114 &7484148810946161522
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
