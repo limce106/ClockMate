@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,24 +7,28 @@ public class RollingStonePoolManager : MonoBehaviour
 {
     public static RollingStonePoolManager Instance;
 
-    public RollingStone stonePrefab;
     public int poolSize = 30;
+    public string prefabPath = "Prefabs/RollingStone";
 
-    private ObjectPool<RollingStone> rollingStonePool;
+    private NetworkObjectPool<RollingStone> rollingStonePool;
 
     private void Awake()
     {
         if(Instance == null)
             Instance = this;
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
-        rollingStonePool = new ObjectPool<RollingStone>(stonePrefab, poolSize, this.transform);
+        rollingStonePool = new NetworkObjectPool<RollingStone>(prefabPath, poolSize, this.transform);
+        PhotonNetwork.PrefabPool = rollingStonePool;
     }
 
-    public RollingStone GetStone()
+    public RollingStone GetStone(Vector3 pos)
     {
-        return rollingStonePool.Get();
+        return rollingStonePool.Get(pos);
     }
 
     public void ReturnStone(RollingStone rollingStone)
