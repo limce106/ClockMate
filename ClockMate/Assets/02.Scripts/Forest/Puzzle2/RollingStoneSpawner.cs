@@ -1,30 +1,51 @@
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 
-public class RollingStoneSpawner : MonoBehaviour
+public class RollingStoneSpawner : MonoBehaviourPunCallbacks
 {
     [System.Serializable]
     public struct SpawnPointInfo
     {
-        public Transform spwanPoint;
+        public Vector3 spwanPoint;
         public float spawnInterval;
         public bool spawnOnce;
     }
 
     public SpawnPointInfo[] spawnPoints;
 
+    private bool spawningStarted = false;
+
     void Start()
     {
+        if(PhotonNetwork.InRoom)
+        {
+            StartSpawning();
+        }
+    }
+
+    public override void OnJoinedRoom()
+    {
+        StartSpawning();
+    }
+
+    void StartSpawning()
+    {
+        if(!PhotonNetwork.IsMasterClient || spawningStarted)
+            return;
+
+        spawningStarted = true;
+
         foreach (var info in spawnPoints)
         {
             StartCoroutine(SpawnLoop(info.spwanPoint, info.spawnInterval, info.spawnOnce));
         }
     }
 
-    IEnumerator SpawnLoop(Transform point, float interval, bool spawnOnce)
+    IEnumerator SpawnLoop(Vector3 point, float interval, bool spawnOnce)
     {
         if(spawnOnce)
         {
@@ -39,10 +60,8 @@ public class RollingStoneSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnStone(Transform point)
+    private void SpawnStone(Vector3 point)
     {
-        var stone = RollingStonePoolManager.Instance.GetStone();
-        stone.transform.position = point.position;
-        stone.transform.rotation = Quaternion.identity;
+        RollingStone stone = RollingStonePoolManager.Instance.GetStone(point);
     }
 }
