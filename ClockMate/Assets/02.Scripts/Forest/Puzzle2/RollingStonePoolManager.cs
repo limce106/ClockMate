@@ -8,7 +8,7 @@ public class RollingStonePoolManager : MonoBehaviour
     public static RollingStonePoolManager Instance;
 
     public int poolSize = 30;
-    public string prefabPath = "Prefabs/RollingStone";
+    private string prefabPath = "Prefabs/RollingStone";
 
     private NetworkObjectPool<RollingStone> rollingStonePool;
 
@@ -23,7 +23,6 @@ public class RollingStonePoolManager : MonoBehaviour
         }
 
         rollingStonePool = new NetworkObjectPool<RollingStone>(prefabPath, poolSize, this.transform);
-        PhotonNetwork.PrefabPool = rollingStonePool;
     }
 
     public RollingStone GetStone(Vector3 pos)
