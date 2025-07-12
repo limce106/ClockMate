@@ -16,8 +16,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public GameObject voiceManager;
 
     public bool isSpawnPlayer = false;
-    public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
+
     public Vector3 hourSpawnPos = new Vector3(0f, 0f, 0f);
+    public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
 
     private void Start()
     {
@@ -40,6 +41,12 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     public void EnterTestServerRoom()
     {
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            statusText.text = "아직 네트워크에 연결되지 않았습니다. \n 다시 시도해주세요.";
+            return;
+        }
+
         PhotonNetwork.JoinRoom(RoomName);
     }
 

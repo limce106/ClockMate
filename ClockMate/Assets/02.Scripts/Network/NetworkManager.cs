@@ -116,6 +116,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Destroy(loadingManager.gameObject);
         }
 
+        VoiceManager[] voiceManagers = FindObjectsOfType<VoiceManager>(true);
+        foreach (var voiceManager in voiceManagers)
+        {
+            if (voiceManager != VoiceManager.Instance)
+                Destroy(voiceManager.gameObject);
+        }
+
         NetworkManager[] networkManagers = FindObjectsOfType<NetworkManager>(true);
         foreach (var networkManager in networkManagers)
         {
@@ -123,8 +130,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Destroy(networkManager.gameObject);
         }
 
-        if(LoadingManager.Instance)
+        if (LoadingManager.Instance)
             Destroy(LoadingManager.Instance.gameObject);
+        if (VoiceManager.Instance)
+            Destroy(VoiceManager.Instance.gameObject);
         if (NetworkManager.Instance)
             Destroy(NetworkManager.Instance.gameObject);
     }
