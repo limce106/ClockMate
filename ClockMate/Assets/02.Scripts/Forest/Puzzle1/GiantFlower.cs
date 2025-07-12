@@ -1,3 +1,4 @@
+using DefineExtension;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -113,7 +114,7 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Hour") || collision.gameObject.CompareTag("Milli"))
+        if(collision.collider.IsPlayerCollider())
         {
             if(!_playersOnFlower.Contains(collision.transform))
             {
@@ -124,7 +125,7 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Hour") || collision.gameObject.CompareTag("Milli"))
+        if (collision.collider.IsPlayerCollider())
         {
             if (_playersOnFlower.Contains(collision.transform))
             {
