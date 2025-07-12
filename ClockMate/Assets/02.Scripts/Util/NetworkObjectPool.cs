@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 네트워크를 사용하는 객체 풀링 시스템
+/// </summary>
 public class NetworkObjectPool<T> : IPunPrefabPool where T : Component
 {
     private readonly Stack<T> pool = new Stack<T>();
@@ -50,12 +53,22 @@ public class NetworkObjectPool<T> : IPunPrefabPool where T : Component
         pool.Push(component);
     }
 
+    /// <summary>
+    /// 오브젝트 풀링 매니저에서는 Get과 Return만 사용하면 됨
+    /// </summary>
+
+    /// <summary>
+    /// 오브젝트가 필요할 때 풀에서 가져오거나 새로 생성함
+    /// </summary>
     public T Get(Vector3 position)
     {
         GameObject obj = PhotonNetwork.Instantiate(prefabPath, position, Quaternion.identity);
         return obj.GetComponent<T>();
     }
 
+    /// <summary>
+    /// 오브젝트 사용 후 반환
+    /// </summary>
     public void Return(T obj)
     {
         if (obj.TryGetComponent<PhotonView>(out PhotonView photonView) && photonView.IsMine)
