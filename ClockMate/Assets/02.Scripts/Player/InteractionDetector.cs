@@ -82,13 +82,21 @@ public class InteractionDetector : MonoBehaviour
             IInteractable interactable = pair.Value;
             
             if (targetObj == null) continue;
-            
+
             // 거리 조건
-            float distance = Vector3.Distance(targetObj.transform.position, _character.transform.position);
+            Vector3 charPos = _character.transform.position;
+            Vector3 targetObjPos = targetObj.transform.position;
+
+            charPos.y = 0;
+            targetObjPos.y = 0;
+
+            float distance = Vector3.Distance(charPos, targetObjPos);
             if (distance > interactDistance) continue;
 
             // 시야각 조건
-            Vector3 direction = targetObj.transform.position - _character.transform.position;
+            Vector3 direction = (targetObjPos - charPos).normalized;
+            Vector3 forward = _character.transform.forward;
+            forward.y = 0;
             float angle = Vector3.Angle(_character.transform.forward, direction);
             if (angle > interactAngle) continue;
 
