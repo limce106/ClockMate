@@ -964,7 +964,7 @@ Transform:
   m_GameObject: {fileID: 248784438}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 71, y: 45.3, z: -8.7}
+  m_LocalPosition: {x: 74.9, y: 27.54, z: 25.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1034,9 +1034,13 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1765460719830853707, guid: a041c74b6e0fc3043aa699ae6f884501, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5875872638052685566, guid: a041c74b6e0fc3043aa699ae6f884501, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 60.607887
+      value: 67.32
       objectReference: {fileID: 0}
     - target: {fileID: 5875872638052685566, guid: a041c74b6e0fc3043aa699ae6f884501, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3322,6 +3326,10 @@ PrefabInstance:
     - target: {fileID: 5697227041886707652, guid: a21d22d7143ea0842a23316a15864e9c, type: 3}
       propertyPath: m_Name
       value: Beanstalk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697227041886707652, guid: a21d22d7143ea0842a23316a15864e9c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

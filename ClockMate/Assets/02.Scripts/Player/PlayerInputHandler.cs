@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static Define.Character;
 using InputAction = UnityEngine.InputSystem.InputAction;
 
@@ -95,6 +96,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnMovePressed(InputAction.CallbackContext context)
     {
         if (!_actionsAvailable[CharacterAction.Move]) return;
+        if (_character.CurrentState is ClimbState) return;
+
         _isMoving = true;
         _character.ChangeState<WalkState>();
     }
@@ -113,7 +116,7 @@ public class PlayerInputHandler : MonoBehaviour
         //_character.ChangeState<InteractState>();
         _character.InteractionDetector.TryInteract();
     }
-    
+
     private void OnAbilityPressed(InputAction.CallbackContext context)
     {
         //_character.ChangeState<AbilityState>();

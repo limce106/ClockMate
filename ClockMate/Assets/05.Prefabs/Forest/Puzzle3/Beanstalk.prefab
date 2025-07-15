@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 95908960876950968}
   - component: {fileID: 7126702896252714589}
   - component: {fileID: 5978094215460237271}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Beanstalk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 5, z: 0.5}
+  m_LocalScale: {x: 1, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -120,3 +120,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 470c632a073a6a1419ab03678bdf5955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  climbYOffset: 0.3
