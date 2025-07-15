@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 기어올라갈 수 있는 오브젝트
+/// Layer는 Climable 지정 필요
+/// </summary>
+
 public class IAClimbObject : MonoBehaviourPun, IInteractable
 {
     private UIManager _uiManager;
@@ -11,7 +16,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
     private Sprite _climbSprite;
     private string _climbString;
 
-    public Vector3 climbOffset = new Vector3(-0.3f, 0f, 0.3f);
+    public float climbYOffset = 0.3f;
 
     private void Awake()
     {
@@ -44,7 +49,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>(gameObject.transform, climbOffset);
+        character.ChangeState<ClimbState>(gameObject.transform, climbYOffset);
         return true;
     }
 }
