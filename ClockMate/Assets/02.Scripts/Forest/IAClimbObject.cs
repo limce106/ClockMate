@@ -11,6 +11,8 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
     private Sprite _climbSprite;
     private string _climbString;
 
+    public Vector3 climbOffset = new Vector3(-0.3f, 0f, 0.3f);
+
     private void Awake()
     {
         Init();
@@ -42,7 +44,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>();
+        character.ChangeState<ClimbState>(gameObject.transform, climbOffset);
         return true;
     }
 }
