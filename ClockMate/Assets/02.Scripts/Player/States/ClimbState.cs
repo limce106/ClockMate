@@ -94,7 +94,7 @@ public class ClimbState : IState
     }
 
     /// <summary>
-    /// 올라가고 있는 오브젝트의 끝지점인지 반환
+    /// 플레이어 앞쪽 위 방향에 등반 가능한 오브젝트가 있는지 확인
     /// </summary>
     private bool IsClimbObjAbove()
     {
