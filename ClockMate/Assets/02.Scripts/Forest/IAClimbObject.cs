@@ -1,3 +1,4 @@
+using DefineExtension;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
     private Sprite _climbSprite;
     private string _climbString;
 
-    public float climbYOffset = 0.3f;
+    public Vector3 attachOffset = new Vector3(0f, 0.3f, 0f);
 
     private void Awake()
     {
@@ -49,7 +50,22 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>(gameObject.transform, climbYOffset);
+        character.ChangeState<ClimbState>(gameObject.transform, attachOffset);
         return true;
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.collider.IsPlayerCollider())
+        {
+            CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
+            ClimbState climbState = character.CurrentState as ClimbState;
+
+            if(climbState != null)
+            {
+                climbState.StopClimbing();
+                character.ChangeState<IdleState>();
+            }
+        }
     }
 }
