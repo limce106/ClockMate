@@ -7,9 +7,9 @@ public class ClimbState : IState
 {
     private readonly CharacterBase _character;
     private readonly Transform _climbTarget;
-    private readonly float _yOffset;
+    private readonly Vector3 _attachOffset;
 
-    public float climbSpeed = 1f;
+    private const float climbSpeed = 3f;
 
     private Rigidbody _rb;
     private RigidbodyConstraints _originalConstraints;
@@ -17,11 +17,11 @@ public class ClimbState : IState
     private const float ForwardCheckOffset = 0.3f;
     private const float RayDistance = 0.5f;
 
-    public ClimbState(CharacterBase character, Transform climbTarget, float yOffset)
+    public ClimbState(CharacterBase character, Transform climbTarget, Vector3 attachOffset)
     {
         _character = character;
         _climbTarget = climbTarget;
-        _yOffset = yOffset;
+        _attachOffset = attachOffset;
     }
 
     public void Enter()
@@ -39,26 +39,12 @@ public class ClimbState : IState
 
     public void Update()
     {
-        if (!IsClimbObjAbove())
-        {
-            StopClimbing();
-            return;
-        }
-
-        float verticalInput = Input.GetAxisRaw("Vertical");
-        if (Mathf.Abs(verticalInput) > 0.1f)
-        {
-            Climb(verticalInput);
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            StopClimbing();
-        }
+        
     }
 
     public void Exit()
     {
-        StopClimbing();
+        
     }
 
     void StartClimbing()
@@ -67,18 +53,17 @@ public class ClimbState : IState
 
         _rb.useGravity = false;
         _rb.velocity = Vector3.zero;
-        _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+        _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 
         // 오브젝트와의 가장 가까운 지점에 붙이기
         if (_climbTarget != null)
         {
-            Vector3 climbPoint = _climbTarget.GetComponent<Collider>().ClosestPoint(_character.transform.position);
-            climbPoint.y += _yOffset;
-            Vector3 dirToWall = (climbPoint - _character.transform.position).normalized;
-            Vector3 horizontalDir = new Vector3(dirToWall.x, 0f, dirToWall.z).normalized;
-
+            Vector3 climbPoint = _climbTarget.GetComponent<Collider>().ClosestPoint(_character.transform.position) + _attachOffset;
             _character.transform.position = climbPoint;
-            _character.transform.forward = horizontalDir;
+
+            Vector3 dirToCenter = (_climbTarget.transform.position - _character.transform.position).normalized;
+            dirToCenter.y = 0;
+            _character.transform.forward = dirToCenter;
         }
     }
 
@@ -91,16 +76,5 @@ public class ClimbState : IState
     {
         _rb.useGravity = true;
         _rb.constraints = _originalConstraints;
-    }
-
-    /// <summary>
-    /// 플레이어 앞쪽 위 방향에 등반 가능한 오브젝트가 있는지 확인
-    /// </summary>
-    private bool IsClimbObjAbove()
-    {
-        Vector3 origin = _character.transform.position + Vector3.up + _character.transform.forward * ForwardCheckOffset;
-        Vector3 direction = _character.transform.forward;
-
-        return Physics.Raycast(origin, direction, RayDistance, LayerMask.GetMask("Climbable"));
     }
 }

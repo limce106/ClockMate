@@ -19,7 +19,8 @@
         {
             Move,
             Jump,
-            Interact
+            Interact,
+            Climb
         }
     }
     public static class UI
