@@ -19,6 +19,9 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     public Vector3 attachOffset = new Vector3(0f, 0.3f, 0f);
 
+    private bool _isColliding = false;
+    private const float climbTopOffset = 0.05f;
+
     private void Awake()
     {
         Init();
@@ -27,18 +30,37 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
     private void Init()
     {
         _uiManager = UIManager.Instance;
-        _climbSprite = Resources.Load<Sprite>("UI/Sprites/interact_active");
-        _climbString = "올라가기";
     }
 
     public bool CanInteract(CharacterBase character)
     {
-        return character.CurrentState is not ClimbState;
+        if (!_isColliding)
+            return false;
+
+        if (character.CurrentState is ClimbState)
+            return false;
+
+        if(!character.IsGrounded)
+            return false;
+
+        // 플레이어가 오브젝트 위에 있으면 상호작용 불가
+        Collider collider = GetComponent<Collider>();
+        float climbTopY = collider.bounds.max.y;
+        float playerY = character.transform.position.y;
+
+        if (playerY >= climbTopY - climbTopOffset)
+            return false;
+
+        return true;
     }
 
     public void OnInteractAvailable()
     {
         _uiNotice = _uiManager.Show<UINotice>("UINotice");
+
+        _climbSprite = Resources.Load<Sprite>("UI/Sprites/interact_active");
+        _climbString = "기어올라가기";
+
         _uiNotice.SetImage(_climbSprite);
         _uiNotice.SetText(_climbString);
     }
@@ -50,8 +72,20 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>(gameObject.transform, attachOffset);
+        character.ChangeState<ClimbState>(this, attachOffset);
+
+        _climbSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _climbString = "기어올라가기 종료";
+
+        _uiNotice.SetImage(_climbSprite);
+        _uiNotice.SetText(_climbString);
+
         return true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        _isColliding = true;
     }
 
     private void OnCollisionExit(Collision collision)
@@ -60,12 +94,19 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
         {
             CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
             ClimbState climbState = character.CurrentState as ClimbState;
+            _isColliding = false;
 
-            if(climbState != null)
+            if (climbState != null)
             {
                 climbState.StopClimbing();
                 character.ChangeState<IdleState>();
+                _uiManager.Close(_uiNotice);
             }
         }
+    }
+
+    public void CloseNoticeUI()
+    {
+        _uiManager.Close(_uiNotice);
     }
 }
