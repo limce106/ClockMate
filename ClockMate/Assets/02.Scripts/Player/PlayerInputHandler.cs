@@ -160,7 +160,7 @@ public class PlayerInputHandler : MonoBehaviour
         {
             climbState.StopClimbing();
             _character.ChangeState<IdleState>();
-            climbState.climbTarget.CloseNoticeUI();
+            climbState.climbTarget.CloseUI();
         }
     }
 
