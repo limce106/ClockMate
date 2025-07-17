@@ -13,6 +13,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 {
     private UIManager _uiManager;
     private UINotice _uiNotice;
+    private UIClimbableObj _uiClimbableObj;
 
     private Sprite _climbSprite;
     private string _climbString;
@@ -74,6 +75,8 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
     {
         character.ChangeState<ClimbState>(this, attachOffset);
 
+        _uiClimbableObj = _uiManager.Show<UIClimbableObj>("UIClimbableObj");
+
         _climbSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
         _climbString = "기어올라가기 종료";
 
@@ -90,6 +93,7 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
 
     private void OnCollisionExit(Collision collision)
     {
+        // 기어오르는 중에 콜리전을 벗어나면 최대 위치에 다다른 것으로 인식
         if(collision.collider.IsPlayerCollider())
         {
             CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
@@ -100,13 +104,17 @@ public class IAClimbObject : MonoBehaviourPun, IInteractable
             {
                 climbState.StopClimbing();
                 character.ChangeState<IdleState>();
-                _uiManager.Close(_uiNotice);
+                climbState.climbTarget.CloseUI();
             }
         }
     }
 
-    public void CloseNoticeUI()
+    /// <summary>
+    /// 조작키 UI 없애기
+    /// </summary>
+    public void CloseUI()
     {
+        _uiManager.Close(_uiClimbableObj);
         _uiManager.Close(_uiNotice);
     }
 }
