@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Define;
+using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 using static Define.Character;
 
-public class MonsterController : MonoBehaviour
+public class MonsterController : MonoBehaviourPun
 {
    [SerializeField] private Transform[] patrolPoints;
    public Transform[] PatrolPoints => patrolPoints; // 몬스터가 순회할 순찰 지점
@@ -16,7 +19,7 @@ public class MonsterController : MonoBehaviour
    [SerializeField] private float verticalViewAngle = 60f;
    [SerializeField] private float viewDistance = 15f;
 
-   [SerializeField] private Transform hourTransform;
+   [SerializeField] private CharacterBase hour;
    public NavMeshAgent Agent { get; private set; }
 
    private LayerMask _viewMask; 
@@ -42,7 +45,11 @@ public class MonsterController : MonoBehaviour
       ChangeStateTo<MStatePatrol>();
       _viewMask = LayerMask.GetMask("Player", "Default"); // 플레이어와 장애물 레이어
       
-      hourTransform = GameObject.FindGameObjectWithTag("Hour").transform;
+      //hourTransform = GameObject.FindGameObjectWithTag("Hour").transform;
+      if (!GameManager.Instance.Characters.TryGetValue(CharacterName.Hour, out hour))
+      {
+         hour = GameObject.FindGameObjectWithTag("Hour").GetComponent<Hour>();
+      }
    }
 
    /// <summary>
@@ -73,8 +80,9 @@ public class MonsterController : MonoBehaviour
    /// </summary>
    public bool CanSeeHour()
    {
-      if (!hourTransform.gameObject.activeSelf) return false;
+      if (hour.CurrentState is DeadState) return false;
       
+      Transform hourTransform = hour.transform;
       Vector3 dirToHour = hourTransform.position - transform.position;
 
       // hour와의 수평/수직 시야각 계산
@@ -100,7 +108,7 @@ public class MonsterController : MonoBehaviour
 
    public void ChaseHour()
    {
-      Agent.SetDestination(hourTransform.position);
+      Agent.SetDestination(hour.transform.position);
    }
 
    public void StopChaseAndReturn()
@@ -124,7 +132,9 @@ public class MonsterController : MonoBehaviour
    {
       if (!other.gameObject.CompareTag("Hour")) return;
 
-      Hour hour = other.gameObject.GetComponent<Hour>();
+//      Hour hour = other.gameObject.GetComponent<Hour>();
+//      if (!hour.photonView.IsMine) return;
+      
       hour.ChangeState<DeadState>();
       if (_currentState is MStateChase)
       {
@@ -160,7 +170,7 @@ public class MonsterController : MonoBehaviour
    /// </summary>
    private void OnDrawGizmosSelected()
    {
-      if (!Application.isPlaying || hourTransform ==null) return;
+      if (!Application.isPlaying || hour ==null) return;
 
       Vector3 position = transform.position;
       Vector3 forward = transform.forward;

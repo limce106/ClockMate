@@ -95,15 +95,27 @@ public class Holder : MonoBehaviourPun
         LocalDropHoldingObj();
     }
 
-    public void DestroyHoldingObj()
+    public void RemoveHoldingObj(bool destroy = false)
     {
-        Destroy(_holdingObj);
-        RemoveHoldingObj();
+        NetworkExtension.RunNetworkOrLocal(
+            () => LocalRemoveHoldingObj(destroy),
+            () => photonView.RPC(nameof(RPC_RemoveHoldingObj), RpcTarget.All, destroy)
+        );
     }
-
-    public void RemoveHoldingObj()
+    
+    private void LocalRemoveHoldingObj(bool destroy)
     {
+        if (destroy)
+        {
+            Destroy(_holdingObj);
+        }
         _holdingObj = null;
         _originalParent = null;
+    }
+    
+    [PunRPC]
+    public void RPC_RemoveHoldingObj(bool destroy)
+    {
+        LocalRemoveHoldingObj(destroy);
     }
 }
