@@ -1,4 +1,6 @@
 using System;
+using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 
 public class IABattery : ResettableBase, IInteractable
@@ -88,10 +90,27 @@ public class IABattery : ResettableBase, IInteractable
 
     public void UseToCharge()
     {
-        _uiManager.Close(_uiNotice);
+        NetworkExtension.RunNetworkOrLocal(
+            LocalUse,
+            () => photonView.RPC(nameof(RPC_UseBattery), RpcTarget.All)
+        );
+    }
+    
+    private void LocalUse()
+    {
+        if (_uiNotice is not null)
+        {
+            _uiManager.Close(_uiNotice);
+        }
         ResetObject();
         gameObject.SetActive(false);
         OnUse?.Invoke(this);
+    }
+    
+    [PunRPC]
+    public void RPC_UseBattery()
+    {
+        LocalUse();
     }
 
     protected override void SaveInitialState()

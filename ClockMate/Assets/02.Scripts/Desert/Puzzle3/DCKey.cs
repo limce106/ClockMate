@@ -1,8 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 
-public class DCKey : MonoBehaviour, IDoorCondition, IInteractable
+public class DCKey : MonoBehaviourPun, IDoorCondition, IInteractable
 {
     [SerializeField] private bool useKey;
     
@@ -25,12 +25,26 @@ public class DCKey : MonoBehaviour, IDoorCondition, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        useKey = true;
-        _holder.DestroyHoldingObj();
-        if (TryGetComponent(out Collider collider))
-        {
-            collider.enabled = false;
-        }
+        _holder.RemoveHoldingObj(true);
+        NetworkExtension.RunNetworkOrLocal(
+            LocalUpdateCondition,
+            () => photonView.RPC(nameof(RPC_UpdateDoorConditionWithKey), RpcTarget.All));
         return true;
     }
+    
+    private void LocalUpdateCondition()
+    {
+        useKey = true;
+        if (TryGetComponent(out Collider col))
+        {
+            col.enabled = false;
+        }
+    }
+    
+    [PunRPC]
+    public void RPC_UpdateDoorConditionWithKey()
+    {
+        LocalUpdateCondition();
+    }
+    
 }
