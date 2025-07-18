@@ -159,8 +159,6 @@ public class PlayerInputHandler : MonoBehaviour
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             climbState.StopClimbing();
-            _character.ChangeState<IdleState>();
-            climbState.climbTarget.CloseUI();
         }
     }
 
