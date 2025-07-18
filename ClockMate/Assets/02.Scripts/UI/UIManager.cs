@@ -92,6 +92,11 @@ public class UIManager : MonoSingleton<UIManager>
         return true;
     }
 
+    public bool IsOnScreen(UIBase ui)
+    {
+        return _uiList.Contains(ui) && ui.gameObject.activeInHierarchy;
+    }
+
     private void Update()
     {
         // Esc 키 입력 시 최상단 UI의 BackKey 호출
