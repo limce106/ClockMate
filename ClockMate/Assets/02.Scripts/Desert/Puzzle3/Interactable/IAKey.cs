@@ -44,10 +44,10 @@ public class IAKey : MonoBehaviourPun, IInteractable
     {
         TryPickUp(character);
             
-        // 배터리 내려놓기 UI 표시
-        _uiNotice = _uiManager.Show<UINotice>("UINotice");
-        _uiNotice.SetImageActive(false);
-        _uiNotice.SetText(_dropString);
+        // UI 표시
+         _uiNotice = _uiManager.Show<UINotice>("UINotice");
+         _uiNotice.SetImageActive(false);
+         _uiNotice.SetText(_dropString);
         
         return true;
     }
@@ -55,6 +55,7 @@ public class IAKey : MonoBehaviourPun, IInteractable
     private void TryPickUp(CharacterBase character)
     {
         Holder holder = character.GetComponentInChildren<Holder>();
+        Debug.Log("holder: " + holder);
         if (holder == null) return;
         
         holder.SetHoldingObj(this);

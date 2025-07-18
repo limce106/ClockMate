@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class UITurretAcive : UIBase
 {
     [SerializeField] private Image[] imgChargeLv;
-    private int _currentChargeIndex;
 
     public void Reset()
     {
@@ -15,29 +14,13 @@ public class UITurretAcive : UIBase
         {
             image.color = Color.black;
         }
-        _currentChargeIndex = 0;
     }
-
-    public void SetInitialChargeLv(int lv)
+    
+    public void UpdateChargeImg(int chargeLv)
     {
-        for (int i = 0; i < lv; i++)
+        for (int i = 0; i < imgChargeLv.Length; i++)
         {
-            imgChargeLv[i].color = Color.green;
-        }
-
-        _currentChargeIndex = lv - 1;
-    }
-    public void UpdateChargeImg(bool isCharged)
-    {
-        if (isCharged)
-        {
-            imgChargeLv[_currentChargeIndex].color = Color.green;
-            _currentChargeIndex++;
-        }
-        else
-        {
-            imgChargeLv[_currentChargeIndex].color = Color.black;   
-            _currentChargeIndex--;
+            imgChargeLv[i].color = i < chargeLv ? Color.green : Color.black;
         }
     }
 }
