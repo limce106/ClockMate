@@ -12,8 +12,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
     protected Sprite _climbSprite;
     protected string _climbString;
 
-    private bool _isColliding = false;
     public Vector3 attachOffset = new Vector3(0f, 0.3f, 0f);
+
+    public float topY;
+    public float bottomY;
 
     protected virtual void Awake()
     {
@@ -22,7 +24,7 @@ public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
 
     protected void ShowNoticeUI(string spritePath, string text)
     {
-        if (!_uiManager.IsOnScreen(_uiNotice))
+        if (_uiNotice == null || !_uiManager.IsOnScreen(_uiNotice))
         {
             _uiNotice = _uiManager.Show<UINotice>("UINotice");
         }
@@ -43,36 +45,27 @@ public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
         _uiManager.Close(_uiNotice);
     }
 
-    protected void OnCollisionEnter(Collision collision)
-    {
-        _isColliding = true;
-    }
+    //protected void OnCollisionExit(Collision collision)
+    //{
+    //    // 기어오르는 중에 콜리전을 벗어나면 최대 위치에 다다른 것으로 인식
+    //    if (collision.collider.IsPlayerCollider())
+    //    {
+    //        CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
+    //        ClimbState climbState = character.CurrentState as ClimbState;
 
-    protected void OnCollisionExit(Collision collision)
-    {
-        // 기어오르는 중에 콜리전을 벗어나면 최대 위치에 다다른 것으로 인식
-        if (collision.collider.IsPlayerCollider())
-        {
-            CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
-            ClimbState climbState = character.CurrentState as ClimbState;
-            _isColliding = false;
+    //        if (climbState != null)
+    //        {
+    //            climbState.StopClimbing();
+    //        }
+    //    }
+    //}
 
-            if (climbState != null)
-            {
-                climbState.StopClimbing();
-            }
-        }
-    }
-
-    public bool CanInteract(CharacterBase character)
+    public virtual bool CanInteract(CharacterBase character)
     {
         if (character.CurrentState is ClimbState)
             return false;
 
         if (!character.IsGrounded)
-            return false;
-
-        if (!_isColliding)
             return false;
 
         return true;

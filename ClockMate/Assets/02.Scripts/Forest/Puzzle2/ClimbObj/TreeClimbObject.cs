@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class TreeClimbObject : ClimbObjectBase
 {
+    private bool _isColliding = false;
+
     private const float surfaceOffset = 0.1f;   // 표면에서 떨어진 거리
     private const float rayOriginBackOffset = 0.1f;   // 너무 가까운 위치에서 Raycast를 쏘면 벽에 충돌하지 않거나 내부에서 시작되므로 살짝 뒤로 물러나기 위함
 
@@ -35,5 +38,25 @@ public class TreeClimbObject : ClimbObjectBase
             dirToCenter.y = 0;
             character.transform.forward = dirToCenter;
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        _isColliding = true;
+    }
+
+    private new void OnCollisionExit(Collision collision)
+    {
+        _isColliding = false;
+    }
+
+    public override bool CanInteract(CharacterBase character)
+    {
+        if (!base.CanInteract(character))
+            return false;
+        if (!_isColliding)
+            return false;
+
+        return true;
     }
 }
