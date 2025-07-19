@@ -9,9 +9,11 @@ public class ClimbState : IState
     public readonly ClimbObjectBase climbTarget;
 
     private const float climbSpeed = 3f;
+    private const float Margin = 0.05f;
 
     private Rigidbody _rb;
     private RigidbodyConstraints _originalConstraints;
+    private bool playerAttached = false;
 
     public ClimbState(CharacterBase character, ClimbObjectBase climbTarget)
     {
@@ -27,7 +29,15 @@ public class ClimbState : IState
 
     public void FixedUpdate()
     {
-        
+        if (!playerAttached)
+            return;
+
+        float characterY = _character.transform.position.y;
+        if(characterY > climbTarget.topY + Margin || characterY < climbTarget.bottomY - Margin)
+        {
+            StopClimbing();
+            return;
+        }
     }
 
     public void Update()
@@ -49,6 +59,7 @@ public class ClimbState : IState
         _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 
         climbTarget.AttachTo(_character);
+        playerAttached = true;
     }
 
 
