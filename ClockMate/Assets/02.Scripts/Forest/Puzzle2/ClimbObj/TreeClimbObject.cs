@@ -8,7 +8,7 @@ public class TreeClimbObject : ClimbObjectBase
     private const float surfaceOffset = 0.1f;   // 표면에서 떨어진 거리
     private const float rayOriginBackOffset = 0.1f;   // 너무 가까운 위치에서 Raycast를 쏘면 벽에 충돌하지 않거나 내부에서 시작되므로 살짝 뒤로 물러나기 위함
 
-    public float attachOffsetX = -0.5f;
+    public float attachOffset = 0.5f;
 
     public override void AttachTo(CharacterBase character)
     {
@@ -23,27 +23,33 @@ public class TreeClimbObject : ClimbObjectBase
 
             if (Physics.Raycast(origin, direction, out RaycastHit hit, 2f, LayerMask.GetMask("Climbable")))
             {
-                attachPoint = hit.point + hit.normal * surfaceOffset;
-                attachPoint.x += attachOffsetX;
-                attachPoint.y = bottomY;
-                character.transform.position = attachPoint;
-
-                // 오브젝트 방향을 바라보게
                 Vector3 forwardDir = -hit.normal;
                 forwardDir.y = 0;
-                character.transform.forward = forwardDir.normalized;
+                forwardDir.Normalize();
+
+                Vector3 offset = -forwardDir * attachOffset;
+                attachPoint = hit.point + hit.normal * surfaceOffset + offset;
+                attachPoint.y = bottomY;
+
+                character.transform.position = attachPoint;
+                // 오브젝트 방향을 바라보게
+                character.transform.forward = forwardDir;
             }
             else
             {
                 // Raycast 실패 시 ClosestPoint로 부착 위치 구하기
                 Collider col = GetComponent<Collider>();
                 attachPoint = col.ClosestPoint(character.transform.position);
-                attachPoint.x += attachOffsetX;
-                attachPoint.y = bottomY;
-                character.transform.position = attachPoint;
 
-                Vector3 dirToCenter = (transform.position - character.transform.position).normalized;
+                Vector3 dirToCenter = transform.position - character.transform.position;
                 dirToCenter.y = 0;
+                dirToCenter.Normalize();
+
+                Vector3 offset = -dirToCenter * attachOffset;
+                attachPoint += offset;
+                attachPoint.y = bottomY;
+
+                character.transform.position = attachPoint;
                 character.transform.forward = dirToCenter;
             }
         }
@@ -54,7 +60,9 @@ public class TreeClimbObject : ClimbObjectBase
             forwardXZ.Normalize();
 
             float radius = GetComponent<Collider>().bounds.extents.x;
-            Vector3 attachXZ = transform.position + forwardXZ * (radius + -attachOffsetX);
+            Vector3 offsetDir = -forwardXZ * attachOffset;
+
+            Vector3 attachXZ = transform.position + forwardXZ * radius - offsetDir;
             attachPoint = new Vector3(attachXZ.x, topY, attachXZ.z);
 
             character.transform.position = attachPoint;
