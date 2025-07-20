@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static Define.Character;
 using InputAction = UnityEngine.InputSystem.InputAction;
 
@@ -49,6 +50,7 @@ public class PlayerInputHandler : MonoBehaviour
             { CharacterAction.Move, true },
             { CharacterAction.Jump, true },
             { CharacterAction.Interact, true },
+            { CharacterAction.Climb, true },
         };
         
         InitInputActions();
@@ -60,6 +62,16 @@ public class PlayerInputHandler : MonoBehaviour
         _inputActions.Player.Interact.performed += OnInteractPressed;
         _inputActions.Player.Ability.performed += OnAbilityPressed;
         _inputActions.Player.Move.performed += OnMovePressed;
+        _inputActions.Player.Climb.performed += OnClimbPressed;
+    }
+
+    private void Update()
+    {
+        if (_character.CurrentState is ClimbState)
+        {
+            HandleClimb();
+            return;
+        }
     }
 
     private void FixedUpdate()
@@ -95,6 +107,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnMovePressed(InputAction.CallbackContext context)
     {
         if (!_actionsAvailable[CharacterAction.Move]) return;
+        if (_character.CurrentState is ClimbState) return;
+
         _isMoving = true;
         _character.ChangeState<WalkState>();
     }
@@ -103,6 +117,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
         if (!_actionsAvailable[CharacterAction.Jump] || !_character.CanJump()) return;
+        if (_character.CurrentState is ClimbState) return;
+
         _character.ChangeState<JumpState>();
         _character.PerformJump();
     }
@@ -113,10 +129,37 @@ public class PlayerInputHandler : MonoBehaviour
         //_character.ChangeState<InteractState>();
         _character.InteractionDetector.TryInteract();
     }
-    
+
     private void OnAbilityPressed(InputAction.CallbackContext context)
     {
         //_character.ChangeState<AbilityState>();
+    }
+
+    private void OnClimbPressed(InputAction.CallbackContext context)
+    {
+        if (!_actionsAvailable[CharacterAction.Climb]) return;
+    }
+
+    private void HandleClimb()
+    {
+        ClimbState climbState = _character.CurrentState as ClimbState;
+
+        Vector2 moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
+        float verticalInput = moveInput.y;
+
+        if (Mathf.Abs(verticalInput) > 0.1f)
+        {
+            climbState.Climb(verticalInput);
+        }
+        else
+        {
+            climbState.Climb(0f);
+        }
+
+        if (Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            climbState.StopClimbing();
+        }
     }
 
     public void SetInputActionsActive(List<CharacterAction> actions, bool value)
