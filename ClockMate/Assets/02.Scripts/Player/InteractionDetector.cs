@@ -96,11 +96,14 @@ public class InteractionDetector : MonoBehaviour
             if (distance > interactDistance) continue;
 
             // 시야각 조건
-            Vector3 direction = (targetObjPos - charPos).normalized;
-            Vector3 forward = _character.transform.forward;
-            forward.y = 0;
-            float angle = Vector3.Angle(_character.transform.forward, direction);
-            if (angle > interactAngle) continue;
+            if(!ShouldIgnoreViewAngle(targetObj))
+            {
+                Vector3 direction = (targetObjPos - charPos).normalized;
+                Vector3 forward = _character.transform.forward;
+                forward.y = 0;
+                float angle = Vector3.Angle(_character.transform.forward, direction);
+                if (angle > interactAngle) continue;
+            }
 
             // 가장 가까운 오브젝트 && 상호작용 가능 여부
             if (distance < closestDistance && interactable.CanInteract(_character))
@@ -153,4 +156,16 @@ public class InteractionDetector : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 시야각 예외 체크 함수
+    /// </summary>
+    private bool ShouldIgnoreViewAngle(GameObject obj)
+    {
+        if(obj.TryGetComponent<TreeClimbObject>(out var tree))
+        {
+            return _character.transform.position.y >= obj.transform.position.y;
+        }
+
+        return false;
+    }
 }
