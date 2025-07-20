@@ -48,9 +48,11 @@ public class InteractionDetector : MonoBehaviour
         _detectedObjects = new Dictionary<GameObject, IInteractable>();
     }
     
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (!other.TryGetComponent(out IInteractable interactable)) return;
+        if (_detectedObjects.ContainsKey(other.gameObject)) return;
+
         // 상호작용 가능한 Interactable이 감지되었다면
 
         _detectedObjects.TryAdd(other.gameObject, interactable);
