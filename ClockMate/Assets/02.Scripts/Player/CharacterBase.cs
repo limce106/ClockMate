@@ -180,23 +180,32 @@ public abstract class CharacterBase : MonoBehaviourPun
 
     /// <summary>
     /// 상태 전환
-    /// </summary>
-    public void ChangeState<T>() where T : IState
+    /// 첫 번째 매개변수는 CharacterBase(this)가 자동으로 추가됨
+    /// </summary>s
+    public T ChangeState<T>(params object[] args) where T : IState
     {
         var type = typeof(T);
 
-        if (!_states.TryGetValue(type, out var state))
+        // 전환할 상태가 Climb이라면 _states에 있어도 초기화
+        // ClimbState는 전환될 때마다 생성자 호출이 필요하기 때문
+        bool forceNew = type == typeof(ClimbState);
+
+        if (forceNew || !_states.TryGetValue(type, out var state))
         {
-            // 생성자 중 CharacterBase 하나 받는 걸 찾음
-            var ctor = type.GetConstructor(new[] { typeof(CharacterBase) });
+            var argList = new List<object> { this };
+            argList.AddRange(args);
+
+            // 생성자 중 argList와 같은 매개변수 받는 걸 찾음
+            var ctor = type.GetConstructor(argList.ConvertAll(a => a.GetType()).ToArray());
             if (ctor == null)
                 throw new Exception($"{type} 클래스에 맞는 생성자가 없음");
 
-            state = (IState)ctor.Invoke(new object[] { this });
+            state = (IState)ctor.Invoke(argList.ToArray());
             _states[type] = state;
         }
 
         _stateMachine.ChangeStateTo(state);
+        return (T)state;
     }
     
     // Stats를 외부에서 교체, 디버그용
