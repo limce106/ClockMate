@@ -50,21 +50,6 @@ public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
         _uiManager.Close(_uiNotice);
     }
 
-    //protected void OnCollisionExit(Collision collision)
-    //{
-    //    // 기어오르는 중에 콜리전을 벗어나면 최대 위치에 다다른 것으로 인식
-    //    if (collision.collider.IsPlayerCollider())
-    //    {
-    //        CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
-    //        ClimbState climbState = character.CurrentState as ClimbState;
-
-    //        if (climbState != null)
-    //        {
-    //            climbState.StopClimbing();
-    //        }
-    //    }
-    //}
-
     public virtual bool CanInteract(CharacterBase character)
     {
         if (character.CurrentState is ClimbState)

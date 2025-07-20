@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 923557843850134187}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.95, z: 0}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 95908960876950968}
   - component: {fileID: 7126702896252714589}
   - component: {fileID: 43077098429654203}
+  - component: {fileID: 6687752664140435754}
   m_Layer: 8
   m_Name: Beanstalk
   m_TagString: Untagged
@@ -157,7 +158,30 @@ MonoBehaviour:
   bottomPoint: {fileID: 8079652105002072731}
   topY: 0
   bottomY: 0
-  attachOffset: {x: -0.5, y: 0.3, z: 0}
+  attachOffsetX: -0.5
+--- !u!136 &6687752664140435754
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5697227041886707652}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5000001
+  m_Height: 0.5
+  m_Direction: 1
+  m_Center: {x: 0.000000059604645, y: 1, z: -0.00000008940697}
 --- !u!1 &6414720295750223950
 GameObject:
   m_ObjectHideFlags: 0
