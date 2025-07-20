@@ -186,12 +186,16 @@ public abstract class CharacterBase : MonoBehaviourPun
     {
         var type = typeof(T);
 
-        if (!_states.TryGetValue(type, out var state))
+        // 전환할 상태가 Climb이라면 _states에 있어도 초기화
+        // ClimbState는 전환될 때마다 생성자 호출이 필요하기 때문
+        bool forceNew = type == typeof(ClimbState);
+
+        if (forceNew || !_states.TryGetValue(type, out var state))
         {
             var argList = new List<object> { this };
             argList.AddRange(args);
 
-            // 생성자 중 CharacterBase 하나 받는 걸 찾음
+            // 생성자 중 argList와 같은 매개변수 받는 걸 찾음
             var ctor = type.GetConstructor(argList.ConvertAll(a => a.GetType()).ToArray());
             if (ctor == null)
                 throw new Exception($"{type} 클래스에 맞는 생성자가 없음");
