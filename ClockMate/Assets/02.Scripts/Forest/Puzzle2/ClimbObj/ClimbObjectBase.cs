@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
+public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 {
     protected UIManager _uiManager;
     protected UINotice _uiNotice;
