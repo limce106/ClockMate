@@ -12,14 +12,19 @@ public abstract class ClimbObjectBase : MonoBehaviour, IClimableObject
     protected Sprite _climbSprite;
     protected string _climbString;
 
-    public Vector3 attachOffset = new Vector3(0f, 0.3f, 0f);
+    [SerializeField] protected Transform topPoint;
+    [SerializeField] protected Transform bottomPoint;
 
+    [Tooltip("인스펙터에서 값 설정할 필요없음")]
     public float topY;
     public float bottomY;
 
     protected virtual void Awake()
     {
         _uiManager = UIManager.Instance;
+
+        topY = topPoint.position.y;
+        bottomY = bottomPoint.position.y;
     }
 
     protected void ShowNoticeUI(string spritePath, string text)

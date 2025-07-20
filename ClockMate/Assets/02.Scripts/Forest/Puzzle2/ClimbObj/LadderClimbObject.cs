@@ -7,17 +7,8 @@ using UnityEngine;
 
 public class LadderClimbObject : ClimbObjectBase
 {
-    [SerializeField] private Transform topPoint;
-    [SerializeField] private Transform bottomPoint;
-
     private bool _isTrigger = false;
     private bool _isColliding = false;
-
-    void Start()
-    {
-        topY = topPoint.position.y;
-        bottomY = bottomPoint.position.y;
-    }
 
     public override void AttachTo(CharacterBase character)
     {
@@ -60,16 +51,18 @@ public class LadderClimbObject : ClimbObjectBase
 
     private void OnTriggerStay(Collider other)
     {
-        _isTrigger = true;
+        if(!_isTrigger)
+            _isTrigger = true;
     }
     private void OnTriggerExit(Collider other)
     {
         _isTrigger = false;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
-        _isColliding = true;
+        if (!_isColliding)
+            _isColliding = true;
     }
 
     private void OnCollisionExit(Collision collision)
