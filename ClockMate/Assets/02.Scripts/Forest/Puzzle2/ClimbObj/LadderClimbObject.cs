@@ -7,9 +7,6 @@ using UnityEngine;
 
 public class LadderClimbObject : ClimbObjectBase
 {
-    private bool _isTrigger = false;
-    private bool _isColliding = false;
-
     public override void AttachTo(CharacterBase character)
     {
         // 사다리 밑에 있으면
@@ -25,48 +22,5 @@ public class LadderClimbObject : ClimbObjectBase
         Vector3 forward = transform.forward;
         forward.y = 0f;
         character.transform.forward = forward.normalized;
-    }
-
-    public override bool CanInteract(CharacterBase character)
-    {
-        if (!base.CanInteract(character))
-            return false;
-
-        // 사다리 밑에 있을 때
-        if(character.transform.position.y < gameObject.transform.position.y)
-        {
-            if (_isColliding)
-                return true;
-            else
-                return false;
-        }
-        else
-        {
-            if (_isTrigger)
-                return true;
-            else
-                return false;
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if(!_isTrigger)
-            _isTrigger = true;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        _isTrigger = false;
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if (!_isColliding)
-            _isColliding = true;
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        _isColliding = false;
     }
 }

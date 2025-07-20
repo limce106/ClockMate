@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class TreeClimbObject : ClimbObjectBase
 {
-    private bool _isTrigger = false;
-    private bool _isColliding = false;
-
     private const float surfaceOffset = 0.1f;   // 표면에서 떨어진 거리
     private const float rayOriginBackOffset = 0.1f;   // 너무 가까운 위치에서 Raycast를 쏘면 벽에 충돌하지 않거나 내부에서 시작되므로 살짝 뒤로 물러나기 위함
 
@@ -62,47 +59,6 @@ public class TreeClimbObject : ClimbObjectBase
 
             character.transform.position = attachPoint;
             character.transform.forward = -forwardXZ;
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!_isTrigger)
-            _isTrigger = true;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        _isTrigger = false;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        _isColliding = true;
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        _isColliding = false;
-    }
-
-    public override bool CanInteract(CharacterBase character)
-    {
-        if (!base.CanInteract(character))
-            return false;
-        
-        if (character.transform.position.y < gameObject.transform.position.y)
-        {
-            if (_isColliding)
-                return true;
-            else
-                return false;
-        }
-        else
-        {
-            if (_isTrigger)
-                return true;
-            else
-                return false;
         }
     }
 }
