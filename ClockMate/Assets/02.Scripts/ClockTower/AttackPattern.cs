@@ -1,14 +1,21 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define.Battle;
 
 /// <summary>
 /// 보스 공격과 플레이어 반격 공통 구조
 /// </summary>
-public abstract class AttackPattern : MonoBehaviour
+[RequireComponent(typeof(PhotonView))]
+public abstract class AttackPattern : MonoBehaviourPun
 {
-    protected float duration;  // 기믹 타임
-    protected bool isSuccess;   // 플레이어가 현재 기믹을 성공했는지
+    public AttackCharacter attackCharacter;
+
+    private void Awake()
+    {
+        Init();
+    }
 
     private void Start()
     {
@@ -17,15 +24,22 @@ public abstract class AttackPattern : MonoBehaviour
     }
 
     /// <summary>
+    /// 필드 초기화
+    /// </summary>
+    protected abstract void Init();
+
+    /// <summary>
     /// 기믹 오브젝트 스폰
     /// </summary>
-    public abstract void SpawnObj();
+    protected abstract void SpawnObj();
+
     /// <summary>
-    /// 기믹 실행
+    /// 공격 기믹 실행
     /// </summary>
     public abstract IEnumerator Run();
+
     /// <summary>
     /// 플레이어가 현재 기믹을 성공했는지
     /// </summary>
-    public bool IsSuccess() => isSuccess;
+    public abstract bool IsSuccess();
 }
