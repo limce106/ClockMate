@@ -1,14 +1,15 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using static Define.Battle;
 
 /// <summary>
 /// 전투 흐름 제어
 /// </summary>
-public class BattleManager : MonoBehaviourPun
+public class BattleManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private List<GameObject> attackPrefabs;
     private int curAttackIdx = 0;
@@ -21,20 +22,40 @@ public class BattleManager : MonoBehaviourPun
 
     public const float recoveryPerSuccess = 0.334f;
 
+    public static BattleManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     void Start()
     {
         StartCoroutine(StartBattle());
     }
+
+    public override void OnJoinedRoom()
+    {
+        StartCoroutine(StartBattle());
+    }
+
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    StartCoroutine(StartBattle());
+    //}
 
     private IEnumerator StartBattle()
     {
         if (!PhotonNetwork.IsMasterClient)
             yield break;
 
-        while(recoverySlider.value < 1f)
-        {
-            yield return StartCoroutine(RunSinglePhase());
-        }
+        StartCoroutine(RunSinglePhase());
 
         // TODO 성공 연출
     }
@@ -45,7 +66,8 @@ public class BattleManager : MonoBehaviourPun
 
         while (curAttackIdx < attackPrefabs.Count)
         {
-            GameObject attackGO = PhotonNetwork.Instantiate(attackPrefabs[curAttackIdx].name, Vector3.zero, Quaternion.identity);
+            string attackName = attackPrefabs[curAttackIdx].name.Trim();
+            GameObject attackGO = PhotonNetwork.Instantiate("Prefabs/" + attackName, Vector3.zero, Quaternion.identity);
             AttackPattern curAttack = attackGO.GetComponent<AttackPattern>();
 
             yield return StartCoroutine(curAttack.Run());
@@ -56,7 +78,7 @@ public class BattleManager : MonoBehaviourPun
 
             if (curAttack.IsSuccess())
             {
-                if (curAttack is PlayerAttackPattern)
+                if (curAttack.attackCharacter == AttackCharacter.Player)
                 {
                     UpdateRecovery();
                 }
@@ -68,7 +90,7 @@ public class BattleManager : MonoBehaviourPun
                 // TODO 실패 연출
 
                 // 플레이어 반격이 실패했다면 첫 기믹으로 돌아감
-                if (curAttack is PlayerAttackPattern)
+                if (curAttack.attackCharacter == AttackCharacter.Player)
                 {
                     curAttackIdx = 0;
                 }
