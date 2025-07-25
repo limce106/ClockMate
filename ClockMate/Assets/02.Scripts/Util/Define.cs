@@ -56,4 +56,13 @@
             Backward
         }
     }
+
+    public static class Battle
+    {
+        public enum AttackCharacter
+        {
+            Player = 0,
+            Boss = 1
+        }
+    }
 }

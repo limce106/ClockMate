@@ -10,10 +10,11 @@ public class Pendulum : MonoBehaviourPun
     private Rigidbody rb;
 
     public float startAngle;
-    public float swingSpeed = 3f;   // 속도
 
     private bool alreadyTriggered = false;  // DestroyObj를 한 번만 실행하기 위함
     private bool isStarted = false;
+
+    private const float swingSpeed = 30f;
 
     public delegate void PendulumDestroyHandler(Pendulum pendulum);
     public event PendulumDestroyHandler OnPendulumDestroyed;    // 진자가 파괴될 때 실행될 콜백
@@ -26,7 +27,7 @@ public class Pendulum : MonoBehaviourPun
 
     private void Start()
     {
-        startAngle = transform.localRotation.z;
+        startAngle = NormalizeAngle(transform.eulerAngles.z);
     }
 
     /// <summary>
@@ -39,8 +40,8 @@ public class Pendulum : MonoBehaviourPun
             return;
         isStarted = true;
 
-        float torque = startAngle < 0 ? 20f : -20f;
-        GetComponent<Rigidbody>().AddTorque(Vector3.forward * torque, ForceMode.Impulse);
+        float torque = startAngle < 0 ? swingSpeed : -swingSpeed;
+        rb.AddTorque(Vector3.forward * torque, ForceMode.Impulse);
     }
 
     private void Update()
