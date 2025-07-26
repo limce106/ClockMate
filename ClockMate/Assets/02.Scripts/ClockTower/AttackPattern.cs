@@ -17,21 +17,10 @@ public abstract class AttackPattern : MonoBehaviourPun
         Init();
     }
 
-    private void Start()
-    {
-        SpawnObj();
-        StartCoroutine(Run());
-    }
-
     /// <summary>
     /// 필드 초기화
     /// </summary>
     protected abstract void Init();
-
-    /// <summary>
-    /// 기믹 오브젝트 스폰
-    /// </summary>
-    protected abstract void SpawnObj();
 
     /// <summary>
     /// 공격 기믹 실행
@@ -41,5 +30,9 @@ public abstract class AttackPattern : MonoBehaviourPun
     /// <summary>
     /// 플레이어가 현재 기믹을 성공했는지
     /// </summary>
-    public abstract bool IsSuccess();
+    public virtual bool IsSuccess()
+    {
+        // TODO 두 플레이어가 죽으면 false 처리
+        return true;
+    }
 }

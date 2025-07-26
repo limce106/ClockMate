@@ -10,11 +10,12 @@ public class Pendulum : MonoBehaviourPun
     private Rigidbody rb;
 
     public float startAngle;
+    private float swingSpeed = 50;
 
     private bool alreadyTriggered = false;  // DestroyObj를 한 번만 실행하기 위함
     private bool isStarted = false;
 
-    private const float swingSpeed = 30f;
+    private const float angleThreshold = 0.5f;
 
     public delegate void PendulumDestroyHandler(Pendulum pendulum);
     public event PendulumDestroyHandler OnPendulumDestroyed;    // 진자가 파괴될 때 실행될 콜백
@@ -23,10 +24,6 @@ public class Pendulum : MonoBehaviourPun
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-    }
-
-    private void Start()
-    {
         startAngle = NormalizeAngle(transform.eulerAngles.z);
     }
 
@@ -49,13 +46,13 @@ public class Pendulum : MonoBehaviourPun
         if (!isStarted)
             return;
 
-        float zAngle = NormalizeAngle(transform.localEulerAngles.z);
-
         if(!alreadyTriggered)
         {
+            float zAngle = NormalizeAngle(transform.localEulerAngles.z);
+            float targetAngle = -startAngle;
+
             // 진자가 반대쪽 끝 각에 도달했다면
-            if(startAngle < 0 && zAngle > -startAngle ||
-                startAngle > 0 && zAngle < -startAngle)
+            if(Mathf.Abs(zAngle - targetAngle) < angleThreshold)
             {
                 alreadyTriggered = true;
                 DestroyObj();
