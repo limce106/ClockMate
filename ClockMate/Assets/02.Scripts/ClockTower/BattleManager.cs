@@ -40,15 +40,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    public override void OnJoinedRoom()
-    {
-        StartCoroutine(StartBattle());
-    }
-
-    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //public override void OnJoinedRoom()
     //{
     //    StartCoroutine(StartBattle());
     //}
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if(PhotonNetwork.IsMasterClient)
+            StartCoroutine(StartBattle());
+    }
 
     private IEnumerator StartBattle()
     {

@@ -8,7 +8,7 @@ using static Define.Battle;
 public class PendulumAttack : AttackPattern
 {
     public string pendulmnPrefabPath = "Prefabs/Pendulum";
-    public float spawnDuration = 3f;
+    private int spawnCount = 5;
 
     public Vector3 minPos = Vector3.zero;
     public Vector3 maxPos = Vector3.zero;
@@ -17,28 +17,37 @@ public class PendulumAttack : AttackPattern
 
     private const int minSpawnNum = 1;
     private const int maxSpawnNum = 4;
+
+    private const int additionalSpawnCount = 3;
     private readonly float[] startAngles = { -60f, 60f };
 
-    protected override void Init() { }
-
-    protected override void SpawnObj()
+    protected override void Init()
     {
-        int spawnCount = Mathf.Clamp(BattleManager.Instance.round, minSpawnNum, maxSpawnNum);
+        spawnCount += (BattleManager.Instance.round - 1) * additionalSpawnCount;
+    }
 
-        for (int i = 0; i < spawnCount; i++)
+    private void SpawnPendulum(float startAngle)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        spawnedPendulums.Clear();
+        // 한 진자운동에 스폰될 시계 추 개수
+        int spawnNum = Mathf.Clamp(BattleManager.Instance.round, minSpawnNum, maxSpawnNum);
+
+        for (int i = 0; i < spawnNum; i++)
         {
             Vector3 pos = GetRandomSpawnPos();
-            float startAngleZ = startAngles[i % 2];
 
-            GameObject pendulum = PhotonNetwork.Instantiate(pendulmnPrefabPath, pos, Quaternion.identity);
-            pendulum.transform.localRotation = Quaternion.Euler(0, 0, startAngleZ);
+            Quaternion rotation = Quaternion.Euler(0, 0, startAngle);
+            GameObject pendulum = PhotonNetwork.Instantiate(pendulmnPrefabPath, pos, rotation);
             spawnedPendulums.Add(pendulum);
         }
     }
 
     private Vector3 GetRandomSpawnPos()
     {
-        const float minDistance = 1.5f;
+        const float minDistance = 0.5f;
 
         while(true)
         {
@@ -52,7 +61,7 @@ public class PendulumAttack : AttackPattern
 
             foreach(GameObject go in spawnedPendulums)
             {
-                if(Vector3.Distance(go.transform.position, randomPos) < minDistance)
+                if(Vector3.Distance(go.transform.position, randomPos) <= minDistance)
                 {
                     isOverlapping = true;
                     break;
@@ -64,7 +73,10 @@ public class PendulumAttack : AttackPattern
         }
     }
 
-    public override IEnumerator Run()
+    /// <summary>
+    /// 스폰된 시계 추 진자운동 시작
+    /// </summary>
+    private IEnumerator MovePendulum()
     {
         int destroyedCount = 0;
 
@@ -82,9 +94,14 @@ public class PendulumAttack : AttackPattern
             yield return null;
     }
 
-    public override bool IsSuccess()
+    public override IEnumerator Run()
     {
-        // TODO 두 플레이어가 죽으면 false 처리
-        return true;
+        for (int i = 0; i < spawnCount; i++)
+        {
+            SpawnPendulum(startAngles[i % 2]);
+            yield return StartCoroutine(MovePendulum());
+
+            yield return new WaitForSeconds(1f);
+        }
     }
 }
