@@ -47,8 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackCharacter: 1
   pendulmnPrefabPath: Prefabs/Pendulum
-  minPos: {x: 0, y: 8, z: -5}
-  maxPos: {x: 0, y: 8, z: 5}
+  attackOriginXY: {x: 0, y: 8}
+  attackZMin: -5
+  attackZMax: 5
+  avoidZMin: 0
+  avoidZMax: 1
 --- !u!114 &1788875364518036121
 MonoBehaviour:
   m_ObjectHideFlags: 0
