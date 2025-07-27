@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 897987202093586145}
   - component: {fileID: 6665379294295724361}
   - component: {fileID: 3546791274960810905}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pendulum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 6665379294295724361}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -149,7 +150,7 @@ GameObject:
   - component: {fileID: 4914230258538829167}
   - component: {fileID: 2279223396653749389}
   - component: {fileID: 3169812911554485681}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
