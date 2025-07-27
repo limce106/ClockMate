@@ -16,8 +16,6 @@ public class ScreenEffectController : MonoBehaviour
     private float warmthStep = maxWarmth/ 3;
     private const float maxWarmth = 0.6f;
 
-    private float transitionTime = 2.0f;   // 전환 속도
-
     void Start()
     {
         if(!volume.profile.TryGet(out colorAdjustments))
@@ -28,18 +26,20 @@ public class ScreenEffectController : MonoBehaviour
 
     private void Update()
     {
+        // 테스트용
         if (Input.GetKeyDown(KeyCode.G))
             EnableGrayscale(true);
-        else if (Input.GetKeyDown(KeyCode.B))
+        else if (Input.GetKeyDown(KeyCode.W))
             IncreaseWarmth();
         else if (Input.GetKeyDown(KeyCode.X))
             EnableGrayscale(false);
+        //
     }
 
     public void EnableGrayscale(bool isGrayscale)
     {
         if(isGrayscale)
-            colorAdjustments.saturation.value = -100f;
+            StartCoroutine(LerpEffect(-100f, colorAdjustments.postExposure.value, whiteBalance.temperature.value, 2f));
         else
             colorAdjustments.saturation.value = 0f;
     }
@@ -55,10 +55,10 @@ public class ScreenEffectController : MonoBehaviour
 
         Debug.Log(warmthLevel);
 
-        StartCoroutine(LerpEffect(targetSaturation, targetExposure, targetTemperature));
+        StartCoroutine(LerpEffect(targetSaturation, targetExposure, targetTemperature, 2f));
     }
 
-    private IEnumerator LerpEffect(float targetSaturation, float targetExposure, float targetTemperature)
+    private IEnumerator LerpEffect(float targetSaturation, float targetExposure, float targetTemperature, float transitionTime)
     {
         float t = 0f;
 
