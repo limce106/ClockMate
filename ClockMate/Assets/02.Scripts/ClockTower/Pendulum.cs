@@ -11,7 +11,8 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
     private Rigidbody rb;
 
     public float startAngle;
-    private float swingSpeed = 50;
+    private float swingSpeed = 45f;
+    private float torque;
 
     private bool alreadyTriggered = false;  // DestroyObj를 한 번만 실행하기 위함
     private bool isStarted = false;
@@ -34,12 +35,16 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void StartPendulum()
     {
-        if (isStarted)
-            return;
         isStarted = true;
+        torque = startAngle < 0 ? swingSpeed : -swingSpeed;
+    }
 
-        float torque = startAngle < 0 ? swingSpeed : -swingSpeed;
-        rb.AddTorque(Vector3.forward * torque, ForceMode.Impulse);
+    private void FixedUpdate()
+    {
+        if (!isStarted)
+            return;
+
+        rb.AddTorque(Vector3.forward * torque, ForceMode.Force);
     }
 
     private void Update()
