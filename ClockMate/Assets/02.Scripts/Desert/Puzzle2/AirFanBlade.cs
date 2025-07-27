@@ -1,3 +1,4 @@
+using DefineExtension;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,7 +49,7 @@ public class AirFanBlade : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(airFan.isFanOn && collision.gameObject.CompareTag("Player"))
+        if(airFan.isFanOn && collision.collider.IsPlayerCollider())
         {
             Destroy(collision.gameObject);
         }
