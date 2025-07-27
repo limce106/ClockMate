@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(HingeJoint))]
-public class Pendulum : MonoBehaviourPun
+public class Pendulum : MonoBehaviourPun, IPunObservable
 {
     private Rigidbody rb;
 
@@ -46,13 +46,13 @@ public class Pendulum : MonoBehaviourPun
         if (!isStarted)
             return;
 
-        if(!alreadyTriggered)
+        if (!alreadyTriggered)
         {
             float zAngle = NormalizeAngle(transform.localEulerAngles.z);
             float targetAngle = -startAngle;
 
             // 진자가 반대쪽 끝 각에 도달했다면
-            if(Mathf.Abs(zAngle - targetAngle) < angleThreshold)
+            if (Mathf.Abs(zAngle - targetAngle) < angleThreshold)
             {
                 alreadyTriggered = true;
                 DestroyObj();
@@ -71,6 +71,30 @@ public class Pendulum : MonoBehaviourPun
         {
             OnPendulumDestroyed.Invoke(this);
             PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(rb.position);
+            stream.SendNext(rb.rotation);
+            stream.SendNext(rb.velocity);
+            stream.SendNext(rb.angularVelocity);
+        }
+        else
+        {
+            Vector3 position = (Vector3)stream.ReceiveNext();
+            Quaternion rotation = (Quaternion)stream.ReceiveNext();
+            Vector3 velocity = (Vector3)stream.ReceiveNext();
+            Vector3 angularVelocity = (Vector3)stream.ReceiveNext();
+
+            rb.position = Vector3.Lerp(rb.position, position, Time.deltaTime * 10f);
+            rb.rotation = Quaternion.Slerp(rb.rotation, rotation, Time.deltaTime * 10f);
+
+            rb.velocity = velocity;
+            rb.angularVelocity = angularVelocity;
         }
     }
 }
