@@ -1,3 +1,4 @@
+using DefineExtension;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,6 +72,14 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
         {
             OnPendulumDestroyed.Invoke(this);
             PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.IsPlayerCollider())
+        {
+            // TODO 플레이어 사망 처리
         }
     }
 
