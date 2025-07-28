@@ -20,7 +20,7 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
     private const float angleThreshold = 0.5f;
 
     public delegate void PendulumDestroyHandler(Pendulum pendulum);
-    public event PendulumDestroyHandler OnPendulumDestroyed;    // 진자가 파괴될 때 실행될 콜백
+    public event PendulumDestroyHandler OnPendulumDestroyed;    // 시계 추가 파괴될 때 실행될 콜백
 
 
     private void Awake()
