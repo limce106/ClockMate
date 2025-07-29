@@ -6,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(HingeJoint))]
-public class Pendulum : MonoBehaviourPun, IPunObservable
+public class SwingPendulum : MonoBehaviourPun, IPunObservable
 {
     private Rigidbody rb;
 
@@ -19,7 +19,7 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
 
     private const float angleThreshold = 0.5f;
 
-    public delegate void PendulumDestroyHandler(Pendulum pendulum);
+    public delegate void PendulumDestroyHandler(SwingPendulum pendulum);
     public event PendulumDestroyHandler OnPendulumDestroyed;    // 시계 추가 파괴될 때 실행될 콜백
 
 
@@ -82,9 +82,16 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         if(collision.collider.IsPlayerCollider())
         {
-            // TODO 플레이어 사망 처리
+            // 플레이어 사망 처리
+            CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
+
+            BattleLifeManager battleLifeManager = GameObject.FindObjectOfType<BattleLifeManager>();
+            battleLifeManager.HandleDeath(character, character.transform.position);
         }
     }
 
