@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DeadState : IState
 {
@@ -11,9 +12,11 @@ public class DeadState : IState
     
     public void Enter()
     {
-        _character.gameObject.SetActive(false);
-        StageLifeManager.Instance.HandleDeath(_character);
-        
+        if(SceneManager.GetActiveScene().ToString() != "ClockTower")
+        {
+            _character.gameObject.SetActive(false);
+            StageLifeManager.Instance.HandleDeath(_character);
+        }
     }
 
     public void FixedUpdate()

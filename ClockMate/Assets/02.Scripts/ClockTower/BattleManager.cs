@@ -14,6 +14,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<GameObject> attackPrefabs;
     private int curAttackIdx = 0;
 
+    private AttackType attackType;
+    private PlayerAttackType playerAttackType = 0;
+
     [Header("UI")]
     public Slider recoverySlider;
 
@@ -33,6 +36,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
+
+        if(StageLifeManager.Instance != null)
+            Destroy(StageLifeManager.Instance);
     }
 
     void Start()
