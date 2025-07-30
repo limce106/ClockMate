@@ -5,7 +5,7 @@ using UnityEngine;
 using static Define.Character;
 using static Define.Battle;
 
-public class BattleLifeManager : MonoBehaviour
+public class BattleLifeManager : MonoBehaviourPun
 {
     private HashSet<int> deadPlayers = new HashSet<int>();
     private Dictionary<CharacterBase, Vector3> lastHitPositions = new Dictionary<CharacterBase, Vector3>();
@@ -25,6 +25,8 @@ public class BattleLifeManager : MonoBehaviour
 
     public void HandleDeath(CharacterBase character)
     {
+        character.ChangeState<DeadState>();
+
         int id = character.GetComponent<PhotonView>().ViewID;
         deadPlayers.Add(id);
 
@@ -47,7 +49,7 @@ public class BattleLifeManager : MonoBehaviour
         Vector3 revivePos = strategy.GetRevivePosition();
         character.transform.position = revivePos;
 
-        character.ChangeState<IdleState>();
+        character.ChangeState<IdleState>(); // TODO 정상적으로 동기화 되는지 확인할 것!
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 
@@ -61,7 +63,15 @@ public class BattleLifeManager : MonoBehaviour
         switch(BattleManager.Instance.attackType)
         {
             case AttackType.SwingAttack:
-                return new SwingReviveStrategy(lastHitPositions[character]);
+                if (lastHitPositions.TryGetValue(character, out Vector3 pos))
+                {
+                    return new SwingReviveStrategy(pos);
+                }
+                else
+                {
+                    Debug.LogWarning($"{character.name} 부활 위치 저장 안 됨");
+                    return new DefaultReviveStrategy(Vector3.zero);
+                }
             case AttackType.SmashAttack:
                 return new SmashReviveStrategy(BattleManager.Instance.currentSmashAttack);
             case AttackType.PlayerAttack:

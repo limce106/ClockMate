@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Define.Battle;
 
 public class DeadState : IState
 {
@@ -31,7 +29,9 @@ public class DeadState : IState
 
     public void Exit()
     {
-        _character.gameObject.SetActive(true);
+        if (SceneManager.GetActiveScene().ToString() != "ClockTower")
+        {
+            _character.gameObject.SetActive(true);
+        }
     }
-
 }
