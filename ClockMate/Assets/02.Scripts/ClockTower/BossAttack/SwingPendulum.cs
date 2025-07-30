@@ -26,6 +26,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         startAngle = NormalizeAngle(transform.eulerAngles.z);
     }
 
@@ -89,9 +90,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
         {
             // 플레이어 사망 처리
             CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
-
-            BattleLifeManager battleLifeManager = GameObject.FindObjectOfType<BattleLifeManager>();
-            battleLifeManager.HandleDeath(character, character.transform.position);
+            
         }
     }
 
