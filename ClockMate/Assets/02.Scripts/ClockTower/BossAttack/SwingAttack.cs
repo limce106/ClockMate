@@ -48,8 +48,8 @@ public class SwingAttack : AttackPattern
         for (int i = 0; i < spawnNum; i++)
         {
             Vector3 pos = GetRandomSpawnPos();
-
             Quaternion rotation = Quaternion.Euler(0, 0, startAngle);
+
             GameObject pendulum = PhotonNetwork.Instantiate(pendulmnPrefabPath, pos, rotation);
             spawnedPendulums.Add(pendulum);
         }
