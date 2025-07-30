@@ -76,7 +76,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            OnPendulumDestroyed.Invoke(this);
+            OnPendulumDestroyed?.Invoke(this);
             PhotonNetwork.Destroy(gameObject);
         }
     }
@@ -91,6 +91,10 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
             // 플레이어 사망 처리
             CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
             
+            // 마지막 위치를 넘겨준다
+            Vector3 hitPos = character.transform.position;
+            BattleLifeManager.Instance.RecordHitPosition(character, hitPos);
+            BattleLifeManager.Instance.HandleDeath(character);
         }
     }
 

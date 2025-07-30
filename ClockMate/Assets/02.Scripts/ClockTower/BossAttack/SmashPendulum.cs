@@ -26,7 +26,8 @@ public class SmashPendulum : MonoBehaviourPun, IPunObservable
         if (collision.collider.IsPlayerCollider())
         {
             // 플레이어 사망 처리
-            
+            CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
+            BattleLifeManager.Instance.HandleDeath(character);
         }
     }
 
