@@ -12,7 +12,6 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     protected Sprite _climbSprite;
     protected string _climbString;
 
-    protected bool _isTrigger = false;
     protected bool _isColliding = false;
 
     [SerializeField] protected Transform topPoint;
@@ -61,7 +60,7 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
         if (!character.IsGrounded)
             return false;
 
-        if (_isTrigger)
+        if (_isColliding)
             return true;
         else
             return false;
@@ -97,23 +96,13 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     public abstract void AttachTo(CharacterBase character);
 
-    private void OnTriggerStay(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (!_isTrigger)
-            _isTrigger = true;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        _isTrigger = false;
+        _isColliding = true;
     }
 
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    _isColliding = true;
-    //}
-
-    //private void OnCollisionExit(Collision collision)
-    //{
-    //    _isColliding = false;
-    //}
+    private void OnCollisionExit(Collision collision)
+    {
+        _isColliding = false;
+    }
 }
