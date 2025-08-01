@@ -36,7 +36,8 @@ public class BattleLifeManager : MonoBehaviourPun
         }
         else
         {
-            // TODO 실패 연출
+            ScreenEffectController screenEffectController = FindAnyObjectByType<ScreenEffectController>();
+            StartCoroutine(screenEffectController.FailBossAttackSequence());
         }
     }
 

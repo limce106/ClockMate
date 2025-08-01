@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class ScreenEffectController : MonoBehaviour
 {
+    public Image fadeImg;
     public Volume volume;
 
     private ColorAdjustments colorAdjustments;
@@ -33,13 +35,15 @@ public class ScreenEffectController : MonoBehaviour
             IncreaseWarmth();
         else if (Input.GetKeyDown(KeyCode.X))
             EnableGrayscale(false);
+        else if (Input.GetKeyDown(KeyCode.F))
+            StartCoroutine(FailBossAttackSequence());
         //
     }
 
-    public void EnableGrayscale(bool isGrayscale)
+    public IEnumerator EnableGrayscale(bool isGrayscale)
     {
         if(isGrayscale)
-            StartCoroutine(LerpEffect(-100f, colorAdjustments.postExposure.value, whiteBalance.temperature.value, 5f));
+            yield return StartCoroutine(LerpEffect(-100f, colorAdjustments.postExposure.value, whiteBalance.temperature.value, 0.5f));
         else
             colorAdjustments.saturation.value = 0f;
     }
@@ -76,5 +80,50 @@ public class ScreenEffectController : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public IEnumerator FadeIn(float duration)
+    {
+        float time = 0f;
+        Color color = fadeImg.color;
+
+        while(time < duration)
+        {
+            color.a = Mathf.Lerp(1f, 0f, time/duration);
+            fadeImg.color = color;
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        color.a = 0f;
+        fadeImg.color = color;
+    }
+
+    public IEnumerator FadeOut(float duration)
+    {
+        float time = 0f;
+        Color color = fadeImg.color;
+
+        while (time < duration)
+        {
+            color.a = Mathf.Lerp(0f, 1f, time / duration);
+            fadeImg.color = color;
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        color.a = 1f;
+        fadeImg.color = color;
+    }
+
+    public IEnumerator FailBossAttackSequence()
+    {
+        yield return StartCoroutine(EnableGrayscale(true));
+        yield return StartCoroutine(FadeOut(5f));
+
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(EnableGrayscale(false));
+        yield return StartCoroutine(FadeIn(3f));
     }
 }
