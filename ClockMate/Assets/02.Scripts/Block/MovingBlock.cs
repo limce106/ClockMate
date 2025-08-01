@@ -44,7 +44,7 @@ public class MovingBlock : ResettableBase
     
     private void OnCollisionEnter(Collision other)
     {
-        if (!other.collider.CompareTag("Player")) return;
+        if (!other.collider.IsPlayerCollider()) return;
         other.transform.SetParent(transform); // 캐릭터도 블럭 따라 움직이도록 설정
         if (!startAutomatically) // 캐릭터가 밟으면 움직임 시작하도록
         {
@@ -62,7 +62,7 @@ public class MovingBlock : ResettableBase
 
     private void OnCollisionExit(Collision other)
     {
-        if (!other.collider.CompareTag("Player")) return;
+        if (!other.collider.IsPlayerCollider()) return;
         other.transform.SetParent(null); // 부모 해제
     }
 

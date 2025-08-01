@@ -19,7 +19,8 @@
         {
             Move,
             Jump,
-            Interact
+            Interact,
+            Climb
         }
     }
     public static class UI
@@ -53,6 +54,15 @@
             Right,
             Forward,
             Backward
+        }
+    }
+
+    public static class Battle
+    {
+        public enum AttackCharacter
+        {
+            Player = 0,
+            Boss = 1
         }
     }
 }
