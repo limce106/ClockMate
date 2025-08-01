@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static Define.Battle;
 
-public class PendulumAttack : AttackPattern
+public class SwingAttack : AttackPattern
 {
-    private string pendulmnPrefabPath = "Prefabs/Pendulum";
+    private string pendulmnPrefabPath = "Prefabs/SwingPendulum";
     private int attackCount = 5;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
@@ -48,8 +48,8 @@ public class PendulumAttack : AttackPattern
         for (int i = 0; i < spawnNum; i++)
         {
             Vector3 pos = GetRandomSpawnPos();
-
             Quaternion rotation = Quaternion.Euler(0, 0, startAngle);
+
             GameObject pendulum = PhotonNetwork.Instantiate(pendulmnPrefabPath, pos, rotation);
             spawnedPendulums.Add(pendulum);
         }
@@ -101,7 +101,7 @@ public class PendulumAttack : AttackPattern
 
         foreach (GameObject pendulumGO in spawnedPendulums)
         {
-            Pendulum pendulum = pendulumGO.GetComponent<Pendulum>();
+            SwingPendulum pendulum = pendulumGO.GetComponent<SwingPendulum>();
             PhotonView pv = pendulumGO.GetComponent<PhotonView>();
 
             pv.RPC("StartPendulum", RpcTarget.All);

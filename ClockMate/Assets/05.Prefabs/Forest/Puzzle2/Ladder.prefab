@@ -73,7 +73,6 @@ GameObject:
   - component: {fileID: 3994627927461383624}
   - component: {fileID: 7960469408257778513}
   - component: {fileID: 6165520868694461799}
-  - component: {fileID: 8480732037268582934}
   - component: {fileID: 3695430849272798332}
   - component: {fileID: 5587399443690994162}
   m_Layer: 0
@@ -150,28 +149,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8480732037268582934
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9025826021275799742}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &3695430849272798332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,11 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e60409e4789ca44bbba571ffee8a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachOffset: {x: 0, y: 0.3, z: 0}
-  topY: 0
-  bottomY: 0
   topPoint: {fileID: 2165637385495429018}
   bottomPoint: {fileID: 7868582410494426349}
+  topY: 0
+  bottomY: 0
 --- !u!65 &5587399443690994162
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -208,5 +184,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 0.1, z: 1}
-  m_Center: {x: 0, y: 0.55, z: 0.5}
+  m_Size: {x: 1, y: 1.1, z: 1}
+  m_Center: {x: 0, y: 0.1, z: 0.45}
