@@ -14,7 +14,7 @@ public class TreeClimbObject : ClimbObjectBase
     {
         Vector3 attachPoint;
 
-        if (character.transform.position.y < gameObject.transform.position.y)
+        if (character.transform.position.y < transform.position.y)
         {
             // 오브젝트와의 가장 가까운 지점에 붙이기
             float halfHeight = character.transform.localScale.y * 0.5f;

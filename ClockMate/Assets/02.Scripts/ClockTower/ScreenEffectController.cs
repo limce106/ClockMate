@@ -39,7 +39,7 @@ public class ScreenEffectController : MonoBehaviour
     public void EnableGrayscale(bool isGrayscale)
     {
         if(isGrayscale)
-            StartCoroutine(LerpEffect(-100f, colorAdjustments.postExposure.value, whiteBalance.temperature.value, 2f));
+            StartCoroutine(LerpEffect(-100f, colorAdjustments.postExposure.value, whiteBalance.temperature.value, 5f));
         else
             colorAdjustments.saturation.value = 0f;
     }
@@ -55,7 +55,7 @@ public class ScreenEffectController : MonoBehaviour
 
         Debug.Log(warmthLevel);
 
-        StartCoroutine(LerpEffect(targetSaturation, targetExposure, targetTemperature, 2f));
+        StartCoroutine(LerpEffect(targetSaturation, targetExposure, targetTemperature, 3f));
     }
 
     private IEnumerator LerpEffect(float targetSaturation, float targetExposure, float targetTemperature, float transitionTime)

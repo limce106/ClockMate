@@ -6,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(HingeJoint))]
-public class Pendulum : MonoBehaviourPun, IPunObservable
+public class SwingPendulum : MonoBehaviourPun, IPunObservable
 {
     private Rigidbody rb;
 
@@ -19,13 +19,14 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
 
     private const float angleThreshold = 0.5f;
 
-    public delegate void PendulumDestroyHandler(Pendulum pendulum);
-    public event PendulumDestroyHandler OnPendulumDestroyed;    // 진자가 파괴될 때 실행될 콜백
+    public delegate void PendulumDestroyHandler(SwingPendulum pendulum);
+    public event PendulumDestroyHandler OnPendulumDestroyed;    // 시계 추가 파괴될 때 실행될 콜백
 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         startAngle = NormalizeAngle(transform.eulerAngles.z);
     }
 
@@ -75,16 +76,25 @@ public class Pendulum : MonoBehaviourPun, IPunObservable
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            OnPendulumDestroyed.Invoke(this);
+            OnPendulumDestroyed?.Invoke(this);
             PhotonNetwork.Destroy(gameObject);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         if(collision.collider.IsPlayerCollider())
         {
-            // TODO 플레이어 사망 처리
+            // 플레이어 사망 처리
+            CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
+            
+            // 마지막 위치를 넘겨준다
+            Vector3 hitPos = character.transform.position;
+            BattleLifeManager.Instance.RecordHitPosition(character, hitPos);
+            BattleLifeManager.Instance.HandleDeath(character);
         }
     }
 

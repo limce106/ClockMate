@@ -11,8 +11,14 @@ using static Define.Battle;
 /// </summary>
 public class BattleManager : MonoBehaviourPunCallbacks
 {
+    private Dictionary<string, AttackType> AttackNameToType;
+
     [SerializeField] private List<GameObject> attackPrefabs;
     private int curAttackIdx = 0;
+
+    public AttackType attackType { get; private set; }
+    public PlayerAttackType playerAttackType { get; private set; }
+    public SmashAttack currentSmashAttack { get; private set; }
 
     [Header("UI")]
     public Slider recoverySlider;
@@ -33,6 +39,18 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
+
+        // StageLifeManager 파괴
+        if (StageLifeManager.Instance != null)
+            Destroy(StageLifeManager.Instance);
+
+        // AttackNameToType 초기화
+        AttackNameToType = new Dictionary<string, AttackType>
+        {
+            {"SwingAttack", AttackType.SwingAttack },
+            {"SmashAttack", AttackType.SmashAttack },
+            {"PlayerAttack", AttackType.PlayerAttack },
+        };
     }
 
     void Start()
@@ -68,8 +86,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
         while (curAttackIdx < attackPrefabs.Count)
         {
             string attackName = attackPrefabs[curAttackIdx].name.Trim();
+            photonView.RPC(nameof(SetAttackType), RpcTarget.All, AttackNameToType[attackName]);
+
             GameObject attackGO = PhotonNetwork.Instantiate("Prefabs/" + attackName, Vector3.zero, Quaternion.identity);
             AttackPattern curAttack = attackGO.GetComponent<AttackPattern>();
+            
+            currentSmashAttack = attackType == AttackType.SmashAttack ? curAttack as SmashAttack : null;
 
             yield return StartCoroutine(curAttack.Run());
             // 공격 완료 후 대기 시간
@@ -105,5 +127,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private void UpdateRecovery()
     {
         recoverySlider.value += recoveryPerSuccess;
+    }
+
+    [PunRPC]
+    void SetAttackType(AttackType newType)
+    {
+        attackType = newType;
     }
 }

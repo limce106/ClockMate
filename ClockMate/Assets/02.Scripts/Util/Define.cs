@@ -64,5 +64,19 @@
             Player = 0,
             Boss = 1
         }
+
+        public enum AttackType
+        {
+            SwingAttack,
+            SmashAttack,
+            PlayerAttack
+        }
+
+        public enum PlayerAttackType
+        {
+            ClockNeedleRecovery,
+            CogwheelRevery,
+            ClockTowerOperation
+        }
     }
 }
