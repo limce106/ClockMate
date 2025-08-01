@@ -1,7 +1,8 @@
 using UnityEngine;
 
-public class Snowball : MonoBehaviour
+public class Snowball : MonoBehaviour, ITurretTarget 
 {
+    private ParticleSystem _destroyEffect;
     private SnowballPoolModule _poolModule;
     private bool _isActive;
     private float _speed;
@@ -13,6 +14,7 @@ public class Snowball : MonoBehaviour
         _poolModule = pool;
         _isActive = false;
         _targetHP = targetHP;
+        _destroyEffect = Resources.Load<ParticleSystem>("Effects/TargetDestroy");
     }
     
     private void Update()
@@ -39,8 +41,9 @@ public class Snowball : MonoBehaviour
         _target = target;
     }
 
-    public void Destroy()
+    public void OnHit()
     {
+        Instantiate(_destroyEffect, transform.position, Quaternion.identity);
         _poolModule.ReturnToPool(this);
         _isActive = false;
     }
