@@ -39,7 +39,7 @@ public class SnowballShooter : MonoBehaviourPun
         };
 
         _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
-        targetDetector.Set(_uiAim, pool);
+        targetDetector.Set(_uiAim);
     }
 
     private void Update()
@@ -61,7 +61,9 @@ public class SnowballShooter : MonoBehaviourPun
         for (int i = 0; i < 9; i++)
         {
             if (!_attackPatterns[pattern, i]) continue;
-            pool.Get().Launch(snowballGenPositions[i], sled, snowballSpeed);
+            Snowball snowball = pool.Get();
+            snowball.Launch(snowballGenPositions[i], sled, snowballSpeed);
+            targetDetector.AddTarget(snowball);
         }
     }
 }
