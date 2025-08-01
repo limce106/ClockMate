@@ -167,7 +167,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -184,11 +184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e60409e4789ca44bbba571ffee8a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachOffset: {x: 0, y: 0.3, z: 0}
-  topY: 0
-  bottomY: 0
   topPoint: {fileID: 2165637385495429018}
   bottomPoint: {fileID: 7868582410494426349}
+  topY: 0
+  bottomY: 0
 --- !u!65 &5587399443690994162
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -208,5 +207,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 0.1, z: 1}
-  m_Center: {x: 0, y: 0.55, z: 0.5}
+  m_Size: {x: 1, y: 1.1, z: 1}
+  m_Center: {x: 0, y: 0.1, z: 0.45}

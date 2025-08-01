@@ -12,7 +12,6 @@ public class ClimbState : IState
     private const float Margin = 0.05f;
 
     private Rigidbody _rb;
-    private RigidbodyConstraints _originalConstraints;
     private bool playerAttached = false;
 
     public ClimbState(CharacterBase character, ClimbObjectBase climbTarget)
@@ -52,8 +51,6 @@ public class ClimbState : IState
 
     void StartClimbing()
     {
-        _originalConstraints = _rb.constraints;
-
         _rb.useGravity = false;
         _rb.velocity = Vector3.zero;
         _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
@@ -71,9 +68,11 @@ public class ClimbState : IState
     public void StopClimbing()
     {
         _rb.useGravity = true;
-        _rb.constraints = _originalConstraints;
+        _rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         _character.ChangeState<IdleState>();
         climbTarget.CloseUI();
+
+        climbTarget.EnableColliders(true);
     }
 }
