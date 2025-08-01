@@ -61,20 +61,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
         if (!character.IsGrounded)
             return false;
 
-        if (character.transform.position.y < gameObject.transform.position.y)
-        {
-            if (_isColliding)
-                return true;
-            else
-                return false;
-        }
+        if (_isTrigger)
+            return true;
         else
-        {
-            if (_isTrigger)
-                return true;
-            else
-                return false;
-        }
+            return false;
     }
 
     public void OnInteractAvailable()
@@ -94,7 +84,15 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
         _uiClimbableObj = _uiManager.Show<UIClimbableObj>("UIClimbableObj");
         ShowNoticeUI("UI/Sprites/keyboard_q_outline", "기어올라가기 종료");
 
+        EnableColliders(false);
+
         return true;
+    }
+
+    public void EnableColliders(bool enable)
+    {
+        Collider collider = GetComponent<Collider>();
+        collider.enabled = enable;
     }
 
     public abstract void AttachTo(CharacterBase character);
@@ -109,14 +107,13 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
         _isTrigger = false;
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        if (!_isColliding)
-            _isColliding = true;
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    _isColliding = true;
+    //}
 
-    private void OnCollisionExit(Collision collision)
-    {
-        _isColliding = false;
-    }
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    _isColliding = false;
+    //}
 }

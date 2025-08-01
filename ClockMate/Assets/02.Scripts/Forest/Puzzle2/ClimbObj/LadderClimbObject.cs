@@ -10,7 +10,7 @@ public class LadderClimbObject : ClimbObjectBase
     public override void AttachTo(CharacterBase character)
     {
         // 사다리 밑에 있으면
-        if(_isColliding)
+        if(character.transform.position.y < transform.position.y)
         {
             character.transform.position = bottomPoint.position;
         }
