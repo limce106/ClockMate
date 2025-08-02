@@ -10,6 +10,8 @@ public class BattleLifeManager : MonoBehaviourPun
     private HashSet<int> deadPlayers = new HashSet<int>();
     private Dictionary<CharacterBase, Vector3> lastHitPositions = new Dictionary<CharacterBase, Vector3>();
 
+    public readonly Vector3 BattleFieldCenter = Vector3.zero;
+
     public static BattleLifeManager Instance { get; private set; }
 
     private void Awake()
@@ -25,8 +27,6 @@ public class BattleLifeManager : MonoBehaviourPun
 
     public void HandleDeath(CharacterBase character)
     {
-        character.ChangeState<DeadState>();
-
         int id = character.GetComponent<PhotonView>().ViewID;
         deadPlayers.Add(id);
 
@@ -54,11 +54,17 @@ public class BattleLifeManager : MonoBehaviourPun
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 
+    /// <summary>
+    /// SwingPendulum과 부딪혔을 때 마지막 위치 저장용
+    /// </summary>
     public void RecordHitPosition(CharacterBase character, Vector3 pos)
     {
         lastHitPositions[character] = pos;
     }
 
+    /// <summary>
+    /// 부활 시점 기준으로 부활 전략 선택
+    /// </summary>
     private IReviveStrategy GetStrategy(CharacterBase character)
     {
         switch(BattleManager.Instance.attackType)
@@ -70,14 +76,14 @@ public class BattleLifeManager : MonoBehaviourPun
                 }
                 else
                 {
-                    Debug.LogWarning($"{character.name} 부활 위치 저장 안 됨");
-                    return new DefaultReviveStrategy(Vector3.zero);
+                    // 낙사 또는 미기록일때
+                    return new DefaultReviveStrategy(BattleFieldCenter);
                 }
             case AttackType.SmashAttack:
                 return new SmashReviveStrategy(BattleManager.Instance.currentSmashAttack);
             case AttackType.PlayerAttack:
             default:
-                return new DefaultReviveStrategy(Vector3.zero);
+                return new DefaultReviveStrategy(BattleFieldCenter);
         }
     }
 }
