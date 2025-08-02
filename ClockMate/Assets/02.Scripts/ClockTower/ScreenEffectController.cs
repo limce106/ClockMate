@@ -35,8 +35,6 @@ public class ScreenEffectController : MonoBehaviour
             IncreaseWarmth();
         else if (Input.GetKeyDown(KeyCode.X))
             EnableGrayscale(false);
-        else if (Input.GetKeyDown(KeyCode.F))
-            StartCoroutine(FailBossAttackSequence());
         //
     }
 
@@ -114,16 +112,5 @@ public class ScreenEffectController : MonoBehaviour
 
         color.a = 1f;
         fadeImg.color = color;
-    }
-
-    public IEnumerator FailBossAttackSequence()
-    {
-        yield return StartCoroutine(EnableGrayscale(true));
-        yield return StartCoroutine(FadeOut(5f));
-
-        yield return new WaitForSeconds(1f);
-
-        yield return StartCoroutine(EnableGrayscale(false));
-        yield return StartCoroutine(FadeIn(3f));
     }
 }

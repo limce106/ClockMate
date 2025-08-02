@@ -28,11 +28,10 @@ public abstract class AttackPattern : MonoBehaviourPun
     public abstract IEnumerator Run();
 
     /// <summary>
-    /// 플레이어가 현재 기믹을 성공했는지
+    /// 플레이어 모두 사망한 경우를 위한 중도 공격 취소 + 오브젝트 제거
     /// </summary>
-    public virtual bool IsSuccess()
+    public virtual void CancelAttack()
     {
-        // TODO 두 플레이어가 죽으면 false 처리
-        return true;
+        
     }
 }

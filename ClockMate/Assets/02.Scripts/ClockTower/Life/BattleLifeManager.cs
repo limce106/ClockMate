@@ -36,8 +36,9 @@ public class BattleLifeManager : MonoBehaviourPun
         }
         else
         {
-            ScreenEffectController screenEffectController = FindAnyObjectByType<ScreenEffectController>();
-            StartCoroutine(screenEffectController.FailBossAttackSequence());
+            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+            BattleManager.Instance.StopCurAttackPattern();
+            deadPlayers.Clear();
         }
     }
 
@@ -67,9 +68,9 @@ public class BattleLifeManager : MonoBehaviourPun
     /// </summary>
     private IReviveStrategy GetStrategy(CharacterBase character)
     {
-        switch(BattleManager.Instance.attackType)
+        switch(BattleManager.Instance.phaseType)
         {
-            case AttackType.SwingAttack:
+            case PhaseType.SwingAttack:
                 if (lastHitPositions.TryGetValue(character, out Vector3 pos))
                 {
                     return new SwingReviveStrategy(pos);
@@ -79,9 +80,9 @@ public class BattleLifeManager : MonoBehaviourPun
                     // 낙사 또는 미기록일때
                     return new DefaultReviveStrategy(BattleFieldCenter);
                 }
-            case AttackType.SmashAttack:
+            case PhaseType.SmashAttack:
                 return new SmashReviveStrategy(BattleManager.Instance.currentSmashAttack);
-            case AttackType.PlayerAttack:
+            case PhaseType.PlayerAttack:
             default:
                 return new DefaultReviveStrategy(BattleFieldCenter);
         }
