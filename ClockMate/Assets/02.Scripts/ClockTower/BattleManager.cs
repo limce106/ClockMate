@@ -1,25 +1,29 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define.Battle;
+using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// 전투 흐름 제어
 /// </summary>
 public class BattleManager : MonoBehaviourPunCallbacks
 {
-    private Dictionary<string, AttackType> AttackNameToType;
+    private Dictionary<string, PhaseType> AttackNameToType;
 
-    [SerializeField] private List<GameObject> attackPrefabs;
-    private int curPhaseIdx = 0;
+    [SerializeField] private List<GameObject> bossAttackPrefabs;
+    [SerializeField] private List<GameObject> playerAttackPrefabs;
+    private AttackPattern curAttackPattern;
+    private ScreenEffectController screenEffectController;
 
-    private Coroutine currentPhaseRoutine;
     private bool isRetryingPhase = false;
+    private bool curAttackSuccess = false;
 
-    public AttackType attackType { get; private set; } = AttackType.SwingAttack;
+    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
     public SmashAttack currentSmashAttack { get; private set; }
 
@@ -30,6 +34,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public int round = 1;
 
     public const float recoveryPerSuccess = 0.334f;
+    private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
+    private readonly PlayerAttackType[] PlayerAttackTypes = (PlayerAttackType[])Enum.GetValues(typeof(PlayerAttackType));
 
     public static BattleManager Instance { get; private set; }
 
@@ -48,12 +54,14 @@ public class BattleManager : MonoBehaviourPunCallbacks
             Destroy(StageLifeManager.Instance);
 
         // AttackNameToType 초기화
-        AttackNameToType = new Dictionary<string, AttackType>
+        AttackNameToType = new Dictionary<string, PhaseType>
         {
-            {"SwingAttack", AttackType.SwingAttack },
-            {"SmashAttack", AttackType.SmashAttack },
-            {"PlayerAttack", AttackType.PlayerAttack },
+            {"SwingAttack", PhaseType.SwingAttack },
+            {"SmashAttack", PhaseType.SmashAttack },
+            {"PlayerAttack", PhaseType.PlayerAttack },
         };
+
+        screenEffectController = FindObjectOfType<ScreenEffectController>();
     }
 
     void Start()
@@ -61,10 +69,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    //public override void OnJoinedRoom()
-    //{
-    //    StartCoroutine(StartBattle());
-    //}
+    public override void OnJoinedRoom()
+    {
+        StartCoroutine(StartBattle());
+    }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
@@ -77,54 +85,76 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient)
             yield break;
 
-        StartCoroutine(RunSinglePhase());
+        yield return StartCoroutine(RunBattle());
 
         // TODO 성공 연출
     }
 
-    private IEnumerator RunSinglePhase()
+    private IEnumerator RunBattle()
     {
-        curPhaseIdx = 0;
-
-        while (true)
+        while(true)
         {
-            string attackName = attackPrefabs[curPhaseIdx].name.Trim();
-            photonView.RPC(nameof(SetAttackType), RpcTarget.All, AttackNameToType[attackName]);
+            // 마지막 반격에 성공하면 종료
+            if(phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
+            {
+                yield break;
+            }
 
-            GameObject attackGO = PhotonNetwork.Instantiate("Prefabs/" + attackName, Vector3.zero, Quaternion.identity);
-            AttackPattern curAttack = attackGO.GetComponent<AttackPattern>();
-            
-            currentSmashAttack = attackType == AttackType.SmashAttack ? curAttack as SmashAttack : null;
-            isRetryingPhase = false;
+            GameObject attackPrefab = GetCurrentPhasePrefab();
+            GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
+            curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
+            currentSmashAttack = phaseType == PhaseType.SmashAttack ? curAttackPattern as SmashAttack : null;
 
-            yield return StartCoroutine(curAttack.Run());
+            yield return StartCoroutine(curAttackPattern.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
-            PhotonNetwork.Destroy(attackGO);
+            PhotonNetwork.Destroy(spawnedAttack);
 
-            if (curAttack.IsSuccess())
+            bool success = curAttackSuccess;
+            curAttackSuccess = false;
+
+            if(success)
             {
-                if (curAttack.attackCharacter == AttackCharacter.Player)
-                {
-                    UpdateRecovery();
-                }
-
-                curPhaseIdx++;
+                yield return StartCoroutine(HandleSuccess());
             }
             else
             {
-                // TODO 실패 연출
+                yield return StartCoroutine(HandleFailure());
+            }
+        }
+    }
 
-                // 플레이어 반격이 실패했다면 첫 기믹으로 돌아감
-                if (curAttack.attackCharacter == AttackCharacter.Player)
-                {
-                    curPhaseIdx = 0;
-                }
-                // 보스 기믹 실패 시(두 플레이어 모두 사망 시) 해당 기믹 재실행
+    private IEnumerator HandleSuccess()
+    {
+        if(phaseType == PhaseType.PlayerAttack)
+        {
+            UpdateRecovery();
+            screenEffectController.IncreaseWarmth();
+
+            photonView.RPC(nameof(TryAdvancePlayerAttack), RpcTarget.All);
+            round++;
+
+            // 마지막 반격 성공 시 종료
+            if ((int)playerAttackType >= playerAttackPrefabs.Count)
+            {
+                yield break;
             }
         }
 
-        round++;
+        photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
+    }
+
+    private IEnumerator HandleFailure()
+    {
+        if (phaseType == PhaseType.PlayerAttack)
+        {
+            photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
+            round++;
+        }
+        else
+        {
+            yield return StartCoroutine(FailBossAttackSequence());
+        }
     }
 
     private void UpdateRecovery()
@@ -132,9 +162,69 @@ public class BattleManager : MonoBehaviourPunCallbacks
         recoverySlider.value += recoveryPerSuccess;
     }
 
-    [PunRPC]
-    void SetAttackType(AttackType newType)
+    public void StopCurAttackPattern()
     {
-        attackType = newType;
+        curAttackPattern?.CancelAttack();
+    }
+
+    private GameObject GetCurrentPhasePrefab()
+    {
+        if (phaseType == PhaseType.PlayerAttack)
+            return playerAttackPrefabs[(int)playerAttackType];
+        else
+            return bossAttackPrefabs[(int)phaseType];
+    }
+
+    [PunRPC]
+    public void ReportAttackResult(bool success, PhotonMessageInfo info)
+    {
+
+        if (info.Sender != PhotonNetwork.MasterClient)
+            return;
+
+        curAttackSuccess = success;
+    }
+
+    /// <summary>
+    /// 다음 페이즈로 이동
+    /// </summary>
+    [PunRPC]
+    void TryAdvanceBossAttack()
+    {
+        int index = (int)phaseType;
+
+        if (index + 1 < PhaseTypes.Length)
+        {
+            phaseType = PhaseTypes[index + 1];
+        }
+        else
+        {
+            phaseType = 0;
+        }
+    }
+
+    /// <summary>
+    /// 다음 플레이어 공격으로 이동
+    /// </summary>
+    [PunRPC]
+    void TryAdvancePlayerAttack()
+    {
+        int index = (int)playerAttackType;
+
+        if(index +1 < PlayerAttackTypes.Length)
+        {
+            playerAttackType = PlayerAttackTypes[index + 1];
+        }
+    }
+
+    public IEnumerator FailBossAttackSequence()
+    {
+        yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
+        yield return StartCoroutine(screenEffectController.FadeOut(5f));
+
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
+        yield return StartCoroutine(screenEffectController.FadeIn(3f));
     }
 }

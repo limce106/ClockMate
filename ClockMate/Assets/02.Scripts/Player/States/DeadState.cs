@@ -18,7 +18,7 @@ public class DeadState : IState
         }
         else
         {
-            if(BattleManager.Instance.attackType == AttackType.SwingAttack)
+            if(BattleManager.Instance.phaseType == PhaseType.SwingAttack)
             {
                 // SwingAttack으로 인해 사망했다면 마지막 위치 저장
                 Vector3 hitPos = _character.transform.position;
