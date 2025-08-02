@@ -14,10 +14,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private Dictionary<string, AttackType> AttackNameToType;
 
     [SerializeField] private List<GameObject> attackPrefabs;
-    private int curAttackIdx = 0;
+    private int curPhaseIdx = 0;
 
-    public AttackType attackType { get; private set; }
-    public PlayerAttackType playerAttackType { get; private set; }
+    private Coroutine currentPhaseRoutine;
+    private bool isRetryingPhase = false;
+
+    public AttackType attackType { get; private set; } = AttackType.SwingAttack;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
     public SmashAttack currentSmashAttack { get; private set; }
 
     [Header("UI")]
@@ -81,22 +84,22 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private IEnumerator RunSinglePhase()
     {
-        curAttackIdx = 0;
+        curPhaseIdx = 0;
 
-        while (curAttackIdx < attackPrefabs.Count)
+        while (true)
         {
-            string attackName = attackPrefabs[curAttackIdx].name.Trim();
+            string attackName = attackPrefabs[curPhaseIdx].name.Trim();
             photonView.RPC(nameof(SetAttackType), RpcTarget.All, AttackNameToType[attackName]);
 
             GameObject attackGO = PhotonNetwork.Instantiate("Prefabs/" + attackName, Vector3.zero, Quaternion.identity);
             AttackPattern curAttack = attackGO.GetComponent<AttackPattern>();
             
             currentSmashAttack = attackType == AttackType.SmashAttack ? curAttack as SmashAttack : null;
+            isRetryingPhase = false;
 
             yield return StartCoroutine(curAttack.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
-
             PhotonNetwork.Destroy(attackGO);
 
             if (curAttack.IsSuccess())
@@ -106,7 +109,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     UpdateRecovery();
                 }
 
-                curAttackIdx++;
+                curPhaseIdx++;
             }
             else
             {
@@ -115,7 +118,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 // 플레이어 반격이 실패했다면 첫 기믹으로 돌아감
                 if (curAttack.attackCharacter == AttackCharacter.Player)
                 {
-                    curAttackIdx = 0;
+                    curPhaseIdx = 0;
                 }
                 // 보스 기믹 실패 시(두 플레이어 모두 사망 시) 해당 기믹 재실행
             }
