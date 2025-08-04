@@ -7,26 +7,20 @@ using UnityEngine.InputSystem.iOS;
 
 public class FallingAttack : AttackPattern
 {
+    private string needlePrefabPath = "Prefabs/FallingNeedle";
     private int attackNeedleCount = 5;
     private bool isCanceled = false;
 
     [SerializeField] private float spawnOriginY = 0f;
 
-    private List<GameObject> spawnedPendulums = new List<GameObject>();
+    private List<GameObject> spawnedNeedles = new List<GameObject>();
 
     private const int addtionalNeedleCount = 2;
+    private const float spawnDelay = 1f;
 
     protected override void Init()
     {
         attackNeedleCount += (BattleManager.Instance.round - 1) * addtionalNeedleCount;
-    }
-
-    private void SpawnPendulum()
-    {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
-        // 오브젝트 스폰
     }
 
     /// <summary>
@@ -41,6 +35,16 @@ public class FallingAttack : AttackPattern
         {
             if (isCanceled)
                 yield break;
+
+            Vector3 pos = GetRandomSpawnPos(spawnOriginY);
+
+            GameObject needleGO = PhotonNetwork.Instantiate(needlePrefabPath, pos, Quaternion.identity);
+            spawnedNeedles.Add(needleGO);
+
+            FallingNeedle fallingNeedle = needleGO.GetComponent<FallingNeedle>();
+            fallingNeedle.OnFallingNeedleDestroyed += (n) => spawnedNeedles.Remove(n);
+
+            yield return new WaitForSeconds(spawnDelay);
         }
 
         if (!isCanceled)
@@ -62,7 +66,7 @@ public class FallingAttack : AttackPattern
             bool isOverlapping = false;
 
             // 이미 스폰된 오브젝트와 겹치지 않는지
-            foreach (GameObject go in spawnedPendulums)
+            foreach (GameObject go in spawnedNeedles)
             {
                 Vector2 exisitingPosXZ = new Vector2(go.transform.position.x, go.transform.position.z);
 
