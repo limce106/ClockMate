@@ -62,7 +62,9 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
             if (Mathf.Abs(zAngle - targetAngle) < angleThreshold)
             {
                 alreadyTriggered = true;
-                DestroyObj();
+
+                if (PhotonNetwork.IsMasterClient)
+                    PhotonNetwork.Destroy(gameObject);
             }
         }
     }
@@ -72,13 +74,9 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
         return (angle + 180) % 360 - 180;
     }
 
-    public void DestroyObj()
+    private void OnDestroy()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            OnPendulumDestroyed?.Invoke(this);
-            PhotonNetwork.Destroy(gameObject);
-        }
+        OnPendulumDestroyed?.Invoke(this);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -90,11 +88,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
         {
             // 플레이어 사망 처리
             CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
-            
-            // 마지막 위치를 넘겨준다
-            Vector3 hitPos = character.transform.position;
-            BattleLifeManager.Instance.RecordHitPosition(character, hitPos);
-            BattleLifeManager.Instance.HandleDeath(character);
+            character.ChangeState<DeadState>();
         }
     }
 
