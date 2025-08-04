@@ -383,8 +383,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33576e7be556f1d4eb8219d0f9afb72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackPrefabs:
+  bossAttackPrefabs:
   - {fileID: 732707544548068936, guid: 3bdd1365a5fe3f643970ec50f0b4784b, type: 3}
+  - {fileID: 1304606408615778887, guid: 557067b96b0f7534b915d02314415f11, type: 3}
+  playerAttackPrefabs: []
+  minBattleFieldXZ: {x: -5, y: -5}
+  maxBattleFieldXZ: {x: 5, y: 5}
   recoverySlider: {fileID: 522222844}
   round: 1
 --- !u!4 &204318377

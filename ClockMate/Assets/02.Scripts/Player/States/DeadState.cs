@@ -11,9 +11,10 @@ public class DeadState : IState
     
     public void Enter()
     {
-        if(SceneManager.GetActiveScene().ToString() != "ClockTower")
+        _character.gameObject.SetActive(false);
+
+        if (SceneManager.GetActiveScene().ToString() != "ClockTower")
         {
-            _character.gameObject.SetActive(false);
             StageLifeManager.Instance.HandleDeath(_character);
         }
         else
@@ -41,9 +42,6 @@ public class DeadState : IState
 
     public void Exit()
     {
-        if (SceneManager.GetActiveScene().ToString() != "ClockTower")
-        {
-            _character.gameObject.SetActive(true);
-        }
+        _character.gameObject.SetActive(true);
     }
 }

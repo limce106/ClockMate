@@ -19,13 +19,15 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
     private ScreenEffectController screenEffectController;
-
-    private bool isRetryingPhase = false;
     private bool curAttackSuccess = false;
+
+    // 전장 범위
+    public Vector2 minBattleFieldXZ;
+    public Vector2 maxBattleFieldXZ;
 
     public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
-    public SmashAttack currentSmashAttack { get; private set; }
+    public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
     public Slider recoverySlider;
@@ -33,7 +35,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
-    public const float recoveryPerSuccess = 0.334f;
+    private const float recoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
     private readonly PlayerAttackType[] PlayerAttackTypes = (PlayerAttackType[])Enum.GetValues(typeof(PlayerAttackType));
 
@@ -57,7 +59,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         AttackNameToType = new Dictionary<string, PhaseType>
         {
             {"SwingAttack", PhaseType.SwingAttack },
-            {"SmashAttack", PhaseType.SmashAttack },
+            {"DropAttack", PhaseType.FallingAttack },
             {"PlayerAttack", PhaseType.PlayerAttack },
         };
 
@@ -69,10 +71,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    public override void OnJoinedRoom()
-    {
-        StartCoroutine(StartBattle());
-    }
+    //public override void OnJoinedRoom()
+    //{
+    //    StartCoroutine(StartBattle());
+    //}
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
@@ -103,7 +105,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
             curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
-            currentSmashAttack = phaseType == PhaseType.SmashAttack ? curAttackPattern as SmashAttack : null;
+            currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
 
             yield return StartCoroutine(curAttackPattern.Run());
             // 공격 완료 후 대기 시간
@@ -128,7 +130,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         if(phaseType == PhaseType.PlayerAttack)
         {
-            UpdateRecovery();
+            if(playerAttackType != PlayerAttackType.ClockTowerOperation)
+                UpdateRecovery();
+
             screenEffectController.IncreaseWarmth();
 
             photonView.RPC(nameof(TryAdvancePlayerAttack), RpcTarget.All);
@@ -211,7 +215,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         int index = (int)playerAttackType;
 
-        if(index +1 < PlayerAttackTypes.Length)
+        if (index +1 < PlayerAttackTypes.Length)
         {
             playerAttackType = PlayerAttackTypes[index + 1];
         }
@@ -220,7 +224,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public IEnumerator FailBossAttackSequence()
     {
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
-        yield return StartCoroutine(screenEffectController.FadeOut(5f));
+        yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
         yield return new WaitForSeconds(1f);
 
