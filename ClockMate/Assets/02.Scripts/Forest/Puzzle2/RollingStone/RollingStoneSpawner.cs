@@ -18,6 +18,8 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
 
     private bool spawningStarted = false;
 
+    public NetworkObjectPool<RollingStone> rollingStonePool;
+
     void Start()
     {
         if(PhotonNetwork.InRoom)
@@ -26,7 +28,7 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnJoinedRoom()
+    public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         StartSpawning();
     }
@@ -61,6 +63,6 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
 
     private void SpawnStone(Vector3 point)
     {
-        RollingStone stone = RollingStonePoolManager.Instance.GetStone(point);
+        RollingStone stone = rollingStonePool.Get(point);
     }
 }

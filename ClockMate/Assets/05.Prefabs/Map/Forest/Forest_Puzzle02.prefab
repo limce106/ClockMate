@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3949940265175414204}
-  - component: {fileID: 1811587497441979041}
   - component: {fileID: 3347095897440137883}
+  - component: {fileID: 2363016694694178070}
+  - component: {fileID: 1833923591307834265}
   m_Layer: 0
   m_Name: RollingStoneController
   m_TagString: Untagged
@@ -33,20 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5990466584159587010}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1811587497441979041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5017327120829900902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ca1004bb4df43140bce937760356277, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  poolSize: 30
-  prefabPath: Prefabs/RollingStone
 --- !u!114 &3347095897440137883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +50,43 @@ MonoBehaviour:
   - spwanPoint: {x: 65.1, y: 23.076427, z: 12.2}
     spawnInterval: 3
     spawnOnce: 0
+  rollingStonePool: {fileID: 2363016694694178070}
+--- !u!114 &2363016694694178070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5017327120829900902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b5b968b65f83b46862352de23f8826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/RollingStone
+  initialPoolSize: 15
+--- !u!114 &1833923591307834265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5017327120829900902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &6327594004057793937
 GameObject:
   m_ObjectHideFlags: 0
