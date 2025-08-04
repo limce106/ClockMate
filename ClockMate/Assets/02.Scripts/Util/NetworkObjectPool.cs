@@ -53,7 +53,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
     }
 
     // 풀에서 오브젝트 꺼내기
-    public T Get(Vector3 position)
+    public T Get(Vector3 position, Quaternion rotation)
     {
         if (!PhotonNetwork.IsMasterClient)
             return null;
@@ -61,14 +61,14 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         T obj = GetInactiveObject();
         if (obj == null)
         {
-            GameObject newObj = PhotonNetwork.Instantiate(prefabPath, Vector3.zero, Quaternion.identity);
+            GameObject newObj = PhotonNetwork.Instantiate(prefabPath, position, rotation);
             obj = newObj.GetComponent<T>();
             pool.Add(obj);
         }
 
         int viewID = obj.photonView.ViewID;
 
-        photonView.RPC(nameof(RPC_ActivateObject), RpcTarget.All, viewID, position);
+        photonView.RPC(nameof(RPC_ActivateObject), RpcTarget.All, viewID, position, rotation);
 
         return obj;
     }
@@ -96,7 +96,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
     }
 
     [PunRPC]
-    public void RPC_ActivateObject(int viewID, Vector3 position)
+    public void RPC_ActivateObject(int viewID, Vector3 position, Quaternion rotation)
     {
         PhotonView view = PhotonView.Find(viewID);
         if (view == null)
@@ -106,6 +106,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
 
         T obj = view.GetComponent<T>();
         obj.transform.position = position;
+        obj.transform.rotation = rotation;
         obj.gameObject.SetActive(true);
     }
 
