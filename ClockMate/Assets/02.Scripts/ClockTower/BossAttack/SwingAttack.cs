@@ -12,13 +12,13 @@ public class SwingAttack : AttackPattern
     private bool isCanceled = false;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
-    public Vector2 attackOriginXY = Vector2.zero;
-    public float attackZMin = 0f;
-    public float attackZMax = 0f;
+    [SerializeField] private Vector2 attackOriginXY = Vector2.zero;
+    [SerializeField] private float attackZMin = 0f;
+    [SerializeField] private float attackZMax = 0f;
 
     // 공통 회피 가능 구간
-    public float avoidZMin = 0f;
-    public float avoidZMax = 0f;
+    [SerializeField] private float avoidZMin = 0f;
+    [SerializeField] private float avoidZMax = 0f;
 
     private List<GameObject> spawnedPendulums = new List<GameObject>();
 
