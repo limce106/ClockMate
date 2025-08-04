@@ -65,10 +65,10 @@
             Boss = 1
         }
 
-        public enum AttackType
+        public enum PhaseType
         {
             SwingAttack,
-            SmashAttack,
+            FallingAttack,
             PlayerAttack
         }
 

@@ -1,9 +1,10 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class RollingStone : MonoBehaviour
+public class RollingStone : MonoBehaviourPun
 {
     public float torqueForce = 10f;
     private Rigidbody rb;
@@ -41,7 +42,8 @@ public class RollingStone : MonoBehaviour
     {
         if(transform.position.y <= ReturnHeight)
         {
-            RollingStonePoolManager.Instance.ReturnStone(this);
+            RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
+            rollingStoneSpawner.rollingStonePool.Return(this);
         }
     }
 }

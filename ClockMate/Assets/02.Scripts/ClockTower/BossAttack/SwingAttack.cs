@@ -9,15 +9,16 @@ public class SwingAttack : AttackPattern
 {
     private string pendulmnPrefabPath = "Prefabs/SwingPendulum";
     private int attackCount = 5;
+    private bool isCanceled = false;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
-    public Vector2 attackOriginXY = Vector2.zero;
-    public float attackZMin = 0f;
-    public float attackZMax = 0f;
+    [SerializeField] private Vector2 attackOriginXY = Vector2.zero;
+    [SerializeField] private float attackZMin = 0f;
+    [SerializeField] private float attackZMax = 0f;
 
     // 공통 회피 가능 구간
-    public float avoidZMin = 0f;
-    public float avoidZMax = 0f;
+    [SerializeField] private float avoidZMin = 0f;
+    [SerializeField] private float avoidZMax = 0f;
 
     private List<GameObject> spawnedPendulums = new List<GameObject>();
 
@@ -120,10 +121,30 @@ public class SwingAttack : AttackPattern
     {
         for (int i = 0; i < attackCount; i++)
         {
+            if (isCanceled)
+                yield break;
+
             SpawnPendulum(startAngles[i % 2]);
             yield return StartCoroutine(MovePendulum());
 
             yield return new WaitForSeconds(1f);
+        }
+
+        if(!isCanceled)
+            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
+    }
+
+    public override void CancelAttack()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        isCanceled = true;
+
+        var pendulumsToDestroy = new List<GameObject>(spawnedPendulums);
+        foreach (GameObject pendulumGO in pendulumsToDestroy)
+        {
+            PhotonNetwork.Destroy(pendulumGO);
         }
     }
 }
