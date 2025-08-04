@@ -63,6 +63,6 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
 
     private void SpawnStone(Vector3 point)
     {
-        RollingStone stone = rollingStonePool.Get(point);
+        RollingStone stone = rollingStonePool.Get(point, Quaternion.identity);
     }
 }
