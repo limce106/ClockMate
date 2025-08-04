@@ -68,7 +68,7 @@
         public enum PhaseType
         {
             SwingAttack,
-            SmashAttack,
+            DropAttack,
             PlayerAttack
         }
 

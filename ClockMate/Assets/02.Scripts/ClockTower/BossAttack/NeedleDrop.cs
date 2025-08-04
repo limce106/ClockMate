@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SmashPendulum : MonoBehaviourPun, IPunObservable
+public class NeedleDrop : MonoBehaviourPun, IPunObservable
 {
     private Rigidbody rb;
 
@@ -15,7 +15,7 @@ public class SmashPendulum : MonoBehaviourPun, IPunObservable
 
     void Update()
     {
-        
+
     }
 
     private void OnCollisionEnter(Collision collision)
