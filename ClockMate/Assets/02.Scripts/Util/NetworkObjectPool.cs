@@ -46,7 +46,6 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
             T component = obj.GetComponent<T>();
             if (component == null)
             {
-                Debug.LogError($"Prefab at {prefabPath} does not have component {typeof(T)}");
                 continue;
             }
             pool.Add(component);
@@ -67,8 +66,10 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
             pool.Add(obj);
         }
 
-        int index = pool.IndexOf(obj);
-        photonView.RPC(nameof(RPC_ActivateObject), RpcTarget.All, index, position);
+        int viewID = obj.photonView.ViewID;
+
+        photonView.RPC(nameof(RPC_ActivateObject), RpcTarget.All, viewID, position);
+
         return obj;
     }
 
@@ -78,10 +79,10 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        int index = pool.IndexOf(obj);
-        if (index < 0) return;
+        int viewID = obj.photonView.ViewID;
 
-        photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, index);
+        if (PhotonNetwork.IsMasterClient)
+            photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, viewID);
     }
 
     private T GetInactiveObject()
@@ -95,21 +96,30 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
     }
 
     [PunRPC]
-    public void RPC_ActivateObject(int index, Vector3 position)
+    public void RPC_ActivateObject(int viewID, Vector3 position)
     {
-        if (index < 0 || index >= pool.Count) return;
+        PhotonView view = PhotonView.Find(viewID);
+        if (view == null)
+        {
+            return;
+        }
 
-        T obj = pool[index];
+        T obj = view.GetComponent<T>();
         obj.transform.position = position;
         obj.gameObject.SetActive(true);
     }
 
     [PunRPC]
-    public void RPC_DeactivateObject(int index)
+    public void RPC_DeactivateObject(int viewID)
     {
-        if (index < 0 || index >= pool.Count) return;
+        PhotonView view = PhotonView.Find(viewID);
+        if (view == null)
+        {
+            return;
+        }
 
-        T obj = pool[index];
+        T obj = view.GetComponent<T>();
         obj.gameObject.SetActive(false);
     }
+
 }
