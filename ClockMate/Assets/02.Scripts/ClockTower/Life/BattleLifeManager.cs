@@ -80,8 +80,8 @@ public class BattleLifeManager : MonoBehaviourPun
                     // 낙사 또는 미기록일때
                     return new DefaultReviveStrategy(BattleFieldCenter);
                 }
-            case PhaseType.DropAttack:
-                return new DropReviveStrategy(BattleManager.Instance.currentDropAttack);
+            case PhaseType.FallingAttack:
+                return new FallingReviveStrategy(BattleManager.Instance.currentFallingAttack);
             case PhaseType.PlayerAttack:
             default:
                 return new DefaultReviveStrategy(BattleFieldCenter);
