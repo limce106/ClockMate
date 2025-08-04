@@ -1,20 +1,24 @@
+using JetBrains.Annotations;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.iOS;
 
-public class DropAttack : AttackPattern
+public class FallingAttack : AttackPattern
 {
-    private int attackPendulumCount = 5;
+    private int attackNeedleCount = 5;
     private bool isCanceled = false;
 
     [SerializeField] private float spawnOriginY = 0f;
 
     private List<GameObject> spawnedPendulums = new List<GameObject>();
 
+    private const int addtionalNeedleCount = 2;
+
     protected override void Init()
     {
-
+        attackNeedleCount += (BattleManager.Instance.round - 1) * addtionalNeedleCount;
     }
 
     private void SpawnPendulum()
@@ -30,7 +34,14 @@ public class DropAttack : AttackPattern
     /// </summary>
     public override IEnumerator Run()
     {
-        yield break;
+        if (!PhotonNetwork.IsMasterClient)
+            yield break;
+
+        for(int i = 0; i < attackNeedleCount; i++)
+        {
+            if (isCanceled)
+                yield break;
+        }
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
@@ -74,7 +85,7 @@ public class DropAttack : AttackPattern
 
         isCanceled = true;
 
-        var pendulumsToDestroy = FindObjectsOfType<NeedleDrop>();
+        var pendulumsToDestroy = FindObjectsOfType<FallingNeedle>();
 
         foreach (var pendulum in pendulumsToDestroy)
         {
