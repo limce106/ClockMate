@@ -25,6 +25,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public Vector2 minBattleFieldXZ;
     public Vector2 maxBattleFieldXZ;
 
+    // 보스 공격 오브젝트 풀
+    public NetworkObjectPool<SwingPendulum> pendulumPool;
+    public NetworkObjectPool<FallingNeedle> needlePool;
+
     public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
@@ -51,10 +55,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         Instance = this;
 
-        // StageLifeManager 파괴
-        if (StageLifeManager.Instance != null)
-            Destroy(StageLifeManager.Instance);
-
         // AttackNameToType 초기화
         AttackNameToType = new Dictionary<string, PhaseType>
         {
@@ -62,6 +62,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
             {"DropAttack", PhaseType.FallingAttack },
             {"PlayerAttack", PhaseType.PlayerAttack },
         };
+
+        // StageLifeManager 파괴
+        if (StageLifeManager.Instance != null)
+            Destroy(StageLifeManager.Instance);
 
         screenEffectController = FindObjectOfType<ScreenEffectController>();
     }

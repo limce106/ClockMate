@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallingNeedle : MonoBehaviourPun, IPunObservable
+public class FallingNeedle : MonoBehaviourPun
 {
     private Rigidbody rb;
 
@@ -12,30 +12,44 @@ public class FallingNeedle : MonoBehaviourPun, IPunObservable
     private const float lifeTime = 3f;
     private const float stickOffset = 0.2f;
 
-    public delegate void FallingNeedleDestroyHandler(GameObject gameObject);
-    public event FallingNeedleDestroyHandler OnFallingNeedleDestroyed;    // 시계 추가 파괴될 때 실행될 콜백
+    public delegate void FallingNeedleDisableHandler(GameObject gameObject);
+    public event FallingNeedleDisableHandler OnFallingNeedleDisabled;    // 시계 추가 파괴될 때 실행될 콜백
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    private void Start()
+    private void OnEnable()
+    {
+        rb.isKinematic = false;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        if (PhotonNetwork.IsMasterClient)
+            photonView.RPC(nameof(ApplyFallForce), RpcTarget.All);
+    }
+
+    private void OnDisable()
+    {
+        OnFallingNeedleDisabled?.Invoke(gameObject);
+        OnFallingNeedleDisabled = null;
+    }
+
+    [PunRPC]
+    void ApplyFallForce()
     {
         rb.AddForce(Vector3.down * fallForce, ForceMode.Acceleration);
     }
 
-    private void OnDestroy()
-    {
-        OnFallingNeedleDestroyed?.Invoke(gameObject);
-    }
-
-    private IEnumerator DestroyAfterDelay()
+    private IEnumerator ReturnAfterDelay()
     {
         yield return new WaitForSeconds(lifeTime);
 
         if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.Destroy(gameObject);
+        {
+            BattleManager.Instance.needlePool.Return(this);
+        }
     }
 
     /// <summary>
@@ -58,7 +72,7 @@ public class FallingNeedle : MonoBehaviourPun, IPunObservable
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             StickToGround();
-            StartCoroutine(DestroyAfterDelay());
+            StartCoroutine(ReturnAfterDelay());
         }
 
         if (collision.collider.IsPlayerCollider())
@@ -69,27 +83,28 @@ public class FallingNeedle : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.rotation);
-            stream.SendNext(rb.velocity);
-            stream.SendNext(rb.angularVelocity);
-        }
-        else
-        {
-            Vector3 position = (Vector3)stream.ReceiveNext();
-            Quaternion rotation = (Quaternion)stream.ReceiveNext();
-            Vector3 velocity = (Vector3)stream.ReceiveNext();
-            Vector3 angularVelocity = (Vector3)stream.ReceiveNext();
+    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    //{
+    //    if (stream.IsWriting)
+    //    {
+    //        stream.SendNext(transform.position);
+    //        stream.SendNext(rb.rotation);
+    //        stream.SendNext(rb.velocity);
+    //        stream.SendNext(rb.angularVelocity);
+    //    }
+    //    else
+    //    {
+    //        Vector3 position = (Vector3)stream.ReceiveNext();
+    //        Quaternion rotation = (Quaternion)stream.ReceiveNext();
+    //        Vector3 velocity = (Vector3)stream.ReceiveNext();
+    //        Vector3 angularVelocity = (Vector3)stream.ReceiveNext();
 
-            rb.position = Vector3.Lerp(rb.position, position, Time.deltaTime * 10f);
-            rb.rotation = Quaternion.Slerp(rb.rotation, rotation, Time.deltaTime * 10f);
+    //        transform.position = position;
+    //        //rb.position = Vector3.Lerp(rb.position, position, Time.deltaTime * 10f);
+    //        rb.rotation = Quaternion.Slerp(rb.rotation, rotation, Time.deltaTime * 10f);
 
-            rb.velocity = velocity;
-            rb.angularVelocity = angularVelocity;
-        }
-    }
+    //        rb.velocity = velocity;
+    //        rb.angularVelocity = angularVelocity;
+    //    }
+    //}
 }
