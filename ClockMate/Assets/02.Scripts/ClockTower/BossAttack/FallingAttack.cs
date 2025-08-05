@@ -7,7 +7,6 @@ using UnityEngine.InputSystem.iOS;
 
 public class FallingAttack : AttackPattern
 {
-    private string needlePrefabPath = "Prefabs/FallingNeedle";
     private int attackNeedleCount = 5;
     private bool isCanceled = false;
 
@@ -38,11 +37,10 @@ public class FallingAttack : AttackPattern
 
             Vector3 pos = GetRandomSpawnPos(spawnOriginY);
 
-            GameObject needleGO = PhotonNetwork.Instantiate(needlePrefabPath, pos, Quaternion.identity);
-            spawnedNeedles.Add(needleGO);
+            FallingNeedle needle = BattleManager.Instance.needlePool.Get(pos, Quaternion.identity);
+            spawnedNeedles.Add(needle.gameObject);
 
-            FallingNeedle fallingNeedle = needleGO.GetComponent<FallingNeedle>();
-            fallingNeedle.OnFallingNeedleDestroyed += (n) => spawnedNeedles.Remove(n);
+            needle.OnFallingNeedleDisabled += (n) => spawnedNeedles.Remove(n);
 
             yield return new WaitForSeconds(spawnDelay);
         }
@@ -89,11 +87,11 @@ public class FallingAttack : AttackPattern
 
         isCanceled = true;
 
-        var pendulumsToDestroy = FindObjectsOfType<FallingNeedle>();
+        var needlesToDestroy = FindObjectsOfType<FallingNeedle>();
 
-        foreach (var pendulum in pendulumsToDestroy)
+        foreach (var needle in needlesToDestroy)
         {
-            PhotonNetwork.Destroy(pendulum.gameObject);
+            BattleManager.Instance.needlePool.Return(needle);
         }
     }
 }
