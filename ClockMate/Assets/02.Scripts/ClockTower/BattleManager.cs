@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define.Battle;
@@ -15,6 +16,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 {
     private Dictionary<string, PhaseType> AttackNameToType;
 
+    public TMP_Text timeLimitText;
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
@@ -29,7 +31,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public NetworkObjectPool<SwingPendulum> pendulumPool;
     public NetworkObjectPool<FallingNeedle> needlePool;
 
-    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
+    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
@@ -39,6 +41,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
+    public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
     private const float recoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
     private readonly PlayerAttackType[] PlayerAttackTypes = (PlayerAttackType[])Enum.GetValues(typeof(PlayerAttackType));
@@ -75,16 +78,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    //public override void OnJoinedRoom()
-    //{
-    //    StartCoroutine(StartBattle());
-    //}
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+    public override void OnJoinedRoom()
     {
-        if(PhotonNetwork.IsMasterClient)
-            StartCoroutine(StartBattle());
+        StartCoroutine(StartBattle());
     }
+
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    if(PhotonNetwork.IsMasterClient)
+    //        StartCoroutine(StartBattle());
+    //}
 
     private IEnumerator StartBattle()
     {
