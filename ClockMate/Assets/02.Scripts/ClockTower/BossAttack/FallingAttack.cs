@@ -27,9 +27,6 @@ public class FallingAttack : AttackPattern
     /// </summary>
     public override IEnumerator Run()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            yield break;
-
         for(int i = 0; i < attackNeedleCount; i++)
         {
             if (isCanceled)
