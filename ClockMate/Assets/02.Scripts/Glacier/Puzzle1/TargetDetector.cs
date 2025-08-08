@@ -18,16 +18,12 @@ public class TargetDetector : MonoBehaviour
     {
         _mainCam = Camera.main;
         _activeTargets = new List<ITurretTarget>();
+        _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
     }
 
     private void Update()
     {
         DetectTarget();
-    }
-    
-    public void Set(UIAim uiAim)
-    {
-        _uiAim = uiAim;
     }
 
     private void DetectTarget()
