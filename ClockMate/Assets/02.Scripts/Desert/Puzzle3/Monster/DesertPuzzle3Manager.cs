@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class DesertPuzzel3Manager: MonoBehaviour
+public class DesertPuzzle3Manager: MonoBehaviour
 {
     [SerializeField] private MonsterController[] monsters;
     [SerializeField] private IABattery[] batteries;

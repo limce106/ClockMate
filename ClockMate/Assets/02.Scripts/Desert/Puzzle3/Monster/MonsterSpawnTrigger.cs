@@ -6,10 +6,10 @@ using UnityEngine.Serialization;
 
 public class MonsterSpawnTrigger : MonoBehaviour
 {
-    [FormerlySerializedAs("monsterManager")] [SerializeField] private DesertPuzzel3Manager desertPuzzel3Manager;
+    [FormerlySerializedAs("desertPuzzel3Manager")] [FormerlySerializedAs("monsterManager")] [SerializeField] private DesertPuzzle3Manager desertPuzzle3Manager;
     private void OnTriggerEnter(Collider other)
     {
-        desertPuzzel3Manager.SpawnMonsters();
+        desertPuzzle3Manager.SpawnMonsters();
         this.gameObject.SetActive(false);
     }
 }
