@@ -27,8 +27,14 @@ public class ClockNeedleRecovery : AttackPattern
     private const float MinDistance = 5f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
+    private const float SpawnPosY = 0.65f;   // 스폰 위치 Y값
 
     protected override void Init()
+    {
+        
+    }
+
+    private void Start()
     {
         ShowRandomTargetTime();
         SpawnNeedles();
@@ -49,7 +55,7 @@ public class ClockNeedleRecovery : AttackPattern
 
     float GetTargetHourAngle()
     {
-        return (targetHour % 12) * 30f + (targetMinute / 60f) * 30f;
+        return (targetHour % 12) * 30f;
     }
 
     float GetTargetMinuteAngle()
@@ -65,8 +71,11 @@ public class ClockNeedleRecovery : AttackPattern
         float randomHourAngle = GetRandomAngleExcluding(targetHourAngle);
         float randomMinuteAngle = GetRandomAngleExcluding(targetHourAngle, randomHourAngle);
 
-        hourNeedle = PhotonNetwork.Instantiate(HourNeedlePrefabPath, BattleManager.Instance.BattleFieldCenter, Quaternion.Euler(0, 0, -randomHourAngle));
-        minuteNeedle = PhotonNetwork.Instantiate(MinuteNeedlePrefabPath, BattleManager.Instance.BattleFieldCenter, Quaternion.Euler(0, 0, -randomMinuteAngle));
+        Vector3 SpawnPos = BattleManager.Instance.BattleFieldCenter;
+        SpawnPos.y = SpawnPosY;
+
+        hourNeedle = PhotonNetwork.Instantiate(HourNeedlePrefabPath, SpawnPos, Quaternion.Euler(0, -randomHourAngle, 0));
+        minuteNeedle = PhotonNetwork.Instantiate(MinuteNeedlePrefabPath, SpawnPos, Quaternion.Euler(0, -randomMinuteAngle, 0));
     }
 
     float GetRandomAngleExcluding(float avoidAngle, float? hourAngle = null)
@@ -101,8 +110,11 @@ public class ClockNeedleRecovery : AttackPattern
 
     bool IsCorrectTime()
     {
-        float hourNeedleAngle = NormalizeAngle(hourNeedle.transform.localEulerAngles.z);
-        float minuteNeedleAngle = NormalizeAngle(minuteNeedle.transform.localEulerAngles.z);
+        if(hourNeedle == null ||  minuteNeedle == null)
+            return false;
+
+        float hourNeedleAngle = NormalizeAngle(hourNeedle.transform.localEulerAngles.y);
+        float minuteNeedleAngle = NormalizeAngle(minuteNeedle.transform.localEulerAngles.y);
 
         float correctHourAngle = GetTargetHourAngle();
         float correctMinuteAngle = GetTargetMinuteAngle();
@@ -144,15 +156,14 @@ public class ClockNeedleRecovery : AttackPattern
             return;
 
         isEnd = true;
-
-        PhotonNetwork.Destroy(hourNeedle);
-        PhotonNetwork.Destroy(minuteNeedle);
-
         ClearClock();
     }
 
     void ClearClock()
     {
+        PhotonNetwork.Destroy(hourNeedle);
+        PhotonNetwork.Destroy(minuteNeedle);
+
         hourNeedleUI.GetComponent<Image>().enabled = false;
         minuteNeedleUI.GetComponent<Image>().enabled = false;
         BattleManager.Instance.timeLimitText.GetComponent<TMP_Text>().enabled = false;
