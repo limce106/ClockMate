@@ -27,7 +27,7 @@ public class FallingAttack : AttackPattern
     /// </summary>
     public override IEnumerator Run()
     {
-        for(int i = 0; i < attackNeedleCount; i++)
+        for (int i = 0; i < attackNeedleCount; i++)
         {
             if (isCanceled)
                 yield break;
@@ -41,6 +41,8 @@ public class FallingAttack : AttackPattern
 
             yield return new WaitForSeconds(spawnDelay);
         }
+
+        yield return new WaitUntil(() => spawnedNeedles.Count == 0);
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
