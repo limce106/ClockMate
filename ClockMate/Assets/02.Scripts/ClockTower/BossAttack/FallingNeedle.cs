@@ -8,7 +8,7 @@ public class FallingNeedle : MonoBehaviourPun
 {
     private Rigidbody rb;
 
-    private const float fallForce = 500f;
+    private const float fallForce = 700f;
     private const float lifeTime = 3f;
     private const float stickOffset = 0.2f;
 
@@ -82,29 +82,4 @@ public class FallingNeedle : MonoBehaviourPun
             character.ChangeState<DeadState>();
         }
     }
-
-    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    //{
-    //    if (stream.IsWriting)
-    //    {
-    //        stream.SendNext(transform.position);
-    //        stream.SendNext(rb.rotation);
-    //        stream.SendNext(rb.velocity);
-    //        stream.SendNext(rb.angularVelocity);
-    //    }
-    //    else
-    //    {
-    //        Vector3 position = (Vector3)stream.ReceiveNext();
-    //        Quaternion rotation = (Quaternion)stream.ReceiveNext();
-    //        Vector3 velocity = (Vector3)stream.ReceiveNext();
-    //        Vector3 angularVelocity = (Vector3)stream.ReceiveNext();
-
-    //        transform.position = position;
-    //        //rb.position = Vector3.Lerp(rb.position, position, Time.deltaTime * 10f);
-    //        rb.rotation = Quaternion.Slerp(rb.rotation, rotation, Time.deltaTime * 10f);
-
-    //        rb.velocity = velocity;
-    //        rb.angularVelocity = angularVelocity;
-    //    }
-    //}
 }
