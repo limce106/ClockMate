@@ -686,7 +686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9cc6c793441e84eb2326c37f1042fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desertPuzzel3Manager: {fileID: 3118613515202222491}
+  desertPuzzle3Manager: {fileID: 3118613515202222491}
 --- !u!1 &7012941783054816657
 GameObject:
   m_ObjectHideFlags: 0
@@ -6088,8 +6088,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2d3660db431e3e4abb9b752bf6e1fb1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4218927317272476150}
   m_SourcePrefab: {fileID: 100100000, guid: c2d3660db431e3e4abb9b752bf6e1fb1, type: 3}
+--- !u!1 &2351000389349954027 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c2d3660db431e3e4abb9b752bf6e1fb1, type: 3}
+  m_PrefabInstance: {fileID: 3197845680186944698}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &4218927317272476150
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2351000389349954027}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6661301, y: 1.2231922, z: 1.6152501}
+  m_Center: {x: 0, y: 0.6049999, z: -0.0035582483}
 --- !u!4 &3164832935680543569 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c2d3660db431e3e4abb9b752bf6e1fb1, type: 3}

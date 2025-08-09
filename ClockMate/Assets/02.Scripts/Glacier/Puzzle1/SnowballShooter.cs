@@ -19,7 +19,6 @@ public class SnowballShooter : MonoBehaviourPun
     
     private float _fireTimer;
     private bool[,] _attackPatterns;
-    private UIAim _uiAim;
 
     private void Awake()
     {
@@ -37,9 +36,6 @@ public class SnowballShooter : MonoBehaviourPun
             {true, false, true, false, true, false, true, false, true},
             {true, false, true, false, false, false, true, false, true},
         };
-
-        _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
-        targetDetector.Set(_uiAim);
     }
 
     private void Update()
