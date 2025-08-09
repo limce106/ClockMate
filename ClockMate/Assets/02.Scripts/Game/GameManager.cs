@@ -8,7 +8,7 @@ using static Define.Character;
 
 public class GameManager : MonoSingleton<GameManager>
 {
-    public CharacterName SelectedCharacter { get; private set; } = CharacterName.Hour;
+    [field: SerializeField] public CharacterName SelectedCharacter { get; private set; } = CharacterName.Hour;
     public Dictionary<CharacterName, CharacterBase> Characters { get; private set; }
     public BoStage CurrentStage { get; private set; }
 
