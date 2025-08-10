@@ -37,7 +37,7 @@ public class FallingAttack : AttackPattern
             FallingClockHand clockHand = BattleManager.Instance.clockhandPool.Get(pos, Quaternion.identity);
             spawnedClockHands.Add(clockHand.gameObject);
 
-            clockHand.OnFallingNeedleDisabled += (n) => spawnedClockHands.Remove(n);
+            clockHand.OnFallingClockHandDisabled += (n) => spawnedClockHands.Remove(n);
 
             yield return new WaitForSeconds(spawnDelay);
         }
