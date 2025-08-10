@@ -29,10 +29,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     // 보스 공격 오브젝트 풀
     public NetworkObjectPool<SwingPendulum> pendulumPool;
-    public NetworkObjectPool<FallingNeedle> needlePool;
+    public NetworkObjectPool<FallingClockHand> clockhandPool;
 
     public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockNeedleRecovery;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
