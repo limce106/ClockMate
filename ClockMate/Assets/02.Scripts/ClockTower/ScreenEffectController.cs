@@ -26,18 +26,6 @@ public class ScreenEffectController : MonoBehaviour
             Debug.LogError("WhiteBalance not found in Volume Profile!");
     }
 
-    private void Update()
-    {
-        // 테스트용
-        if (Input.GetKeyDown(KeyCode.G))
-            EnableGrayscale(true);
-        else if (Input.GetKeyDown(KeyCode.W))
-            IncreaseWarmth();
-        else if (Input.GetKeyDown(KeyCode.X))
-            EnableGrayscale(false);
-        //
-    }
-
     public IEnumerator EnableGrayscale(bool isGrayscale)
     {
         if(isGrayscale)
@@ -54,8 +42,6 @@ public class ScreenEffectController : MonoBehaviour
         float targetSaturation = Mathf.Lerp(0f, 40f, warmthLevel);      // 생동감
         float targetExposure = Mathf.Lerp(0f, maxWarmth, warmthLevel);  // 밝기
         float targetTemperature = Mathf.Lerp(0f, 20f, warmthLevel);     //노란기
-
-        Debug.Log(warmthLevel);
 
         StartCoroutine(LerpEffect(targetSaturation, targetExposure, targetTemperature, 3f));
     }

@@ -67,7 +67,7 @@
 
         public enum PlayerAttackType
         {
-            ClockNeedleRecovery,
+            ClockHandRecovery,
             CogwheelRevery,
             ClockTowerOperation
         }

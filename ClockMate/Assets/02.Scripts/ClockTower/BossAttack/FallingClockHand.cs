@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallingNeedle : MonoBehaviourPun
+public class FallingClockHand : MonoBehaviourPun
 {
     private Rigidbody rb;
 
@@ -12,8 +12,8 @@ public class FallingNeedle : MonoBehaviourPun
     private const float lifeTime = 3f;
     private const float stickOffset = 0.2f;
 
-    public delegate void FallingNeedleDisableHandler(GameObject gameObject);
-    public event FallingNeedleDisableHandler OnFallingNeedleDisabled;    // 시계 추가 파괴될 때 실행될 콜백
+    public delegate void FallingClockHandDisableHandler(GameObject gameObject);
+    public event FallingClockHandDisableHandler OnFallingClockHandDisabled;    // 시계 추가 파괴될 때 실행될 콜백
 
     private void Awake()
     {
@@ -32,8 +32,8 @@ public class FallingNeedle : MonoBehaviourPun
 
     private void OnDisable()
     {
-        OnFallingNeedleDisabled?.Invoke(gameObject);
-        OnFallingNeedleDisabled = null;
+        OnFallingClockHandDisabled?.Invoke(gameObject);
+        OnFallingClockHandDisabled = null;
     }
 
     [PunRPC]
@@ -48,7 +48,7 @@ public class FallingNeedle : MonoBehaviourPun
 
         if (PhotonNetwork.IsMasterClient)
         {
-            BattleManager.Instance.needlePool.Return(this);
+            BattleManager.Instance.clockhandPool.Return(this);
         }
     }
 
