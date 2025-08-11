@@ -87,20 +87,37 @@ public class InteractionDetector : MonoBehaviour
             // 거리 조건
             Vector3 charPos = _character.transform.position;
             Vector3 targetObjPos = targetObj.transform.position;
+            Vector3 forward = _character.transform.forward;
 
             charPos.y = 0;
             targetObjPos.y = 0;
+            forward.y = 0;
 
-            float distance = Vector3.Distance(charPos, targetObjPos);
+            HingeJoint hinge = targetObj.GetComponent<HingeJoint>();
+            float distance;
+            Vector3 center;
+
+            if(hinge == null)
+            {
+                distance = Vector3.Distance(charPos, targetObjPos);
+                center = Vector3.zero;  // 초기화되지 않은 변수 막기용
+            }
+            else
+            {
+                MeshRenderer renderer = targetObj.GetComponentInChildren<MeshRenderer>();
+
+                center = renderer.bounds.center;
+                center.y = 0;
+                distance = Vector3.Distance(charPos, center);
+            }
+
             if (distance > interactDistance) continue;
 
             // 시야각 조건
             if(!ShouldIgnoreViewAngle(targetObj))
             {
-                Vector3 direction = (targetObjPos - charPos).normalized;
-                Vector3 forward = _character.transform.forward;
-                forward.y = 0;
-                float angle = Vector3.Angle(_character.transform.forward, direction);
+                Vector3 direction = hinge == null ? (targetObjPos - charPos).normalized : (center - charPos).normalized;
+                float angle = Vector3.Angle(forward, direction);
                 if (angle > interactAngle) continue;
             }
 

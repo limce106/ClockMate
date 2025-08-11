@@ -682,6 +682,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecoveryHourClockHand
       objectReference: {fileID: 0}
+    - target: {fileID: 7187283922675596617, guid: f86dce75746c4d3479936ca3840f6b36, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8566395899150888786, guid: f86dce75746c4d3479936ca3840f6b36, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13.316145
@@ -2023,6 +2027,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1390010973435750600, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
+      propertyPath: m_Constraints
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 2990194408555785783, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
       propertyPath: sceneViewId
       value: 5
@@ -2031,13 +2039,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecoveryMinuteClockHand
       objectReference: {fileID: 0}
+    - target: {fileID: 3190810293514739049, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8840461621351823630, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.033477
       objectReference: {fileID: 0}
     - target: {fileID: 8840461621351823630, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8840461621351823630, guid: 9e2c0fd691e52f54aadab3dbcac6d570, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2515,7 +2527,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5558303344413861422, guid: 3dccfcb9ccc827645a9bbc6a9f364e0c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.138369
+      value: -0.15
       objectReference: {fileID: 0}
     - target: {fileID: 5558303344413861422, guid: 3dccfcb9ccc827645a9bbc6a9f364e0c, type: 3}
       propertyPath: m_LocalPosition.y
