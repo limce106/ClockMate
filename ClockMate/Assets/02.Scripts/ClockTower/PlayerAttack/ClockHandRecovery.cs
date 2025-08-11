@@ -46,10 +46,10 @@ public class ClockHandRecovery : AttackPattern
         targetMinute = Random.Range(1, 12) * 5;     // 5분 단위로 보여줌
 
         hourClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetHourAngle());
-        minuteClockHand.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
+        minuteClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
 
         hourClockHandUI.GetComponent<Image>().enabled = true;
-        minuteClockHand.GetComponent<Image>().enabled = true;
+        minuteClockHandUI.GetComponent<Image>().enabled = true;
         BattleManager.Instance.timeLimitText.GetComponent<TMP_Text>().enabled = true;
     }
 
