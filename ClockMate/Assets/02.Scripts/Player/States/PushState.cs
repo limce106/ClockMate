@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PushState : IState
 {
@@ -14,7 +15,9 @@ public class PushState : IState
     } 
     public void Enter()
     {
-        _character.transform.rotation = Quaternion.LookRotation(_followTransform.forward);
+        if(SceneManager.GetActiveScene().ToString() == "Glacier")
+            _character.transform.rotation = Quaternion.LookRotation(_followTransform.forward);
+        
     }
 
     public void FixedUpdate()

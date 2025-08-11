@@ -10,7 +10,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
 {
     [SerializeField] private CharacterName ControllerName;      // 밀 수 있는 캐릭터
     private float rotationSpeed = 30f;
-    private Transform clockCenterTransform;
+    private int fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
 
     private UINotice _uiNotice;
     private Sprite _exitSprite;
@@ -18,7 +18,6 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
     private Rigidbody _rb;
     private CharacterBase _controller;
-    private bool _isColliding = false;
     private bool _isControlled;
 
     private void Awake()
@@ -26,10 +25,10 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _rb = GetComponent<Rigidbody>();
         _rb.isKinematic = true;
 
-        clockCenterTransform = transform.parent;
         _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
         _exitString = "나가기";
     }
+
 
     void Update()
     {
@@ -38,44 +37,21 @@ public class IAClockHand : MonoBehaviour, IInteractable
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ExitControl();
+            return;
         }
 
-        Vector3 inputDir = Vector3.zero;
-        if (Input.GetKey(KeyCode.W)) inputDir += _controller.transform.forward;
-        if (Input.GetKey(KeyCode.S)) inputDir -= _controller.transform.forward;
-        if (Input.GetKey(KeyCode.A)) inputDir -= _controller.transform.right;
-        if (Input.GetKey(KeyCode.D)) inputDir += _controller.transform.right;
-
-        if (inputDir.magnitude < 0.1f)
-            return;
-
-        inputDir.y = 0;
-        inputDir.Normalize();
-
-        Vector3 centerToHand = transform.position - clockCenterTransform.position;
-        centerToHand.y = 0;
-        centerToHand.Normalize();
-
-        float cross = Vector3.Cross(centerToHand, inputDir).y;
-
-        float direction = 0f;
-
-        if (cross > 0.1f)
-            direction = 1f;
-        else if (cross < -0.1f)
-            direction = -1f;
-        else
-            direction = 0f;
-
-        transform.Rotate(0f, direction * rotationSpeed * Time.deltaTime, 0f);
+        if (Input.GetKey(KeyCode.W) && fixedRotationDirection != 0)
+        {
+            transform.Rotate(0f, fixedRotationDirection * rotationSpeed * Time.deltaTime, 0f);
+        }
     }
 
     public bool CanInteract(CharacterBase character)
     {
-        if (!_isColliding || _controller == null)
+        if (_controller == null)
             return false;
 
-        if (character.Name != ControllerName)
+        if (_controller.Name != ControllerName)
             return false;
 
         return true;
@@ -88,38 +64,76 @@ public class IAClockHand : MonoBehaviour, IInteractable
     public bool Interact(CharacterBase character)
     {
         _isControlled = true;
-        _controller = character;
         _controller.ChangeState<PushState>(transform);
-        //_controller.InputHandler.enabled = false;
+        _controller.InputHandler.enabled = false;
         _rb.isKinematic = false;
+
+        _controller.GetComponent<Rigidbody>().isKinematic = true;
+        _controller.transform.SetParent(transform, true);
+
+        fixedRotationDirection = GetDirectionFromView();
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
 
-        if (TryGetComponent(out Collider col))
+        // 플레이어 바라보는 방향 설정
+        Vector3 direction = transform.position - character.transform.position;
+        direction.y = 0;
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        character.transform.rotation = targetRotation;
+
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders)
         {
-            col.enabled = false;
+            collider.enabled = false;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// 플레이어 시선 기반으로 시계/반시계 회전 방향 결정
+    /// </summary>
+    /// <returns></returns>
+    private int GetDirectionFromView()
+    {
+        Vector3 forward = _controller.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        Vector3 centerToHand = transform.position;
+        centerToHand.y = 0;
+        centerToHand.Normalize();
+
+        float cross = Vector3.Cross(centerToHand, forward).y;
+
+        if (cross > 0.1f) return 1;
+        else if (cross < -0.1f) return -1;
+        else return 0;
     }
 
     private void ExitControl()
     {
         _isControlled = false;
         _controller.ChangeState<IdleState>();
-        //_controller.InputHandler.enabled = true;
-        _controller = null;
+        _controller.InputHandler.enabled = true;
         _rb.isKinematic = true;
+
+        _controller.transform.SetParent(null, true);
+        _controller.GetComponent<Rigidbody>().isKinematic = false;
+        _controller = null;
+
+        fixedRotationDirection = 0;
 
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
 
         // collider 다시 활성화
-        if (TryGetComponent(out Collider col))
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders)
         {
-            col.enabled = true;
+            collider.enabled = true;
         }
     }
 
@@ -127,7 +141,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
     {
         if (collision.collider.IsPlayerCollider())
         {
-            _isColliding = true;
+            _controller = collision.gameObject.GetComponent<CharacterBase>();
         }
     }
 
@@ -135,7 +149,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
     {
         if (collision.collider.IsPlayerCollider())
         {
-            _isColliding = false;
+            _controller = null;
         }
     }
 }
