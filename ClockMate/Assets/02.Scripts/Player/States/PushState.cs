@@ -15,9 +15,8 @@ public class PushState : IState
     } 
     public void Enter()
     {
-        if(SceneManager.GetActiveScene().ToString() == "Glacier")
-            _character.transform.rotation = Quaternion.LookRotation(_followTransform.forward);
-        
+        _character.transform.rotation = Quaternion.LookRotation(_followTransform.forward);
+
     }
 
     public void FixedUpdate()

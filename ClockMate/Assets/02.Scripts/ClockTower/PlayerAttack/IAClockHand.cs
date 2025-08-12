@@ -4,13 +4,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using static Define.Character;
 
 public class IAClockHand : MonoBehaviour, IInteractable
 {
     [SerializeField] private CharacterName ControllerName;      // 밀 수 있는 캐릭터
-    private float rotationSpeed = 30f;
-    private int fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
+    private float _torqueForce = 20f;
+    private int _fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
 
     private UINotice _uiNotice;
     private Sprite _exitSprite;
@@ -19,6 +20,9 @@ public class IAClockHand : MonoBehaviour, IInteractable
     private Rigidbody _rb;
     private CharacterBase _controller;
     private bool _isControlled;
+    private bool _isColliding;
+
+    private const float ControllerOffset = 1.2f;
 
     private void Awake()
     {
@@ -40,18 +44,15 @@ public class IAClockHand : MonoBehaviour, IInteractable
             return;
         }
 
-        if (Input.GetKey(KeyCode.W) && fixedRotationDirection != 0)
+        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
-            transform.Rotate(0f, fixedRotationDirection * rotationSpeed * Time.deltaTime, 0f);
+            transform.root.Rotate(0f, _fixedRotationDirection * 30f * Time.deltaTime, 0f);
         }
     }
 
     public bool CanInteract(CharacterBase character)
     {
-        if (_controller == null)
-            return false;
-
-        if (_controller.Name != ControllerName)
+        if (character.Name != ControllerName)
             return false;
 
         return true;
@@ -64,24 +65,25 @@ public class IAClockHand : MonoBehaviour, IInteractable
     public bool Interact(CharacterBase character)
     {
         _isControlled = true;
+        _controller = character;
+
+        if (GetDirectionFromView() == 0)
+            return false;
+
+        _fixedRotationDirection = GetDirectionFromView();
+
         _controller.ChangeState<PushState>(transform);
         _controller.InputHandler.enabled = false;
         _rb.isKinematic = false;
 
         _controller.GetComponent<Rigidbody>().isKinematic = true;
-        _controller.transform.SetParent(transform, true);
-
-        fixedRotationDirection = GetDirectionFromView();
+        _controller.transform.SetParent(transform);
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
 
-        // 플레이어 바라보는 방향 설정
-        Vector3 direction = transform.position - character.transform.position;
-        direction.y = 0;
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        character.transform.rotation = targetRotation;
+        SetControllerPos();
 
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders)
@@ -98,58 +100,71 @@ public class IAClockHand : MonoBehaviour, IInteractable
     /// <returns></returns>
     private int GetDirectionFromView()
     {
-        Vector3 forward = _controller.transform.forward;
+        Vector3 hingePos = GetComponent<HingeJoint>().transform.position;
+        Vector3 playerDir = _controller.transform.position - hingePos;
+
+        Vector3 forward = transform.forward; // 바늘 앞 방향
         forward.y = 0;
         forward.Normalize();
 
-        Vector3 centerToHand = transform.position;
-        centerToHand.y = 0;
-        centerToHand.Normalize();
+        playerDir.y = 0;
+        playerDir.Normalize();
 
-        float cross = Vector3.Cross(centerToHand, forward).y;
+        float crossY = Vector3.Cross(forward, playerDir).y;
 
-        if (cross > 0.1f) return 1;
-        else if (cross < -0.1f) return -1;
-        else return 0;
+        if (crossY > 0.1f)
+            return -1; // 플레이어가 바늘 왼쪽 → 시계 방향
+        else if (crossY < -0.1f)
+            return 1; // 오른쪽 → 반시계 방향
+        else
+            return 0;
+    }
+
+    private void SetControllerPos()
+    {
+        float originControllerY = _controller.transform.position.y;
+
+        Vector3 dir = (transform.position - _controller.transform.position);
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            dir.Normalize();
+
+            _controller.transform.position = transform.position - dir * ControllerOffset;
+            _controller.transform.position = new Vector3(_controller.transform.position.x, originControllerY, _controller.transform.position.z);
+            _controller.transform.rotation = Quaternion.LookRotation(dir);
+        }
     }
 
     private void ExitControl()
     {
-        _isControlled = false;
-        _controller.ChangeState<IdleState>();
-        _controller.InputHandler.enabled = true;
-        _rb.isKinematic = true;
-
-        _controller.transform.SetParent(null, true);
-        _controller.GetComponent<Rigidbody>().isKinematic = false;
-        _controller = null;
-
-        fixedRotationDirection = 0;
-
-        UIManager.Instance.Close(_uiNotice);
-        _uiNotice = null;
-
         // collider 다시 활성화
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders)
         {
             collider.enabled = true;
         }
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.collider.IsPlayerCollider())
-        {
-            _controller = collision.gameObject.GetComponent<CharacterBase>();
-        }
-    }
+        _isControlled = false;
+        _controller.ChangeState<IdleState>();
+        _controller.InputHandler.enabled = true;
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.collider.IsPlayerCollider())
+        _controller.transform.SetParent(null);
+
+        RaycastHit hit;
+        if (Physics.Raycast(_controller.transform.position + Vector3.up, Vector3.down, out hit, 5f))
         {
-            _controller = null;
+            _controller.transform.position = hit.point + Vector3.up * 0.01f; // 지면 바로 위
+            _controller.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * _controller.transform.rotation;
         }
+
+        _controller.GetComponent<Rigidbody>().isKinematic = false;
+        _controller = null;
+
+        _rb.isKinematic = true;
+
+        UIManager.Instance.Close(_uiNotice);
+        _uiNotice = null;
     }
 }
