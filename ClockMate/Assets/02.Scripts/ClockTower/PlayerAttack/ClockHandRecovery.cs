@@ -24,7 +24,7 @@ public class ClockHandRecovery : AttackPattern
 
     private const string HourClockHandPrefabPath = "Prefabs/RecoveryHourClockHand";
     private const string MinuteClockHandPrefabPath = "Prefabs/RecoveryMinuteClockHand";
-    private const float MinDistance = 5f;   // 분침, 시침 스폰 위치 간의 최소 거리
+    private const float MinDistance = 10f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
     private const float SpawnPosY = 0.65f;   // 스폰 위치 Y값
@@ -125,6 +125,30 @@ public class ClockHandRecovery : AttackPattern
         return hourDiff < AnswerOffset && minuteDiff < AnswerOffset;
     }
 
+    /// <summary>
+    /// 두 시계 바늘의 사이각을 기준으로 회전 가능 여부 결정
+    /// </summary>
+    public bool CanRotate(IAClockHand hand, int direction)
+    {
+        IAClockHand other = hand == hourClockHand
+        ? minuteClockHand.GetComponentInChildren<IAClockHand>()
+        : hourClockHand.GetComponentInChildren<IAClockHand>();
+
+        Vector3 curForward = hand.meshRenderer.transform.forward;
+        Vector3 otherForward = other.meshRenderer.transform.forward;
+
+        float angle = Vector3.Angle(curForward, otherForward);
+
+        if (angle > 10f)
+            return true;
+
+        Vector3 cross = Vector3.Cross(curForward, otherForward);
+        if(cross.y * direction < 0)
+            return true;
+
+        return false;
+    }
+
     public override IEnumerator Run()
     {
         float timer = timeLimit;
@@ -136,6 +160,8 @@ public class ClockHandRecovery : AttackPattern
 
             if(IsCorrectTime())
             {
+                yield return new WaitForSeconds(2f);
+
                 CancelAttack();
                 BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
                 yield break;
