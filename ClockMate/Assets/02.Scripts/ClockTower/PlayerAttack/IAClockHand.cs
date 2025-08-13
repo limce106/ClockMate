@@ -9,6 +9,7 @@ using static Define.Character;
 
 public class IAClockHand : MonoBehaviour, IInteractable
 {
+    private ClockHandRecovery _clockHandRecovery;
     [SerializeField] private CharacterName ControllerName;      // 밀 수 있는 캐릭터
     private int _fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
 
@@ -16,16 +17,18 @@ public class IAClockHand : MonoBehaviour, IInteractable
     private Sprite _exitSprite;
     private string _exitString;
 
-    [SerializeField] private MeshRenderer meshRenderer;
+    public MeshRenderer meshRenderer;
     private Rigidbody _rb;
     private CharacterBase _controller;
     private bool _isControlled;
 
-    private const float ControllerOffset = 0.7f;
+    private const float ControllerOffset = 1.2f;
     private const float RotationSpeed = 20f;
 
     private void Awake()
     {
+        _clockHandRecovery = FindObjectOfType<ClockHandRecovery>();
+
         _rb = GetComponent<Rigidbody>();
         _rb.isKinematic = true;
 
@@ -44,7 +47,8 @@ public class IAClockHand : MonoBehaviour, IInteractable
             return;
         }
 
-        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
+        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0
+            && _clockHandRecovery.CanRotate(this, _fixedRotationDirection))
         {
             transform.root.Rotate(0f, _fixedRotationDirection * RotationSpeed * Time.deltaTime, 0f);
         }
@@ -52,17 +56,10 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
     public bool CanInteract(CharacterBase character)
     {
-        if (character.Name != ControllerName)
+        if (_isControlled)
             return false;
 
-        Vector3 boundsSize = meshRenderer.bounds.size;
-        Vector3 localBoundSize = transform.InverseTransformVector(boundsSize);
-
-        float sideWidth = Mathf.Abs(localBoundSize.x) / 2;
-        Vector3 characterLocalPos = transform.InverseTransformPoint(character.transform.position);
-
-        // 캐릭터가 바늘의 앞뒤에 있으면 상호작용 불가
-        if (Mathf.Abs(characterLocalPos.x) < sideWidth)
+        if (character.Name != ControllerName)
             return false;
 
         return true;
@@ -74,26 +71,9 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        _isControlled = true;
-        _controller = character;
-
-        if (GetDirectionFromView() == 0)
+        // 시계 바늘 앞뒤에 있으면 상호작용 불가
+        if (GetDirectionFromView(character) == 0)
             return false;
-
-        _fixedRotationDirection = GetDirectionFromView();
-
-        _controller.ChangeState<PushState>(transform);
-        _controller.InputHandler.enabled = false;
-        _rb.isKinematic = false;
-
-        _controller.GetComponent<Rigidbody>().isKinematic = true;
-        _controller.transform.SetParent(transform);
-
-        _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
-        _uiNotice.SetImage(_exitSprite);
-        _uiNotice.SetText(_exitString);
-
-        SetControllerPos();
 
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders)
@@ -101,30 +81,41 @@ public class IAClockHand : MonoBehaviour, IInteractable
             collider.enabled = false;
         }
 
+        _isControlled = true;
+        _controller = character;
+
+        _fixedRotationDirection = GetDirectionFromView(character);
+
+        _controller.ChangeState<PushState>(meshRenderer.transform);
+        _controller.InputHandler.enabled = false;
+        _rb.isKinematic = false;
+
+        _controller.GetComponent<Rigidbody>().isKinematic = true;
+        _controller.transform.SetParent(meshRenderer.transform);
+
+        _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
+        _uiNotice.SetImage(_exitSprite);
+        _uiNotice.SetText(_exitString);
+
+        SetControllerPos();
+
         return true;
     }
 
     /// <summary>
-    /// 플레이어 시선 기반으로 시계/반시계 회전 방향 결정
+    /// 플레이어 위치에 따라 시계/반시계 회전 방향 결정
     /// </summary>
     /// <returns></returns>
-    private int GetDirectionFromView()
+    private int GetDirectionFromView(CharacterBase character)
     {
-        Vector3 hingePos = GetComponent<HingeJoint>().transform.position;
-        Vector3 playerDir = _controller.transform.position - hingePos;
+        Vector3 meshForward = meshRenderer.transform.forward;
+        Vector3 playerDir = character.transform.position - meshRenderer.transform.position;
 
-        Vector3 forward = transform.forward; // 바늘 앞 방향
-        forward.y = 0;
-        forward.Normalize();
+        float crossY = Vector3.Cross(meshForward, playerDir).y;
 
-        playerDir.y = 0;
-        playerDir.Normalize();
-
-        float crossY = Vector3.Cross(forward, playerDir).y;
-
-        if (crossY > 0.1f)
+        if (crossY > 0)
             return -1; // 플레이어가 바늘 왼쪽 → 시계 방향
-        else if (crossY < -0.1f)
+        else if (crossY < 0)
             return 1; // 오른쪽 → 반시계 방향
         else
             return 0;
