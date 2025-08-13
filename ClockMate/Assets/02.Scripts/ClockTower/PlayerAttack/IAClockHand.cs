@@ -10,19 +10,19 @@ using static Define.Character;
 public class IAClockHand : MonoBehaviour, IInteractable
 {
     [SerializeField] private CharacterName ControllerName;      // 밀 수 있는 캐릭터
-    private float _torqueForce = 20f;
     private int _fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
 
     private UINotice _uiNotice;
     private Sprite _exitSprite;
     private string _exitString;
 
+    [SerializeField] private MeshRenderer meshRenderer;
     private Rigidbody _rb;
     private CharacterBase _controller;
     private bool _isControlled;
-    private bool _isColliding;
 
-    private const float ControllerOffset = 1.2f;
+    private const float ControllerOffset = 0.7f;
+    private const float RotationSpeed = 20f;
 
     private void Awake()
     {
@@ -46,13 +46,23 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
         if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
-            transform.root.Rotate(0f, _fixedRotationDirection * 30f * Time.deltaTime, 0f);
+            transform.root.Rotate(0f, _fixedRotationDirection * RotationSpeed * Time.deltaTime, 0f);
         }
     }
 
     public bool CanInteract(CharacterBase character)
     {
         if (character.Name != ControllerName)
+            return false;
+
+        Vector3 boundsSize = meshRenderer.bounds.size;
+        Vector3 localBoundSize = transform.InverseTransformVector(boundsSize);
+
+        float sideWidth = Mathf.Abs(localBoundSize.x) / 2;
+        Vector3 characterLocalPos = transform.InverseTransformPoint(character.transform.position);
+
+        // 캐릭터가 바늘의 앞뒤에 있으면 상호작용 불가
+        if (Mathf.Abs(characterLocalPos.x) < sideWidth)
             return false;
 
         return true;
@@ -124,17 +134,19 @@ public class IAClockHand : MonoBehaviour, IInteractable
     {
         float originControllerY = _controller.transform.position.y;
 
-        Vector3 dir = (transform.position - _controller.transform.position);
-        dir.y = 0f;
+        Vector3 right = transform.right;
+        right.y = 0f;
+        right.Normalize();
 
-        if (dir.sqrMagnitude > 0.01f)
-        {
-            dir.Normalize();
+        Vector3 toPlayer = _controller.transform.position - transform.position;
+        float side = Vector3.Dot(toPlayer, right);
 
-            _controller.transform.position = transform.position - dir * ControllerOffset;
-            _controller.transform.position = new Vector3(_controller.transform.position.x, originControllerY, _controller.transform.position.z);
-            _controller.transform.rotation = Quaternion.LookRotation(dir);
-        }
+        Vector3 attachDir = side >= 0 ? right : -right;
+        Vector3 targetPos = transform.position + attachDir * ControllerOffset;
+        targetPos.y = originControllerY;
+        _controller.transform.position = targetPos;
+
+        _controller.transform.rotation = Quaternion.LookRotation(-attachDir);
     }
 
     private void ExitControl()
