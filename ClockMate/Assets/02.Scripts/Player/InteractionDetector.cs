@@ -136,6 +136,8 @@ public class InteractionDetector : MonoBehaviour
     
     private void RemoveDetectedObject(GameObject targetObj)
     {
+        if(targetObj == null) return;
+
         // dictionary에서 제거, UI 비활성화 처리
         _detectedObjects.Remove(targetObj);
         _uiInteraction?.DeactivateUI(targetObj);
