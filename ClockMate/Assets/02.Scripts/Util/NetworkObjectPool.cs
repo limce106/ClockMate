@@ -36,7 +36,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        if(!isInitPool)
+        if (!isInitPool)
             InitPool();
     }
 
@@ -55,13 +55,13 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         for (int i = 0; i < initialPoolSize; i++)
         {
             GameObject obj = PhotonNetwork.Instantiate(prefabPath, Vector3.zero, Quaternion.identity);
-            obj.SetActive(false);
             T component = obj.GetComponent<T>();
             if (component == null)
             {
                 continue;
             }
             pool.Add(component);
+            photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, obj.GetPhotonView().ViewID);
         }
     }
 
