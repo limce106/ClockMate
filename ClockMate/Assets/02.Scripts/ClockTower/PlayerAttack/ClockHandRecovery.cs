@@ -20,14 +20,14 @@ public class ClockHandRecovery : AttackPattern
 
     private bool isEnd = false;
 
-    private const float timeLimit = 30f;
+    private const float timeLimit = 500f;
 
     private const string HourClockHandPrefabPath = "Prefabs/RecoveryHourClockHand";
     private const string MinuteClockHandPrefabPath = "Prefabs/RecoveryMinuteClockHand";
     private const float MinDistance = 10f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
-    private const float SpawnPosY = 0.65f;   // 스폰 위치 Y값
+    private const float SpawnPosY = 1f;   // 스폰 위치 Y값
 
     protected override void Init()
     {
@@ -38,12 +38,30 @@ public class ClockHandRecovery : AttackPattern
     {
         ShowRandomTargetTime();
         SpawnClockHands();
+
+        Debug.Log("Hour: " + GetTargetHourAngle());
+        Debug.Log("Minute: " + GetTargetMinuteAngle());
     }
 
+    /// <summary>
+    /// 랜덤으로 정답 시간을 정해서 UI로 띄우기
+    /// </summary>
     private void ShowRandomTargetTime()
     {
-        targetHour = Random.Range(1, 13);
-        targetMinute = Random.Range(1, 12) * 5;     // 5분 단위로 보여줌
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        int randomHour = Random.Range(1, 13);
+        int randomMinute = Random.Range(1, 12) * 5;     // 5분 단위로 보여줌
+
+        photonView.RPC(nameof(RPC_SetTargetTime), RpcTarget.All, randomHour, randomMinute);
+    }
+
+    [PunRPC]
+    private void RPC_SetTargetTime(int hour, int minute)
+    {
+        targetHour = hour;
+        targetMinute = minute;
 
         hourClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetHourAngle());
         minuteClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
@@ -53,18 +71,31 @@ public class ClockHandRecovery : AttackPattern
         BattleManager.Instance.timeLimitText.GetComponent<TMP_Text>().enabled = true;
     }
 
+    /// <summary>
+    /// 시침 정답 각도
+    /// </summary>
     float GetTargetHourAngle()
     {
         return (targetHour % 12) * 30f;
     }
 
+    /// <summary>
+    /// 분침 정답 각도
+    /// </summary>
     float GetTargetMinuteAngle()
     {
         return targetMinute * 6f;
     }
 
+    /// <summary>
+    /// 시침, 분침 모델을 랜덤 각도로 스폰
+    /// 두 바늘 최소 사이각, 정답으로부터 최소 각도 제한
+    /// </summary>
     void SpawnClockHands()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         float targetHourAngle = GetTargetHourAngle();
         float targetMinuteAngle = GetTargetMinuteAngle();
 
@@ -108,6 +139,9 @@ public class ClockHandRecovery : AttackPattern
         return angle;
     }
 
+    /// <summary>
+    /// 현재 시침, 분침 모델 각도가 정답인지 확인
+    /// </summary>
     bool IsCorrectTime()
     {
         if(hourClockHand == null || minuteClockHand == null)
@@ -130,12 +164,20 @@ public class ClockHandRecovery : AttackPattern
     /// </summary>
     public bool CanRotate(IAClockHand hand, int direction)
     {
+        if (hourClockHand == null || minuteClockHand == null)
+            return false;
+
         IAClockHand other = hand == hourClockHand
         ? minuteClockHand.GetComponentInChildren<IAClockHand>()
         : hourClockHand.GetComponentInChildren<IAClockHand>();
 
         Vector3 curForward = hand.meshRenderer.transform.forward;
         Vector3 otherForward = other.meshRenderer.transform.forward;
+
+        if (curForward == otherForward)
+            Debug.Log("Same");
+        else
+            Debug.Log("Different");
 
         float angle = Vector3.Angle(curForward, otherForward);
 
