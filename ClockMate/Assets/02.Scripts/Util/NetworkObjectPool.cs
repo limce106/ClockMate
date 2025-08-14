@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
 
     private List<T> pool = new List<T>();
     private int poolSize;
+
+    private bool isInitPool = false;
 
     public static NetworkObjectPool<T> Instance { get; private set; }
 
@@ -24,7 +27,17 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        InitPool();
+        if(PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            InitPool();
+            isInitPool = true;
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if(!isInitPool)
+            InitPool();
     }
 
     public void Initialize(string prefabPath, int initialSize, Transform parent = null)
