@@ -1,17 +1,12 @@
-using DefineExtension;
 using Photon.Pun;
-using Photon.Realtime;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Define.Character;
 
 public class IAClockHand : MonoBehaviourPun, IInteractable
 {
     private ClockHandRecovery _clockHandRecovery;
-    [SerializeField] private CharacterName ControllerName;      // 밀 수 있는 캐릭터
-    private int _fixedRotationDirection = 0;  // 1: 시계 방향, -1: 반시계 방향
+    [SerializeField] private CharacterName ControllerName;
+    private int _fixedRotationDirection = 0;
 
     private UINotice _uiNotice;
     private Sprite _exitSprite;
@@ -28,7 +23,6 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
     private void Awake()
     {
         _clockHandRecovery = FindObjectOfType<ClockHandRecovery>();
-
         _rb = GetComponent<Rigidbody>();
         _rb.isKinematic = true;
 
@@ -36,63 +30,45 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
         _exitString = "나가기";
     }
 
-
     void Update()
     {
-        if (!_isControlled) return;
+        // 조작 중인 플레이어가 로컬 플레이어인지 확인
+        bool isLocalPlayerControlling = _isControlled && _controller != null && _controller.photonView.IsMine;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (isLocalPlayerControlling)
         {
-            ExitControl();
-            return;
-        }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                ExitControl();
+                return;
+            }
 
-        bool canRotate = _clockHandRecovery.CanRotate(this, _fixedRotationDirection);
-
-        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0 && canRotate)
-        {
-            transform.root.Rotate(0f, _fixedRotationDirection * RotationSpeed * Time.deltaTime, 0f);
+            if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
+            {
+                photonView.RPC(nameof(RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.deltaTime);
+            }
         }
     }
 
     public bool CanInteract(CharacterBase character)
     {
-        if (_isControlled)
-            return false;
-
-        if (character.Name != ControllerName)
-            return false;
-
+        if (_isControlled) return false;
+        if (character.Name != ControllerName) return false;
         return true;
     }
 
     public void OnInteractAvailable() { }
-
     public void OnInteractUnavailable() { }
 
     public bool Interact(CharacterBase character)
     {
-        // 시계 바늘 앞뒤에 있으면 상호작용 불가
-        if (GetDirectionFromView(character) == 0)
-            return false;
-
-        Collider[] colliders = GetComponentsInChildren<Collider>();
-        foreach (Collider collider in colliders)
-        {
-            collider.enabled = false;
-        }
+        if (GetDirectionFromView(character) == 0) return false;
 
         _isControlled = true;
         _controller = character;
-
         _fixedRotationDirection = GetDirectionFromView(character);
 
-        _controller.ChangeState<PushState>(meshRenderer.transform);
-        _controller.InputHandler.enabled = false;
-        _rb.isKinematic = false;
-
-        _controller.GetComponent<Rigidbody>().isKinematic = true;
-        photonView.RPC(nameof(RPC_SetParent), RpcTarget.All, _controller.photonView.ViewID, photonView.ViewID);
+        photonView.RPC(nameof(RPC_AttachController), RpcTarget.All, _controller.photonView.ViewID);
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
@@ -101,120 +77,98 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
         return true;
     }
 
-    /// <summary>
-    /// 플레이어 위치에 따라 시계/반시계 회전 방향 결정
-    /// </summary>
-    /// <returns></returns>
     private int GetDirectionFromView(CharacterBase character)
     {
         Vector3 meshForward = meshRenderer.transform.forward;
         Vector3 playerDir = character.transform.position - meshRenderer.transform.position;
-
         float crossY = Vector3.Cross(meshForward, playerDir).y;
-
-        if (crossY > 0)
-            return -1; // 플레이어가 바늘 왼쪽 → 시계 방향
-        else if (crossY < 0)
-            return 1; // 오른쪽 → 반시계 방향
-        else
-            return 0;
-    }
-
-    private void SetControllerPos()
-    {
-        float originControllerY = _controller.transform.position.y;
-
-        Vector3 right = transform.right;
-        right.y = 0f;
-        right.Normalize();
-
-        Vector3 toPlayer = _controller.transform.position - transform.position;
-        float side = Vector3.Dot(toPlayer, right);
-
-        Vector3 attachDir = side >= 0 ? right : -right;
-        Vector3 targetPos = transform.position + attachDir * ControllerOffset;
-        targetPos.y = originControllerY;
-        _controller.transform.position = targetPos;
-
-        _controller.transform.rotation = Quaternion.LookRotation(-attachDir);
+        if (crossY > 0) return -1;
+        else if (crossY < 0) return 1;
+        else return 0;
     }
 
     private void ExitControl()
     {
-        // collider 다시 활성화
-        Collider[] colliders = GetComponentsInChildren<Collider>();
-        foreach (Collider collider in colliders)
-        {
-            collider.enabled = true;
-        }
-
         _isControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
 
-        photonView.RPC(nameof(RPC_SetParent), RpcTarget.All, _controller.photonView.ViewID, -1);
-
-        RaycastHit hit;
-        if (Physics.Raycast(_controller.transform.position + Vector3.up, Vector3.down, out hit, 5f))
-        {
-            _controller.transform.position = hit.point + Vector3.up * 0.01f; // 지면 바로 위
-            _controller.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * _controller.transform.rotation;
-        }
-
-        _controller.GetComponent<Rigidbody>().isKinematic = false;
-        _controller = null;
-
-        _rb.isKinematic = true;
+        photonView.RPC(nameof(RPC_DetachController), RpcTarget.All, _controller.photonView.ViewID);
 
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
     }
 
     [PunRPC]
-    private void RPC_SetParent(int playerViewID, int parentViewID)
-    {
-        PhotonView playerView = PhotonView.Find(playerViewID);
-        if (playerView == null) return;
-
-        PhotonTransformView photonTransformView = playerView.GetComponent<PhotonTransformView>();
-
-        if (parentViewID == -1)
-        {
-            photonTransformView.enabled = true;
-            playerView.transform.SetParent(null);
-        }
-        else
-        {
-            PhotonView parentView = PhotonView.Find(parentViewID);
-            Transform meshTransform = parentView.GetComponent<IAClockHand>().meshRenderer.transform;
-
-            photonTransformView.enabled = false;
-
-            playerView.transform.SetParent(meshTransform);
-
-            photonView.RPC(nameof(RPC_SetControllerPos), RpcTarget.All, playerViewID);
-
-        }
-    }
-
-    [PunRPC]
-    private void RPC_SetControllerPos(int controllerViewID)
+    private void RPC_AttachController(int controllerViewID)
     {
         PhotonView controllerView = PhotonView.Find(controllerViewID);
-        float originControllerY = controllerView.transform.position.y;
+        if (controllerView == null) return;
 
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders)
+        {
+            collider.enabled = false;
+        }
+
+        controllerView.GetComponent<Rigidbody>().isKinematic = true;
+
+        PhotonTransformView photonTransformView = controllerView.GetComponent<PhotonTransformView>();
+        photonTransformView.enabled = false;
+
+        _rb.isKinematic = false;
+
+        controllerView.transform.SetParent(meshRenderer.transform);
+
+        float originControllerY = controllerView.transform.position.y;
         Vector3 right = transform.right;
         right.y = 0f;
         right.Normalize();
 
         Vector3 toPlayer = controllerView.transform.position - transform.position;
         float side = Vector3.Dot(toPlayer, right);
-
         Vector3 attachDir = side >= 0 ? right : -right;
+
         Vector3 targetPos = transform.position + attachDir * ControllerOffset;
         targetPos.y = originControllerY;
-        controllerView.transform.position = targetPos;
 
+        controllerView.transform.position = targetPos;
         controllerView.transform.rotation = Quaternion.LookRotation(-attachDir);
+    }
+
+    [PunRPC]
+    private void RPC_DetachController(int controllerViewID)
+    {
+        PhotonView controllerView = PhotonView.Find(controllerViewID);
+        if (controllerView == null) return;
+
+        if (controllerView.IsMine)
+        {
+            _controller = null;
+        }
+
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders)
+        {
+            collider.enabled = true;
+        }
+
+        _rb.isKinematic = true;
+
+        controllerView.transform.SetParent(null);
+        controllerView.GetComponent<PhotonTransformView>().enabled = true;
+
+        RaycastHit hit;
+        if (Physics.Raycast(controllerView.transform.position + Vector3.up, Vector3.down, out hit, 5f))
+        {
+            controllerView.transform.position = hit.point + Vector3.up * 0.01f;
+            controllerView.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * controllerView.transform.rotation;
+        }
+    }
+
+    [PunRPC]
+    private void RPC_Rotate(float rotationAmount)
+    {
+        transform.root.Rotate(0f, rotationAmount, 0f);
     }
 }
