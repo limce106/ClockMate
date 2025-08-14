@@ -1,7 +1,5 @@
-using JetBrains.Annotations;
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +15,8 @@ public class ClockHandRecovery : AttackPattern
 
     private GameObject hourClockHand;
     private GameObject minuteClockHand;
+    // 마스터 클라이언트만 관리하는 타이머
+    private float _timer;
 
     private bool isEnd = false;
 
@@ -193,29 +193,45 @@ public class ClockHandRecovery : AttackPattern
 
     public override IEnumerator Run()
     {
-        float timer = timeLimit;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _timer = timeLimit;
+        }
 
-        while(timer > 0f)
+        while (true)
         {
             if (isEnd)
-                yield break;
-
-            if(IsCorrectTime())
             {
-                yield return new WaitForSeconds(2f);
+                yield break;
+            }
 
+            // 마스터 클라이언트만 타이머를 업데이트하고 동기화 RPC 호출
+            if (PhotonNetwork.IsMasterClient)
+            {
+                _timer -= Time.deltaTime;
+                photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
+
+                if (_timer <= 0f)
+                {
+                    // 시간 초과 처리
+                    BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                    ClearClock();
+                    yield break;
+                }
+            }
+
+            // 정답 확인 로직은 모든 클라이언트에서 실행
+            if (IsCorrectTime())
+            {
+                // 정답을 맞췄을 때
+                yield return new WaitForSeconds(2f);
                 CancelAttack();
                 BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
                 yield break;
             }
 
-            BattleManager.Instance.timeLimitText.text = Mathf.CeilToInt(timer) + "초";
-            timer -= Time.deltaTime;
             yield return null;
         }
-
-        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-        ClearClock();
     }
 
     public override void CancelAttack()
@@ -235,5 +251,11 @@ public class ClockHandRecovery : AttackPattern
         hourClockHandUI.GetComponent<Image>().enabled = false;
         minuteClockHandUI.GetComponent<Image>().enabled = false;
         BattleManager.Instance.timeLimitText.GetComponent<TMP_Text>().enabled = false;
+    }
+
+    [PunRPC]
+    private void RPC_UpdateTimeLimitTxt(int time)
+    {
+        BattleManager.Instance.timeLimitText.text = time + "초";
     }
 }
