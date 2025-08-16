@@ -7,20 +7,19 @@ using UnityEngine.InputSystem.iOS;
 
 public class FallingAttack : AttackPattern
 {
-    private string needlePrefabPath = "Prefabs/FallingNeedle";
-    private int attackNeedleCount = 5;
+    private int attackClockHandCount = 5;
     private bool isCanceled = false;
 
     [SerializeField] private float spawnOriginY = 0f;
 
-    private List<GameObject> spawnedNeedles = new List<GameObject>();
+    private List<GameObject> spawnedClockHands = new List<GameObject>();
 
-    private const int addtionalNeedleCount = 2;
+    private const int addtionalCount = 2;
     private const float spawnDelay = 1f;
 
     protected override void Init()
     {
-        attackNeedleCount += (BattleManager.Instance.round - 1) * addtionalNeedleCount;
+        attackClockHandCount += (BattleManager.Instance.round - 1) * addtionalCount;
     }
 
     /// <summary>
@@ -28,24 +27,22 @@ public class FallingAttack : AttackPattern
     /// </summary>
     public override IEnumerator Run()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            yield break;
-
-        for(int i = 0; i < attackNeedleCount; i++)
+        for (int i = 0; i < attackClockHandCount; i++)
         {
             if (isCanceled)
                 yield break;
 
             Vector3 pos = GetRandomSpawnPos(spawnOriginY);
 
-            GameObject needleGO = PhotonNetwork.Instantiate(needlePrefabPath, pos, Quaternion.identity);
-            spawnedNeedles.Add(needleGO);
+            FallingClockHand clockHand = BattleManager.Instance.clockhandPool.Get(pos, Quaternion.identity);
+            spawnedClockHands.Add(clockHand.gameObject);
 
-            FallingNeedle fallingNeedle = needleGO.GetComponent<FallingNeedle>();
-            fallingNeedle.OnFallingNeedleDestroyed += (n) => spawnedNeedles.Remove(n);
+            clockHand.OnFallingClockHandDisabled += (n) => spawnedClockHands.Remove(n);
 
             yield return new WaitForSeconds(spawnDelay);
         }
+
+        yield return new WaitUntil(() => spawnedClockHands.Count == 0);
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
@@ -66,7 +63,7 @@ public class FallingAttack : AttackPattern
             bool isOverlapping = false;
 
             // 이미 스폰된 오브젝트와 겹치지 않는지
-            foreach (GameObject go in spawnedNeedles)
+            foreach (GameObject go in spawnedClockHands)
             {
                 Vector2 exisitingPosXZ = new Vector2(go.transform.position.x, go.transform.position.z);
 
@@ -89,11 +86,11 @@ public class FallingAttack : AttackPattern
 
         isCanceled = true;
 
-        var pendulumsToDestroy = FindObjectsOfType<FallingNeedle>();
+        var clockHandsToDestroy = FindObjectsOfType<FallingClockHand>();
 
-        foreach (var pendulum in pendulumsToDestroy)
+        foreach (var clockHand in clockHandsToDestroy)
         {
-            PhotonNetwork.Destroy(pendulum.gameObject);
+            BattleManager.Instance.clockhandPool.Return(clockHand);
         }
     }
 }

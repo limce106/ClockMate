@@ -6,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(HingeJoint))]
-public class SwingPendulum : MonoBehaviourPun, IPunObservable
+public class SwingPendulum : MonoBehaviourPun
 {
     private Rigidbody rb;
 
@@ -19,15 +19,29 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
 
     private const float angleThreshold = 0.5f;
 
-    public delegate void PendulumDestroyHandler(SwingPendulum pendulum);
-    public event PendulumDestroyHandler OnPendulumDestroyed;    // 시계 추가 파괴될 때 실행될 콜백
+    public delegate void PendulumDisabledHandler(SwingPendulum pendulum);
+    public event PendulumDisabledHandler OnPendulumDisabled;    // 시계 추가 파괴될 때 실행될 콜백
 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+    }
+
+    private void OnEnable()
+    {
+        alreadyTriggered = false;
+        isStarted = false;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
         startAngle = NormalizeAngle(transform.eulerAngles.z);
+    }
+
+    private void OnDisable()
+    {
+        OnPendulumDisabled?.Invoke(this);
+        OnPendulumDisabled = null;
     }
 
     /// <summary>
@@ -36,6 +50,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void StartPendulum()
     {
+        startAngle = NormalizeAngle(transform.eulerAngles.z);
         isStarted = true;
         torque = startAngle < 0 ? swingSpeed : -swingSpeed;
     }
@@ -64,7 +79,7 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
                 alreadyTriggered = true;
 
                 if (PhotonNetwork.IsMasterClient)
-                    PhotonNetwork.Destroy(gameObject);
+                    BattleManager.Instance.pendulumPool.Return(this);
             }
         }
     }
@@ -72,11 +87,6 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
     float NormalizeAngle(float angle)
     {
         return (angle + 180) % 360 - 180;
-    }
-
-    private void OnDestroy()
-    {
-        OnPendulumDestroyed?.Invoke(this);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -89,30 +99,6 @@ public class SwingPendulum : MonoBehaviourPun, IPunObservable
             // 플레이어 사망 처리
             CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
             character.ChangeState<DeadState>();
-        }
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.rotation);
-            stream.SendNext(rb.velocity);
-            stream.SendNext(rb.angularVelocity);
-        }
-        else
-        {
-            Vector3 position = (Vector3)stream.ReceiveNext();
-            Quaternion rotation = (Quaternion)stream.ReceiveNext();
-            Vector3 velocity = (Vector3)stream.ReceiveNext();
-            Vector3 angularVelocity = (Vector3)stream.ReceiveNext();
-
-            rb.position = Vector3.Lerp(rb.position, position, Time.deltaTime * 10f);
-            rb.rotation = Quaternion.Slerp(rb.rotation, rotation, Time.deltaTime * 10f);
-
-            rb.velocity = velocity;
-            rb.angularVelocity = angularVelocity;
         }
     }
 }
