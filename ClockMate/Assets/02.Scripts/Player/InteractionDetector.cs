@@ -92,20 +92,21 @@ public class InteractionDetector : MonoBehaviour
             // 거리 조건
             Vector3 charPos = _character.transform.position;
             Vector3 targetObjPos = targetObj.transform.position;
+            Vector3 forward = _character.transform.forward;
 
             charPos.y = 0;
             targetObjPos.y = 0;
+            forward.y = 0;
 
             float distance = Vector3.Distance(charPos, targetObjPos);
+
             if (distance > interactDistance) continue;
 
             // 시야각 조건
             if(!ShouldIgnoreViewAngle(targetObj))
             {
                 Vector3 direction = (targetObjPos - charPos).normalized;
-                Vector3 forward = _character.transform.forward;
-                forward.y = 0;
-                float angle = Vector3.Angle(_character.transform.forward, direction);
+                float angle = Vector3.Angle(forward, direction);
                 if (angle > interactAngle) continue;
             }
 
@@ -164,6 +165,8 @@ public class InteractionDetector : MonoBehaviour
 
     private void RemoveDetectedObject(GameObject targetObj)
     {
+        if(targetObj == null) return;
+
         // dictionary에서 제거, UI 비활성화 처리
         _detectedObjects.Remove(targetObj);
         _uiInteraction?.DeactivateUI(targetObj);
