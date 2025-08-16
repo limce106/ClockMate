@@ -7,13 +7,6 @@
             Hour,
             Milli
         }
-
-        public enum CharacterId
-        {
-            None = 0,
-            Hour = 1,
-            Milli = 2
-        }
         
         public enum CharacterAction
         {
@@ -74,7 +67,7 @@
 
         public enum PlayerAttackType
         {
-            ClockNeedleRecovery,
+            ClockHandRecovery,
             CogwheelRevery,
             ClockTowerOperation
         }

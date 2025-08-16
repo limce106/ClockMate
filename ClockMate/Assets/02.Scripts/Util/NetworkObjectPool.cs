@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
 
     private List<T> pool = new List<T>();
     private int poolSize;
+
+    private bool isInitPool = false;
 
     public static NetworkObjectPool<T> Instance { get; private set; }
 
@@ -24,17 +27,27 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        InitPool();
+        if(PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            InitPool();
+            isInitPool = true;
+        }
     }
 
-    public void Initialize(string prefabPath, int initialSize, Transform parent = null)
+    public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        this.prefabPath = prefabPath;
-        this.initialPoolSize = initialSize;
-
-        if (!PhotonNetwork.IsMasterClient) return;
-        InitPool();
+        if (!isInitPool)
+            InitPool();
     }
+
+    //public void Initialize(string prefabPath, int initialSize, Transform parent = null)
+    //{
+    //    this.prefabPath = prefabPath;
+    //    this.initialPoolSize = initialSize;
+
+    //    if (!PhotonNetwork.IsMasterClient) return;
+    //    InitPool();
+    //}
 
 
     private void InitPool()
@@ -42,13 +55,13 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         for (int i = 0; i < initialPoolSize; i++)
         {
             GameObject obj = PhotonNetwork.Instantiate(prefabPath, Vector3.zero, Quaternion.identity);
-            obj.SetActive(false);
             T component = obj.GetComponent<T>();
             if (component == null)
             {
                 continue;
             }
             pool.Add(component);
+            photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, obj.GetPhotonView().ViewID);
         }
     }
 

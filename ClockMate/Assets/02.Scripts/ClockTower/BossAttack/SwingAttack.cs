@@ -7,7 +7,6 @@ using static Define.Battle;
 
 public class SwingAttack : AttackPattern
 {
-    private string pendulmnPrefabPath = "Prefabs/SwingPendulum";
     private int attackCount = 5;
     private bool isCanceled = false;
 
@@ -51,8 +50,8 @@ public class SwingAttack : AttackPattern
             Vector3 pos = GetRandomSpawnPos();
             Quaternion rotation = Quaternion.Euler(0, 0, startAngle);
 
-            GameObject pendulum = PhotonNetwork.Instantiate(pendulmnPrefabPath, pos, rotation);
-            spawnedPendulums.Add(pendulum);
+            SwingPendulum pendulum = BattleManager.Instance.pendulumPool.Get(pos, rotation);
+            spawnedPendulums.Add(pendulum.gameObject);
         }
     }
 
@@ -98,7 +97,7 @@ public class SwingAttack : AttackPattern
     /// </summary>
     private IEnumerator MovePendulum()
     {
-        int destroyedCount = 0;
+        int disabledCount = 0;
 
         foreach (GameObject pendulumGO in spawnedPendulums)
         {
@@ -106,11 +105,11 @@ public class SwingAttack : AttackPattern
             PhotonView pv = pendulumGO.GetComponent<PhotonView>();
 
             pv.RPC("StartPendulum", RpcTarget.All);
-            pendulum.OnPendulumDestroyed += (p) => destroyedCount++;
+            pendulum.OnPendulumDisabled += (p) => disabledCount++;
         }
 
         // 모든 시계추가 제거될 때까지 대기
-        while (destroyedCount < spawnedPendulums.Count)
+        while (disabledCount < spawnedPendulums.Count)
             yield return null;
     }
 
@@ -141,10 +140,11 @@ public class SwingAttack : AttackPattern
 
         isCanceled = true;
 
-        var pendulumsToDestroy = new List<GameObject>(spawnedPendulums);
-        foreach (GameObject pendulumGO in pendulumsToDestroy)
+        var pendulumsToReturn = new List<GameObject>(spawnedPendulums);
+        foreach (GameObject pendulumGO in pendulumsToReturn)
         {
-            PhotonNetwork.Destroy(pendulumGO);
+            SwingPendulum pendulum = pendulumGO.GetComponent<SwingPendulum>();
+            BattleManager.Instance.pendulumPool.Return(pendulum);
         }
     }
 }
