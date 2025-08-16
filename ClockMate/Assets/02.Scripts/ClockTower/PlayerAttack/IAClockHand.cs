@@ -54,6 +54,8 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
     {
         if (_isControlled) return false;
         if (character.Name != ControllerName) return false;
+        if (character.transform.position.y >= transform.position.y) return false;
+
         return true;
     }
 
@@ -66,6 +68,9 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
 
         _isControlled = true;
         _controller = character;
+        _controller.ChangeState<PushState>(meshRenderer.transform);
+        _controller.InputHandler.enabled = false;
+
         _fixedRotationDirection = GetDirectionFromView(character);
 
         photonView.RPC(nameof(RPC_AttachController), RpcTarget.All, _controller.photonView.ViewID);
@@ -105,10 +110,21 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
         PhotonView controllerView = PhotonView.Find(controllerViewID);
         if (controllerView == null) return;
 
-        Collider[] colliders = GetComponentsInChildren<Collider>();
-        foreach (Collider collider in colliders)
+        Collider[] handColliders = GetComponentsInChildren<Collider>();
+        Collider[] controllerColliders = controllerView.GetComponents<Collider>();
+
+        foreach (var controllerCol  in controllerColliders)
         {
-            collider.enabled = false;
+            foreach (var handCol in handColliders)
+            {
+                // 시계 바늘과 플레이어의 충돌 무시
+                Physics.IgnoreCollision(controllerCol, handCol, true);
+            }
+        }
+
+        foreach (var handCol in handColliders)
+        {
+            handCol.enabled = false;
         }
 
         controllerView.GetComponent<Rigidbody>().isKinematic = true;
@@ -147,23 +163,34 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
             _controller = null;
         }
 
-        Collider[] colliders = GetComponentsInChildren<Collider>();
-        foreach (Collider collider in colliders)
+        Collider[] handColliders = GetComponentsInChildren<Collider>();
+        Collider[] controllerColliders = controllerView.GetComponents<Collider>();
+
+        foreach (var controllerCol in controllerColliders)
         {
-            collider.enabled = true;
+            foreach (var handCol in handColliders)
+            {
+                Physics.IgnoreCollision(controllerCol, handCol, false);
+            }
         }
 
+        foreach (var handCol in handColliders)
+        {
+            handCol.enabled = true;
+        }
+
+        controllerView.GetComponent<Rigidbody>().isKinematic = false;
         _rb.isKinematic = true;
 
         controllerView.transform.SetParent(null);
         controllerView.GetComponent<PhotonTransformView>().enabled = true;
 
-        RaycastHit hit;
-        if (Physics.Raycast(controllerView.transform.position + Vector3.up, Vector3.down, out hit, 5f))
-        {
-            controllerView.transform.position = hit.point + Vector3.up * 0.01f;
-            controllerView.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * controllerView.transform.rotation;
-        }
+        //RaycastHit hit;
+        //if (Physics.Raycast(controllerView.transform.position + Vector3.up, Vector3.down, out hit, 5f))
+        //{
+        //    controllerView.transform.position = hit.point + Vector3.up * 0.01f;
+        //    controllerView.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * controllerView.transform.rotation;
+        //}
     }
 
     [PunRPC]

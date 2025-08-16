@@ -20,7 +20,7 @@ public class ClockHandRecovery : AttackPattern
 
     private bool isEnd = false;
 
-    private const float timeLimit = 500f;
+    private const float timeLimit = 30f;
 
     private const string HourClockHandPrefabPath = "Prefabs/RecoveryHourClockHand";
     private const string MinuteClockHandPrefabPath = "Prefabs/RecoveryMinuteClockHand";
@@ -173,11 +173,6 @@ public class ClockHandRecovery : AttackPattern
 
         Vector3 curForward = hand.meshRenderer.transform.forward;
         Vector3 otherForward = other.meshRenderer.transform.forward;
-
-        if (curForward == otherForward)
-            Debug.Log("Same");
-        else
-            Debug.Log("Different");
 
         float angle = Vector3.Angle(curForward, otherForward);
 
