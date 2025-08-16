@@ -755,6 +755,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabPath: Prefabs/SwingPendulum
   initialPoolSize: 15
+  parentTransform: {fileID: 512342077}
 --- !u!4 &512342077
 Transform:
   m_ObjectHideFlags: 0
@@ -1060,6 +1061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabPath: Prefabs/FallingClockHand
   initialPoolSize: 15
+  parentTransform: {fileID: 627350065}
 --- !u!114 &627350064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2813,27 +2815,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: hourSpawnPos.x
-      value: 17.92
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: hourSpawnPos.y
-      value: 0.8040314
+      value: 1.4984639
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: hourSpawnPos.z
-      value: 19.38
+      value: 9.3
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: milliSpawnPos.x
-      value: -21.3
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: milliSpawnPos.y
-      value: 0.8040314
+      value: 1.4984639
       objectReference: {fileID: 0}
     - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: milliSpawnPos.z
-      value: 19.38
+      value: 9.3
       objectReference: {fileID: 0}
     - target: {fileID: 3447095921055497446, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: m_Name
