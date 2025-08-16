@@ -10,8 +10,6 @@ public class BattleLifeManager : MonoBehaviourPun
     private HashSet<int> deadPlayers = new HashSet<int>();
     private Dictionary<CharacterBase, Vector3> lastHitPositions = new Dictionary<CharacterBase, Vector3>();
 
-    public readonly Vector3 BattleFieldCenter = new Vector3(0f,1f,0f);
-
     public static BattleLifeManager Instance { get; private set; }
 
     private void Awake()
@@ -78,13 +76,13 @@ public class BattleLifeManager : MonoBehaviourPun
                 else
                 {
                     // 낙사 또는 미기록일때
-                    return new DefaultReviveStrategy(BattleFieldCenter);
+                    return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
                 }
             case PhaseType.FallingAttack:
                 return new FallingReviveStrategy(BattleManager.Instance.currentFallingAttack);
             case PhaseType.PlayerAttack:
             default:
-                return new DefaultReviveStrategy(BattleFieldCenter);
+                return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
         }
     }
 }
