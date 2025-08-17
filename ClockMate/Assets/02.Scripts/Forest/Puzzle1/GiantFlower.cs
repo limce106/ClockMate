@@ -16,6 +16,9 @@ public class GiantFlower : ResettableBase, IPunObservable
     public float hourWeight = 1.5f;
     public float milliWeight = 1.0f;
 
+    [Header("¡Ÿ±‚")]
+    public Animator steamAnimator;
+
     private bool _isLocked = false;
     private bool _hasTilted = false;
     private Vector3 _initialPosition;

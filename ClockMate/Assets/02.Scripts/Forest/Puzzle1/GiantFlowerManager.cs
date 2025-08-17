@@ -33,7 +33,7 @@ public class GiantFlowerManager : MonoBehaviour
 
             if(HasNextFlower())
             {
-                LowerNextFlower();
+                GrowSteam();
             }
             else
             {
@@ -50,26 +50,32 @@ public class GiantFlowerManager : MonoBehaviour
         return currentIndex < giantFlowers.Length - 1;
     }
 
-    private void LowerNextFlower()
+    private void GrowSteam()
     {
-        Transform nextFlower = giantFlowers[currentIndex + 1].transform.parent;
-        StartCoroutine(LowerFlower(nextFlower));
+        GiantFlower nextFlower = giantFlowers[currentIndex + 1];
+        nextFlower.steamAnimator.Play("Grow", 0, 0f);
     }
 
-    IEnumerator LowerFlower(Transform nextFlower)
-    {
-        Vector3 start = nextFlower.position;
-        Vector3 target = start + Vector3.down * dropOffsetY;
+    //private void LowerNextFlower()
+    //{
+    //    Transform nextFlower = giantFlowers[currentIndex + 1].transform.parent;
+    //    StartCoroutine(LowerFlower(nextFlower));
+    //}
 
-        while(Vector3.Distance(nextFlower.position, target) > 0.01f)
-        {
-            nextFlower.position = Vector3.Lerp(nextFlower.position, target, Time.deltaTime * dropSpeed);
-            yield return null;
-        }
+    //IEnumerator LowerFlower(Transform nextFlower)
+    //{
+    //    Vector3 start = nextFlower.position;
+    //    Vector3 target = start + Vector3.down * dropOffsetY;
 
-        nextFlower.position = target;
-        flowerLeveled = false;
-    }
+    //    while(Vector3.Distance(nextFlower.position, target) > 0.01f)
+    //    {
+    //        nextFlower.position = Vector3.Lerp(nextFlower.position, target, Time.deltaTime * dropSpeed);
+    //        yield return null;
+    //    }
+
+    //    nextFlower.position = target;
+    //    flowerLeveled = false;
+    //}
 
     void TriggerFinalAction()
     {
