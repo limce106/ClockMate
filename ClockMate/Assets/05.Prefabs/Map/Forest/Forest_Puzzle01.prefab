@@ -240,113 +240,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5630733786745047034
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5371478147621917490}
-  - component: {fileID: 1628639482758874757}
-  - component: {fileID: 2092161502983555037}
-  - component: {fileID: 1801139867680580190}
-  m_Layer: 0
-  m_Name: Steam
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5371478147621917490
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5630733786745047034}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.6532815, y: 0.27059805, z: -0.27059805, w: 0.6532815}
-  m_LocalPosition: {x: 7.5, y: 12.7, z: 7.5}
-  m_LocalScale: {x: 0.7, y: 10.5, z: 0.7}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7134484322324290827}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: -45}
---- !u!33 &1628639482758874757
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5630733786745047034}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &2092161502983555037
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5630733786745047034}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1801139867680580190
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5630733786745047034}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &8462951217808884549
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +269,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5371478147621917490}
   - {fileID: 2191758812912952324}
   - {fileID: 5986958051789771873}
   - {fileID: 6208604537094789971}
@@ -448,6 +340,14 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4874015806812467937, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 700c8ecff934bab45b54fcb47aac955a, type: 2}
+    - target: {fileID: 5477192133591783623, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 700c8ecff934bab45b54fcb47aac955a, type: 2}
     - target: {fileID: 6061207423758594955, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: m_Name
       value: GiantFlower (2)
@@ -549,6 +449,14 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4874015806812467937, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e61d8eb7dd430724e9963a1f386584e8, type: 2}
+    - target: {fileID: 5477192133591783623, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e61d8eb7dd430724e9963a1f386584e8, type: 2}
     - target: {fileID: 6061207423758594955, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: m_Name
       value: GiantFlower (3)
@@ -650,6 +558,14 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4874015806812467937, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d1ca95fed2eda9458ad2e3e4330f4a4, type: 2}
+    - target: {fileID: 5477192133591783623, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d1ca95fed2eda9458ad2e3e4330f4a4, type: 2}
     - target: {fileID: 6061207423758594955, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: m_Name
       value: GiantFlower (4)
@@ -751,6 +667,14 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4874015806812467937, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 08054ebf40c56024e86d2dd2440bc429, type: 2}
+    - target: {fileID: 5477192133591783623, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 08054ebf40c56024e86d2dd2440bc429, type: 2}
     - target: {fileID: 6061207423758594955, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: m_Name
       value: GiantFlower (1)
@@ -916,6 +840,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7134484322324290827}
     m_Modifications:
+    - target: {fileID: 2143324713926829397, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143324713926829397, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2485976790596620524, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
