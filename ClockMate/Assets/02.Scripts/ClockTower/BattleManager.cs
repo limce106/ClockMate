@@ -7,7 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define.Battle;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// 전투 흐름 제어

@@ -210,6 +210,7 @@ public class ClockHandRecovery : AttackPattern
                 {
                     // 시간 초과 처리
                     BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                    photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
                     ClearClock();
                     yield break;
                 }
@@ -220,6 +221,8 @@ public class ClockHandRecovery : AttackPattern
             {
                 // 정답을 맞췄을 때
                 yield return new WaitForSeconds(2f);
+
+                photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
                 CancelAttack();
                 BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
                 yield break;
@@ -240,12 +243,25 @@ public class ClockHandRecovery : AttackPattern
 
     void ClearClock()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         PhotonNetwork.Destroy(hourClockHand);
         PhotonNetwork.Destroy(minuteClockHand);
 
         hourClockHandUI.GetComponent<Image>().enabled = false;
         minuteClockHandUI.GetComponent<Image>().enabled = false;
         BattleManager.Instance.timeLimitText.GetComponent<TMP_Text>().enabled = false;
+    }
+
+    [PunRPC]
+    void RPC_DetachAllPlayers()
+    {
+        IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
+        IAClockHand minute = minuteClockHand?.GetComponentInChildren<IAClockHand>();
+
+        hour?.ExitControl();
+        minute?.ExitControl();
     }
 
     [PunRPC]
