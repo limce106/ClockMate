@@ -19,6 +19,7 @@ public class GiantFlower : ResettableBase, IPunObservable
     [Header("¡Ÿ±‚")]
     public Animator steamAnimator;
 
+    private Rigidbody _rb;
     private bool _isLocked = false;
     private bool _hasTilted = false;
     private Vector3 _initialPosition;
@@ -27,7 +28,12 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     private List<Transform> _playersOnFlower = new List<Transform>();
 
-    void Update()
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody>();
+    }
+
+    void FixedUpdate()
     {
         if(_isLocked) 
             return;
@@ -35,7 +41,7 @@ public class GiantFlower : ResettableBase, IPunObservable
         Vector2 totalTorque = CalculateTotalTorque();
         ApplyRotation(totalTorque);
 
-        if(!_hasTilted)
+        if (!_hasTilted)
         {
             float tiltAmount = Quaternion.Angle(transform.rotation, Quaternion.identity);
             if (tiltAmount > LevelTolerance)
@@ -75,11 +81,18 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     void ApplyRotation(Vector2 totalTorque)
     {
-        float angleX = Mathf.Clamp(totalTorque.y * sensitivity, -maxAngle, maxAngle);
-        float angleZ = Mathf.Clamp(totalTorque.x * sensitivity, -maxAngle, maxAngle);
+        //float angleX = Mathf.Clamp(totalTorque.y * sensitivity, -maxAngle, maxAngle);
+        //float angleZ = Mathf.Clamp(totalTorque.x * sensitivity, -maxAngle, maxAngle);
         
-        Quaternion targetRotation = Quaternion.Euler(angleX, 0f, -angleZ);
-        transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, Time.deltaTime * _rotationSpeed);
+        //Quaternion targetRotation = Quaternion.Euler(angleX, 0f, -angleZ);
+        //transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, Time.fixedDeltaTime * _rotationSpeed);
+
+        _rb.AddTorque(new Vector3(totalTorque.y, 0f, -totalTorque.x) * sensitivity, ForceMode.Force);
+
+        if (_rb.angularVelocity.magnitude > maxAngle)
+        {
+            _rb.angularVelocity = _rb.angularVelocity.normalized * maxAngle;
+        }
     }
 
     /// <summary>
@@ -146,6 +159,7 @@ public class GiantFlower : ResettableBase, IPunObservable
     {
         transform.position = _initialPosition;
         _isLocked = false;
+        _hasTilted = false;
         _playersOnFlower.Clear();
     }
 
