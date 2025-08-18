@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PolarBearController : MonoBehaviourPun
 {
-    [SerializeField] private Transform sled;
+    [SerializeField] private SledController sled;
     [SerializeField] private float followDistance;
     [SerializeField] private float jumpForce;
     [SerializeField] private float moveSpeed;
@@ -14,6 +14,7 @@ public class PolarBearController : MonoBehaviourPun
     private Rigidbody _rb;
     private bool _isJumping;
     private LayerMask _layerMask;
+    private bool _chaseSled;
 
     private void Awake()
     {
@@ -23,18 +24,25 @@ public class PolarBearController : MonoBehaviourPun
     private void Init()
     {
         _rb = GetComponent<Rigidbody>();
-        _layerMask = LayerMask.GetMask("Default");
+        _layerMask = LayerMask.GetMask("Ground");
     }
 
     private void FixedUpdate()
     {
-        if (!photonView.IsMine) return;
+        if (!_chaseSled) return; 
 
         // 썰매를 따라서 이동
-        Vector3 direction = (sled.position - transform.position);
-        direction.y = 0f;
+        Vector3 toSled = sled.transform.position - transform.position;
+        toSled.y = 0f;
+        float dist = toSled.magnitude;
 
-        if (direction.magnitude > followDistance) return;
+        // dist가 followDistance보다 클 때만 추격
+        if (dist <= followDistance)
+        {
+            // 멈춤 처리
+            _rb.velocity = new Vector3(0f, _rb.velocity.y, 0f);
+            return;
+        }
         
         if (NeedToJump())
         {
@@ -42,7 +50,7 @@ public class PolarBearController : MonoBehaviourPun
         }
         else 
         {
-            Move(direction.normalized);
+            Move(toSled.normalized);
         }
     }
 
@@ -66,9 +74,14 @@ public class PolarBearController : MonoBehaviourPun
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Default"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             _isJumping = false;
         }
+    }
+
+    public void StartChase()
+    {
+        _chaseSled = true;
     }
 }

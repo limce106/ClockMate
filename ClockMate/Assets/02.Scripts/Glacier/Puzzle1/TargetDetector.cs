@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Define;
 using UnityEngine;
 
 public class TargetDetector : MonoBehaviour
@@ -11,25 +13,34 @@ public class TargetDetector : MonoBehaviour
 
     private void Awake()
     {
-        Init();
+        enabled = false;
     }
 
-    private void Init()
+    public void Init()
     {
         _mainCam = Camera.main;
         _activeTargets = new List<ITurretTarget>();
         _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
+        
+        // 눈덩이 비활성화 이벤트 구독
+        Snowball.OnInactive -= HandleTargetInactive;
+        Snowball.OnInactive += HandleTargetInactive;
     }
 
     private void Update()
     {
+        if (_uiAim is null) return;
         DetectTarget();
     }
-
+    
+    private void HandleTargetInactive(ITurretTarget target)
+    {
+        _activeTargets.Remove(target);
+    }
+    
     private void DetectTarget()
     {
         CurrentTarget = null;
-
         // 조준 UI 화면 좌표 영역 계산
         Vector3[] corners = new Vector3[4];
         _uiAim.AimTransform.GetWorldCorners(corners);
@@ -72,5 +83,10 @@ public class TargetDetector : MonoBehaviour
     public void RemoveTarget(ITurretTarget target)
     {
         _activeTargets.Remove(target);
+    }
+
+    private void OnDestroy()
+    {
+        Snowball.OnInactive -= HandleTargetInactive;
     }
 }
