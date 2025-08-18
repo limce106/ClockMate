@@ -95,7 +95,20 @@ MonoBehaviour:
   - RPC_AttachController
   - RPC_DetachController
   - RPC_UpdateTimeLimitTxt
-  - RPC_DetachAllPlayers
+  - RPC_AllFinished
+  - RPC_Begin
+  - RPC_BeginChase
+  - RPC_Destroy
+  - RPC_GameOver
+  - RPC_InitForAll
+  - RPC_PrepareChase
+  - RPC_ReportFinished
+  - RPC_ReportSelection
+  - RPC_RequestDestroy
+  - RPC_RequestStart
+  - RPC_SyncHP
+  - RPC_TeleportAll
+  - RPC_TeleportDone
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

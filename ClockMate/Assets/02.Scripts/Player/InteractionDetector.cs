@@ -72,6 +72,11 @@ public class InteractionDetector : MonoBehaviour
 
     private void UpdateActiveInteractObj()
     {
+        if (_detectedObjects.Count > 0)
+        {
+            CleanupInvalidInteractables();
+        }
+        
         if (_detectedObjects.Count == 0) return;
         
         float closestDistance = float.MaxValue;
@@ -133,7 +138,31 @@ public class InteractionDetector : MonoBehaviour
             _activeInteractObj = availableObj;
         }
     }
-    
+
+    private void CleanupInvalidInteractables()
+    {
+        var toRemove = new List<GameObject>();
+        foreach (KeyValuePair<GameObject, IInteractable> kv in _detectedObjects)
+        {
+            GameObject go = kv.Key;
+            if (go is null || !go.activeInHierarchy)
+            {
+                toRemove.Add(go);
+                continue;
+            }
+
+            if (!go.TryGetComponent(out Collider col) || !col.enabled)
+            {
+                toRemove.Add(go);
+            }
+        }
+
+        foreach (GameObject go in toRemove)
+        {
+            RemoveDetectedObject(go);
+        }
+    }
+
     private void RemoveDetectedObject(GameObject targetObj)
     {
         if(targetObj == null) return;
