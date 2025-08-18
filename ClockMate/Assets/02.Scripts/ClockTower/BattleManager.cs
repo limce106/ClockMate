@@ -7,7 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define.Battle;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// 전투 흐름 제어
@@ -16,7 +15,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 {
     private Dictionary<string, PhaseType> AttackNameToType;
 
+    private float _timer;   // 플레이어 제한 시간용 타이머
     public TMP_Text timeLimitText;
+    
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
@@ -41,6 +42,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
+    private const float playerAttackTimeLimit = 10f;
     public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
     private const float recoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
@@ -89,6 +91,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
             StartCoroutine(StartBattle());
     }
 
+    private void Update()
+    {
+        if (PhotonNetwork.IsMasterClient && phaseType == PhaseType.PlayerAttack)
+            RunTimer();
+    }
+
     private IEnumerator StartBattle()
     {
         if (!PhotonNetwork.IsMasterClient)
@@ -107,6 +115,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if(phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
             {
                 yield break;
+            }
+
+            // 플레이어 공격 페이즈일 때 시간 제한 설정 및 UI 동기화
+            if (phaseType == PhaseType.PlayerAttack)
+            {
+                _timer = playerAttackTimeLimit;
+                photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
+            }
+            else
+            {
+                photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, false);
             }
 
             GameObject attackPrefab = GetCurrentPhasePrefab();
@@ -237,5 +256,33 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
         yield return StartCoroutine(screenEffectController.FadeIn(3f));
+    }
+    
+    [PunRPC]
+    private void RPC_UpdateTimeLimitTxt(int time)
+    {
+        if (time < 0) time = 0;
+        timeLimitText.text = time + "초";
+    }
+
+    private void RunTimer()
+    {
+        _timer -= Time.deltaTime;
+        photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
+    }
+
+    /// <summary>
+    /// 시간 제한이 끝났는지
+    /// </summary>
+    /// <returns></returns>
+    public bool IsTimeLimitEnd()
+    {
+        return _timer <= 0;
+    }
+
+    [PunRPC]
+    void RPC_EnableTimeLimit(bool isEnable)
+    {
+        timeLimitText.GetComponent<TMP_Text>().enabled = isEnable;
     }
 }
