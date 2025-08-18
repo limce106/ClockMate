@@ -1464,7 +1464,6 @@ GameObject:
   - component: {fileID: 3543098905104676273}
   - component: {fileID: 3626708002921695564}
   - component: {fileID: 2143324713926829397}
-  - component: {fileID: 68872388660495867}
   m_Layer: 0
   m_Name: GiantFlower
   m_TagString: Untagged
@@ -1548,36 +1547,9 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8953015452613250884, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
---- !u!54 &68872388660495867
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8970790510856910994}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 14
-  m_CollisionDetection: 0
 --- !u!1001 &1936373597869626388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1633,8 +1605,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8961720604667533800}
   m_SourcePrefab: {fileID: 100100000, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
+--- !u!1 &1593720486842067269 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
+  m_PrefabInstance: {fileID: 1936373597869626388}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &8961720604667533800
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1593720486842067269}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 8953015452613250884, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
 --- !u!4 &2113834169913816063 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9a032ba610ed85c419f1e1e4c59bf69c, type: 3}
