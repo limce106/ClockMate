@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
-using static Define.Character;
 
-public class SledController : MonoBehaviour
+public class SledController : MonoBehaviourPun
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
@@ -18,6 +15,7 @@ public class SledController : MonoBehaviour
     private Rigidbody _rb;
     private bool _jumpRequested;
     private float _currentYaw;
+    private bool _hasControl;
 
     private void Awake()
     {
@@ -26,7 +24,7 @@ public class SledController : MonoBehaviour
 
     private void Update()
     {
-        if (!isMoving || GameManager.Instance.SelectedCharacter != CharacterName.Hour) return;
+        if (!isMoving || !_hasControl) return;
         // 움직이는 중이고 아워라면 
         
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
@@ -38,7 +36,7 @@ public class SledController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!isMoving || GameManager.Instance.SelectedCharacter != CharacterName.Hour) return;
+        if (!isMoving || !_hasControl) return;
 
         MoveForward(); 
         HandleTurn();
@@ -55,6 +53,7 @@ public class SledController : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _jumpRequested = false;
         _currentYaw = 0f;
+        _hasControl = true;
     }
 
     /// <summary>
@@ -98,6 +97,25 @@ public class SledController : MonoBehaviour
     /// </summary>
     private bool IsGrounded()
     {
-        return Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundMask);
+        return Physics.CheckSphere(
+            groundCheck.position, 
+            groundCheckRadius, 
+            groundMask,
+            QueryTriggerInteraction.Ignore);
     }
+
+    public void StartSled()
+    {
+        isMoving = true;
+    }
+
+    public void SetControl(bool hasControl)
+    {
+        _hasControl = hasControl;
+        bool isMine = photonView.IsMine;
+        
+        _rb.isKinematic = !isMine;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
+    } 
 }
