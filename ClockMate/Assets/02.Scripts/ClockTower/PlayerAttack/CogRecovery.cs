@@ -31,15 +31,16 @@ public class CogRecovery : AttackPattern
     {
         if (AllCogsAligned())
         {
-            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
-            ClearCogs();
+            EndRecovery(true);
             yield break;
         }
         
         // 제한 시간이 다 되었는지 if문으로 확인 후 아래 코드 추가
-        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-        ClearCogs();
-        yield break;
+        if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
+        {
+            EndRecovery(false);
+            yield break;
+        }
     }
 
     public override void CancelAttack() { }
@@ -66,5 +67,11 @@ public class CogRecovery : AttackPattern
     private Vector3 GetRandomSpawnPos()
     {
         return Vector3.zero;
+    }
+
+    void EndRecovery(bool isSuccess)
+    {
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+        ClearCogs();
     }
 }
