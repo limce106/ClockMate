@@ -2,9 +2,10 @@ using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
 
-public class IAClockHand : MonoBehaviourPun, IInteractable
+public class IAClockHand : MonoBehaviour, IInteractable
 {
     private ClockHandRecovery _clockHandRecovery;
+    private ClockHandController _clockHandController;
     [SerializeField] private CharacterName ControllerName;
     private int _fixedRotationDirection = 0;
 
@@ -13,18 +14,15 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
     private string _exitString;
 
     public MeshRenderer meshRenderer;
-    private Rigidbody _rb;
     private CharacterBase _controller;
     private bool _isControlled;
 
-    private const float ControllerOffset = 1.2f;
     private const float RotationSpeed = 20f;
 
     private void Awake()
     {
         _clockHandRecovery = FindObjectOfType<ClockHandRecovery>();
-        _rb = GetComponent<Rigidbody>();
-        _rb.isKinematic = true;
+        _clockHandController = transform.root.GetComponent<ClockHandController>();
 
         _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
         _exitString = "나가기";
@@ -45,7 +43,7 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
 
             if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
             {
-                photonView.RPC(nameof(RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.deltaTime);
+                _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.deltaTime);
             }
         }
     }
@@ -73,7 +71,7 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
 
         _fixedRotationDirection = GetDirectionFromView(character);
 
-        photonView.RPC(nameof(RPC_AttachController), RpcTarget.All, _controller.photonView.ViewID);
+        _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_AttachController), RpcTarget.All, _controller.photonView.ViewID);
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
@@ -100,98 +98,13 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
 
-        photonView.RPC(nameof(RPC_DetachController), RpcTarget.All);
-
-        UIManager.Instance.Close(_uiNotice);
-        _uiNotice = null;
-    }
-
-    [PunRPC]
-    private void RPC_AttachController(int controllerViewID)
-    {
-        PhotonView controllerView = PhotonView.Find(controllerViewID);
-        if (controllerView == null) return;
-
-        Collider[] handColliders = GetComponentsInChildren<Collider>();
-        Collider[] controllerColliders = controllerView.GetComponents<Collider>();
-
-        foreach (var controllerCol  in controllerColliders)
-        {
-            foreach (var handCol in handColliders)
-            {
-                // 시계 바늘과 플레이어의 충돌 무시
-                Physics.IgnoreCollision(controllerCol, handCol, true);
-            }
-        }
-
-        foreach (var handCol in handColliders)
-        {
-            handCol.enabled = false;
-        }
-
-        controllerView.GetComponent<Rigidbody>().isKinematic = true;
-
-        PhotonTransformView photonTransformView = controllerView.GetComponent<PhotonTransformView>();
-        photonTransformView.enabled = false;
-
-        _rb.isKinematic = false;
-
-        controllerView.transform.SetParent(meshRenderer.transform);
-
-        float originControllerY = controllerView.transform.position.y;
-        Vector3 right = transform.right;
-        right.y = 0f;
-        right.Normalize();
-
-        Vector3 toPlayer = controllerView.transform.position - transform.position;
-        float side = Vector3.Dot(toPlayer, right);
-        Vector3 attachDir = side >= 0 ? right : -right;
-
-        Vector3 targetPos = transform.position + attachDir * ControllerOffset;
-        targetPos.y = originControllerY;
-
-        controllerView.transform.position = targetPos;
-        controllerView.transform.rotation = Quaternion.LookRotation(-attachDir);
-    }
-
-    [PunRPC]
-    private void RPC_DetachController()
-    {
-        if (_controller == null) return;
-
-        PhotonView controllerView = PhotonView.Find(_controller.photonView.ViewID);
-
-        if (controllerView.IsMine)
+        _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_DetachController), RpcTarget.All, _controller.photonView.ViewID);
+        if (_controller.photonView.IsMine)
         {
             _controller = null;
         }
 
-        Collider[] handColliders = GetComponentsInChildren<Collider>();
-        Collider[] controllerColliders = controllerView.GetComponents<Collider>();
-
-        foreach (var controllerCol in controllerColliders)
-        {
-            foreach (var handCol in handColliders)
-            {
-                Physics.IgnoreCollision(controllerCol, handCol, false);
-            }
-        }
-
-        foreach (var handCol in handColliders)
-        {
-            handCol.enabled = true;
-        }
-
-        controllerView.GetComponent<Rigidbody>().isKinematic = false;
-        _rb.isKinematic = true;
-
-        controllerView.transform.SetParent(null);
-        controllerView.GetComponent<PhotonTransformView>().enabled = true;
-    }
-
-    [PunRPC]
-    private void RPC_Rotate(float rotationAmount)
-    {
-        transform.root.Rotate(0f, rotationAmount, 0f);
+        UIManager.Instance.Close(_uiNotice);
+        _uiNotice = null;
     }
 }

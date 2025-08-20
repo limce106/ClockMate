@@ -69,8 +69,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
         };
 
         // StageLifeManager ÆÄ±«
-        if (StageLifeManager.Instance != null)
-            Destroy(StageLifeManager.Instance);
+        //if (StageLifeManager.Instance != null)
+        //    Destroy(StageLifeManager.Instance);
 
         screenEffectController = FindObjectOfType<ScreenEffectController>();
     }
