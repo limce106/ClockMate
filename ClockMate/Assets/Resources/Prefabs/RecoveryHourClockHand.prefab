@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 1419449293861180711}
   - component: {fileID: 6754520202128000649}
   - component: {fileID: 4075927613350354889}
-  - component: {fileID: 4899970666681466690}
   - component: {fileID: 4204097770649566463}
-  - component: {fileID: 5966025449389933465}
+  - component: {fileID: 1187330577080578754}
   m_Layer: 0
   m_Name: Hinge
   m_TagString: Untagged
@@ -102,20 +101,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4899970666681466690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2934540344760838738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19c9e4dfb6a48324390f675b94fe4d98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ControllerName: 0
-  meshRenderer: {fileID: 4205925411451221047}
 --- !u!65 &4204097770649566463
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -137,7 +122,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 7.5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5966025449389933465
+--- !u!114 &1187330577080578754
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,19 +131,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2934540344760838738}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 19c9e4dfb6a48324390f675b94fe4d98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 0
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  ControllerName: 0
+  meshRenderer: {fileID: 4205925411451221047}
 --- !u!1 &7187283922675596617
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,6 +145,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8566395899150888786}
+  - component: {fileID: 8704708449161550208}
+  - component: {fileID: 5878849527764007596}
   m_Layer: 0
   m_Name: RecoveryHourClockHand
   m_TagString: Untagged
@@ -192,6 +171,40 @@ Transform:
   - {fileID: 1276970779856286543}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8704708449161550208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7187283922675596617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5878849527764007596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7187283922675596617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7ba555bff2d3841b125ba1b1667578, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1599357679298303140
 PrefabInstance:
   m_ObjectHideFlags: 0
