@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BreakPoint : MonoBehaviour, ITurretTarget
@@ -9,8 +10,8 @@ public class BreakPoint : MonoBehaviour, ITurretTarget
     public void Init(DestroyableIce ice, TargetDetector targetDetector)
     {
         _ice = ice;
+        _ice.UiIceBreakPoint.SetImage(this);
         _targetDetector = targetDetector;
-        _ice.UiIceBreakPoint.SetImagePosition(this);
         _targetDetector.AddTarget(this);
         _destroyEffect = Resources.Load<ParticleSystem>("Effects/PointDestroy");
     }

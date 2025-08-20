@@ -20,9 +20,18 @@ public class UIIceBreakPoint : UIBase
         _images = new Dictionary<BreakPoint, Image>();
     }
     
-    public void SetImagePosition(BreakPoint breakPoint)
+    private void Update()
     {
-        img[_index].transform.position = Camera.main.WorldToScreenPoint(breakPoint.transform.position);
+        if (_images.Count <= 0) return;
+            
+        foreach (var kv in _images)
+        {
+            kv.Value.transform.position = Camera.main.WorldToScreenPoint(kv.Key.transform.position);
+        }
+    }
+    
+    public void SetImage(BreakPoint breakPoint)
+    {
         _images[breakPoint] = img[_index++];
     }
     
