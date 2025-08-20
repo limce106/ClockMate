@@ -92,13 +92,15 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
         else return 0;
     }
 
-    private void ExitControl()
+    public void ExitControl()
     {
+        if (_controller == null) return;
+
         _isControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
 
-        photonView.RPC(nameof(RPC_DetachController), RpcTarget.All, _controller.photonView.ViewID);
+        photonView.RPC(nameof(RPC_DetachController), RpcTarget.All);
 
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
@@ -153,10 +155,11 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
     }
 
     [PunRPC]
-    private void RPC_DetachController(int controllerViewID)
+    private void RPC_DetachController()
     {
-        PhotonView controllerView = PhotonView.Find(controllerViewID);
-        if (controllerView == null) return;
+        if (_controller == null) return;
+
+        PhotonView controllerView = PhotonView.Find(_controller.photonView.ViewID);
 
         if (controllerView.IsMine)
         {
@@ -184,13 +187,6 @@ public class IAClockHand : MonoBehaviourPun, IInteractable
 
         controllerView.transform.SetParent(null);
         controllerView.GetComponent<PhotonTransformView>().enabled = true;
-
-        //RaycastHit hit;
-        //if (Physics.Raycast(controllerView.transform.position + Vector3.up, Vector3.down, out hit, 5f))
-        //{
-        //    controllerView.transform.position = hit.point + Vector3.up * 0.01f;
-        //    controllerView.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * controllerView.transform.rotation;
-        //}
     }
 
     [PunRPC]
