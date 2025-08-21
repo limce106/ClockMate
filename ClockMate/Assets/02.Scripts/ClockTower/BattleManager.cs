@@ -18,11 +18,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private float _timer;   // 플레이어 제한 시간용 타이머
     public TMP_Text timeLimitText;
     
-    [SerializeField] private List<GameObject> bossAttackPrefabs;
-    [SerializeField] private List<GameObject> playerAttackPrefabs;
-    private AttackPattern curAttackPattern;
-    private ScreenEffectController screenEffectController;
-    private bool curAttackSuccess = false;
+    [SerializeField] private List<GameObject> _bossAttackPrefabs;
+    [SerializeField] private List<GameObject> _playerAttackPrefabs;
+    private AttackPattern _curAttackPattern;
+    private ScreenEffectController _screenEffectController;
+    private bool _curAttackSuccess = false;
 
     // 전장 범위
     public Vector2 minBattleFieldXZ;
@@ -42,9 +42,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
-    private const float playerAttackTimeLimit = 10f;
+    private const float PlayerAttackTimeLimit = 10f;
     public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
-    private const float recoveryPerSuccess = 0.334f;
+    private const float RecoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
     private readonly PlayerAttackType[] PlayerAttackTypes = (PlayerAttackType[])Enum.GetValues(typeof(PlayerAttackType));
 
@@ -72,7 +72,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         //if (StageLifeManager.Instance != null)
         //    Destroy(StageLifeManager.Instance);
 
-        screenEffectController = FindObjectOfType<ScreenEffectController>();
+        _screenEffectController = FindObjectOfType<ScreenEffectController>();
     }
 
     void Start()
@@ -111,8 +111,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         while(true)
         {
-            // 마지막 반격에 성공하면 종료
-            if(phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
+            // 복구율이 100%이면 종료
+            if(GetCurrentRecovery() >= 1f)
             {
                 yield break;
             }
@@ -120,7 +120,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             // 플레이어 공격 페이즈일 때 시간 제한 설정 및 UI 동기화
             if (phaseType == PhaseType.PlayerAttack)
             {
-                _timer = playerAttackTimeLimit;
+                _timer = PlayerAttackTimeLimit;
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
             else
@@ -130,16 +130,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
-            curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
-            currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
+            _curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
+            currentFallingAttack = phaseType == PhaseType.FallingAttack ? _curAttackPattern as FallingAttack : null;
 
-            yield return StartCoroutine(curAttackPattern.Run());
+            yield return StartCoroutine(_curAttackPattern.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
             PhotonNetwork.Destroy(spawnedAttack);
 
-            bool success = curAttackSuccess;
-            curAttackSuccess = false;
+            bool success = _curAttackSuccess;
+            _curAttackSuccess = false;
 
             if(success)
             {
@@ -159,13 +159,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if(playerAttackType != PlayerAttackType.ClockTowerOperation)
                 UpdateRecovery();
 
-            screenEffectController.IncreaseWarmth();
+            _screenEffectController.IncreaseWarmth();
 
             photonView.RPC(nameof(TryAdvancePlayerAttack), RpcTarget.All);
             round++;
 
             // 마지막 반격 성공 시 종료
-            if ((int)playerAttackType >= playerAttackPrefabs.Count)
+            if ((int)playerAttackType >= _playerAttackPrefabs.Count)
             {
                 yield break;
             }
@@ -189,20 +189,25 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private void UpdateRecovery()
     {
-        recoverySlider.value += recoveryPerSuccess;
+        recoverySlider.value += RecoveryPerSuccess;
+    }
+
+    public float GetCurrentRecovery()
+    {
+        return recoverySlider.value;
     }
 
     public void StopCurAttackPattern()
     {
-        curAttackPattern?.CancelAttack();
+        _curAttackPattern?.CancelAttack();
     }
 
     private GameObject GetCurrentPhasePrefab()
     {
         if (phaseType == PhaseType.PlayerAttack)
-            return playerAttackPrefabs[(int)playerAttackType];
+            return _playerAttackPrefabs[(int)playerAttackType];
         else
-            return bossAttackPrefabs[(int)phaseType];
+            return _bossAttackPrefabs[(int)phaseType];
     }
 
     [PunRPC]
@@ -212,7 +217,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if (info.Sender != PhotonNetwork.MasterClient)
             return;
 
-        curAttackSuccess = success;
+        _curAttackSuccess = success;
     }
 
     /// <summary>
@@ -249,13 +254,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public IEnumerator FailBossAttackSequence()
     {
-        yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
-        yield return StartCoroutine(screenEffectController.FadeOut(3f));
+        yield return StartCoroutine(_screenEffectController.EnableGrayscale(true));
+        yield return StartCoroutine(_screenEffectController.FadeOut(3f));
 
         yield return new WaitForSeconds(1f);
 
-        yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
-        yield return StartCoroutine(screenEffectController.FadeIn(3f));
+        yield return StartCoroutine(_screenEffectController.EnableGrayscale(false));
+        yield return StartCoroutine(_screenEffectController.FadeIn(3f));
     }
     
     [PunRPC]
