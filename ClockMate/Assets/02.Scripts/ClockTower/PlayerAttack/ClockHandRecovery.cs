@@ -200,12 +200,8 @@ public class ClockHandRecovery : AttackPattern
                 EndRecovery(true);
                 yield break;
             }
-
-            yield return null;
         }
     }
-
-    public override void CancelAttack() { }
 
     [PunRPC]
     void RPC_DetachAllPlayers()
