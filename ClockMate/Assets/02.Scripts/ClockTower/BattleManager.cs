@@ -33,7 +33,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public NetworkObjectPool<FallingClockHand> clockhandPool;
 
     public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockTowerOperation;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
@@ -80,16 +80,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    //public override void OnJoinedRoom()
-    //{
-    //    StartCoroutine(StartBattle());
-    //}
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+    public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.IsMasterClient)
-            StartCoroutine(StartBattle());
+        StartCoroutine(StartBattle());
     }
+
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    if (PhotonNetwork.IsMasterClient)
+    //        StartCoroutine(StartBattle());
+    //}
 
     private void Update()
     {
@@ -141,7 +141,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             bool success = curAttackSuccess;
             curAttackSuccess = false;
 
-            if(success)
+            if (success)
             {
                 yield return StartCoroutine(HandleSuccess());
             }
@@ -157,7 +157,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if(phaseType == PhaseType.PlayerAttack)
         {
             if(playerAttackType != PlayerAttackType.ClockTowerOperation)
-                UpdateRecovery();
+                UpdateRecovery(recoveryPerSuccess);
 
             screenEffectController.IncreaseWarmth();
 
@@ -187,9 +187,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private void UpdateRecovery()
+    public void UpdateRecovery(float value)
     {
-        recoverySlider.value += recoveryPerSuccess;
+        recoverySlider.value += value;
     }
 
     public float GetCurrentRecovery()
