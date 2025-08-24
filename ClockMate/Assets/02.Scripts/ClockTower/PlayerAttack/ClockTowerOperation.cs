@@ -33,8 +33,8 @@ public class ClockTowerOperation : AttackPattern
                 EndOperation(false);
                 yield break;
             }
-            
-            if(BattleManager.Instance.GetCurrentRecovery() >= 1f)
+
+            if (BattleManager.Instance.GetCurrentRecovery() >= 1f)
             {
                 EndOperation(true);
                 yield break;
