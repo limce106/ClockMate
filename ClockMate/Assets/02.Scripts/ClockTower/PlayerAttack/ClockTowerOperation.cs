@@ -8,6 +8,7 @@ public class ClockTowerOperation : AttackPattern
     private GameObject _clockSpring;
 
     private const string ClockSpringPrefabPath = "Prefabs/ClockSpring";
+    private const float SpawnPosYOffset = 0.7f;
 
     protected override void Init() { }
 
@@ -21,14 +22,16 @@ public class ClockTowerOperation : AttackPattern
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        _clockSpring = PhotonNetwork.Instantiate(ClockSpringPrefabPath, BattleManager.Instance.BattleFieldCenter, Quaternion.identity);
+        Vector3 spawnPos = BattleManager.Instance.BattleFieldCenter;
+        spawnPos.y -= SpawnPosYOffset;
+        _clockSpring = PhotonNetwork.Instantiate(ClockSpringPrefabPath, spawnPos, Quaternion.identity);
     }
 
     public override IEnumerator Run()
     {
         while (true)
         {
-            if (BattleManager.Instance.IsTimeLimitEnd() || BattleManager.Instance.GetCurrentRecovery() >= 1f)
+            if (BattleManager.Instance.IsTimeLimitEnd())
             {
                 EndOperation(false);
                 yield break;
@@ -39,6 +42,8 @@ public class ClockTowerOperation : AttackPattern
                 EndOperation(true);
                 yield break;
             }
+
+            yield return null;
         }
     }
 
