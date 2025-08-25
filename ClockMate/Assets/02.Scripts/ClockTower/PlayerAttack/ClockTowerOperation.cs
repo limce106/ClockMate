@@ -8,7 +8,7 @@ public class ClockTowerOperation : AttackPattern
     private GameObject _clockSpring;
 
     private const string ClockSpringPrefabPath = "Prefabs/ClockSpring";
-    private const float SpawnPosYOffset = 0.7f;
+    private const float SpawnPosY = 1.3f;
 
     protected override void Init() { }
 
@@ -23,7 +23,7 @@ public class ClockTowerOperation : AttackPattern
             return;
 
         Vector3 spawnPos = BattleManager.Instance.BattleFieldCenter;
-        spawnPos.y -= SpawnPosYOffset;
+        spawnPos.y = SpawnPosY;
         _clockSpring = PhotonNetwork.Instantiate(ClockSpringPrefabPath, spawnPos, Quaternion.identity);
     }
 
