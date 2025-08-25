@@ -205,8 +205,6 @@ public class ClockHandRecovery : AttackPattern
         }
     }
 
-    public override void CancelAttack() { }
-
     [PunRPC]
     void RPC_DetachAllPlayers()
     {
