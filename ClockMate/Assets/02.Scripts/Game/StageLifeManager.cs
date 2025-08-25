@@ -85,4 +85,9 @@ public class StageLifeManager : MonoSingleton<StageLifeManager>
         else
             _uiRevive.SetUI(false, _deadCharacter.Name);
     }
+
+    public void DestroySelf()
+    {
+        Destroy(this);
+    }
 }
