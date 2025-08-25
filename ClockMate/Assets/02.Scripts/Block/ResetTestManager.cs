@@ -18,7 +18,7 @@ public class ResetTestManager : MonoSingleton<ResetTestManager>
         {
             if(NetworkManager.Instance.IsInRoomAndReady())
             {
-                resettable.RPC_ResetObject();
+                resettable.photonView.RPC("RPC_ResetObject", RpcTarget.All);
             }
             else
             {
