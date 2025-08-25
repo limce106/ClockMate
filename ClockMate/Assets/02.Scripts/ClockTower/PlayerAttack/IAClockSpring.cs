@@ -155,7 +155,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         CharacterBase character = PhotonView.Find(viewID).GetComponent<CharacterBase>();
 
         _attachedPlayers[viewID] = character;
-        _pushInput.Remove(viewID);
+        _pushInput[viewID] = false;
     }
 
     [PunRPC]
@@ -164,7 +164,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         if (!_attachedPlayers.ContainsKey(viewID)) return;
 
         _attachedPlayers.Remove(viewID);
-        _pushInput[viewID] = false;
+        _pushInput.Remove(viewID);
     }
 
     public bool CanInteract(CharacterBase character)
