@@ -210,4 +210,19 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     public void OnInteractAvailable() { }
 
     public void OnInteractUnavailable(){ }
+
+    [PunRPC]
+    public void RPC_ExitControlAll()
+    {
+        foreach (var kvp in _attachedPlayers)
+        {
+            CharacterBase character = kvp.Value;
+
+            if(character.photonView.IsMine)
+            {
+                character.ChangeState<IdleState>();
+                character.InputHandler.enabled = true;
+            }
+        }
+    }
 }
