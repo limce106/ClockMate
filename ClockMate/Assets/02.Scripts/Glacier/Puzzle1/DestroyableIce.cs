@@ -1,7 +1,8 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 
-public class DestroyableIce : MonoBehaviour
+public class DestroyableIce : MonoBehaviourPun
 {
     [SerializeField] private ParticleSystem[] breakParticles;
     [SerializeField] private GameObject iceGo;
@@ -16,16 +17,10 @@ public class DestroyableIce : MonoBehaviour
     {
         Init();
     }
-
-    private void Start()
-    {
-        SetDestroyable();
-    }
-
+    
     private void Init()
     {
         _breakPointCount = breakPoints.Length;
-        
     }
     
     public void SetDestroyable()
@@ -59,5 +54,4 @@ public class DestroyableIce : MonoBehaviour
             AllDestroyed();
         }
     }
-    
 }

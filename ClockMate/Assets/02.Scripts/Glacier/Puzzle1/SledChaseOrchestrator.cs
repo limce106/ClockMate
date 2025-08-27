@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Video;
 using static Define.Character;
 
@@ -13,8 +11,8 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Transform sledStart;
     [SerializeField] private Transform bearStart;
-    [SerializeField] private Collider chaseEndTrigger;
-
+    
+    [SerializeField] private DestroyableIce destroyableIce;
     [SerializeField] private SledController sled;
     [SerializeField] private Collider sledTriggerCollider;
     [SerializeField] private PolarBearController bear;
@@ -59,6 +57,13 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
     public void RequestStartFromTrigger()
     {
         photonView.RPC(nameof(RPC_RequestStart), RpcTarget.MasterClient);
+    }
+    
+    public void RequestIceEventFromTrigger()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        photonView.RPC(nameof(RPC_ActivateBreakPoints), RpcTarget.All, _milliActor);
     }
 
 
@@ -112,6 +117,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         characterModels.SetActive(true);
         sled.transform.SetPositionAndRotation(sledPos, Quaternion.Euler(sledEuler));
         bear.transform.SetPositionAndRotation(bearPos, Quaternion.Euler(bearEuler));
+        sled.GetComponent<Rigidbody>().isKinematic = false;
         bear.GetComponent<Rigidbody>().isKinematic = false;
         photonView.RPC(nameof(RPC_TeleportDone), RpcTarget.MasterClient);
     }
@@ -144,7 +150,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         bool isMilli = PhotonNetwork.LocalPlayer.ActorNumber == milliActor;
 
         sled.SetControl(isHour);           
-        sled.StartSled();                  
+        sled.SetSledMoving(true);                  
         bear.StartChase(); 
 
         // 카메라
@@ -160,7 +166,21 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         }
         
         snowballShooter.SetActive(true);
-        
-        sled.GetComponent<PhotonTransformView>().enabled = true;
     }
+    
+    [PunRPC]
+    private void RPC_ActivateBreakPoints(int milliActor)
+    {
+        snowballShooter.SetActive(false);
+
+        if (PhotonNetwork.LocalPlayer.ActorNumber == milliActor)
+        {
+            destroyableIce.SetDestroyable();
+        }
+        else
+        {
+            sled.SetControl(false);
+        }
+    }
+
 }

@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class SledController : MonoBehaviourPun
+public class SledController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
@@ -104,18 +104,30 @@ public class SledController : MonoBehaviourPun
             QueryTriggerInteraction.Ignore);
     }
 
-    public void StartSled()
+    public void SetSledMoving(bool value)
     {
-        isMoving = true;
+        isMoving = value;
     }
 
     public void SetControl(bool hasControl)
     {
         _hasControl = hasControl;
-        bool isMine = photonView.IsMine;
-        
-        _rb.isKinematic = !isMine;
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
-    } 
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+            transform.rotation = (Quaternion)stream.ReceiveNext();
+        }
+
+    }
 }
