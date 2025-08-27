@@ -72,6 +72,7 @@ public class FallingBlock : ResettableBase, IPunObservable
         Debug.Log("블럭 추락 시작");
         _isFalling = true;
         _materialInstance.color = fallingColor;
+        SoundManager.Instance.PlaySfx("rock_fall", pos: transform.position, volume: 1f);
         // 떨어지는 순간의 애니메이션 재생 (이것도 필요시)
 
         while (true)
