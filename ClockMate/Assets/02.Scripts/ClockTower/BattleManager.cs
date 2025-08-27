@@ -24,10 +24,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private ScreenEffectController screenEffectController;
     private bool curAttackSuccess = false;
 
-    // 전장 범위
-    public Vector2 minBattleFieldXZ;
-    public Vector2 maxBattleFieldXZ;
-
     // 보스 공격 오브젝트 풀
     public NetworkObjectPool<SwingPendulum> pendulumPool;
     public NetworkObjectPool<FallingClockHand> clockhandPool;
@@ -42,7 +38,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
-    private const float playerAttackTimeLimit = 10f;
+    public float battleFieldRadius = 5f; // 전장 반지름
+    private const float playerAttackTimeLimit = 10f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
     private const float recoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
@@ -72,6 +69,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
         //if (StageLifeManager.Instance != null)
         //    Destroy(StageLifeManager.Instance);
 
+        //StageLifeManager.Instance.DestroySelf();
+
         screenEffectController = FindObjectOfType<ScreenEffectController>();
     }
 
@@ -80,16 +79,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    public override void OnJoinedRoom()
-    {
-        StartCoroutine(StartBattle());
-    }
-
-    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //public override void OnJoinedRoom()
     //{
-    //    if (PhotonNetwork.IsMasterClient)
-    //        StartCoroutine(StartBattle());
+    //    StartCoroutine(StartBattle());
     //}
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(StartBattle());
+    }
 
     private void Update()
     {
@@ -157,7 +156,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if(phaseType == PhaseType.PlayerAttack)
         {
             if(playerAttackType != PlayerAttackType.ClockTowerOperation)
-                UpdateRecovery(recoveryPerSuccess);
+                photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
             screenEffectController.IncreaseWarmth();
 
@@ -187,7 +186,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void UpdateRecovery(float value)
+    [PunRPC]
+    public void RPC_UpdateRecovery(float value)
     {
         recoverySlider.value += value;
     }

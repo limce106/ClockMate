@@ -17,6 +17,7 @@ public class GiantFlower : ResettableBase, IPunObservable
     public float milliWeight = 1.0f;
 
     [Header("¡Ÿ±‚")]
+    public GameObject sideSteam;
     public Animator steamAnimator;
 
     private Rigidbody _rb;
