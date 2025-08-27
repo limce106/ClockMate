@@ -8,7 +8,7 @@ public class ClockTowerOperation : AttackPattern
     private GameObject _clockSpring;
 
     private const string ClockSpringPrefabPath = "Prefabs/ClockSpring";
-    private const float SpawnPosY = 1.3f;
+    private const float SpawnPosY = 0.7f;
 
     protected override void Init() { }
 

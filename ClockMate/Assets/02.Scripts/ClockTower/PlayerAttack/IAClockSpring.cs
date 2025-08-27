@@ -51,7 +51,6 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         }
 
         // 둘 다 W 누르고 있으면 태엽 회전
-        // TODO 테스트가 끝나면 2로 바꿀 것!!
         if (_attachedPlayers.Count == 2 && PhotonNetwork.IsMasterClient)
         {
             bool allPushing = true;
@@ -179,14 +178,18 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
         _rb.isKinematic = false;
 
+        Vector3 attachPos = Vector3.zero;
+
         if(character.transform.root.tag == "Hour")
         {
-            character.transform.position = hourAttachPos.position;
+            attachPos = hourAttachPos.position;
         }
         else if (character.transform.root.tag == "Milli")
         {
-            character.transform.position = milliAttachPos.position;
+            attachPos = milliAttachPos.position;
         }
+        attachPos.y = character.transform.position.y;
+        character.transform.position = attachPos;
 
         photonView.RPC(nameof(RPC_AddPlayer), RpcTarget.All, character.photonView.ViewID);
 
