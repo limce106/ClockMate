@@ -961,7 +961,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5367038431311633839
 Transform:
   m_ObjectHideFlags: 0
@@ -1504,7 +1504,9 @@ MonoBehaviour:
   maxAngle: 20
   hourWeight: 20
   milliWeight: 10
+  sideSteam: {fileID: 4539073874026141270}
   steamAnimator: {fileID: 12662484466066200}
+  smoothingFactor: 0.5
 --- !u!114 &3626708002921695564
 MonoBehaviour:
   m_ObjectHideFlags: 0
