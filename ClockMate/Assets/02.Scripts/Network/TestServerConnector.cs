@@ -88,7 +88,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         else
         {
             var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
-            GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, milli.GetComponent<CharacterBase>());
+            GameManager.Instance.RegisterCharacter(Character.CharacterName.Milli, milli.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
         }
 
