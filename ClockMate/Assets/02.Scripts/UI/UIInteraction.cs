@@ -9,6 +9,7 @@ public class UIInteraction : UIBase
     [SerializeField] private int initialPoolSize = 10;
 
     private List<Image> _uiImagePool;
+    private List<GameObject> _tmpRemove;
     private Dictionary<GameObject, Image> _objectToUIImage;
     private Sprite _spriteInactive;
     private Sprite _spriteActive;
@@ -23,6 +24,7 @@ public class UIInteraction : UIBase
     {
         UIType = Windowed;
         _uiImagePool = new List<Image>(initialPoolSize);
+        _tmpRemove = new List<GameObject>();
         for (int i = 0; i < initialPoolSize; i++)
         {
             _uiImagePool.Add(Instantiate(imgInteractionPrefab, transform));
@@ -57,12 +59,26 @@ public class UIInteraction : UIBase
 
     public void UpdateUIPosition()
     {
+        if (_objectToUIImage.Count == 0) return;
+        
+        _tmpRemove.Clear();
         foreach (var pair in _objectToUIImage)
         {
-            if (pair.Key is null) continue;
-
-            Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(pair.Key.transform.position);
+            if (pair.Key == null) { _tmpRemove.Add(pair.Key); }
+        }
+        
+        foreach (var k in _tmpRemove)
+        {
+            if (_objectToUIImage.TryGetValue(k, out var img)) ReturnImageToPool(img);
+            _objectToUIImage.Remove(k);
+        }
+        if (_objectToUIImage.Count == 0) return;
+        
+        foreach (var pair in _objectToUIImage)
+        {
+            GameObject obj = pair.Key; 
             Image uiImage = pair.Value;
+            Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(obj.transform.position);
 
             if (viewportPoint.z <= 0)
             {
@@ -71,20 +87,30 @@ public class UIInteraction : UIBase
                 continue;
             }
 
-            if (IsInView(pair.Key))
-            {
-                Vector3 screenPoint = _mainCamera.WorldToScreenPoint(pair.Key.transform.position);
-                screenPoint.x = Mathf.Round(screenPoint.x);
-                screenPoint.y = Mathf.Round(screenPoint.y);
-                uiImage.transform.position = screenPoint;
-            }
+            bool inView = viewportPoint.x is >= 0f and <= 1f && viewportPoint.y is >= 0f and <= 1f;
+            Vector3 sp;
+            if (inView)
+                sp = _mainCamera.WorldToScreenPoint(obj.transform.position);
             else
-            {
-                Vector3 edgeScreenPoint = CalculateEdgePosition(viewportPoint);
-                edgeScreenPoint.x = Mathf.Round(edgeScreenPoint.x);
-                edgeScreenPoint.y = Mathf.Round(edgeScreenPoint.y);
-                uiImage.transform.position = edgeScreenPoint;
-            }
+                sp = CalculateEdgePosition(viewportPoint);
+
+            sp.x = Mathf.Round(sp.x); sp.y = Mathf.Round(sp.y);
+            uiImage.transform.position = sp;
+            if (!uiImage.gameObject.activeSelf) uiImage.gameObject.SetActive(true);
+            // if (IsInView(pair.Key))
+            // {
+            //     Vector3 screenPoint = _mainCamera.WorldToScreenPoint(pair.Key.transform.position);
+            //     screenPoint.x = Mathf.Round(screenPoint.x);
+            //     screenPoint.y = Mathf.Round(screenPoint.y);
+            //     uiImage.transform.position = screenPoint;
+            // }
+            // else
+            // {
+            //     Vector3 edgeScreenPoint = CalculateEdgePosition(viewportPoint);
+            //     edgeScreenPoint.x = Mathf.Round(edgeScreenPoint.x);
+            //     edgeScreenPoint.y = Mathf.Round(edgeScreenPoint.y);
+            //     uiImage.transform.position = edgeScreenPoint;
+            // }
         }
     }
 

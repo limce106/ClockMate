@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using Define;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -80,13 +81,15 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
-            GameManager.Instance?.SetSelectedCharacter(Define.Character.CharacterName.Hour);
+            var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
+            GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
+            GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
         }
         else
         {
-            PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
-            GameManager.Instance?.SetSelectedCharacter(Define.Character.CharacterName.Milli);
+            var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
+            GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, milli.GetComponent<CharacterBase>());
+            GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
