@@ -16,10 +16,10 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
     private Dictionary<int, CharacterBase> _attachedPlayers = new Dictionary<int, CharacterBase>();
     private Dictionary<int, bool> _pushInput = new Dictionary<int, bool>();
-    private Dictionary<int, Vector3> _followLocalOffset = new Dictionary<int, Vector3>();
+    private Vector3 _followLocalOffset;
 
     private const float RotationSpeed = 50f;
-    private const float Recovery = 0.0005f;
+    private const float RecoveryFillAmount = 0.0005f;
 
     private void Awake()
     {
@@ -52,7 +52,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
         // 둘 다 W 누르고 있으면 태엽 회전
         // TODO 테스트가 끝나면 2로 바꿀 것!!
-        if (_attachedPlayers.Count == 1)
+        if (_attachedPlayers.Count == 2 && PhotonNetwork.IsMasterClient)
         {
             bool allPushing = true;
             foreach (var kvp in _pushInput)
@@ -71,32 +71,27 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
     private void FollowClockSpring()
     {
-        foreach(var kvp in _attachedPlayers)
+        if(IsLocalPlayerAttached(out int localViewID))
         {
-            int viewID = kvp.Key;
-            CharacterBase character = kvp.Value;
+            CharacterBase character = _attachedPlayers[localViewID];
 
-            if(_followLocalOffset.ContainsKey(viewID))
+            Vector3 newPosition = transform.TransformPoint(_followLocalOffset);
+            newPosition.y = character.transform.position.y;
+
+            character.transform.position = newPosition;
+
+            if (character.transform.root.tag == "Hour")
             {
-                Vector3 localOffset = _followLocalOffset[viewID];
-                Vector3 newPosition = transform.TransformPoint(localOffset);
-                newPosition.y = character.transform.position.y;
+                character.transform.rotation = transform.rotation;
+            }
+            else if (character.transform.root.tag == "Milli")
+            {
+                Quaternion oppositeRotation = Quaternion.Euler(
+                    transform.rotation.eulerAngles.x,
+                    transform.rotation.eulerAngles.y + 180f,
+                    transform.rotation.eulerAngles.z);
 
-                character.transform.position = newPosition;
-
-                if(character.transform.root.tag == "Hour")
-                {
-                    character.transform.rotation = transform.rotation;
-                }
-                else if (character.transform.root.tag == "Milli")
-                {
-                    Quaternion oppositeRotation = Quaternion.Euler(
-                        transform.rotation.eulerAngles.x,
-                        transform.rotation.eulerAngles.y + 180f,
-                        transform.rotation.eulerAngles.z);
-
-                    character.transform.rotation = oppositeRotation;
-                }
+                character.transform.rotation = oppositeRotation;
             }
         }
     }
@@ -104,7 +99,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     private void RotateSpring()
     {
         _rb.MoveRotation(_rb.rotation * Quaternion.Euler(0, RotationSpeed * Time.fixedDeltaTime, 0));
-        BattleManager.Instance.UpdateRecovery(Recovery);
+        BattleManager.Instance.photonView.RPC(nameof(BattleManager.Instance.RPC_UpdateRecovery), RpcTarget.All, RecoveryFillAmount);
     }
 
     bool IsLocalPlayerAttached(out int localViewID)
@@ -129,9 +124,8 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         character.ChangeState<IdleState>();
         character.InputHandler.enabled = true;
 
-        _attachedPlayers.Remove(viewID);
-        _pushInput.Remove(viewID);
-        _followLocalOffset.Remove(viewID);
+        photonView.RPC(nameof(RPC_RemovePlayer), RpcTarget.All, character.photonView.ViewID);
+        _followLocalOffset = Vector3.zero;
 
         if(_attachedPlayers.Count == 0)
             _rb.isKinematic = true;
@@ -155,6 +149,24 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         }
     }
 
+    [PunRPC]
+    public void RPC_AddPlayer(int viewID)
+    {
+        CharacterBase character = PhotonView.Find(viewID).GetComponent<CharacterBase>();
+
+        _attachedPlayers[viewID] = character;
+        _pushInput[viewID] = false;
+    }
+
+    [PunRPC]
+    public void RPC_RemovePlayer(int viewID)
+    {
+        if (!_attachedPlayers.ContainsKey(viewID)) return;
+
+        _attachedPlayers.Remove(viewID);
+        _pushInput.Remove(viewID);
+    }
+
     public bool CanInteract(CharacterBase character)
     {
         return !_attachedPlayers.ContainsKey(character.photonView.ViewID);
@@ -176,14 +188,11 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
             character.transform.position = milliAttachPos.position;
         }
 
-        int viewID = character.photonView.ViewID;
-
-        _attachedPlayers[viewID] = character;
-        _pushInput[viewID] = false;
+        photonView.RPC(nameof(RPC_AddPlayer), RpcTarget.All, character.photonView.ViewID);
 
         Vector3 localOffset = transform.InverseTransformPoint(character.transform.position);
         localOffset.y = 0f;
-        _followLocalOffset[viewID] = localOffset;
+        _followLocalOffset = localOffset;
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
@@ -201,4 +210,19 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     public void OnInteractAvailable() { }
 
     public void OnInteractUnavailable(){ }
+
+    [PunRPC]
+    public void RPC_ExitControlAll()
+    {
+        foreach (var kvp in _attachedPlayers)
+        {
+            CharacterBase character = kvp.Value;
+
+            if(character.photonView.IsMine)
+            {
+                character.ChangeState<IdleState>();
+                character.InputHandler.enabled = true;
+            }
+        }
+    }
 }

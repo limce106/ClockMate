@@ -11,13 +11,11 @@ public class SwingAttack : AttackPattern
     private bool isCanceled = false;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
-    [SerializeField] private Vector2 attackOriginXY = Vector2.zero;
-    [SerializeField] private float attackZMin = 0f;
-    [SerializeField] private float attackZMax = 0f;
+    [SerializeField] private float attackOriginY = 0f;
 
     // 공통 회피 가능 구간
-    [SerializeField] private float avoidZMin = 0f;
-    [SerializeField] private float avoidZMax = 0f;
+    [SerializeField] private float avoidRadiusMin = 0f;
+    [SerializeField] private float avoidRadiusMax = 0f;
 
     private List<GameObject> spawnedPendulums = new List<GameObject>();
 
@@ -63,24 +61,29 @@ public class SwingAttack : AttackPattern
     {
         const float minDistance = 0.5f;
 
-        while(true)
+        while (true)
         {
-            float x = attackOriginXY.x;
-            float y = attackOriginXY.y;
-            float z = Random.Range(attackZMin, attackZMax);
+            // 랜덤 위치 생성
+            float r = BattleManager.Instance.battleFieldRadius * Mathf.Sqrt(Random.value);
+            float angle = Random.value * 360f;
+
+            float x = BattleManager.Instance.BattleFieldCenter.x + r * Mathf.Cos(angle * Mathf.Deg2Rad);
+            float z = BattleManager.Instance.BattleFieldCenter.z + r * Mathf.Sin(angle * Mathf.Deg2Rad);
+            float y = attackOriginY;
 
             Vector3 randomPos = new Vector3(x, y, z);
-            bool isOverlapping = false;
 
-            // 회피 구간 내부인지
-            bool isInAvoidableZone = randomPos.z >= avoidZMin && randomPos.z <= avoidZMax;
+            // 회피 구간 확인. 회피 구간이 원형 전장의 중심으로부터 특정 반지름을 벗어난 도넛 모양이라고 가정
+            float distanceToCenter = Vector3.Distance(randomPos, BattleManager.Instance.BattleFieldCenter);
+            bool isInAvoidableZone = distanceToCenter >= avoidRadiusMin && distanceToCenter <= avoidRadiusMax;
+
             if (isInAvoidableZone)
                 continue;
 
-            // 이미 스폰된 오브젝트와 겹치지 않는지
+            bool isOverlapping = false;
             foreach (GameObject go in spawnedPendulums)
             {
-                if(Vector3.Distance(go.transform.position, randomPos) <= minDistance)
+                if (Vector3.Distance(go.transform.position, randomPos) <= minDistance)
                 {
                     isOverlapping = true;
                     break;

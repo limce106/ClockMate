@@ -49,8 +49,12 @@ public class ClockTowerOperation : AttackPattern
 
     void EndOperation(bool isSuccess)
     {
-        if (_clockSpring != null)
+        if (_clockSpring != null && PhotonNetwork.IsMasterClient)
+        {
+            IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
+            _clockSpring.GetPhotonView().RPC(nameof(clockSpringComp.RPC_ExitControlAll), RpcTarget.All);
             PhotonNetwork.Destroy(_clockSpring);
+        }
 
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }

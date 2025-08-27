@@ -52,7 +52,9 @@ public class GiantFlowerManager : MonoBehaviour
 
     private void GrowSteam()
     {
-        GiantFlower nextFlower = giantFlowers[currentIndex + 1];
+        GiantFlower nextFlower = giantFlowers[currentIndex];
+
+        nextFlower.sideSteam.SetActive(true);
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
     }
 
