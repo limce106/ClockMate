@@ -9,7 +9,11 @@ public class InteractionDetector : MonoBehaviour
     [SerializeField] private LayerMask interactLayer;
     [SerializeField] private float interactDistance = 5.0f; // 상호작용 가능 거리
     [SerializeField] private float interactAngle = 60.0f; // 상호작용 가능 시야각
-    [SerializeField] private GameObject activeInteractObj; // 상호작용 가능 시야각
+    [SerializeField] private GameObject activeInteractObj;
+    
+    private float _interactDistSqr;
+    private float _cosAngle;
+    private readonly List<GameObject> _tmpRemove = new();
     
     private CharacterBase _character;
     private Dictionary<GameObject, IInteractable> _detectedObjects;
@@ -37,9 +41,9 @@ public class InteractionDetector : MonoBehaviour
         if (_updateTimer >= UpdateInterval)
         {
             UpdateActiveInteractObj();
+            _uiInteraction?.UpdateUIPosition();
             _updateTimer -= UpdateInterval;
         }
-        _uiInteraction?.UpdateUIPosition();
         activeInteractObj = _activeInteractObj;
     }
     
@@ -47,6 +51,8 @@ public class InteractionDetector : MonoBehaviour
     {
         _character = GetComponentInParent<CharacterBase>();
         _detectedObjects = new Dictionary<GameObject, IInteractable>();
+        _interactDistSqr = interactDistance * interactDistance;
+        _cosAngle = Mathf.Cos(interactAngle * Mathf.Deg2Rad);
     }
     
     private void OnTriggerEnter(Collider other)
@@ -65,94 +71,94 @@ public class InteractionDetector : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.TryGetComponent(out IInteractable interactable)) return;
-        
-        RemoveDetectedObject(other.gameObject);
+        if (_detectedObjects.ContainsKey(other.gameObject))
+            RemoveDetectedObject(other.gameObject);
     }
 
     private void UpdateActiveInteractObj()
     {
         if (_detectedObjects.Count == 0) return;
         
-        float closestDistance = float.MaxValue;
-        GameObject availableObj = null;
+        var charT = _character.transform;
+        Vector3 charPos = charT.position; charPos.y = 0f;
+        Vector3 forward = charT.forward; forward.y = 0f;
+        forward.Normalize();
+
+        float bestDistSqr = float.MaxValue;
+        GameObject best = null;
 
         foreach (var pair in _detectedObjects)
         {
             GameObject targetObj = pair.Key;
             IInteractable interactable = pair.Value;
-            
             if (targetObj == null) continue;
 
             // 거리 조건
-            Vector3 charPos = _character.transform.position;
             Vector3 targetObjPos = targetObj.transform.position;
-            Vector3 forward = _character.transform.forward;
-
-            charPos.y = 0;
             targetObjPos.y = 0;
-            forward.y = 0;
-
-            float distance = Vector3.Distance(charPos, targetObjPos);
-
-            if (distance > interactDistance) continue;
+            Vector3 dir = targetObjPos - charPos;
+            float d2 = dir.sqrMagnitude;
+            if (d2 > _interactDistSqr) continue;
 
             // 시야각 조건
             if(!ShouldIgnoreViewAngle(targetObj))
             {
-                Vector3 direction = (targetObjPos - charPos).normalized;
-                float angle = Vector3.Angle(forward, direction);
-                if (angle > interactAngle) continue;
+                if (d2 > 1e-6f)
+                {
+                    float dot = Vector3.Dot(forward, dir / Mathf.Sqrt(d2));
+                    if (dot < _cosAngle) continue;
+                }
             }
 
             // 가장 가까운 오브젝트 && 상호작용 가능 여부
-            if (distance < closestDistance && interactable.CanInteract(_character))
+            if (d2 < bestDistSqr && interactable.CanInteract(_character))
             {
-                closestDistance = distance;
-                availableObj = targetObj;
+                bestDistSqr = d2;
+                best = targetObj;
             }
         }
 
         // 선택된 오브젝트가 변경되었을 때만 Sprite 교체
-        if (_activeInteractObj != availableObj)
+        if (_activeInteractObj != best)
         {
             // 이전 선택된 오브젝트 UI Reset
-            if (_activeInteractObj is not null)
+            if (_activeInteractObj !=null)
             {
                 _uiInteraction?.SetImage(_activeInteractObj, false);
-                _detectedObjects[_activeInteractObj]?.OnInteractUnavailable();
+                if (_detectedObjects.TryGetValue(_activeInteractObj, out var oldInter))
+                    oldInter.OnInteractUnavailable();
             }
 
             // 새로 선택된 오브젝트 UI Set
-            if (availableObj is not null)
+            if (best != null)
             {
-                _uiInteraction?.SetImage(availableObj, true);
-                _detectedObjects[availableObj]?.OnInteractAvailable();
+                _uiInteraction?.SetImage(best, true);
+                if (_detectedObjects.TryGetValue(best, out var newInter))
+                    newInter.OnInteractAvailable();
             }
-
-            _activeInteractObj = availableObj;
+            _activeInteractObj = best;
         }
     }
 
     private void CleanupInvalidInteractables()
     {
-        var toRemove = new List<GameObject>();
-        foreach (KeyValuePair<GameObject, IInteractable> kv in _detectedObjects)
+        _tmpRemove.Clear();
+        foreach (var kv in _detectedObjects)
         {
             GameObject go = kv.Key;
             if (go == null || !go.activeInHierarchy)
             {
-                toRemove.Add(go);
+                _tmpRemove.Add(go);
                 continue;
             }
 
             if (!go.TryGetComponent(out Collider col) || !col.enabled)
             {
-                toRemove.Add(go);
+                _tmpRemove.Add(go);
             }
         }
 
-        foreach (GameObject go in toRemove)
+        foreach (GameObject go in _tmpRemove)
         {
             RemoveDetectedObject(go);
         }
@@ -189,11 +195,13 @@ public class InteractionDetector : MonoBehaviour
     public void TryInteract()
     {
         if (_activeInteractObj == null) return;
-        IInteractable interactable = _detectedObjects[_activeInteractObj];
-        if (interactable.Interact(_character) && !interactable.CanInteract(_character))
+        if (_detectedObjects.TryGetValue(_activeInteractObj, out var inter))
         {
-            _uiInteraction?.DeactivateUI(_activeInteractObj);
-            _activeInteractObj = null;
+            if (inter.Interact(_character) && !inter.CanInteract(_character))
+            {
+                _uiInteraction?.DeactivateUI(_activeInteractObj);
+                _activeInteractObj = null;
+            }
         }
     }
 
