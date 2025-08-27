@@ -51,23 +51,28 @@ public class FallingAttack : AttackPattern
     public Vector3 GetRandomSpawnPos(float y)
     {
         const float minDistance = 0.5f;
+        float battleFieldRadius = BattleManager.Instance.battleFieldRadius; // 원형 전장의 반지름
 
         while (true)
         {
-            float x = Random.Range(BattleManager.Instance.minBattleFieldXZ.x, BattleManager.Instance.maxBattleFieldXZ.x);
-            float z = Random.Range(BattleManager.Instance.minBattleFieldXZ.y, BattleManager.Instance.maxBattleFieldXZ.y);
+            // 랜덤 위치 생성
+            float r = battleFieldRadius * Mathf.Sqrt(Random.value);
+            float angle = Random.value * 360f;
 
-            Vector3 randomPos = new Vector3(x, y, z);
-            Vector2 randomPosXY = new Vector2(x, z);
+            float x = r * Mathf.Cos(angle * Mathf.Deg2Rad);
+            float z = r * Mathf.Sin(angle * Mathf.Deg2Rad);
+
+            Vector3 randomPos = new Vector3(BattleManager.Instance.BattleFieldCenter.x + x, y, BattleManager.Instance.BattleFieldCenter.z + z);
+
+            Vector2 randomPosXZ = new Vector2(randomPos.x, randomPos.z);
 
             bool isOverlapping = false;
 
-            // 이미 스폰된 오브젝트와 겹치지 않는지
             foreach (GameObject go in spawnedClockHands)
             {
-                Vector2 exisitingPosXZ = new Vector2(go.transform.position.x, go.transform.position.z);
+                Vector2 existingPosXZ = new Vector2(go.transform.position.x, go.transform.position.z);
 
-                if (Vector2.Distance(randomPosXY, exisitingPosXZ) <= minDistance)
+                if (Vector2.Distance(randomPosXZ, existingPosXZ) <= minDistance)
                 {
                     isOverlapping = true;
                     break;
@@ -75,7 +80,9 @@ public class FallingAttack : AttackPattern
             }
 
             if (!isOverlapping)
+            {
                 return randomPos;
+            }
         }
     }
 
