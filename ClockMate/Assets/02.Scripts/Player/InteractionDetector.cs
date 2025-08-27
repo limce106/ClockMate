@@ -31,6 +31,8 @@ public class InteractionDetector : MonoBehaviour
 
     private void Update()
     {
+        if (_detectedObjects.Count > 0) CleanupInvalidInteractables();
+
         _updateTimer += Time.deltaTime;
         if (_updateTimer >= UpdateInterval)
         {
@@ -38,7 +40,6 @@ public class InteractionDetector : MonoBehaviour
             _updateTimer -= UpdateInterval;
         }
         _uiInteraction?.UpdateUIPosition();
-
         activeInteractObj = _activeInteractObj;
     }
     
@@ -60,7 +61,6 @@ public class InteractionDetector : MonoBehaviour
             _uiInteraction = UIManager.Instance.Show<UIInteraction>("UIInteractionRoot");
         }
         _uiInteraction.ActivateUI(other.gameObject);
-        // TODO 게임 오브젝트가 제거되었을 경우 처리 추가
     }
 
     private void OnTriggerExit(Collider other)
@@ -72,11 +72,6 @@ public class InteractionDetector : MonoBehaviour
 
     private void UpdateActiveInteractObj()
     {
-        if (_detectedObjects.Count > 0)
-        {
-            CleanupInvalidInteractables();
-        }
-        
         if (_detectedObjects.Count == 0) return;
         
         float closestDistance = float.MaxValue;
@@ -145,7 +140,7 @@ public class InteractionDetector : MonoBehaviour
         foreach (KeyValuePair<GameObject, IInteractable> kv in _detectedObjects)
         {
             GameObject go = kv.Key;
-            if (go is null || !go.activeInHierarchy)
+            if (go == null || !go.activeInHierarchy)
             {
                 toRemove.Add(go);
                 continue;
@@ -165,7 +160,22 @@ public class InteractionDetector : MonoBehaviour
 
     private void RemoveDetectedObject(GameObject targetObj)
     {
-        if(targetObj == null) return;
+        if (targetObj == null)
+        {
+            var dead = new List<GameObject>();
+            foreach (var kv in _detectedObjects)
+                if (kv.Key == null) dead.Add(kv.Key);
+
+            foreach (var k in dead)
+            {
+                _detectedObjects.Remove(k);
+                _uiInteraction?.DeactivateUI(k); // UI 매핑도 함께 제거
+            }
+
+            if (_activeInteractObj == null) return;
+            _activeInteractObj = null;
+            return;
+        }
 
         // dictionary에서 제거, UI 비활성화 처리
         _detectedObjects.Remove(targetObj);
