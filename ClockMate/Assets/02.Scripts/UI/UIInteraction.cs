@@ -57,12 +57,24 @@ public class UIInteraction : UIBase
 
     public void UpdateUIPosition()
     {
+        var toRemove = new List<GameObject>();
         foreach (var pair in _objectToUIImage)
         {
-            if (pair.Key is null) continue;
-
-            Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(pair.Key.transform.position);
+            var obj = pair.Key;
+            if (obj == null) { toRemove.Add(obj); continue; }
+        }
+        
+        foreach (var k in toRemove)
+        {
+            if (_objectToUIImage.TryGetValue(k, out var img)) ReturnImageToPool(img);
+            _objectToUIImage.Remove(k);
+        }
+        
+        foreach (var pair in _objectToUIImage)
+        {
+            GameObject obj = pair.Key; 
             Image uiImage = pair.Value;
+            Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(obj.transform.position);
 
             if (viewportPoint.z <= 0)
             {
