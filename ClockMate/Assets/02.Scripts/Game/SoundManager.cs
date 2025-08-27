@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -11,7 +12,8 @@ public struct SoundHandle
     public bool IsValid => Id != 0;
 }
 
-public class SoundManager : MonoSingleton<SoundManager>
+[RequireComponent(typeof(PhotonView))]
+public class SoundManager : MonoPunSingleton<SoundManager>
 {
     [Header("Audio Assets")]
     [SerializeField] private AudioMixer audioMixer;
@@ -20,6 +22,9 @@ public class SoundManager : MonoSingleton<SoundManager>
     [Header("BGM")]
     [SerializeField] private float defaultBgmFade = 0.75f;
 
+    [Header("Network")]
+    [SerializeField] private double netLeadTime = 0.15; // 네트워크 헤드룸(초)
+    
     // 상태
     [SerializeField] private string currentBGM;
 
@@ -38,6 +43,8 @@ public class SoundManager : MonoSingleton<SoundManager>
     // BGM 전용 소스(크로스페이드용 2개)
     private AudioSource _bgmA, _bgmB;
     private bool _bgmToggle;
+    
+    private PhotonView _pv;
 
     protected override void Awake()
     {
@@ -79,6 +86,7 @@ public class SoundManager : MonoSingleton<SoundManager>
             source.spatialBlend = 0f;
             source.volume = 0f;
         }
+        _pv = GetComponent<PhotonView>();
     }
 
     private void CacheMixerGroup(SoundType type)
@@ -98,6 +106,7 @@ public class SoundManager : MonoSingleton<SoundManager>
 
     /// <summary>
     /// SFX 재생(핸들 반환). pos=null이면 2D, 값 있으면 3D.
+    /// 동기화는 false가 디폴트.
     /// </summary>
     public SoundHandle PlaySfx(
         string key,
@@ -105,13 +114,41 @@ public class SoundManager : MonoSingleton<SoundManager>
         Vector3? pos = null,
         float volume = 1f,
         float pitch = 1f,
-        float delay = 0f)
+        float delay = 0f,
+        bool sync = false,
+        bool includeSelf = true)
+    {
+        if (!sync)
+        {
+            return PlaySfx_Local(key, loop, pos, volume, pitch, delay);
+        }
+        
+        // 네트워크 기준 시작 시각(모든 클라 공통)
+        double start = PhotonNetwork.Time + netLeadTime;
+
+        // 로컬도 재생(동일 기준 시간으로 딜레이)
+        if (includeSelf)
+        {
+            float localDelay = Mathf.Max(0f, (float)(start - PhotonNetwork.Time));
+            PlaySfx_Local(key, loop, pos, volume, pitch, localDelay);
+        }
+
+        // 원격에게 알림
+        bool spatial = pos.HasValue;
+        Vector3 p = spatial ? pos.Value : Vector3.zero;
+        _pv.RPC(nameof(RPC_PlaySfx), RpcTarget.Others,
+            key, loop, spatial, p, volume, pitch, start);
+
+        return default;
+    }
+
+    private SoundHandle PlaySfx_Local(string key, bool loop, Vector3? pos, float volume, float pitch, float delay)
     {
         AudioClip clip = GetClipOrWarn(key);
         if (!clip) return default;
 
-        SoundPlayer p = RentPlayer();
-        p.Configure(
+        SoundPlayer player = RentPlayer();
+        player.Configure(
             clip: clip,
             group: GetGroup(SoundType.Effect),
             loop: loop,
@@ -120,11 +157,19 @@ public class SoundManager : MonoSingleton<SoundManager>
             spatial: pos.HasValue,
             worldPos: pos);
 
-        SoundHandle handle = RegisterActive(key, p);
-        p.Play(delay, OnPlayerFinish);
+        SoundHandle handle = RegisterActive(key, player);
+        player.Play(delay, OnPlayerFinish);
         return handle;
     }
 
+    [PunRPC]
+    private void RPC_PlaySfx(string key, bool loop, bool spatial, Vector3 pos,
+        float volume, float pitch, double netStart)
+    {
+        float delay = Mathf.Max(0f, (float)(netStart - PhotonNetwork.Time));
+        PlaySfx_Local(key, loop, spatial ? (Vector3?)pos : null, volume, pitch, delay);
+    }
+    
     /// <summary>
     /// BGM 전환(크로스페이드).
     /// </summary>
@@ -156,8 +201,8 @@ public class SoundManager : MonoSingleton<SoundManager>
     public void Stop(SoundHandle handle)
     {
         if (!handle.IsValid) return;
-        if (_activeById.TryGetValue(handle.Id, out var p) && p != null)
-            p.StopImmediate();
+        if (_activeById.TryGetValue(handle.Id, out SoundPlayer player) && player != null)
+            player.StopImmediate();
     }
 
     /// <summary>
@@ -175,6 +220,18 @@ public class SoundManager : MonoSingleton<SoundManager>
                 player.StopImmediate();
         }
     }
+    
+    /// <summary>
+    /// 동기화 여부를 지정하여 정지
+    /// </summary>
+    public void StopByKey(string key, bool sync)
+    {
+        if (sync) _pv.RPC(nameof(RPC_StopByKey), RpcTarget.Others, key);
+        StopByKey(key);
+    }
+    
+    [PunRPC]
+    private void RPC_StopByKey(string key) => StopByKey(key);
 
     /// <summary>
     /// 전체 정지(옵션: 타입 제한)
