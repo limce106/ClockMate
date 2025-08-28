@@ -18,6 +18,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 {
     public static CharacterSelectManager instance;
 
+    public GameObject canvas;
     public CharacterSlot[] characters;
     public TMP_Text statusText;
     public GameObject gameReady;
@@ -34,12 +35,29 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        canvas.SetActive(false);
+
+        CutsceneSyncManager.Instance.PlayForAll(
+            "Intro",
+            0f,
+            () =>
+            {
+                photonView.RPC(nameof(RPC_ActivateCanvas), RpcTarget.All);
+            }
+        );
+
         _localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
         foreach (var character in characters)
         {
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
+    }
+
+    [PunRPC]
+    private void RPC_ActivateCanvas()
+    {
+        canvas.SetActive(true);
     }
 
     void OnCharacterClicked(CharacterSlot character)

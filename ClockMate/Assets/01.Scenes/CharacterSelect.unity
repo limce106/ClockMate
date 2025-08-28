@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -176,6 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32720033d9fb3714f94b02a7321b3791, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 1152459357}
   characters:
   - characterButton: {fileID: 263996949}
     nonSelectableImg: {fileID: 1162497759}
@@ -216,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ccb7a88b1c2154ea49bb0007b9c1dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSelectManager: {fileID: 84637698}
+  _characterSelectManager: {fileID: 84637698}
   Player1Ready: {fileID: 86041407}
   Player2Ready: {fileID: 700002155}
 --- !u!1 &86041407
