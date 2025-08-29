@@ -48,7 +48,12 @@ public class MonsterController : MonoBehaviourPun
       //hourTransform = GameObject.FindGameObjectWithTag("Hour").transform;
       if (!GameManager.Instance.Characters.TryGetValue(CharacterName.Hour, out hour))
       {
-         hour = GameObject.FindGameObjectWithTag("Hour").GetComponent<Hour>();
+         hour = GameObject.FindGameObjectWithTag("Hour").GetComponentInParent<Hour>();
+      }
+
+      if (hour == null)
+      {
+         Debug.LogError("아워 찾기 실패");
       }
    }
 

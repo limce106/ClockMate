@@ -121,9 +121,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!114 &9164789217416970919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,7 +460,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.000000004371138
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalPosition.y
@@ -468,7 +468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.10000005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalRotation.w
