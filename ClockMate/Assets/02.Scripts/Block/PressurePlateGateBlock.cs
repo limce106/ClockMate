@@ -103,8 +103,8 @@ public class PressurePlateGateBlock : ResettableBase
 
     protected override void SaveInitialState()
     {
-        Vector3 direction = isDoorLeft ? Vector3.left : Vector3.right;
-        _openPosition = _closedPosition + direction * openOffsetX;
+        Vector3 localDir = isDoorLeft ? transform.right : -transform.right; // 로컬 X축
+        _openPosition = _closedPosition + localDir * openOffsetX;
     }
 
     public override void ResetObject()
