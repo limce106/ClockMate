@@ -123,6 +123,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Destroy(voiceManager.gameObject);
         }
 
+        SoundManager[] soundManagers = FindObjectsOfType<SoundManager>(true);
+        foreach (var soundManager in soundManagers)
+        {
+            if (soundManager != SoundManager.Instance)
+                Destroy(soundManager.gameObject);
+        }
+
+        CutsceneSyncManager[] cutsceneSyncManagers = FindObjectsOfType<CutsceneSyncManager>(true);
+        foreach (var cutsceneSyncManager in cutsceneSyncManagers)
+        {
+            if (cutsceneSyncManager != CutsceneSyncManager.Instance)
+                Destroy(cutsceneSyncManager.gameObject);
+        }
+
         NetworkManager[] networkManagers = FindObjectsOfType<NetworkManager>(true);
         foreach (var networkManager in networkManagers)
         {
@@ -134,6 +148,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(LoadingManager.Instance.gameObject);
         if (VoiceManager.Instance)
             Destroy(VoiceManager.Instance.gameObject);
+        if (SoundManager.Instance)
+            Destroy(SoundManager.Instance.gameObject);
+        if (CutsceneSyncManager.Instance)
+            Destroy(CutsceneSyncManager.Instance.gameObject);
         if (NetworkManager.Instance)
             Destroy(NetworkManager.Instance.gameObject);
     }

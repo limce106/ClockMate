@@ -34,12 +34,24 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        photonView.RPC(nameof(RPC_StartIntro), RpcTarget.All);
+
         _localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
         foreach (var character in characters)
         {
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
+    }
+
+    [PunRPC]
+    private void RPC_StartIntro()
+    {
+        CutsceneSyncManager.Instance.PlayForAll(
+            "Intro",
+            0f,
+            () => { }
+        );
     }
 
     void OnCharacterClicked(CharacterSlot character)
