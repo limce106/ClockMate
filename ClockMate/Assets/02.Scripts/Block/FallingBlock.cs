@@ -29,11 +29,8 @@ public class FallingBlock : ResettableBase, IPunObservable
 
     protected override void Init()
     {
-        if (meshRenderer != null)
-        {
-            _materialInstance = meshRenderer.material;
-        }
-
+        meshRenderer = GetComponent<MeshRenderer>();
+        _materialInstance = meshRenderer.material;
         _destroyPoint = new Vector3(transform.position.x, transform.position.y - destroyYThreshold, transform.position.z);
     }
 
