@@ -22,6 +22,7 @@ public class FallingBlock : ResettableBase, IPunObservable
     [SerializeField] private float fallDelay = 1.5f;
     [SerializeField] private float fallSpeed = 7f;
     [SerializeField] private float destroyYThreshold = 10f;
+    [SerializeField] private float reviveDelay = 2f;
     [SerializeField] private Color delayColor = Color.red;
     [SerializeField] private Color fallingColor = Color.black;
     [SerializeField] private MeshRenderer meshRenderer;
@@ -43,14 +44,10 @@ public class FallingBlock : ResettableBase, IPunObservable
         Debug.Log("블럭 밟음");
 
         // 서버에 연결됐고 방에 들어왔다면
-        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
-        {
-            photonView.RPC("RPC_StartFalling", RpcTarget.All);
-        }
-        else
-        {
-            StartFallingLocally();
-        }
+        NetworkExtension.RunNetworkOrLocal(
+            StartFallingLocally,
+            () => photonView.RPC(nameof(RPC_StartFalling), RpcTarget.All)
+        );
     }
 
     private void StartFallingLocally()
@@ -83,10 +80,34 @@ public class FallingBlock : ResettableBase, IPunObservable
                 yield return null;
             }
             Debug.Log("블럭 비활성화");
-            gameObject.SetActive(false); // 비활성화
-            _isFalling = false;
+            //gameObject.SetActive(false); // 비활성화
+            meshRenderer.enabled = false;
+
+            NetworkExtension.RunNetworkOrLocal(
+            StartReviveLocally,
+            () => photonView.RPC(nameof(RPC_StartRevive), RpcTarget.All)
+            );
+
             yield break;
         }
+    }
+
+    [PunRPC]
+    public void RPC_StartRevive()
+    {
+        StartReviveLocally();
+    }
+
+    private void StartReviveLocally()
+    {
+        StartCoroutine(ReviveRoutine());
+    }
+
+    private IEnumerator ReviveRoutine()
+    {
+        yield return new WaitForSeconds(reviveDelay);
+
+        ResetObject();
     }
 
     // 초기 상태 저장
@@ -101,7 +122,8 @@ public class FallingBlock : ResettableBase, IPunObservable
     public override void ResetObject()
     {
         if (this == null) return;
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
+        meshRenderer.enabled = true;
 
         transform.position = _initialPosition;
         transform.rotation = _initialRotation;
