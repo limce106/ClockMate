@@ -46,13 +46,6 @@ public class SoundManager : MonoPunSingleton<SoundManager>
     
     private PhotonView _pv;
 
-    protected override void Awake()
-    {
-        base.Awake();
-
-        Init();
-    }
-
     protected override void Init()
     {
         base.Init();
