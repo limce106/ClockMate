@@ -26,8 +26,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4669194559136880962}
   - {fileID: 7156047164683101268}
@@ -66,8 +66,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.38167763, y: -0.0008676052, z: 0.08536184}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7771703419640679045}
   - {fileID: 1050941394801414456}
@@ -166,8 +166,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5843198669545755073}
   - {fileID: 1891469108542704450}
@@ -2981,19 +2981,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 8.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -38.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.8262748
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalRotation.x
@@ -3001,7 +3001,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.56326723
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalRotation.z
@@ -3013,7 +3013,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 68.564
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -3039,38 +3039,8 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: -1253394011958575851, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: -2021257205118448899, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4966538902142096523}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
---- !u!1 &4566668062905885039 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -2021257205118448899, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
-  m_PrefabInstance: {fileID: 6670707562940672914}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &4966538902142096523
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4566668062905885039}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4433050824237725076, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
 --- !u!4 &6564458608244444281 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
