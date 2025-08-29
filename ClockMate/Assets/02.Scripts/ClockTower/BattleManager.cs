@@ -38,8 +38,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [Tooltip("인스펙터에서 값 변경하지 말 것")]
     public int round = 1;
 
-    public float battleFieldRadius = 5f; // 전장 반지름
-    private const float playerAttackTimeLimit = 100f;    // 플레이어 반격 제한시간
+    public float battleFieldRadius = 5f; // 전장 반지름(임시)
+    private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
     private const float recoveryPerSuccess = 0.334f;
     private readonly PhaseType[] PhaseTypes = (PhaseType[])Enum.GetValues(typeof(PhaseType));
