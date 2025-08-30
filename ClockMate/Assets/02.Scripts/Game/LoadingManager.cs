@@ -56,8 +56,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         _isLoading = true;
 
-        if(_uiLoading == null)
-            _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
+        //if(_uiLoading == null)
+        //    _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
 
         if (nextSceneName == null)
         {
