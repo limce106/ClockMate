@@ -36,9 +36,6 @@ public abstract class ResettableBase : MonoBehaviourPun
 	[PunRPC]
     public void RPC_ResetObject()
     {
-		if(photonView.IsMine)
-		{
-			ResetObject();
-        }
+        ResetObject();
     }
 }
