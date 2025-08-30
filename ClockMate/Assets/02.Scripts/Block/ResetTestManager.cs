@@ -13,18 +13,21 @@ public class ResetTestManager : MonoSingleton<ResetTestManager>
     
     public void ResetAllBlocks()
     {
-        PhotonView photonView = GetComponent<PhotonView>();
-        foreach (ResettableBase resettable in _resettableList)
+        if (NetworkManager.Instance.IsInRoomAndReady() && PhotonNetwork.IsMasterClient)
         {
-            if(NetworkManager.Instance.IsInRoomAndReady())
+            foreach (ResettableBase resettable in _resettableList)
             {
-                resettable.photonView.RPC("RPC_ResetObject", RpcTarget.All);
+                resettable.photonView.RPC(nameof(resettable.RPC_ResetObject), RpcTarget.All);
             }
-            else
+        }
+        else
+        {
+            foreach (ResettableBase resettable in _resettableList)
             {
                 resettable.ResetObject();
             }
         }
+
         Debug.Log("초기화 완료");
         cbResetFinished?.Invoke();
         cbResetFinished = null;
