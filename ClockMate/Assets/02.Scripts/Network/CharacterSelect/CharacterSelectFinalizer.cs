@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Realtime;
 using static Define.Character;
 
-public class CharacterSelectFinalizer : MonoBehaviour
+public class CharacterSelectFinalizer : MonoBehaviourPun
 {
     [SerializeField]
     private CharacterSelectManager _characterSelectManager;
@@ -14,6 +13,7 @@ public class CharacterSelectFinalizer : MonoBehaviour
     public GameObject Player2Ready;
 
     private bool _isLoadingStarted = false;
+    private bool _isCutsceneFinished = false;   // 컷씬 끝났는지 확인
 
     private void Start()
     {
@@ -31,10 +31,34 @@ public class CharacterSelectFinalizer : MonoBehaviour
         Player1Ready?.SetActive(true);
         Player2Ready?.SetActive(true);
 
-        yield return null;
+        yield return new WaitForSeconds(1f);
 
         GameManager.Instance?.CreateNewSaveData();
+        photonView.RPC(nameof(RPC_KronosAdvent), RpcTarget.All);
+        LoadingManager.Instance?.ShowLoadingUI();
+
+        yield return new WaitUntil(() => _isCutsceneFinished);
+
         LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
+    }
+
+    [PunRPC]
+    private void RPC_KronosAdvent()
+    {
+        CutsceneSyncManager.Instance.PlayForAll(
+            "KronosAdvent",
+            0f,
+            () => 
+            {
+                photonView.RPC(nameof(RPC_NotifyCutsceneFinished), RpcTarget.All);
+            }
+        );
+    }
+
+    [PunRPC]
+    private void RPC_NotifyCutsceneFinished()
+    {
+        _isCutsceneFinished = true;
     }
 
     void Update()
