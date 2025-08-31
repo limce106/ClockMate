@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 5959221647995475126}
   serializedVersion: 2
   m_LocalRotation: {x: 0.00000013315805, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.03287503, z: -0.008651341}
-  m_LocalScale: {x: 0.08651327, y: 0.08651327, z: 0.08651327}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5233118187718858837}
@@ -51,10 +51,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.68
-  m_Height: 1.5
+  m_Radius: 0.6
+  m_Height: 1.63
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.92, z: 0}
 --- !u!1 &6443839724450058856
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,6 +67,8 @@ GameObject:
   - component: {fileID: 1765460719830853707}
   - component: {fileID: 9164789217416970919}
   - component: {fileID: 7496400829461271468}
+  - component: {fileID: 5149111290800593999}
+  - component: {fileID: 4267211916932333981}
   - component: {fileID: 1104138066627259733}
   - component: {fileID: 1925505827239022401}
   - component: {fileID: 8491432711090025664}
@@ -154,6 +156,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e6c26da9d9a2754a9b23acae8ac1911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5149111290800593999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6443839724450058856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84dc66279e9280e41b556e3e4807c3b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 4267211916932333981}
+  character: {fileID: 9164789217416970919}
+  pSpeed: Speed
+  pIsGrounded: IsGrounded
+  pJump: Jump
+  pFanFly: FanFly
+  speedLerp: 0.2
+  playWalkTwoStep: 0
+  walkTwoStepKey: walk_2steps
+  walkStateName: Walk
+  minSpeedForStep: 0.2
+  sfxGuardSec: 0.35
+--- !u!95 &4267211916932333981
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6443839724450058856}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 82417853e1db55a4995316825402c7bc, type: 3}
+  m_Controller: {fileID: 9100000, guid: 3fd4ef1d3111b994ab6297f2e7a89d69, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1104138066627259733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -462,7 +509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.1999999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -512,7 +559,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Hour
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: 82417853e1db55a4995316825402c7bc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
@@ -547,10 +595,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.057211235
-  m_Height: 0.1548511
+  m_Radius: 0.5
+  m_Height: 1.91
   m_Direction: 1
-  m_Center: {x: 0, y: -0.02625767, z: -0.01315077}
+  m_Center: {x: 0, y: 0.98, z: 0}
 --- !u!4 &5233118187718858837 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 82417853e1db55a4995316825402c7bc, type: 3}
