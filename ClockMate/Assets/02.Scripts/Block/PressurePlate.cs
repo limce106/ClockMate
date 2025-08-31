@@ -106,6 +106,7 @@ public class PressurePlate : ResettableBase, IPunObservable
         if (isPressed == state) return;
 
         isPressed = state;
+        PlaySfx(isPressed);
 
         if (_pressCoroutine != null)
         {
@@ -114,6 +115,12 @@ public class PressurePlate : ResettableBase, IPunObservable
         _pressCoroutine = StartCoroutine(PressRoutine(isPressed));
     }
 
+    private void PlaySfx(bool press)
+    {
+        string sfxKey = press ? "button_press_down" : "button_press_up";
+        SoundManager.Instance.PlaySfx(key: sfxKey, pos: transform.position, volume: 0.8f);
+    }
+    
     private IEnumerator PressRoutine(bool pressed)
     {
         Vector3 target = pressed ? _endPoint : _initialPosition;
