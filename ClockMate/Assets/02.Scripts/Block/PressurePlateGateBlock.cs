@@ -58,7 +58,8 @@ public class PressurePlateGateBlock : ResettableBase
         if (_openCoroutine != null) return;
 
         _openCoroutine = StartCoroutine(OpenDoorRoutine());
-
+        SoundManager.Instance.PlaySfx(key: "gate_open", pos: transform.position, volume: 0.7f);
+        
         foreach (PressurePlate plate in linkedPlates)
         {
             plate.SetLockState(true); // 발판 고정
