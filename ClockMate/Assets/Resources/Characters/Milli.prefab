@@ -211,6 +211,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  contactEpsilon: 0.06
+  landMinSpeed: 2.5
 --- !u!114 &6671131347730133792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,6 +243,7 @@ MonoBehaviour:
   pIsGrounded: IsGrounded
   pJump: Jump
   pFanFly: FanFly
+  pIsJumping: IsJumping
   speedLerp: 0.2
   walkStateName: Walk
   walkMarks:
@@ -248,7 +251,9 @@ MonoBehaviour:
   - 0.73
   minSpeedForStep: 0.2
   stepSfxKey: character_walk
-  stepVolume: 0.5
+  stepVolume: 1
+  jumpSfxKey: character_jump
+  jumpVolume: 0.8
 --- !u!114 &-3434168223869650666
 MonoBehaviour:
   m_ObjectHideFlags: 0
