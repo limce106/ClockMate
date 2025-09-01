@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
@@ -38,6 +39,14 @@ public class CharacterAnimation : MonoBehaviourPun
         Init();
     }
 
+    private void Start()
+    {
+        if (character)
+        {
+            _wasGroundedForNetwork = character.IsGrounded;
+        }
+    }
+
     private void Init()
     {
         if (!animator)  animator  = GetComponentInChildren<Animator>(true);
@@ -54,10 +63,6 @@ public class CharacterAnimation : MonoBehaviourPun
             animator.updateMode = AnimatorUpdateMode.Normal;
         }
         _prevPos = transform.position;
-        if (character)
-        {
-            _wasGroundedForNetwork = character.IsGrounded;
-        }
         _characterSfx = GetComponent<CharacterSfx>();
     }
 
@@ -83,7 +88,7 @@ public class CharacterAnimation : MonoBehaviourPun
         float smoothedPlanarSpeed = Mathf.Lerp(prev, planarSpeed, speedLerp);
         animator.SetFloat(_hSpeed, smoothedPlanarSpeed);
         
-        if (photonView.IsMine)
+        if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
             // 로컬 플레이어는 직접 상태를 계산, 변경됐을 때만 RPC 호출
             bool isGroundedNow = character.IsGrounded;
@@ -92,6 +97,10 @@ public class CharacterAnimation : MonoBehaviourPun
                 _wasGroundedForNetwork = isGroundedNow;
                 photonView.RPC(nameof(RPC_SyncIsGrounded), RpcTarget.All, isGroundedNow);
             }
+        }
+        else
+        {
+            animator.SetBool(_hIsGrounded, character.IsGrounded);
         }
 
         UpdateFootstepPhase(smoothedPlanarSpeed);
@@ -142,6 +151,12 @@ public class CharacterAnimation : MonoBehaviourPun
     /// </summary>
     public void PlayJump()
     {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetTrigger(_hJump);
+            _characterSfx?.PlayJumpSound();
+            return;
+        }
         if (animator && photonView.IsMine)
         {
             photonView.RPC(nameof(RPC_PlayJump), RpcTarget.All);
