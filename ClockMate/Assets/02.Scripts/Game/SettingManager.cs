@@ -7,6 +7,6 @@ using UnityEngine;
 /// </summary>
 public class SettingManager : MonoSingleton<SettingManager>
 {
-    public bool isMicOn = true;
+    public bool isMicOn = false;
     public float remoteVoiceVolume = 1f;
 }
