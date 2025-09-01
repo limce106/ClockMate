@@ -3141,12 +3141,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -6554696837317055450, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5761492998941407702}
+    - targetCorrespondingSourceObject: {fileID: -6554696837317055450, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8702503662170116908}
     - targetCorrespondingSourceObject: {fileID: -300758735875386648, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6394720332874703798}
     - targetCorrespondingSourceObject: {fileID: -300758735875386648, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9083857223886675417}
+    - targetCorrespondingSourceObject: {fileID: -300758735875386648, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7964104671469409505}
     - targetCorrespondingSourceObject: {fileID: -7594575980284958161, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6976441523183020133}
@@ -3225,7 +3231,29 @@ MonoBehaviour:
   - {fileID: 0}
   isDoorLeft: 0
   openOffsetX: 2.868261
-  openSpeed: 2
+  openSpeed: 1
+--- !u!114 &7964104671469409505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2828366851138550138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &5334997877585445309 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7594575980284958161, guid: 4072dbc32a5ef1642a73e757b417aa42, type: 3}
@@ -3329,7 +3357,29 @@ MonoBehaviour:
   - {fileID: 0}
   isDoorLeft: 1
   openOffsetX: 2.868261
-  openSpeed: 2
+  openSpeed: 1
+--- !u!114 &8702503662170116908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8762338959738013620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1001 &7042428241359354459
 PrefabInstance:
   m_ObjectHideFlags: 0
