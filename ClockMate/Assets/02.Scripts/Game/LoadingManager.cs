@@ -1,20 +1,22 @@
-using Define;
-using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadingManager : MonoBehaviourPunCallbacks
 {
+    private enum LoadState { Load = 1, Active }
+
     public static LoadingManager Instance { get; private set; }
 
     private UILoading _uiLoading;
     private bool _isLoading = false;
     private AsyncOperation _currentLoadOperation;
+    private string _targetScene;
 
     private Dictionary<int, float> _loadingProgress = new Dictionary<int, float>();
-    private HashSet<int> _loadedPlayers = new HashSet<int>();
+    private HashSet<int> _finishedPlayers = new HashSet<int>();
 
     private void Awake()
     {
@@ -41,7 +43,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        StartCoroutine("EndLoading");
+        if (scene.name == _targetScene)
+        {
+            photonView.RPC(nameof(NotifyLoadState), RpcTarget.MasterClient, 
+                PhotonNetwork.LocalPlayer.ActorNumber, (int) LoadState.Active);
+        }
     }
 
     public void ShowLoadingUI()
@@ -54,14 +60,14 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         if(_isLoading) 
             return;
 
-        _isLoading = true;
-
         if (nextSceneName == null)
         {
             Debug.Log("Next Scene Name Is Null!");
             return;
         }
-
+        
+        _isLoading = true;
+        _targetScene = nextSceneName;
         StartCoroutine(LoadSceneAsync(nextSceneName));
     }
 
@@ -70,8 +76,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         _currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
         _currentLoadOperation.allowSceneActivation = false;
 
-        int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-
         while(!_currentLoadOperation.isDone)
         {
             float progress = Mathf.Clamp01(_currentLoadOperation.progress / 0.9f);
@@ -79,7 +83,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             
             if(progress >= 1f)
             {
-                photonView.RPC("NotifyPlayerLoaded", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+                photonView.RPC(nameof(NotifyLoadState), RpcTarget.MasterClient, 
+                    PhotonNetwork.LocalPlayer.ActorNumber, (int) LoadState.Load);
                 break;
             }
 
@@ -88,39 +93,48 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void NotifyPlayerLoaded(int actorNumber)
+    void NotifyLoadState(int actorNumber, int loadState)
     {
-        if(!_loadedPlayers.Contains(actorNumber))
-        {
-            _loadedPlayers.Add(actorNumber);
-        }
+        _finishedPlayers.Add(actorNumber);
+        if (_finishedPlayers.Count != PhotonNetwork.CurrentRoom.PlayerCount) return;
 
-        if (_loadedPlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+        switch ((LoadState) loadState)
         {
-            photonView.RPC("ActivateLoadedScene", RpcTarget.All);
+            case LoadState.Load:
+                photonView.RPC(nameof(ActivateLoadedScene), RpcTarget.All);
+                break;
+            case LoadState.Active:
+                photonView.RPC(nameof(RPC_InstantiateCharacters), RpcTarget.All);
+                break;
         }
+        
+        _finishedPlayers.Clear();
     }
 
     [PunRPC]
-    void ActivateLoadedScene()
+    private void ActivateLoadedScene()
     {
         if(_currentLoadOperation != null)
         {
             _currentLoadOperation.allowSceneActivation = true;
         }
     }
+    
+    [PunRPC]
+    private void RPC_InstantiateCharacters()
+    {
+        GameManager.Instance.LoadSelectedCharacter();
+        StartCoroutine(nameof(EndLoading));
+    }
 
     IEnumerator EndLoading()
     {
-        if (_isLoading)
-        {
-            yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
-            GameManager.Instance?.ResetStageAndCharacter();
-        }
+        yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         _isLoading = false;
+        _targetScene = null;
 
         if (_uiLoading != null)
         {

@@ -1,10 +1,8 @@
-using Photon.Pun;
-using Photon.Voice.PUN;
-using Photon.Voice.Unity;
 using System;
 using System.Collections.Generic;
-using System.Xml;
+using Photon.Pun;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Define.Character;
 
 /// <summary>
@@ -23,6 +21,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     public PlayerInputHandler InputHandler {get; private set;}
     public bool IsGrounded => _groundChecker.IsGrounded();
     public IState CurrentState => _stateMachine.CurrentState;
+    public CharacterAnimation Anim { get; private set; }
     
     // 서버 관련 필드
     private PhotonTransformView _photonTransformView;
@@ -34,6 +33,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     }
 
     private StateMachine _stateMachine;
+    private CharacterSfx _characterSfx;
     private Rigidbody _rb;
     private GroundChecker _groundChecker;
     private int _jumpCount;
@@ -45,12 +45,14 @@ public abstract class CharacterBase : MonoBehaviourPun
     [Header("Ground Check Settings")]
     [SerializeField] private float groundCheckDistance = 0.1f; // 감지 거리
     [SerializeField] private LayerMask groundLayer = ~0; // 기본값: 모든 오브젝트
-
-    protected List<IAbility> abilities = new();
+    [SerializeField] private float contactEpsilon = 0.06f; // 실접촉 허용 오차
+    private bool _wasTouchingGround;
+    private float _fallSpeedAbsMax;
+    private float _lastLandTime;
+    private const float LANDING_COOLDOWN = 0.5f;
 
     protected virtual void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
         Init();
         _photonTransformView = GetComponent<PhotonTransformView>();
     }
@@ -58,16 +60,12 @@ public abstract class CharacterBase : MonoBehaviourPun
     protected void Update()
     {
         _stateMachine.Update();
-        
-        if (transform.position.y < -10f && CurrentState is not DeadState)
-        {
-            ChangeState<DeadState>();
-        }
     }
 
     protected virtual void FixedUpdate()
     {
         _stateMachine?.FixedUpdate();
+        HandleLandingSfx();
     }
 
     protected virtual void Init()
@@ -83,8 +81,32 @@ public abstract class CharacterBase : MonoBehaviourPun
         _groundChecker = new GroundChecker(col, groundCheckDistance, groundLayer);
         InteractionDetector = GetComponentInChildren<InteractionDetector>();
         InputHandler = GetComponent<PlayerInputHandler>();
+        Anim = GetComponent<CharacterAnimation>();
+        _characterSfx = GetComponent<CharacterSfx>();
     }
+    
+    private void HandleLandingSfx()
+    {
+        bool isNearGround = _groundChecker.IsGrounded(out RaycastHit hit);          
+        bool isTouching = isNearGround  && hit.distance <= contactEpsilon; 
 
+        // 공중 동안 최대 하강속도 기록
+        if (!isNearGround  && _rb.velocity.y < 0f)
+            _fallSpeedAbsMax = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
+        
+        if (isTouching  && !_wasTouchingGround && Time.time > _lastLandTime + LANDING_COOLDOWN)
+        {
+            _lastLandTime = Time.time;
+            float impactSpeed = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
+        
+            _characterSfx?.PlayLandingSound(impactSpeed);
+
+            _fallSpeedAbsMax = 0f;
+        }
+
+        // 상태 갱신
+        _wasTouchingGround = isTouching ;
+    }
 
     /// <summary>
     /// 최대 점프 횟수 이상이면 false 반환
@@ -107,6 +129,7 @@ public abstract class CharacterBase : MonoBehaviourPun
         _rb.MovePosition(transform.position + Vector3.up * 0.05f); // collider 겹침 방지, 살짝 띄우기
         _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z); // 점프 전 y 속도(추락 속도) 제거
         _rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse); // 점프 힘 적용
+        Anim?.PlayJump();
         JumpCount++;
 
         // 다른 클라이언트에게 동기화
@@ -216,33 +239,14 @@ public abstract class CharacterBase : MonoBehaviourPun
         Stats.walkSpeed = newStats.walkSpeed;
     }
 
-    /// <summary>
-    ///  능력 추가
-    /// </summary>
-    public void AddAbility(IAbility ability)
-    {
-        if (ability != null && !abilities.Contains(ability))
-        {
-            abilities.Add(ability);
-        }
-    }
-
-    public void RestAbilities()
-    {
-        abilities.Clear();
-    }
-
-    public void TryUseAbility()
-    {
-        foreach (IAbility ability in abilities)
-        {
-            if (ability.Use()) break; // 능력 사용 성공하면 반복문 끝내기
-        }
-    }
-
     [PunRPC]
     public void SetCharacterActive(bool isActive)
     {
         gameObject.SetActive(isActive);
+    }
+
+    private void OnEnable()
+    {
+        Anim?.ResetDelta();
     }
 }

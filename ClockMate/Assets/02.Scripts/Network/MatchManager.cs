@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using static UnityEngine.SceneManagement.SceneManager;
 
 public class MatchManager : MonoBehaviourPunCallbacks
 {
@@ -207,7 +208,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
                         Debug.Log("Delete Data");
                     }
 
-                    PhotonNetwork.LoadLevel("CharacterSelect");
+                    photonView.RPC(nameof(LoadSceneForAll), RpcTarget.All, "CharacterSelect");
                 }
             };
         }
@@ -215,5 +216,11 @@ public class MatchManager : MonoBehaviourPunCallbacks
         {
             Debug.Log("RPCManager 초기화 실패!");
         }
+    }
+    
+    [PunRPC]
+    void LoadSceneForAll(string sceneName)
+    {
+        LoadScene(sceneName);
     }
 }

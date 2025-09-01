@@ -23,26 +23,7 @@ public class GameManager : MonoSingleton<GameManager>
             CurrentStage = new BoStage(saveData.stageId);
         }
     }
-
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "Desert" && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.LocalPlayer.IsLocal)
-        {
-            // 캐릭터 로딩
-            LoadCharacter(SelectedCharacter);
-        }
-    }
-
+    
     public void CreateNewSaveData()
     {
         // 새 게임 시작 시 호출 필요
@@ -82,29 +63,26 @@ public class GameManager : MonoSingleton<GameManager>
         SetAllCharactersActive(true);
     }
 
-    private CharacterBase LoadCharacter(CharacterName characterName)
+    public bool LoadSelectedCharacter()
     {
-        if (Characters.ContainsKey(characterName))
-            return Characters[characterName];
-
-        string path = $"Characters/{characterName}";
+        string path = $"Characters/{SelectedCharacter}";
 
         if(NetworkManager.Instance.IsInRoomAndReady())
         {
-            GameObject player = PhotonNetwork.Instantiate(path, Vector3.zero, Quaternion.identity, 0, new object[] { characterName });
+            Vector3 position = CurrentStage.LoadPositions[SelectedCharacter];
+            GameObject player = PhotonNetwork.Instantiate(path, position, Quaternion.identity, 0, new object[] { SelectedCharacter });
             CharacterBase character = player.GetComponent<CharacterBase>();
-            character.name = characterName.ToString();
+            character.gameObject.name = SelectedCharacter.ToString();
+            Debug.Log($"character spawn: {SelectedCharacter}, scene: {SceneManager.GetActiveScene().name}");
 
             int viewID = player.GetComponent<PhotonView>().ViewID;
-            RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, characterName, viewID);
+            RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, SelectedCharacter, viewID);
 
-            return character;
+            return true;
         }
-        else
-        {
-            Debug.LogError($"[GameManager] 캐릭터 프리팹 로드 실패: 네트워크 연결 불가");
-            return null;
-        }
+
+        Debug.LogError($"[GameManager] 캐릭터 프리팹({SelectedCharacter}) 로드 실패: 네트워크 연결 불가");
+        return false;
     }
 
     public void SetSelectedCharacter(CharacterName character)
@@ -114,10 +92,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     public void RegisterCharacter(CharacterName character, CharacterBase characterBase)
     {
-        if (!Characters.ContainsKey(character))
-        {
-            Characters.Add(character, characterBase);
-        }
+        Characters[character] = characterBase;
     }
 
     public void SetAllCharactersActive(bool isActive)
