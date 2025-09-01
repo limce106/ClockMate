@@ -49,6 +49,10 @@ public class UISetting : UIBase
             SetRemoteVoiceVolume(value);
         });
 
+        if(VoiceManager.Instance != null)
+        {
+            SettingManager.Instance.isMicOn = VoiceManager.Instance.recorder.TransmitEnabled;
+        }
         UpdateMicIcon(SettingManager.Instance.isMicOn);
         remoteVoiceVolumeSlider.value = SettingManager.Instance.remoteVoiceVolume;
     }

@@ -30,6 +30,7 @@ public class VoiceManager : MonoBehaviour
         if (recorder == null)
         {
             recorder = GetComponent<Recorder>();
+            SetMicActive(false);
         }
     }
 
