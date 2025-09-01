@@ -41,7 +41,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        StartCoroutine("EndLoading");
+        StartCoroutine(nameof(EndLoading));
     }
 
     public void ShowLoadingUI()
@@ -90,10 +90,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void NotifyPlayerLoaded(int actorNumber)
     {
-        if(!_loadedPlayers.Contains(actorNumber))
-        {
-            _loadedPlayers.Add(actorNumber);
-        }
+        _loadedPlayers.Add(actorNumber);
 
         if (_loadedPlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
         {
@@ -115,7 +112,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         if (_isLoading)
         {
             yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
-            GameManager.Instance?.ResetStageAndCharacter();
+            //GameManager.Instance?.ResetStageAndCharacter();
         }
 
         yield return new WaitForSeconds(2f);

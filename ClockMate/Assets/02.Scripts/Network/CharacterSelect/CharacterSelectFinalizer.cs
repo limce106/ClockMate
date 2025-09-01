@@ -34,31 +34,24 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
         yield return new WaitForSeconds(1f);
 
         GameManager.Instance?.CreateNewSaveData();
-        photonView.RPC(nameof(RPC_KronosAdvent), RpcTarget.All);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CutsceneSyncManager.Instance.PlayForAll(
+                "KronosAdvent",
+                0f,
+                () => 
+                {
+                    photonView.RPC(nameof(RPC_LoadDesertScene), RpcTarget.All);
+                }
+            );
+        }
         LoadingManager.Instance?.ShowLoadingUI();
+    }
 
-        yield return new WaitUntil(() => _isCutsceneFinished);
-
+    [PunRPC]
+    private void RPC_LoadDesertScene()
+    {
         LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
-    }
-
-    [PunRPC]
-    private void RPC_KronosAdvent()
-    {
-        CutsceneSyncManager.Instance.PlayForAll(
-            "KronosAdvent",
-            0f,
-            () => 
-            {
-                photonView.RPC(nameof(RPC_NotifyCutsceneFinished), RpcTarget.All);
-            }
-        );
-    }
-
-    [PunRPC]
-    private void RPC_NotifyCutsceneFinished()
-    {
-        _isCutsceneFinished = true;
     }
 
     void Update()
