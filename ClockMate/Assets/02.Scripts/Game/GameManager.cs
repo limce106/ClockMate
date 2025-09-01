@@ -84,16 +84,18 @@ public class GameManager : MonoSingleton<GameManager>
 
     private CharacterBase LoadCharacter(CharacterName characterName)
     {
-        if (Characters.ContainsKey(characterName))
-            return Characters[characterName];
+        if (Characters.TryGetValue(characterName, out var loadCharacter))
+            return loadCharacter;
 
         string path = $"Characters/{characterName}";
 
         if(NetworkManager.Instance.IsInRoomAndReady())
         {
-            GameObject player = PhotonNetwork.Instantiate(path, Vector3.zero, Quaternion.identity, 0, new object[] { characterName });
+            Vector3 position = CurrentStage.LoadPositions[characterName];
+            GameObject player = PhotonNetwork.Instantiate(path, position, Quaternion.identity, 0, new object[] { characterName });
             CharacterBase character = player.GetComponent<CharacterBase>();
-            character.name = characterName.ToString();
+            character.gameObject.name = characterName.ToString();
+            Debug.Log($"character spawn: {characterName}, scene: {SceneManager.GetActiveScene().name}");
 
             int viewID = player.GetComponent<PhotonView>().ViewID;
             RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", RpcTarget.All, characterName, viewID);
@@ -114,10 +116,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     public void RegisterCharacter(CharacterName character, CharacterBase characterBase)
     {
-        if (!Characters.ContainsKey(character))
-        {
-            Characters.Add(character, characterBase);
-        }
+        Characters.TryAdd(character, characterBase);
     }
 
     public void SetAllCharactersActive(bool isActive)
