@@ -38,7 +38,7 @@ public class FanButtonController : MonoBehaviour
 
     private void TrySwitchFan()
     {
-        if (NetworkManager.Instance.IsInRoomAndReady() && _airFan.photonView.IsMine)
+        if (NetworkManager.Instance.IsInRoomAndReady() && PhotonNetwork.IsMasterClient)
         {
             _airFan.photonView.RPC("RPC_SwitchFan", RpcTarget.All);
         }

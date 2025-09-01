@@ -57,7 +57,7 @@ public class VerticalLaunchStrategy : ILaunchStrategy
     public IEnumerator LaunchCoroutine(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
         float gravity = Mathf.Abs(Physics.gravity.y);
-        float remainingHeight = airFan.windHeight - airFan.transform.position.y;
+        float remainingHeight = airFan.windHeight + airFan.transform.position.y - milli.transform.position.y;
 
         if(remainingHeight <= 0 )
         {
