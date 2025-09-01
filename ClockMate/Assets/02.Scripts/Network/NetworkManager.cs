@@ -38,7 +38,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
 
         // 자동 씬 동기화
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = false;
     }
 
     void Start()

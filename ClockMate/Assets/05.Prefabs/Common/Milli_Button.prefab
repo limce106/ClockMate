@@ -103,7 +103,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1557015450083406034, guid: e33abb08054ec1b4a87975233d6a35b0, type: 3}
 --- !u!1 &5185183914691881964
@@ -151,8 +151,8 @@ GameObject:
   - component: {fileID: 3065768772920669029}
   - component: {fileID: 8260183679987118074}
   - component: {fileID: 1248809602737072088}
-  - component: {fileID: 113078725833974475}
-  - component: {fileID: 4090963622073921099}
+  - component: {fileID: 7361180261088465086}
+  - component: {fileID: 4252534718499701366}
   - component: {fileID: 3517868704473958551}
   m_Layer: 0
   m_Name: M_Button_u
@@ -242,7 +242,7 @@ MonoBehaviour:
   moveSpeed: 2
   pressedColor: {r: 0, g: 1, b: 0, a: 1}
   character: 1
---- !u!65 &113078725833974475
+--- !u!65 &7361180261088465086
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -261,10 +261,10 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.73, y: 0.08465332, z: 0.67}
-  m_Center: {x: -0.00001591444, y: 0.02, z: 0.0000010728836}
---- !u!65 &4090963622073921099
-BoxCollider:
+  m_Size: {x: 0.3, y: 0.25, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!64 &4252534718499701366
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -281,9 +281,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8230273, y: 0.08465332, z: 0.82302487}
-  m_Center: {x: -0.00001591444, y: -0.02424036, z: 0.0000010728836}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7670977130367323212, guid: e33abb08054ec1b4a87975233d6a35b0, type: 3}
 --- !u!114 &3517868704473958551
 MonoBehaviour:
   m_ObjectHideFlags: 0
