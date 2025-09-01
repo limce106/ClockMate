@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
-public class AirFan : MonoBehaviourPun
+public class AirFan : MonoBehaviourPun, IPunObservable
 {
     private static Milli _milli;
     private static Rigidbody _milliRb;
@@ -149,5 +149,42 @@ public class AirFan : MonoBehaviourPun
     public void SetFanState(FanState nextState)
     {
         fanState = nextState;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(isFanOn);
+            stream.SendNext(fanState);
+        }
+        else
+        {
+            bool remoteIsFanOn = (bool)stream.ReceiveNext();
+            FanState remoteFanState = (FanState)stream.ReceiveNext();
+
+            // 받은 상태가 현재 로컬 상태와 다르면 강제로 동기화
+            if (remoteIsFanOn != isFanOn)
+            {
+                isFanOn = remoteIsFanOn;
+
+                if (isFanOn)
+                {
+                    fanState = FanState.SpinningUp;
+                    windEffect.Play();
+                }
+                else
+                {
+                    fanState = FanState.SpinningDown;
+                    windEffect.Stop();
+                }
+            }
+
+            // fanState가 동기화되지 않았을 경우에도 처리
+            if (remoteFanState != fanState)
+            {
+                fanState = remoteFanState;
+            }
+        }
     }
 }
