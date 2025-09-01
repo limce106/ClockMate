@@ -19,16 +19,10 @@ public class CharacterAnimation : MonoBehaviourPun
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
 
-    [Header("Footstep SFX")]
+    [Header("Walk")]
     [SerializeField] private string walkStateName = "Walk";
     [SerializeField] private float[] walkMarks = { 0.23f, 0.73f }; // 루프 내 접지 지점(0~1)
     [SerializeField] private float minSpeedForStep = 0.2f;         // 너무 느리면 미재생
-    [SerializeField] private string stepSfxKey = "character_walk";
-    [SerializeField] private float stepVolume = 0.8f;
-
-    [Header("Jump SFX")]
-    [SerializeField] private string jumpSfxKey = "character_jump";
-    [SerializeField] private float jumpVolume = 0.8f;
 
     // hashes
     private int _hSpeed, _hIsGrounded, _hJump, _hFanFly;
@@ -37,7 +31,7 @@ public class CharacterAnimation : MonoBehaviourPun
     private float _lastPhase; // 0~1
     
     private bool _wasGroundedForNetwork;
-    private float _remoteUpdateTimer;
+    private CharacterSfx _characterSfx;
 
     private void Awake()
     {
@@ -64,6 +58,7 @@ public class CharacterAnimation : MonoBehaviourPun
         {
             _wasGroundedForNetwork = character.IsGrounded;
         }
+        _characterSfx = GetComponent<CharacterSfx>();
     }
 
     private void OnEnable()
@@ -78,15 +73,15 @@ public class CharacterAnimation : MonoBehaviourPun
 
         // transform 델타로 속도 계산
         Vector3 curr = transform.position;
-        Vector3 d = curr - _prevPos;
-        float dt = Mathf.Max(Time.deltaTime, 1e-6f);
-        float planarSpeed = new Vector2(d.x, d.z).magnitude / dt;
+        Vector3 positionDelta = curr - _prevPos;
+        float deltaTime = Mathf.Max(Time.deltaTime, 1e-6f);
+        float planarSpeed = new Vector2(positionDelta.x, positionDelta.z).magnitude / deltaTime;
         _prevPos = curr;
 
         // 애니 파라미터 갱신
         float prev = animator.GetFloat(_hSpeed);
-        float sm = Mathf.Lerp(prev, planarSpeed, speedLerp);
-        animator.SetFloat(_hSpeed, sm);
+        float smoothedPlanarSpeed = Mathf.Lerp(prev, planarSpeed, speedLerp);
+        animator.SetFloat(_hSpeed, smoothedPlanarSpeed);
         
         if (photonView.IsMine)
         {
@@ -99,7 +94,7 @@ public class CharacterAnimation : MonoBehaviourPun
             }
         }
 
-        UpdateFootstepPhase(sm);
+        UpdateFootstepPhase(smoothedPlanarSpeed);
     }
 
     /// <summary>
@@ -132,11 +127,9 @@ public class CharacterAnimation : MonoBehaviourPun
             for (int i = 0; i < walkMarks.Length; i++)
             {
                 float m = walkMarks[i];
-                // 지난 프레임(last)~이번 프레임(now) 구간이 마크 m을 통과했는가?
-                if ((!wrapped && _lastPhase < m && phaseNow >= m) ||
-                     ( wrapped && (_lastPhase < m || phaseNow >= m)))
+                if ((!wrapped && _lastPhase < m && phaseNow >= m) || ( wrapped && (_lastPhase < m || phaseNow >= m)))
                 {
-                    SoundManager.Instance.PlaySfx(key: stepSfxKey, pos: transform.position, volume: stepVolume);
+                    _characterSfx?.PlayFootstepSound();
                 }
             }
         }
@@ -160,14 +153,13 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_PlayJump()
     {
         animator.SetTrigger(_hJump);
-        SoundManager.Instance.PlaySfx(jumpSfxKey, pos: transform.position, volume: jumpVolume);
+        _characterSfx?.PlayJumpSound();
         ResetDelta();
     }
     
     [PunRPC]
     private void RPC_SyncIsGrounded(bool isGrounded)
     {
-        // 모든 클라이언트가 이 RPC를 받아서 애니메이터 파라미터를 동일하게 설정
         animator.SetBool(_hIsGrounded, isGrounded);
     }
 

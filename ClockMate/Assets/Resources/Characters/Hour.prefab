@@ -69,6 +69,7 @@ GameObject:
   - component: {fileID: 7496400829461271468}
   - component: {fileID: 5149111290800593999}
   - component: {fileID: 4267211916932333981}
+  - component: {fileID: -621628144410902173}
   - component: {fileID: 1104138066627259733}
   - component: {fileID: 1925505827239022401}
   - component: {fileID: 8491432711090025664}
@@ -145,7 +146,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   contactEpsilon: 0.06
-  landMinSpeed: 2.5
 --- !u!114 &7496400829461271468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,10 +183,6 @@ MonoBehaviour:
   - 0.23
   - 0.73
   minSpeedForStep: 0.2
-  stepSfxKey: character_walk
-  stepVolume: 1
-  jumpSfxKey: character_jump
-  jumpVolume: 0.8
 --- !u!95 &4267211916932333981
 Animator:
   serializedVersion: 5
@@ -208,6 +204,27 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-621628144410902173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6443839724450058856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7038712d446c1bd4990cc3f34db2998f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpSfxKey: character_jump
+  jumpVolume: 0.8
+  footstepSfxKey: character_walk
+  footstepVolume: 0.8
+  landingSfxKey: character_hit_ground
+  minLandingImpactSpeed: 2.5
+  maxLandingImpactSpeed: 15
+  minLandingVolume: 0.4
+  maxLandingVolume: 1
 --- !u!114 &1104138066627259733
 MonoBehaviour:
   m_ObjectHideFlags: 0

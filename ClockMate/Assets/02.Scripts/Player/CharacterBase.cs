@@ -33,6 +33,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     }
 
     private StateMachine _stateMachine;
+    private CharacterSfx _characterSfx;
     private Rigidbody _rb;
     private GroundChecker _groundChecker;
     private int _jumpCount;
@@ -45,11 +46,10 @@ public abstract class CharacterBase : MonoBehaviourPun
     [SerializeField] private float groundCheckDistance = 0.1f; // 감지 거리
     [SerializeField] private LayerMask groundLayer = ~0; // 기본값: 모든 오브젝트
     [SerializeField] private float contactEpsilon = 0.06f; // 실접촉 허용 오차
-    [SerializeField] private float landMinSpeed   = 2.5f;   // 이보다 작으면 무음
     private bool _wasTouchingGround;
     private float _fallSpeedAbsMax;
     private float _lastLandTime;
-    private const float LANDING_COOLDOWN = 0.2f;
+    private const float LANDING_COOLDOWN = 0.5f;
 
     protected virtual void Awake()
     {
@@ -68,38 +68,6 @@ public abstract class CharacterBase : MonoBehaviourPun
         HandleLandingSfx();
     }
 
-    private void HandleLandingSfx()
-    {
-        bool nearGround = _groundChecker.IsGrounded(out RaycastHit hit);          
-        bool touching   = nearGround && hit.distance <= contactEpsilon; 
-
-        // 공중 동안 최대 하강속도 기록
-        if (!nearGround && _rb.velocity.y < 0f)
-            _fallSpeedAbsMax = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
-
-        // 공중 -> 실접촉 전이 시 1회 재생
-        if (touching && !_wasTouchingGround && Time.time > _lastLandTime + LANDING_COOLDOWN)
-        {
-            float impact = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
-            if (impact >= landMinSpeed)
-            {
-                _lastLandTime = Time.time;
-                
-                float volumeScale = Mathf.InverseLerp(landMinSpeed, 20f, impact); // 20f는 최대 충격 속도
-                float finalVolume = Mathf.Lerp(0.4f, 1.0f, volumeScale);
-
-                SoundManager.Instance.PlaySfx("character_hit_ground",
-                    pos: transform.position,
-                    volume: finalVolume);
-            }
-            _fallSpeedAbsMax = 0f; // 리셋
-            ResetJumpCount();      
-        }
-
-        // 상태 갱신
-        _wasTouchingGround = touching;
-    }
-
     protected virtual void Init()
     {
         Stats = Instantiate(OriginalStats);
@@ -114,6 +82,30 @@ public abstract class CharacterBase : MonoBehaviourPun
         InteractionDetector = GetComponentInChildren<InteractionDetector>();
         InputHandler = GetComponent<PlayerInputHandler>();
         Anim = GetComponent<CharacterAnimation>();
+        _characterSfx = GetComponent<CharacterSfx>();
+    }
+    
+    private void HandleLandingSfx()
+    {
+        bool isNearGround = _groundChecker.IsGrounded(out RaycastHit hit);          
+        bool isTouching = isNearGround  && hit.distance <= contactEpsilon; 
+
+        // 공중 동안 최대 하강속도 기록
+        if (!isNearGround  && _rb.velocity.y < 0f)
+            _fallSpeedAbsMax = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
+        
+        if (isTouching  && !_wasTouchingGround && Time.time > _lastLandTime + LANDING_COOLDOWN)
+        {
+            _lastLandTime = Time.time;
+            float impactSpeed = Mathf.Max(_fallSpeedAbsMax, -_rb.velocity.y);
+        
+            _characterSfx?.PlayLandingSound(impactSpeed);
+
+            _fallSpeedAbsMax = 0f;
+        }
+
+        // 상태 갱신
+        _wasTouchingGround = isTouching ;
     }
 
     /// <summary>
