@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Define.Map;
 
 public class LoadingManager : MonoBehaviourPunCallbacks
 {
@@ -140,6 +142,15 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         {
             _uiLoading.Close();
             _uiLoading = null;
+        }
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
+        {
+            if(currentScene.Equals(puzzleMap.ToString()))
+            {
+                UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
+            }
         }
     }
 }

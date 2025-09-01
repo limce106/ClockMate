@@ -35,6 +35,13 @@
             Forest,
             ClockTower
         }
+
+        public enum PuzzleMapName
+        {
+            Desert,
+            Glacier,
+            Forest
+        }
     }
 
     public static class Block
