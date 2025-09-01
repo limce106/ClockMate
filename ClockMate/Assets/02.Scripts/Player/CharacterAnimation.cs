@@ -98,7 +98,8 @@ public class CharacterAnimation : MonoBehaviourPun
                 photonView.RPC(nameof(RPC_SyncIsGrounded), RpcTarget.All, isGroundedNow);
             }
         }
-        else
+
+        if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hIsGrounded, character.IsGrounded);
         }
