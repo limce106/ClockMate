@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 2515879162212685193}
   - component: {fileID: 6671131347730133792}
   - component: {fileID: 9143583973323175578}
+  - component: {fileID: 1791376470696439772}
   - component: {fileID: -3434168223869650666}
   - component: {fileID: -4070705020424280772}
   - component: {fileID: 7142162060117645836}
@@ -212,7 +213,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   contactEpsilon: 0.06
-  landMinSpeed: 2.5
 --- !u!114 &6671131347730133792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,10 +250,27 @@ MonoBehaviour:
   - 0.23
   - 0.73
   minSpeedForStep: 0.2
-  stepSfxKey: character_walk
-  stepVolume: 1
+--- !u!114 &1791376470696439772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6605623365497456390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7038712d446c1bd4990cc3f34db2998f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   jumpSfxKey: character_jump
   jumpVolume: 0.8
+  footstepSfxKey: character_walk
+  footstepVolume: 0.8
+  landingSfxKey: character_hit_ground
+  minLandingImpactSpeed: 2.5
+  maxLandingImpactSpeed: 15
+  minLandingVolume: 0.4
+  maxLandingVolume: 1
 --- !u!114 &-3434168223869650666
 MonoBehaviour:
   m_ObjectHideFlags: 0
