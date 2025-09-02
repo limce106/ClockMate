@@ -93,5 +93,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
+
+        CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
+        if (cinemachineTargetSetter != null)
+            cinemachineTargetSetter.SetTarget();
     }
 }
