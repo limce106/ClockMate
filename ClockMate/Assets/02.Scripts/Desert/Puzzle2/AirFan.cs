@@ -94,6 +94,7 @@ public class AirFan : MonoBehaviourPun, IPunObservable
         {
             isFlying = true;
             _launchStrategy.Launch(_milli, _milliRb, this);
+            _milli.Anim.SetFanFly(true);
         }
     }
 
