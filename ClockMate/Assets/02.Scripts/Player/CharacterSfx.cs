@@ -46,7 +46,7 @@ public class CharacterSfx : MonoBehaviour
         float volumeScale = Mathf.InverseLerp(minLandingImpactSpeed, maxLandingImpactSpeed, impactSpeed);
         float finalVolume = Mathf.Lerp(minLandingVolume, maxLandingVolume, volumeScale);
         float finalPitch = Mathf.Lerp(1.0f, 1.1f, volumeScale);
-        Debug.Log($"impactSpeed: {impactSpeed}, finalVolume: {finalVolume}, finalPitch: {finalPitch}");
+//        Debug.Log($"impactSpeed: {impactSpeed}, finalVolume: {finalVolume}, finalPitch: {finalPitch}");
 
         SoundManager.Instance.PlaySfx(landingSfxKey, pos: transform.position, volume: finalVolume, pitch: finalPitch);
     }

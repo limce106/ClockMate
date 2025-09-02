@@ -34,6 +34,14 @@ public class AirFan : MonoBehaviourPun, IPunObservable
 
     public AirFanSetting setting = new AirFanSetting();
 
+    [Header("È¿°úÀ½")] 
+    [SerializeField] private string onSfxKey = "fan_on";
+    [SerializeField] private string runningSfxKey= "fan_noise";
+    [SerializeField] private string offSfxKey = "fan_stop";
+    [SerializeField] private float sfxVolume = 0.8f;
+    
+    private SoundHandle _runningSfxHandle;
+
     void Start()
     {
         InitStrategy();
@@ -94,6 +102,7 @@ public class AirFan : MonoBehaviourPun, IPunObservable
         {
             isFlying = true;
             _launchStrategy.Launch(_milli, _milliRb, this);
+            _milli.Anim.SetFanFly(true);
         }
     }
 
@@ -127,12 +136,16 @@ public class AirFan : MonoBehaviourPun, IPunObservable
             isFanOn = false;
             fanState = FanState.SpinningDown;
             windEffect.Stop();
+            SoundManager.Instance.Stop(_runningSfxHandle);
+            SoundManager.Instance.PlaySfx(key: offSfxKey, pos: transform.position, volume: sfxVolume);
         }
         else
         {
             isFanOn = true;
             fanState = FanState.SpinningUp;
             windEffect.Play();
+            SoundManager.Instance.PlaySfx(key: onSfxKey, pos: transform.position, volume: sfxVolume);
+            _runningSfxHandle = SoundManager.Instance.PlaySfx(key: runningSfxKey, pos: transform.position, volume: sfxVolume, loop: true, delay: 0.7f);
         }
 
         _fanBlades.startRotationSpeed = _fanBlades.currentRotationSpeed;

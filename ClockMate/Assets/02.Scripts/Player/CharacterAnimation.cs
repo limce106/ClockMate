@@ -15,7 +15,6 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pIsGrounded = "IsGrounded";
     [SerializeField] private string pJump = "Jump";
     [SerializeField] private string pFanFly = "FanFly";
-    [SerializeField] private string pIsJumping = "IsJumping";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
@@ -99,9 +98,14 @@ public class CharacterAnimation : MonoBehaviourPun
             }
         }
 
+        // 로컬에서
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hIsGrounded, character.IsGrounded);
+            if (character.IsGrounded && animator.GetBool(_hFanFly))
+            {
+                animator.SetBool(_hFanFly, false);
+            }
         }
 
         UpdateFootstepPhase(smoothedPlanarSpeed);
@@ -177,10 +181,20 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_SyncIsGrounded(bool isGrounded)
     {
         animator.SetBool(_hIsGrounded, isGrounded);
+        if (isGrounded && animator.GetBool(_hFanFly))
+        {
+            animator.SetBool(_hFanFly, false);
+        }
     }
 
     public void SetFanFly(bool on)
     {
+        Debug.Log($"fan fly is {on}");
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hFanFly, on);
+            return;
+        }
         if (animator && photonView.IsMine)
         {
             photonView.RPC(nameof(RPC_SetFanFly), RpcTarget.All, on);
