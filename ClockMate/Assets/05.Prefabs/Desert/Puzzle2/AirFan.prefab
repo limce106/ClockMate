@@ -188,6 +188,10 @@ MonoBehaviour:
   isFanOn: 1
   fanState: 0
   _target: {fileID: 0}
+  onSfxKey: fan_on
+  runningSfxKey: fan_noise
+  offSfxKey: fan_stop
+  sfxVolume: 0.8
 --- !u!114 &4304272029597336542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +210,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 36450128960683713}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

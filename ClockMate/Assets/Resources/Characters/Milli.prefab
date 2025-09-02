@@ -51,10 +51,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 35.9541
-  m_Height: 115.34568
+  m_Radius: 34.23
+  m_Height: 91.54951
   m_Direction: 1
-  m_Center: {x: 0.5354221, y: 73.88987, z: 0}
+  m_Center: {x: 0, y: 59.190613, z: 0}
 --- !u!1 &570261171101261199
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,7 +243,6 @@ MonoBehaviour:
   pIsGrounded: IsGrounded
   pJump: Jump
   pFanFly: FanFly
-  pIsJumping: IsJumping
   speedLerp: 0.2
   walkStateName: Walk
   walkMarks:
@@ -571,6 +570,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Milli_Mesh
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9d1b9b37c66e3e34eb525f065f96d900, type: 3}
+      propertyPath: m_TagString
+      value: Milli
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: 9d1b9b37c66e3e34eb525f065f96d900, type: 3}
     m_RemovedGameObjects: []
@@ -607,10 +610,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.4506035
-  m_Height: 2.0356216
+  m_Radius: 0.38
+  m_Height: 1.6210022
   m_Direction: 1
-  m_Center: {x: 0.0027389526, y: 1.0172691, z: 0}
+  m_Center: {x: 0, y: 0.8099594, z: 0}
 --- !u!4 &6852284779600221201 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9d1b9b37c66e3e34eb525f065f96d900, type: 3}
