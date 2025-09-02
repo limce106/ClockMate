@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using static Define.Character;
 
 [RequireComponent(typeof(PhotonView))]
 public class CharacterAnimation : MonoBehaviourPun
@@ -54,7 +55,11 @@ public class CharacterAnimation : MonoBehaviourPun
         _hSpeed = Animator.StringToHash(pSpeed);
         _hIsGrounded = Animator.StringToHash(pIsGrounded);
         _hJump = Animator.StringToHash(pJump);
-        _hFanFly = Animator.StringToHash(pFanFly);
+
+        if (character.Name == CharacterName.Milli)
+        {
+            _hFanFly = Animator.StringToHash(pFanFly);
+        }
 
         if (animator)
         {
@@ -102,10 +107,7 @@ public class CharacterAnimation : MonoBehaviourPun
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hIsGrounded, character.IsGrounded);
-            if (character.IsGrounded && animator.GetBool(_hFanFly))
-            {
-                animator.SetBool(_hFanFly, false);
-            }
+            TryEndFanFly(character.IsGrounded);
         }
 
         UpdateFootstepPhase(smoothedPlanarSpeed);
@@ -181,7 +183,12 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_SyncIsGrounded(bool isGrounded)
     {
         animator.SetBool(_hIsGrounded, isGrounded);
-        if (isGrounded && animator.GetBool(_hFanFly))
+        TryEndFanFly(isGrounded);
+    }
+
+    private void TryEndFanFly(bool isGrounded)
+    {
+        if (character.Name == CharacterName.Milli && isGrounded && animator.GetBool(_hFanFly))
         {
             animator.SetBool(_hFanFly, false);
         }
