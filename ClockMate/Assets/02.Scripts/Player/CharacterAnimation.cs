@@ -38,13 +38,9 @@ public class CharacterAnimation : MonoBehaviourPun
     private bool _wasGroundedForNetwork;
     private CharacterSfx _characterSfx;
 
-    private void Awake()
-    {
-        Init();
-    }
-
     private void Start()
     {
+        Init();
         if (character)
         {
             _wasGroundedForNetwork = character.IsGrounded;
