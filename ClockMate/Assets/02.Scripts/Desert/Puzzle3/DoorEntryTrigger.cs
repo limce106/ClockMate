@@ -8,6 +8,7 @@ public class DoorEntryTrigger : MonoBehaviour
     [SerializeField] DoorConditionController doorConditionController;
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log($"DoorEntryTrigger.OnTriggerExit: {other.name}");
         if (other.IsPlayerCollider())
         {
             doorConditionController.EnterDoor();

@@ -176,6 +176,8 @@ MonoBehaviour:
   pIsGrounded: IsGrounded
   pJump: Jump
   pFanFly: FanFly
+  pPickUp: PickUp
+  pCarry: Carry
   speedLerp: 0.2
   walkStateName: Walk
   walkMarks:
@@ -224,6 +226,8 @@ MonoBehaviour:
   maxLandingImpactSpeed: 15
   minLandingVolume: 0.4
   maxLandingVolume: 1
+  pickUpSfxKey: item_get
+  pickUpVolume: 1
 --- !u!114 &1104138066627259733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,7 +420,7 @@ Transform:
   m_GameObject: {fileID: 9044235292285250103}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.848, z: 0.5}
+  m_LocalPosition: {x: -0.097, y: 0.816, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

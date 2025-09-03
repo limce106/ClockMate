@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using static Define.Character;
 
 [RequireComponent(typeof(PhotonView))]
 public class CharacterAnimation : MonoBehaviourPun
@@ -15,17 +16,21 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pIsGrounded = "IsGrounded";
     [SerializeField] private string pJump = "Jump";
     [SerializeField] private string pFanFly = "FanFly";
+    [SerializeField] private string pPickUp = "PickUp";
+    [SerializeField] private string pCarry = "Carry";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
 
     [Header("Walk")]
-    [SerializeField] private string walkStateName = "Walk";
+    [SerializeField] private string walkTag = "Walk";
     [SerializeField] private float[] walkMarks = { 0.23f, 0.73f }; // 루프 내 접지 지점(0~1)
     [SerializeField] private float minSpeedForStep = 0.2f;         // 너무 느리면 미재생
 
     // hashes
-    private int _hSpeed, _hIsGrounded, _hJump, _hFanFly;
+    private int _hSpeed, _hIsGrounded, _hJump;
+    private int _hFanFly;
+    private int _hPickUp, _hCarry;
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
@@ -33,13 +38,9 @@ public class CharacterAnimation : MonoBehaviourPun
     private bool _wasGroundedForNetwork;
     private CharacterSfx _characterSfx;
 
-    private void Awake()
-    {
-        Init();
-    }
-
     private void Start()
     {
+        Init();
         if (character)
         {
             _wasGroundedForNetwork = character.IsGrounded;
@@ -54,7 +55,16 @@ public class CharacterAnimation : MonoBehaviourPun
         _hSpeed = Animator.StringToHash(pSpeed);
         _hIsGrounded = Animator.StringToHash(pIsGrounded);
         _hJump = Animator.StringToHash(pJump);
-        _hFanFly = Animator.StringToHash(pFanFly);
+
+        if (character.Name == CharacterName.Milli)
+        {
+            _hFanFly = Animator.StringToHash(pFanFly);
+        }
+        else
+        {
+            _hPickUp = Animator.StringToHash(pPickUp);
+            _hCarry = Animator.StringToHash(pCarry);
+        }
 
         if (animator)
         {
@@ -102,10 +112,7 @@ public class CharacterAnimation : MonoBehaviourPun
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hIsGrounded, character.IsGrounded);
-            if (character.IsGrounded && animator.GetBool(_hFanFly))
-            {
-                animator.SetBool(_hFanFly, false);
-            }
+            TryEndFanFly(character.IsGrounded);
         }
 
         UpdateFootstepPhase(smoothedPlanarSpeed);
@@ -127,9 +134,9 @@ public class CharacterAnimation : MonoBehaviourPun
             _lastPhase = phaseNow;
             return;
         }
-
-        // Walk 상태에서만 처리
-        if (!st.IsName(walkStateName))
+        
+        // 이동하는 상태에서만 처리
+        if (!st.IsTag(walkTag))
         {
             _lastPhase = phaseNow;
             return;
@@ -181,7 +188,12 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_SyncIsGrounded(bool isGrounded)
     {
         animator.SetBool(_hIsGrounded, isGrounded);
-        if (isGrounded && animator.GetBool(_hFanFly))
+        TryEndFanFly(isGrounded);
+    }
+
+    private void TryEndFanFly(bool isGrounded)
+    {
+        if (character.Name == CharacterName.Milli && isGrounded && animator.GetBool(_hFanFly))
         {
             animator.SetBool(_hFanFly, false);
         }
@@ -208,4 +220,45 @@ public class CharacterAnimation : MonoBehaviourPun
     }
 
     public void ResetDelta() => _prevPos = transform.position;
+
+    public void PlayPickUp()
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetTrigger(_hPickUp);
+            _characterSfx?.PlayPickUpSound();
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_PlayPickUp), RpcTarget.All);
+        }
+    }
+    
+    [PunRPC] 
+    private void RPC_PlayPickUp()
+    {
+        animator.SetTrigger(_hPickUp);
+        _characterSfx?.PlayPickUpSound();
+    }
+    
+    public void SetCarry(bool on)
+    {
+        Debug.Log($"Carry is {on}");
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hCarry, on);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_SetCarry), RpcTarget.All, on);
+        }
+    }
+
+    [PunRPC] 
+    private void RPC_SetCarry(bool on)
+    {
+        animator.SetBool(_hCarry, on);
+    }
 }
