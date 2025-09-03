@@ -15,6 +15,8 @@ public class IALog : MonoBehaviourPun, IInteractable
     private CharacterBase _interactingCharacter;
     private UIManager _uiManager;
     private Coroutine _moveCoroutine;
+    private Quaternion _startLocalRot;
+    private Vector3 _startLocalEuler;
     
     private void Awake()
     {
@@ -35,7 +37,9 @@ public class IALog : MonoBehaviourPun, IInteractable
 
     private void Init()
     {
-        _startAxis = transform.rotation.eulerAngles;
+        _startLocalRot   = transform.localRotation;
+        _startLocalEuler = transform.localEulerAngles;
+        
         _isInteracting = false;
         _uiManager = UIManager.Instance;
     }
@@ -88,7 +92,8 @@ public class IALog : MonoBehaviourPun, IInteractable
         }
         
         if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-        _moveCoroutine = StartCoroutine(MoveRoutine(Quaternion.Euler(rotateAxis)));
+        Vector3 targetLocalEuler = new Vector3(rotateAxis.x, rotateAxis.y, rotateAxis.z);
+        _moveCoroutine = StartCoroutine(MoveRoutine(Quaternion.Euler(targetLocalEuler)));
     }
 
     private void Drop()
@@ -108,7 +113,7 @@ public class IALog : MonoBehaviourPun, IInteractable
         }
         
         if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-        _moveCoroutine = StartCoroutine(MoveRoutine(Quaternion.Euler(_startAxis)));
+        _moveCoroutine = StartCoroutine(MoveRoutine(_startLocalRot));
     }
 
     private void OnDestroy()
@@ -120,21 +125,16 @@ public class IALog : MonoBehaviourPun, IInteractable
         if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
     }
     
-    private IEnumerator MoveRoutine(Quaternion targetRotation)
+    private IEnumerator MoveRoutine(Quaternion targetLocalRotation)
     {
         float speed = _isInteracting ? moveSpeed : dropSpeed;
-        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+        while (Quaternion.Angle(transform.localRotation, targetLocalRotation) > 0.1f)
         {
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRotation,
-                speed * Time.deltaTime
-            );
-
+            transform.localRotation = Quaternion.RotateTowards(
+                transform.localRotation, targetLocalRotation, speed * Time.deltaTime);
             yield return null;
         }
-
-        transform.rotation = targetRotation;
+        transform.localRotation = targetLocalRotation;
     }
 
     [PunRPC]
