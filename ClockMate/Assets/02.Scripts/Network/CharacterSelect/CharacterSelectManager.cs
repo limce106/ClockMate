@@ -30,6 +30,9 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         instance = this;
+
+        SoundManager.Instance.StopAll(SoundType.BGM);
+
         if (PhotonNetwork.IsMasterClient)
         {
             CutsceneSyncManager.Instance.PlayForAll(
@@ -195,5 +198,10 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         }
 
         RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, canAcceptReady);
+    }
+
+    public void PlayUIClickSFX()
+    {
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
