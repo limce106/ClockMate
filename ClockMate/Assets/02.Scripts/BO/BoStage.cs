@@ -45,11 +45,11 @@ public class BoStage
         {
             GameManager.Instance.Characters[character].transform.position = LoadPositions[character];
         }
-        
+
         // 블럭 초기화
         ResetTestManager.Instance.ResetAllBlocks();
 
         // 부활 가능 횟수 초기화
-        LeftReviveCount = MaxReviveCount;
+        //LeftReviveCount = MaxReviveCount;
     }
 }
