@@ -67,7 +67,7 @@ public class AirFan : MonoBehaviourPun, IPunObservable
     void Update()
     {
         // 테스트용
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
             {
