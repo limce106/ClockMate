@@ -1,3 +1,4 @@
+using System.Collections;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
@@ -6,6 +7,12 @@ public class Holder : MonoBehaviourPun
 {
     private GameObject _holdingObj;
     private Transform _originalParent;
+    private CharacterBase _character;
+    
+    private void Awake()
+    {
+        _character = GetComponentInParent<CharacterBase>();
+    }
 
     public bool IsHolding<T>() where T : IInteractable
     {
@@ -28,10 +35,9 @@ public class Holder : MonoBehaviourPun
 
     public void SetHoldingObj<T>(T obj) where T : MonoBehaviourPun, IInteractable
     {
-        NetworkExtension.RunNetworkOrLocal(
-            () => LocalSetHoldingObj(obj.gameObject),
-            () => photonView.RPC(nameof(RPC_SetHoldingObj), RpcTarget.All, obj.photonView.ViewID)
-        );
+        _character.Anim.PlayPickUp();
+        _character.InputHandler.enabled = false; // 줍기 애니메이션 재생동안은 움직임 중단
+        StartCoroutine(nameof(PickUpThenSetPos), obj);
     }
 
     private void LocalSetHoldingObj(GameObject obj)
@@ -52,7 +58,19 @@ public class Holder : MonoBehaviourPun
         }
         
         _holdingObj = obj;
+        _character.Anim.SetCarry(true);
     }
+    
+    private IEnumerator PickUpThenSetPos(MonoBehaviourPun obj)
+    {
+        yield return new WaitForSeconds(1.0f);
+        // 들어올리는 애니메이션 재생 기다린 뒤 물건 위치 이동, 움직임 재활성화
+        _character.InputHandler.enabled = true;
+        NetworkExtension.RunNetworkOrLocal(
+            () => LocalSetHoldingObj(obj.gameObject),
+            () => photonView.RPC(nameof(RPC_SetHoldingObj), RpcTarget.All, obj.photonView.ViewID)
+        );
+    } 
 
     [PunRPC]
     public void RPC_SetHoldingObj(int viewID)
@@ -63,12 +81,14 @@ public class Holder : MonoBehaviourPun
         LocalSetHoldingObj(view.gameObject);
     }
 
-    public void DropHoldingObj()
+    public bool TryDropHoldingObj()
     {
+        if(_holdingObj == null) return false;
         NetworkExtension.RunNetworkOrLocal(
             LocalDropHoldingObj,
             () => photonView.RPC(nameof(RPC_DropHoldingObj), RpcTarget.All)
         );
+        return true;
     }
 
     private void LocalDropHoldingObj()
@@ -111,6 +131,7 @@ public class Holder : MonoBehaviourPun
         }
         _holdingObj = null;
         _originalParent = null;
+        _character.Anim.SetCarry(false);
     }
     
     [PunRPC]
