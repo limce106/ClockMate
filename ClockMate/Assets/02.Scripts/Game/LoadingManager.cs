@@ -55,6 +55,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     public void ShowLoadingUI()
     {
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
+        GameManager.Instance.SetLocalCharacterInput(false);
     }
 
     public void StartSyncedLoading(string nextSceneName)
@@ -158,5 +159,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
                 UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
             }
         }
+
+        GameManager.Instance.SetLocalCharacterInput(true);
     }
 }
