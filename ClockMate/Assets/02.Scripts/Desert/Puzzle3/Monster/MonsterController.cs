@@ -36,6 +36,13 @@ public class MonsterController : MonoBehaviourPun
    {
       _currentState?.Update();
       ChangeColorAccordingToState();
+
+      if (hour) return;
+      
+      if (!GameManager.Instance.Characters.TryGetValue(CharacterName.Hour, out hour))
+      {
+         hour = GameObject.FindGameObjectWithTag("Hour")?.GetComponentInParent<Hour>();
+      }
    }
 
    private void Init()
@@ -48,7 +55,7 @@ public class MonsterController : MonoBehaviourPun
       //hourTransform = GameObject.FindGameObjectWithTag("Hour").transform;
       if (!GameManager.Instance.Characters.TryGetValue(CharacterName.Hour, out hour))
       {
-         hour = GameObject.FindGameObjectWithTag("Hour").GetComponentInParent<Hour>();
+         hour = GameObject.FindGameObjectWithTag("Hour")?.GetComponentInParent<Hour>();
       }
 
       if (hour == null)
@@ -140,7 +147,8 @@ public class MonsterController : MonoBehaviourPun
 //      Hour hour = other.gameObject.GetComponent<Hour>();
 //      if (!hour.photonView.IsMine) return;
       
-      hour.ChangeState<DeadState>();
+      //hour.ChangeState<DeadState>();
+      Debug.Log("아야");
       if (_currentState is MStateChase)
       {
          ChangeStateTo<MStateReturn>();
@@ -156,6 +164,7 @@ public class MonsterController : MonoBehaviourPun
    /// </summary>
    private void ChangeColorAccordingToState()
    {
+      if (meshRenderer == null) return;
       Material materialInstance = meshRenderer.material;
 
       Color stateColor = _currentState switch
