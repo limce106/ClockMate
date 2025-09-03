@@ -47,6 +47,8 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         float timeoutSec = 0f,
         Action masterOnlyOnAllFinished = null)
     {
+        GameManager.Instance.SetLocalCharacterInput(false);
+
         if (!PhotonNetwork.IsMasterClient)
         {
             Debug.LogWarning("[CutsceneSync] PlayForAll: Only Master can start.");
@@ -124,6 +126,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 
         cutscenePlayer.Skip(); // 타임아웃 등으로 인해 컷신이 종료되지 않은 경우 강제 스킵
         ResetState(); // 상태 리셋
+        GameManager.Instance.SetLocalCharacterInput(true);
     }
     
     #endregion
