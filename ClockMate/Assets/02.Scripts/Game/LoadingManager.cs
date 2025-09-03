@@ -133,6 +133,10 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
 
+        CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
+        if(cinemachineTargetSetter != null)
+            cinemachineTargetSetter.SetTarget();
+
         yield return new WaitForSeconds(1f);
 
         _isLoading = false;
@@ -144,7 +148,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             _uiLoading = null;
         }
 
+        GameManager.Instance.PlayMapBgm();
         string currentScene = SceneManager.GetActiveScene().name;
+
         foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
             if(currentScene.Equals(puzzleMap.ToString()))
