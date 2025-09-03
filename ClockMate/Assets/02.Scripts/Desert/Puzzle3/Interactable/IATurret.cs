@@ -317,6 +317,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     private void LocalCharge()
     {
         if (ChargeLevel >= maxChargeLevel) return;
+        ChargeLevel++;
         SoundManager.Instance.PlaySfx(key: chargeSfxKey, volume: chargeSfxVolume);
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
     }
