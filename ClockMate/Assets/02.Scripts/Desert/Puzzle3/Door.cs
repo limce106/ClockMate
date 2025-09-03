@@ -1,22 +1,27 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Door : MonoBehaviour
 {
     [SerializeField] private Vector3 openAxis; // 회전 목표 EulerAngles 
-    [SerializeField] private float openSpeed; // 초당 회전 속도 (degrees/sec)
-    [SerializeField] private float closeSpeed; 
+    [SerializeField] private Vector3 openPos; // 이동 목표 
+    [SerializeField] private float openSpeed; // 열리는 속도 (degrees/sec)
+    [SerializeField] private float closeSpeed;
+    [SerializeField] private string sfxKey;
+    [SerializeField] private float sfxVolume;
 
     private Coroutine _openCoroutine;
     private Coroutine _closeCoroutine;
     private Vector3 _startAxis;
+    private Vector3 _startPos;
+    private SoundHandle _sfxHandle;
 
     [field: SerializeField] public bool IsLocked { get; private set; }
 
     private void Awake()
     {
         _startAxis = transform.localRotation.eulerAngles;
+        _startPos = transform.localPosition;
     }
     
     public void Open()
@@ -57,23 +62,33 @@ public class Door : MonoBehaviour
     private IEnumerator MoveRoutine(Quaternion targetRotation, bool isOpening)
     {
         float speed = isOpening ? openSpeed : closeSpeed;
+        Vector3 targetPos = isOpening ? openPos : _startPos;
+        SoundManager.Instance.Stop(_sfxHandle); // 재생 중이던 효과음이 있다면 중단
 
-        while (Quaternion.Angle(transform.localRotation, targetRotation) > 0.1f)
+        if (transform.localRotation == targetRotation && transform.localPosition == targetPos) yield break;
+        _sfxHandle = SoundManager.Instance.PlaySfx(key: sfxKey, pos: transform.position, volume: sfxVolume);
+
+        const float rotEps = 0.1f;
+        const float posEps = 0.001f;
+
+        while (Quaternion.Angle(transform.localRotation, targetRotation) > rotEps
+               || Vector3.Distance(transform.localPosition, targetPos) > posEps)
         {
             transform.localRotation = Quaternion.RotateTowards(
-                transform.localRotation,
-                targetRotation,
-                speed * Time.deltaTime
-            );
+                transform.localRotation, targetRotation, speed * Time.deltaTime);
+
+            transform.localPosition = Vector3.MoveTowards(
+                transform.localPosition, targetPos, speed * Time.deltaTime);
+
             yield return null;
         }
 
         transform.localRotation = targetRotation;
+        transform.localPosition = targetPos;
 
-        if (isOpening)
-            _openCoroutine = null;
-        else
-            _closeCoroutine = null;
+        if (isOpening) _openCoroutine = null;
+        else _closeCoroutine = null;
+        SoundManager.Instance.Stop(_sfxHandle); // 효과음 중단
     }
 
 }
