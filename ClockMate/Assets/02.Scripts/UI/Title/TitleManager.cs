@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
 
-public class TitleUIController : MonoBehaviour
+public class TitleManager : MonoBehaviour
 {
     [Header("Text")]
     public TMP_InputField joinCodeInputField;
@@ -21,11 +21,14 @@ public class TitleUIController : MonoBehaviour
     [Header("Panel")]
     public GameObject titlePanel;
     public GameObject lobbyPanel;
+    public GameObject playTypePanel;
 
     private bool suppressCallback = false;
 
     void Start()
     {
+        SoundManager.Instance.PlayBgm("title_bgm");
+
         joinCodeInputField.onValueChanged.AddListener(OnInputValueChanged);
         CheckInput(joinCodeInputField.text);
     }
@@ -57,13 +60,23 @@ public class TitleUIController : MonoBehaviour
     {
         titlePanel.SetActive(false);
         lobbyPanel.SetActive(true);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
     public void OnClick_Setting()
     {
-
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
     public void OnClick_Exit()
     {
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
         Application.Quit();
+    }
+    public void OnClick_CreateCode()
+    {
+        lobbyPanel.SetActive(false);
+        playTypePanel.SetActive(true);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
