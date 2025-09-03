@@ -243,8 +243,10 @@ MonoBehaviour:
   pIsGrounded: IsGrounded
   pJump: Jump
   pFanFly: FanFly
+  pPickUp: PickUp
+  pCarry: Carry
   speedLerp: 0.2
-  walkStateName: Walk
+  walkTag: Walk
   walkMarks:
   - 0.23
   - 0.73
@@ -270,6 +272,8 @@ MonoBehaviour:
   maxLandingImpactSpeed: 15
   minLandingVolume: 0.4
   maxLandingVolume: 1
+  pickUpSfxKey: item_get
+  pickUpVolume: 1
 --- !u!114 &-3434168223869650666
 MonoBehaviour:
   m_ObjectHideFlags: 0
