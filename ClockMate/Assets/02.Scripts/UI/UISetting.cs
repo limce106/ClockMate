@@ -71,6 +71,8 @@ public class UISetting : UIBase
 
         VoiceManager.Instance?.SetMicActive(SettingManager.Instance.isMicOn);
         UpdateMicIcon(SettingManager.Instance.isMicOn);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     /// <summary>
@@ -88,5 +90,6 @@ public class UISetting : UIBase
     public void OnClick_Close()
     {
         UIManager.Instance?.Close(this);
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }

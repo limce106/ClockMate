@@ -114,4 +114,39 @@ public class GameManager : MonoSingleton<GameManager>
             return "Hour";
         }
     }
+
+    public void PlayMapBgm()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        string bgmKey = GetBgmKeyForScene(currentScene);
+
+        if (!string.IsNullOrEmpty(bgmKey) && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBgm(bgmKey);
+        }
+        else
+        {
+            Debug.LogError($"[GameManager] BGM 재생 실패. 키: {bgmKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
+        }
+    }
+
+    /// <summary>
+    /// 맵 이름에 해당하는 BGM 이름을 반환
+    /// </summary>
+    private string GetBgmKeyForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Desert":
+                return "desert_wind";
+            case "Glacier":
+                return "";
+            case "Forest":
+                return "";
+            case "ClockTower":
+                return "";
+            default:
+                return null; // BGM이 없는 씬
+        }
+    }
 }

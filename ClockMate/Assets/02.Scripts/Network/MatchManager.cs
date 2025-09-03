@@ -31,6 +31,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public void OnClick_CreateRoom()
     {
         StartCoroutine(TryCreateRoom());
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     IEnumerator TryCreateRoom()
@@ -67,8 +68,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
             retry--;
         }
-
-        // statusText.text = "방 생성 실패. 다시 시도해주세요.";
     }
 
     public void OnClick_JoinWithCode()
@@ -82,7 +81,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
 
         PhotonNetwork.JoinRoom(code);
-        // statusText.text = "방에 입장 중...";
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     private string GenerateRoomCode()
@@ -108,7 +107,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public void OnClick_RandomMatch()
     {
         PhotonNetwork.JoinRandomRoom();
-        //statusText.text = "랜덤 매칭 중...";
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -121,7 +120,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
         };
 
         PhotonNetwork.CreateRoom(null, options);
-        // statusText.text = "새 방 생성 중...";
     }
 
     public override void OnJoinedRoom()

@@ -27,6 +27,8 @@ public class PlayModeSelector : MonoBehaviour
     {
         IsNewGameRoom = true;
         matchManager.OnClick_CreateRoom();
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
     public void OnClick_Continue()
     {
@@ -35,5 +37,7 @@ public class PlayModeSelector : MonoBehaviour
 
         IsNewGameRoom = false;
         matchManager.OnClick_CreateRoom();
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
