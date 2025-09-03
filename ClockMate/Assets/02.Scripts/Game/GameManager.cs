@@ -149,4 +149,15 @@ public class GameManager : MonoSingleton<GameManager>
                 return null; // BGM이 없는 씬
         }
     }
+
+    public void SetLocalCharacterInput(bool enabled)
+    {
+        foreach(var character in Characters)
+        {
+            if(character.Value.photonView.IsMine)
+            {
+                character.Value.InputHandler.enabled = enabled;
+            }
+        }
+    }
 }
