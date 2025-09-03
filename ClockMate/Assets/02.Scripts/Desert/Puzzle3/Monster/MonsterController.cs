@@ -1,12 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Define;
-using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 using static Define.Character;
+using Random = UnityEngine.Random;
 
 public class MonsterController : MonoBehaviourPun
 {
@@ -26,6 +27,13 @@ public class MonsterController : MonoBehaviourPun
    private IMonsterState _currentState;
    private Dictionary<Type, IMonsterState> _states;
    public event Action<MonsterController> OnMonsterDied;
+   
+   // 효과음
+   [SerializeField] private string growlSfxKey = "monster_growling";
+   [SerializeField] private float  growlIntervalMin = 3f;   // 초
+   [SerializeField] private float  growlIntervalMax = 6f;   // 초
+   [SerializeField] private float  growlVolume = 0.6f;
+   private Coroutine _growlCoroutine;
    
    private void Awake()
    {
@@ -154,7 +162,30 @@ public class MonsterController : MonoBehaviourPun
          ChangeStateTo<MStateReturn>();
       }
    }
+   
+   private void OnEnable()
+   {
+      if (NetworkManager.Instance.IsInRoomAndReady() && !photonView.IsMine) return;
+      if (_growlCoroutine == null) _growlCoroutine = StartCoroutine(Co_GrowlLoop());
+   }
 
+   private void OnDisable()
+   {
+      if (_growlCoroutine != null) { StopCoroutine(_growlCoroutine); _growlCoroutine = null; }
+   }
+
+   private IEnumerator Co_GrowlLoop()
+   {
+      float interval = Random.Range(growlIntervalMin, growlIntervalMax);
+      while (true)
+      {
+         // 활성 상태일 때만 재생
+         if (isActiveAndEnabled)
+            SoundManager.Instance.PlaySfx(key: growlSfxKey, pos: transform.position, volume: growlVolume);
+
+         yield return new WaitForSeconds(interval);
+      }
+   }
    #region Test
    
    [SerializeField] private SkinnedMeshRenderer meshRenderer;
