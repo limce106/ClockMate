@@ -148,7 +148,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             _uiLoading = null;
         }
 
+        GameManager.Instance.PlayMapBgm();
         string currentScene = SceneManager.GetActiveScene().name;
+
         foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
             if(currentScene.Equals(puzzleMap.ToString()))
