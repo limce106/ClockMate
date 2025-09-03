@@ -25,6 +25,11 @@ public class IATurret : MonoBehaviourPun, IInteractable
     [SerializeField] private float attackRange = 100f;
     [SerializeField] private LayerMask hitMask; // 대상 레이어
     
+    [SerializeField] private string chargeSfxKey;
+    [SerializeField] private float chargeSfxVolume;
+    [SerializeField] private string fireSfxKey;
+    [SerializeField] private float fireSfxVolume;
+    
     private GameObject _indicator; // 타겟 표시
     
     private bool _isOccupied; // 터렛 조작 중 여부
@@ -286,6 +291,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     {
         ChargeLevel--; // ChargeLevel 1 감소
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
+        SoundManager.Instance.PlaySfx(key: fireSfxKey, pos: transform.position, volume: fireSfxVolume);
 
         if (_currentTarget is not null)
         {
@@ -311,7 +317,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     private void LocalCharge()
     {
         if (ChargeLevel >= maxChargeLevel) return;
-        ChargeLevel++;
+        SoundManager.Instance.PlaySfx(key: chargeSfxKey, volume: chargeSfxVolume);
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
     }
     
