@@ -27,9 +27,11 @@ public class IABattery : ResettableBase, IInteractable
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            TryDrop();
-            // 배터리 내려놓기 UI 닫기
-            _uiManager.Close(_uiNotice);
+            if (TryDrop())
+            {
+                // 배터리 내려놓기 UI 닫기
+                _uiManager.Close(_uiNotice);
+            }
         }
     }
 
@@ -80,12 +82,15 @@ public class IABattery : ResettableBase, IInteractable
         _isHeld = true;
     }
 
-    private void TryDrop()
+    private bool TryDrop()
     {
-        _currentHolder?.DropHoldingObj();
+        bool? result = _currentHolder?.TryDropHoldingObj();
+
+        if (!result.HasValue || !result.Value) return false;
         
         _currentHolder = null;
         _isHeld = false;
+        return true;
     }
 
     public void UseToCharge()

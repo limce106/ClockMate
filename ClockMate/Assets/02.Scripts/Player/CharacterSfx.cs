@@ -20,6 +20,10 @@ public class CharacterSfx : MonoBehaviour
     [SerializeField] private float minLandingVolume = 0.4f;
     [SerializeField] private float maxLandingVolume = 1.0f;
 
+    [Header("PickUp SFX")]
+    [SerializeField] private string pickUpSfxKey = "item_get";
+    [SerializeField] private float pickUpVolume = 1f;
+    
     /// <summary>
     /// 점프 사운드 재생
     /// </summary>
@@ -49,5 +53,10 @@ public class CharacterSfx : MonoBehaviour
 //        Debug.Log($"impactSpeed: {impactSpeed}, finalVolume: {finalVolume}, finalPitch: {finalPitch}");
 
         SoundManager.Instance.PlaySfx(landingSfxKey, pos: transform.position, volume: finalVolume, pitch: finalPitch);
+    }
+    
+    public void PlayPickUpSound()
+    {
+        SoundManager.Instance.PlaySfx(key:pickUpSfxKey, pos: transform.position, volume: pickUpVolume);
     }
 }
