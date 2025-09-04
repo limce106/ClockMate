@@ -43,7 +43,15 @@ public class IAClockworkGear : MonoBehaviourPun, IInteractable
             masterOnlyOnAllFinished: () =>
             {
                 // TODO: 다음 씬으로 넘어가는 로직
+                // 임시 엔딩
+                photonView.RPC(nameof(RPC_ActivateEndingUI), RpcTarget.All);
             }
         );
+    }
+    
+    [PunRPC]
+    private void RPC_ActivateEndingUI()
+    {
+        UIManager.Instance.Show<UIEnding>("UIEnding");
     }
 }
