@@ -1,9 +1,7 @@
-using JetBrains.Annotations;
-using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
-using UnityEngine.InputSystem.iOS;
 
 public class FallingAttack : AttackPattern
 {
