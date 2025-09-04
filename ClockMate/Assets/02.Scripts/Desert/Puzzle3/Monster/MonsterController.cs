@@ -166,7 +166,7 @@ public class MonsterController : MonoBehaviourPun
    private void OnEnable()
    {
       if (NetworkManager.Instance.IsInRoomAndReady() && !photonView.IsMine) return;
-      if (_growlCoroutine == null) _growlCoroutine = StartCoroutine(Co_GrowlLoop());
+      if (_growlCoroutine == null) _growlCoroutine = StartCoroutine(GrowlLoopCoroutine());
    }
 
    private void OnDisable()
@@ -174,7 +174,7 @@ public class MonsterController : MonoBehaviourPun
       if (_growlCoroutine != null) { StopCoroutine(_growlCoroutine); _growlCoroutine = null; }
    }
 
-   private IEnumerator Co_GrowlLoop()
+   private IEnumerator GrowlLoopCoroutine()
    {
       float interval = Random.Range(growlIntervalMin, growlIntervalMax);
       while (true)
