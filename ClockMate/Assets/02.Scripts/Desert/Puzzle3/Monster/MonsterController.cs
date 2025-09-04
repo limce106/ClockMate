@@ -42,15 +42,14 @@ public class MonsterController : MonoBehaviourPun
 
    private void Update()
    {
-      _currentState?.Update();
-      ChangeColorAccordingToState();
-
-      if (hour) return;
+      if (!hour) return;
       
       if (!GameManager.Instance.Characters.TryGetValue(CharacterName.Hour, out hour))
       {
          hour = GameObject.FindGameObjectWithTag("Hour")?.GetComponentInParent<Hour>();
       }
+      _currentState?.Update();
+      ChangeColorAccordingToState();
    }
 
    private void Init()
