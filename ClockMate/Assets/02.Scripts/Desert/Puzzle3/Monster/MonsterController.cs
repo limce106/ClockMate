@@ -155,7 +155,8 @@ public class MonsterController : MonoBehaviourPun
 //      if (!hour.photonView.IsMine) return;
       
       //hour.ChangeState<DeadState>();
-      Debug.Log("아야");
+      // TODO 실제 사망 처리로 교체하기
+      hour.transform.position = new Vector3(-180.880005f,73.4297409f,-89.7699966f);
       if (_currentState is MStateChase)
       {
          ChangeStateTo<MStateReturn>();

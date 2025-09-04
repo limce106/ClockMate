@@ -26,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf1f09dd43e172048b9c45b899d02f87, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4023975
+      value: 0.56
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf1f09dd43e172048b9c45b899d02f87, type: 3}
       propertyPath: m_LocalPosition.z
@@ -187,6 +187,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 077f27cb86948ba46adbab4d6dfd902d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4167013064803720285}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 077f27cb86948ba46adbab4d6dfd902d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 967451335317488505}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 077f27cb86948ba46adbab4d6dfd902d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 754996585111534552}
   m_SourcePrefab: {fileID: 100100000, guid: 077f27cb86948ba46adbab4d6dfd902d, type: 3}
 --- !u!1 &6178898768552197529 stripped
 GameObject:
@@ -214,6 +220,10 @@ MonoBehaviour:
   verticalViewAngle: 60
   viewDistance: 7
   hour: {fileID: 0}
+  growlSfxKey: monster_growling
+  growlIntervalMin: 3
+  growlIntervalMax: 6
+  growlVolume: 0.6
   meshRenderer: {fileID: 0}
 --- !u!195 &6585783531400752112
 NavMeshAgent:
@@ -233,7 +243,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 0.58
+  m_Height: 0.6
   m_BaseOffset: -0.25
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -284,7 +294,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.4566101
-  m_Center: {x: 0, y: 0.40660977, z: 0}
+  m_Center: {x: 0, y: 0.53, z: 0}
 --- !u!114 &-4291482392897629956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,6 +334,56 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!33 &967451335317488505
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6178898768552197529}
+  m_Mesh: {fileID: 1360107307202970949, guid: cf1f09dd43e172048b9c45b899d02f87, type: 3}
+--- !u!23 &754996585111534552
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6178898768552197529}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 5bd1b2b6dc3761d40b569bd3f767025a, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &6842105956287293219 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 077f27cb86948ba46adbab4d6dfd902d, type: 3}
