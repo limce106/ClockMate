@@ -71,7 +71,7 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         characters[index].selectedByActorNumber = actorNumber;
         characters[index].nonSelectableImg.gameObject.SetActive(true);
 
-        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + characters[index].characterName + "_Sticker");
+        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + characters[index].characterName + "_Image");
         if (characterSprite == null)
         {
             Debug.LogWarning($"Sprite for {characters[index].characterName} not found in Resources.");
