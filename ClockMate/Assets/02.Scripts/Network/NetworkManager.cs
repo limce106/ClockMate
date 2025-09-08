@@ -45,6 +45,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnected)
         {
+            SetPhotonID();
             PhotonNetwork.ConnectUsingSettings();
         }
 
@@ -71,6 +72,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         TryHandleDisconnect();
+    }
+
+    private void SetPhotonID()
+    {
+        string punAppId = EnvLoader.GetEnv("PUN_APP_ID");
+        string voiceAppId = EnvLoader.GetEnv("VOICE_APP_ID");
+
+        if(!string.IsNullOrEmpty(punAppId))
+        {
+            PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime = punAppId;
+        }
+        if (!string.IsNullOrEmpty(voiceAppId))
+        {
+            PhotonNetwork.PhotonServerSettings.AppSettings.AppIdVoice = voiceAppId;
+        }
     }
 
     void TryHandleDisconnect()
