@@ -453,12 +453,12 @@ MonoBehaviour:
   - {fileID: 4467992356540520643, guid: 4cf3750ce91ba74428f72d585d13f3a9, type: 3}
   - {fileID: 4467992356540520643, guid: f7e7787d7fd8f7f48a6f36f72efecccd, type: 3}
   - {fileID: 4467992356540520643, guid: f6ff2eeb3a426e74cb459625384b9df1, type: 3}
-  minBattleFieldXZ: {x: -5, y: -5}
-  maxBattleFieldXZ: {x: 5, y: 5}
   pendulumPool: {fileID: 512342076}
   clockhandPool: {fileID: 627350063}
+  bossAttackFloor: {fileID: 1002807071815544869}
   recoverySlider: {fileID: 522222844}
   round: 1
+  battleFieldRadius: 5
 --- !u!4 &204318377
 Transform:
   m_ObjectHideFlags: 0
@@ -2952,6 +2952,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 777152684178418616, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2524673196444792687, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
       propertyPath: m_Name
       value: ClockTower_Map
@@ -2961,6 +2965,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
+--- !u!1 &1002807071815544869 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 777152684178418616, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
+  m_PrefabInstance: {fileID: 1002807071815544868}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
