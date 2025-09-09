@@ -15,7 +15,7 @@ public static class EnvLoader
 
         if (!File.Exists(envPath))
         {
-            Debug.LogWarning("'.env' 파일이 존재하지 않습니다. App ID가 로드되지 않습니다.");
+            Debug.LogWarning("'.env' 파일이 존재하지 않습니다. 환경 변수가 로드되지 않습니다.");
             return;
         }
 
