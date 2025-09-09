@@ -75,7 +75,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
             { PlayerAttackType.ClockHandRecovery, "ClockHandRecovery_Cutscene" },
             { PlayerAttackType.CogwheelRevery, "CogwheelRevery_Cutscene" },
             { PlayerAttackType.ClockTowerOperation, "ClockTowerOperation_Cutscene" }
-            // 여기에 새로운 공격과 컷씬 이름을 추가하세요.
         };
     }
 
