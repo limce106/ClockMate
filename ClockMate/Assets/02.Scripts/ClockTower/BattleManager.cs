@@ -14,10 +14,11 @@ using static Define.Battle;
 public class BattleManager : MonoBehaviourPunCallbacks
 {
     private Dictionary<string, PhaseType> AttackNameToType;
+    private Dictionary<PlayerAttackType, string> playerCutsceneNames;
 
     private float _timer;   // 플레이어 제한 시간용 타이머
     public TMP_Text timeLimitText;
-    
+
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
@@ -27,6 +28,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     // 보스 공격 오브젝트 풀
     public NetworkObjectPool<SwingPendulum> pendulumPool;
     public NetworkObjectPool<FallingClockHand> clockhandPool;
+
+    public GameObject bossAttackFloor;  // 보스 공격 시 전투 바닥
 
     public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockTowerOperation;
@@ -49,7 +52,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -65,13 +68,15 @@ public class BattleManager : MonoBehaviourPunCallbacks
             {"PlayerAttack", PhaseType.PlayerAttack },
         };
 
-        // StageLifeManager 파괴
-        //if (StageLifeManager.Instance != null)
-        //    Destroy(StageLifeManager.Instance);
-
-        //StageLifeManager.Instance.DestroySelf();
-
         screenEffectController = FindObjectOfType<ScreenEffectController>();
+
+        playerCutsceneNames = new Dictionary<PlayerAttackType, string>
+        {
+            { PlayerAttackType.ClockHandRecovery, "ClockHandRecovery_Cutscene" },
+            { PlayerAttackType.CogwheelRevery, "CogwheelRevery_Cutscene" },
+            { PlayerAttackType.ClockTowerOperation, "ClockTowerOperation_Cutscene" }
+            // 여기에 새로운 공격과 컷씬 이름을 추가하세요.
+        };
     }
 
     void Start()
@@ -108,10 +113,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private IEnumerator RunBattle()
     {
-        while(true)
+        while (true)
         {
             // 마지막 반격에 성공하면 종료
-            if(phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
+            if (phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
             {
                 yield break;
             }
@@ -153,32 +158,63 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private IEnumerator HandleSuccess()
     {
-        if(phaseType == PhaseType.PlayerAttack)
+        if (phaseType == PhaseType.PlayerAttack)
         {
-            if(playerAttackType != PlayerAttackType.ClockTowerOperation)
+            if (playerAttackType != PlayerAttackType.ClockTowerOperation)
                 photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
             screenEffectController.IncreaseWarmth();
 
-            photonView.RPC(nameof(TryAdvancePlayerAttack), RpcTarget.All);
-            round++;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                CutsceneSyncManager.Instance.PlayForAll(
+                    playerCutsceneNames[playerAttackType],
+                    0f,
+                    () =>
+                    {
+                        photonView.RPC(nameof(TryAdvancePlayerAttack), RpcTarget.All);
+                        round++;
 
-            // 마지막 반격 성공 시 종료
-            if ((int)playerAttackType >= playerAttackPrefabs.Count)
+                        if ((int)playerAttackType < playerAttackPrefabs.Count)
+                        {
+                            photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
+                        }
+                    }
+                );
+            }
+
+            // TODO 컷씬 재생 중에 판 생기고 플레이어 이동
+
+            while (CutsceneSyncManager.Instance.IsBusy)
+            {
+                yield return null;
+            }
+
+            if (!PhotonNetwork.IsMasterClient)
             {
                 yield break;
             }
         }
-
-        photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
+        else
+        {
+            photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
+        }
     }
 
     private IEnumerator HandleFailure()
     {
         if (phaseType == PhaseType.PlayerAttack)
         {
+            yield return StartCoroutine(screenEffectController.FadeOut(3f));
+
             photonView.RPC(nameof(TryAdvanceBossAttack), RpcTarget.All);
             round++;
+
+            // TODO 판 생기고 플레이어 이동
+
+            yield return new WaitForSeconds(1f);
+
+            yield return StartCoroutine(screenEffectController.FadeIn(3f));
         }
         else
         {
@@ -246,7 +282,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         int index = (int)playerAttackType;
 
-        if (index +1 < PlayerAttackTypes.Length)
+        if (index + 1 < PlayerAttackTypes.Length)
         {
             playerAttackType = PlayerAttackTypes[index + 1];
         }
@@ -262,7 +298,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
         yield return StartCoroutine(screenEffectController.FadeIn(3f));
     }
-    
+
     [PunRPC]
     private void RPC_UpdateTimeLimitTxt(int time)
     {
@@ -279,7 +315,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// <summary>
     /// 시간 제한이 끝났는지
     /// </summary>
-    /// <returns></returns>
     public bool IsTimeLimitEnd()
     {
         return _timer <= 0;
