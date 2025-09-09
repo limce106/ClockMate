@@ -6,6 +6,7 @@ using Define;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
+using ExitGames.Client.Photon;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
@@ -31,13 +32,21 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             statusText.text = "클릭해서 서버 연결하기";
-            PhotonNetwork.AutomaticallySyncScene = true;
-            PhotonNetwork.ConnectUsingSettings();
+            PhotonNetwork.AutomaticallySyncScene = false;
+
+            AppSettings appSettings = GetAppSettingsFromEnv();
+            if (appSettings != null)
+            {
+                PhotonNetwork.ConnectUsingSettings(appSettings);
+            }
         }
         else
         {
             statusText.text = "이미 서버 연결됨!";
         }
+
+        PhotonNetwork.SendRate = 60;
+        PhotonNetwork.SerializationRate = 60;
     }
 
     public void EnterTestServerRoom()
@@ -61,6 +70,15 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         };
 
         PhotonNetwork.CreateRoom(RoomName, options, TypedLobby.Default);
+    }
+
+    public override void OnJoinedLobby()
+    {
+        AppSettings appSettings = GetAppSettingsFromEnv();
+        if (VoiceManager.Instance != null && appSettings != null)
+        {
+            VoiceManager.Instance.ConnectVoice(appSettings);
+        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -97,5 +115,29 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
         if (cinemachineTargetSetter != null)
             cinemachineTargetSetter.SetTarget();
+    }
+
+    private AppSettings GetAppSettingsFromEnv()
+    {
+        EnvLoader.LoadEnv();
+
+        string punAppId = EnvLoader.GetEnv("PUN_APP_ID");
+        string voiceAppId = EnvLoader.GetEnv("VOICE_APP_ID");
+
+        if (string.IsNullOrEmpty(punAppId))
+        {
+            return null;
+        }
+
+        AppSettings appSettings = new AppSettings
+        {
+            AppIdRealtime = punAppId,
+            AppIdVoice = voiceAppId,
+            UseNameServer = true,
+            FixedRegion = PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion,
+            Protocol = ConnectionProtocol.Udp,
+        };
+
+        return appSettings;
     }
 }

@@ -5,6 +5,8 @@ using Photon.Pun;
 using Photon.Realtime;
 using PN = Photon.Pun.PhotonNetwork;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using ExitGames.Client.Photon;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -37,7 +39,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(gameObject);
         }
 
-        // 자동 씬 동기화
         PhotonNetwork.AutomaticallySyncScene = false;
     }
 
@@ -45,9 +46,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnected)
         {
-            SetPhotonID();
-            PhotonNetwork.ConnectUsingSettings();
+            AppSettings appSettings = GetAppSettingsFromEnv();
+            if(appSettings != null)
+            {
+                PhotonNetwork.ConnectUsingSettings(appSettings);
+            }
+            else
+            {
+                Debug.LogError("App ID를 불러올 수 없습니다. 연결을 시도하지 않습니다.");
+            }
         }
+
 
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 60;
@@ -57,6 +66,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
         Debug.Log("Connected to Master");
+    }
+
+    public override void OnJoinedLobby()
+    {
+        AppSettings appSettings = GetAppSettingsFromEnv();
+        if (VoiceManager.Instance != null && appSettings != null)
+        {
+            VoiceManager.Instance.ConnectVoice(appSettings);
+        }
     }
 
     public bool IsInRoomAndReady()
@@ -74,19 +92,28 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         TryHandleDisconnect();
     }
 
-    private void SetPhotonID()
+    private AppSettings GetAppSettingsFromEnv()
     {
+        EnvLoader.LoadEnv();
+
         string punAppId = EnvLoader.GetEnv("PUN_APP_ID");
         string voiceAppId = EnvLoader.GetEnv("VOICE_APP_ID");
 
-        if(!string.IsNullOrEmpty(punAppId))
+        if (string.IsNullOrEmpty(punAppId))
         {
-            PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime = punAppId;
+            return null;
         }
-        if (!string.IsNullOrEmpty(voiceAppId))
+
+        AppSettings appSettings = new AppSettings
         {
-            PhotonNetwork.PhotonServerSettings.AppSettings.AppIdVoice = voiceAppId;
-        }
+            AppIdRealtime = punAppId,
+            AppIdVoice = voiceAppId,
+            UseNameServer = true,
+            FixedRegion = PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion,
+            Protocol = ConnectionProtocol.Udp,
+        };
+
+        return appSettings;
     }
 
     void TryHandleDisconnect()
