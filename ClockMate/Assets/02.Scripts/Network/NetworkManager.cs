@@ -107,10 +107,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         AppSettings appSettings = new AppSettings
         {
             AppIdRealtime = punAppId,
-            AppIdVoice = voiceAppId,
-            UseNameServer = true,
-            FixedRegion = PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion,
-            Protocol = ConnectionProtocol.Udp,
+            AppIdVoice = voiceAppId
         };
 
         return appSettings;

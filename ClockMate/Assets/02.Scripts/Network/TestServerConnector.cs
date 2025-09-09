@@ -15,7 +15,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public GameObject enterTestServerButton;
     public TMP_Text statusText;
     public GameObject puzzleHUD;
-    public GameObject voiceManager;
 
     public bool isSpawnPlayer = false;
 
@@ -45,8 +44,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             statusText.text = "이미 서버 연결됨!";
         }
 
-        PhotonNetwork.SendRate = 60;
-        PhotonNetwork.SerializationRate = 60;
+        PhotonNetwork.SendRate = 30;
+        PhotonNetwork.SerializationRate = 30;
     }
 
     public void EnterTestServerRoom()
@@ -132,10 +131,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         AppSettings appSettings = new AppSettings
         {
             AppIdRealtime = punAppId,
-            AppIdVoice = voiceAppId,
-            UseNameServer = true,
-            FixedRegion = PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion,
-            Protocol = ConnectionProtocol.Udp,
+            AppIdVoice = voiceAppId
         };
 
         return appSettings;
