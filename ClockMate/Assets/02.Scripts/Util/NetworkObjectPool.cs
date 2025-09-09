@@ -40,15 +40,6 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
             InitPool();
     }
 
-    //public void Initialize(string prefabPath, int initialSize, Transform parent = null)
-    //{
-    //    this.prefabPath = prefabPath;
-    //    this.initialPoolSize = initialSize;
-
-    //    if (!PhotonNetwork.IsMasterClient) return;
-    //    InitPool();
-    //}
-
 
     private void InitPool()
     {
