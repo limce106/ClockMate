@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6317848080610467880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1080927173719443873}
+  - component: {fileID: 2450420614455622168}
+  - component: {fileID: 7793861500124977112}
+  - component: {fileID: 3458981794295497407}
+  m_Layer: 0
+  m_Name: BattleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1080927173719443873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317848080610467880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2450420614455622168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317848080610467880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33576e7be556f1d4eb8219d0f9afb72f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeLimitText: {fileID: 0}
+  bossAttackPrefabs:
+  - {fileID: 732707544548068936, guid: 3bdd1365a5fe3f643970ec50f0b4784b, type: 3}
+  - {fileID: 1304606408615778887, guid: 557067b96b0f7534b915d02314415f11, type: 3}
+  playerAttackPrefabs:
+  - {fileID: 4467992356540520643, guid: 4cf3750ce91ba74428f72d585d13f3a9, type: 3}
+  - {fileID: 4467992356540520643, guid: f7e7787d7fd8f7f48a6f36f72efecccd, type: 3}
+  - {fileID: 4467992356540520643, guid: f6ff2eeb3a426e74cb459625384b9df1, type: 3}
+  pendulumPool: {fileID: 0}
+  clockhandPool: {fileID: 0}
+  bossAttackFloor: {fileID: 0}
+  recoverySlider: {fileID: 0}
+  round: 1
+  battleFieldRadius: 5
+--- !u!114 &7793861500124977112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317848080610467880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &3458981794295497407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317848080610467880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abeee07002100084ea88b92eaf9131eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
