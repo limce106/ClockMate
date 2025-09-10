@@ -55,15 +55,17 @@ public class CharacterAnimation : MonoBehaviourPun
         _hSpeed = Animator.StringToHash(pSpeed);
         _hIsGrounded = Animator.StringToHash(pIsGrounded);
         _hJump = Animator.StringToHash(pJump);
+        _hPickUp = Animator.StringToHash(pPickUp);
+        _hCarry = Animator.StringToHash(pCarry);
 
         if (character.Name == CharacterName.Milli)
         {
+            // 밀리만
             _hFanFly = Animator.StringToHash(pFanFly);
         }
         else
         {
-            _hPickUp = Animator.StringToHash(pPickUp);
-            _hCarry = Animator.StringToHash(pCarry);
+            // 아워만
         }
 
         if (animator)

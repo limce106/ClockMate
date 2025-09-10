@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 2743892732286709248}
   - component: {fileID: 4788762151664199846}
   - component: {fileID: 1677822083506480908}
-  - component: {fileID: 5288459468144141007}
   - component: {fileID: 3946049337842229988}
+  - component: {fileID: 6858244525145448922}
   - component: {fileID: 5962914033462564917}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,23 +111,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -4752028826911605078, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &5288459468144141007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 43449511127770047}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 5
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 681023848864228605}
-  gripB: {fileID: 1417463881698112706}
 --- !u!54 &3946049337842229988
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -155,6 +138,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6858244525145448922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43449511127770047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 5
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 681023848864228605}
+  gripB: {fileID: 1417463881698112706}
 --- !u!114 &5962914033462564917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +174,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 5288459468144141007}
+  - {fileID: 6858244525145448922}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 6406617815804338538}
   - component: {fileID: 4352177313356794463}
   - component: {fileID: 8677279247300422722}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 8119463948876860723}
+  cog: {fileID: 4914827462462862966}
   side: 0
 --- !u!114 &8677279247300422722
 MonoBehaviour:
@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 1584247548287799027}
   - component: {fileID: 45105493260738505}
   - component: {fileID: 1443793952129194319}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 7616682728548628299}
+  cog: {fileID: 8097522452477998658}
   side: 0
 --- !u!114 &1443793952129194319
 MonoBehaviour:
@@ -328,10 +328,10 @@ GameObject:
   - component: {fileID: 5838471641505104044}
   - component: {fileID: 2187153358258604896}
   - component: {fileID: 5652734090290822454}
-  - component: {fileID: 7616682728548628299}
   - component: {fileID: 7713388441092934257}
+  - component: {fileID: 8097522452477998658}
   - component: {fileID: 834017010124160027}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,23 +427,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -399758464000890851, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &7616682728548628299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156333396093197081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 0
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 45105493260738505}
-  gripB: {fileID: 8043961294493511804}
 --- !u!54 &7713388441092934257
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -471,6 +454,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8097522452477998658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156333396093197081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 0
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 45105493260738505}
+  gripB: {fileID: 8043961294493511804}
 --- !u!114 &834017010124160027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,7 +490,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7616682728548628299}
+  - {fileID: 8097522452477998658}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -637,10 +637,10 @@ GameObject:
   - component: {fileID: 49945105370502684}
   - component: {fileID: 1118026107948258889}
   - component: {fileID: 6837136265191820995}
-  - component: {fileID: 8119463948876860723}
   - component: {fileID: 1933019652411205550}
+  - component: {fileID: 4914827462462862966}
   - component: {fileID: 6698454411565621940}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,23 +736,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 8682941158844210025, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &8119463948876860723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1379427329990936741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 3
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 4352177313356794463}
-  gripB: {fileID: 3943320125324614538}
 --- !u!54 &1933019652411205550
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -780,6 +763,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4914827462462862966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379427329990936741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 3
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 4352177313356794463}
+  gripB: {fileID: 3943320125324614538}
 --- !u!114 &6698454411565621940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,7 +799,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 8119463948876860723}
+  - {fileID: 4914827462462862966}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -814,7 +814,7 @@ GameObject:
   - component: {fileID: 6478832021777689638}
   - component: {fileID: 4492520528535910063}
   - component: {fileID: 313489426744772022}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -848,7 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 6573148329283414422}
+  cog: {fileID: 4451158109470966136}
   side: 1
 --- !u!114 &313489426744772022
 MonoBehaviour:
@@ -931,10 +931,10 @@ GameObject:
   - component: {fileID: 7703238849772283109}
   - component: {fileID: 725204121118320594}
   - component: {fileID: 2119436870838059678}
-  - component: {fileID: 6573148329283414422}
   - component: {fileID: 422668489919582999}
+  - component: {fileID: 4451158109470966136}
   - component: {fileID: 1212388923204284824}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,23 +1030,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8316621170810667537, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &6573148329283414422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2898011608282072294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 1
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 2291544001102519611}
-  gripB: {fileID: 4492520528535910063}
 --- !u!54 &422668489919582999
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1074,6 +1057,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4451158109470966136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2898011608282072294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 1
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 2291544001102519611}
+  gripB: {fileID: 4492520528535910063}
 --- !u!114 &1212388923204284824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1093,7 +1093,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 6573148329283414422}
+  - {fileID: 4451158109470966136}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1108,7 +1108,7 @@ GameObject:
   - component: {fileID: 2433172895907426122}
   - component: {fileID: 7846424649456149041}
   - component: {fileID: 1664713439216407263}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1142,7 +1142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 2313862646805338413}
+  cog: {fileID: 5584029023559106465}
   side: 1
 --- !u!114 &1664713439216407263
 MonoBehaviour:
@@ -1177,7 +1177,7 @@ GameObject:
   - component: {fileID: 6429366498696052178}
   - component: {fileID: 4706154974017257832}
   - component: {fileID: 3873550947320406806}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1211,7 +1211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 2313862646805338413}
+  cog: {fileID: 5584029023559106465}
   side: 0
 --- !u!114 &3873550947320406806
 MonoBehaviour:
@@ -1293,7 +1293,7 @@ GameObject:
   - component: {fileID: 4784690905853645864}
   - component: {fileID: 681023848864228605}
   - component: {fileID: 3807842392668293221}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 5288459468144141007}
+  cog: {fileID: 6858244525145448922}
   side: 0
 --- !u!114 &3807842392668293221
 MonoBehaviour:
@@ -1362,7 +1362,7 @@ GameObject:
   - component: {fileID: 3225827888837402922}
   - component: {fileID: 3943320125324614538}
   - component: {fileID: 1083771648836966433}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1396,7 +1396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 8119463948876860723}
+  cog: {fileID: 4914827462462862966}
   side: 1
 --- !u!114 &1083771648836966433
 MonoBehaviour:
@@ -1539,7 +1539,7 @@ MonoBehaviour:
   attackCharacter: 0
   cogsRoot: {fileID: 6134074079327923003}
   slotsRoot: {fileID: 6437747962812640699}
-  spawnY: 1
+  spawnY: 0
   minDistanceBetweenCogs: 3
   triesPerPass: 400
   passes: 5
@@ -1555,7 +1555,7 @@ GameObject:
   - component: {fileID: 3989435886735177310}
   - component: {fileID: 5555014179010797032}
   - component: {fileID: 8967918672636711817}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1589,7 +1589,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 2924420031578822871}
+  cog: {fileID: 6008601191299460026}
   side: 1
 --- !u!114 &8967918672636711817
 MonoBehaviour:
@@ -1625,10 +1625,10 @@ GameObject:
   - component: {fileID: 1512819548709594557}
   - component: {fileID: 1695532051744405021}
   - component: {fileID: 1294724441243328843}
-  - component: {fileID: 2924420031578822871}
   - component: {fileID: 7771681040524420083}
+  - component: {fileID: 6008601191299460026}
   - component: {fileID: 8470352699082297056}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1724,23 +1724,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 3172730142729273837, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &2924420031578822871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6559680583762813159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 2
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 750394639230931112}
-  gripB: {fileID: 5555014179010797032}
 --- !u!54 &7771681040524420083
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1768,6 +1751,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6008601191299460026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6559680583762813159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 2
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 750394639230931112}
+  gripB: {fileID: 5555014179010797032}
 --- !u!114 &8470352699082297056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1787,7 +1787,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 2924420031578822871}
+  - {fileID: 6008601191299460026}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1802,7 +1802,7 @@ GameObject:
   - component: {fileID: 3145169887278072348}
   - component: {fileID: 1417463881698112706}
   - component: {fileID: 8283804946072002270}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1836,7 +1836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 5288459468144141007}
+  cog: {fileID: 6858244525145448922}
   side: 1
 --- !u!114 &8283804946072002270
 MonoBehaviour:
@@ -1919,10 +1919,10 @@ GameObject:
   - component: {fileID: 3125525999937115259}
   - component: {fileID: 5180397106825809314}
   - component: {fileID: 7552912778879667018}
-  - component: {fileID: 2313862646805338413}
   - component: {fileID: 243928133354498981}
+  - component: {fileID: 5584029023559106465}
   - component: {fileID: 603664782782655547}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: C_Cog05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2018,23 +2018,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7766800333334252689, guid: a2e83680c255ed64f9ac2c8690e9d555, type: 3}
---- !u!114 &2313862646805338413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7376475554894431871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93181a99e7f6ca2439198fe261dbfcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: 4
-  carryHeight: 0.5
-  moveSpeed: 3
-  gripA: {fileID: 4706154974017257832}
-  gripB: {fileID: 7846424649456149041}
 --- !u!54 &243928133354498981
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2062,6 +2045,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5584029023559106465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7376475554894431871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9349b4f61f89be14f871c55be790630d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: 4
+  carryHeight: 0.35
+  moveSpeed: 3
+  gripA: {fileID: 4706154974017257832}
+  gripB: {fileID: 7846424649456149041}
 --- !u!114 &603664782782655547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2081,7 +2081,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 2313862646805338413}
+  - {fileID: 5584029023559106465}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2096,7 +2096,7 @@ GameObject:
   - component: {fileID: 9074051387991625226}
   - component: {fileID: 8043961294493511804}
   - component: {fileID: 3762841855330630599}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2130,7 +2130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 7616682728548628299}
+  cog: {fileID: 8097522452477998658}
   side: 1
 --- !u!114 &3762841855330630599
 MonoBehaviour:
@@ -2202,7 +2202,7 @@ GameObject:
   - component: {fileID: 825434526720409898}
   - component: {fileID: 2291544001102519611}
   - component: {fileID: 8914272176022125448}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2236,7 +2236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 6573148329283414422}
+  cog: {fileID: 4451158109470966136}
   side: 0
 --- !u!114 &8914272176022125448
 MonoBehaviour:
@@ -2271,7 +2271,7 @@ GameObject:
   - component: {fileID: 5011333872830626016}
   - component: {fileID: 750394639230931112}
   - component: {fileID: 6074425174512615097}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GripA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2305,7 +2305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70045f4aa47cbeb449b1d8eeace579dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cog: {fileID: 2924420031578822871}
+  cog: {fileID: 6008601191299460026}
   side: 0
 --- !u!114 &6074425174512615097
 MonoBehaviour:
