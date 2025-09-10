@@ -17,12 +17,11 @@ public class Cog : MonoBehaviourPun, IPunObservable
     [SerializeField] private IACogGrip gripA;
     [SerializeField] private IACogGrip gripB;
 
-    private PhotonView _pv;
     private Rigidbody _rb;
     private bool _carried;
 
     // 위치 동기화용
-    public Vector3 NetPos {get; private set;}
+    private Vector3 _netPos;
     private Quaternion _netRot;
     // 각 클라가 보낸 월드 이동 벡터
     private Vector3 _worldMoveA = Vector3.zero;
@@ -30,7 +29,6 @@ public class Cog : MonoBehaviourPun, IPunObservable
 
     private void Awake()
     {
-        _pv = GetComponent<PhotonView>();
         _rb = GetComponent<Rigidbody>();
     }
     
@@ -136,7 +134,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         }
         else // 클라
         {
-            NetPos = (Vector3)stream.ReceiveNext();
+            _netPos = (Vector3)stream.ReceiveNext();
             _netRot = (Quaternion)stream.ReceiveNext();
         }
     }
@@ -146,7 +144,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         if (!PhotonNetwork.IsMasterClient)
         {
             // 누적 오차 제거
-            transform.position = NetPos;
+            transform.position = _netPos;
             transform.rotation = _netRot;
         }
     }
