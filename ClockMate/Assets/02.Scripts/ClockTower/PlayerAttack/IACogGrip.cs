@@ -97,6 +97,18 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         }
     }
 
+    /// <summary>
+    /// 상호작용하는 캐릭터와 톱니바퀴의 충돌 여부를 설정한다.
+    /// </summary>
+    private void SetIgnoreCollisionWithHolder(bool ignore)
+    {
+        Collider cogCol = cog.GetComponent<Collider>();
+        foreach (var holderCol in _holder.GetComponentsInChildren<Collider>())
+        {
+            Physics.IgnoreCollision(cogCol, holderCol, ignore);
+        }
+    }
+
     private void UpdateAttachedPoseLocal()
     {
         // XZ만 스냅, Y는 현재 높이 유지
@@ -147,6 +159,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     private void RPC_SetGrabState(bool value, int characterViewId)
     {
         SetGrabState(value, characterViewId);
+        SetIgnoreCollisionWithHolder(value);
         cog.OnGripStateChange();
     }
 
