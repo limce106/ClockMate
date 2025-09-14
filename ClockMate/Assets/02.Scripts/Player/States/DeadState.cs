@@ -13,7 +13,7 @@ public class DeadState : IState
     {
         _character.gameObject.SetActive(false);
 
-        if (SceneManager.GetActiveScene().ToString() != "ClockTower")
+        if (SceneManager.GetActiveScene().name != "ClockTower")
         {
             PuzzleLifeManager.Instance.HandleDeath(_character);
         }
