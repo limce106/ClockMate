@@ -7,6 +7,10 @@ using UnityEngine;
 /// </summary>
 public class SettingManager : MonoSingleton<SettingManager>
 {
+    // BGM, SFX 값은 오디오 믹서가 아닌 아래 값을 수정하면 자동 반영됨
+    public float bgmVolume = 0.8f;
+    public float sfxVolume = 0.93f;
+
     public bool isMicOn = false;
     public float remoteVoiceVolume = 1f;
 }
