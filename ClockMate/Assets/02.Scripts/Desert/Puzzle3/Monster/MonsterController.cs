@@ -15,7 +15,7 @@ public class MonsterController : MonoBehaviourPun
    public Transform[] PatrolPoints => patrolPoints; // 몬스터가 순회할 순찰 지점
 
    [SerializeField] private Transform returnPoint; // 플레이어 추격 중지 후 복귀할 지점
-
+   
    [SerializeField] private float horizontalViewAngle = 90f;
    [SerializeField] private float verticalViewAngle = 60f;
    [SerializeField] private float viewDistance = 15f;
@@ -26,6 +26,7 @@ public class MonsterController : MonoBehaviourPun
    private LayerMask _viewMask; 
    private IMonsterState _currentState;
    private Dictionary<Type, IMonsterState> _states;
+   private static bool _ignoreHour;
    public event Action<MonsterController> OnMonsterDied;
    
    // 효과음
@@ -99,7 +100,7 @@ public class MonsterController : MonoBehaviourPun
    /// </summary>
    public bool CanSeeHour()
    {
-      if (hour.CurrentState is DeadState) return false;
+      if (_ignoreHour) return false;
       
       Transform hourTransform = hour.transform;
       Vector3 dirToHour = hourTransform.position - transform.position;
@@ -155,12 +156,16 @@ public class MonsterController : MonoBehaviourPun
 //      if (!hour.photonView.IsMine) return;
       
       //hour.ChangeState<DeadState>();
+      StartCoroutine(StopMovementForSeconds(3f));
+
       // TODO 실제 사망 처리로 교체하기
-      hour.transform.position = new Vector3(-183.348f,74.57979f,74.57979f);
-      if (_currentState is MStateChase)
-      {
-         ChangeStateTo<MStateReturn>();
-      }
+      //hour.transform.position = new Vector3(-183.348f,74.57979f,74.57979f);
+      ChangeStateTo<MStateReturn>();
+
+      // if (_currentState is MStateChase)
+      // {
+      //    ChangeStateTo<MStateReturn>();
+      // }
    }
    
    private void OnEnable()
@@ -185,6 +190,21 @@ public class MonsterController : MonoBehaviourPun
 
          yield return new WaitForSeconds(interval);
       }
+   }
+   
+       
+   private IEnumerator StopMovementForSeconds(float seconds)
+   {
+      SetHourDizzy(true);      
+      yield return new WaitForSeconds(seconds);
+      SetHourDizzy(false);
+   }
+
+   private void SetHourDizzy(bool isDizzy)
+   {
+      hour.InputHandler.enabled = !isDizzy;
+      hour.Anim.SetDizzy(isDizzy);
+      _ignoreHour = isDizzy;
    }
    #region Test
    

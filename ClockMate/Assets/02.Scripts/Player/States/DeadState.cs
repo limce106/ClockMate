@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Define.Battle;
@@ -15,7 +16,7 @@ public class DeadState : IState
 
         if (SceneManager.GetActiveScene().ToString() != "ClockTower")
         {
-            PuzzleLifeManager.Instance.HandleDeath(_character);
+            //PuzzleLifeManager.Instance.HandleDeath(_character);
         }
         else
         {
