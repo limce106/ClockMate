@@ -15,6 +15,7 @@ public class MonsterController : MonoBehaviourPun
    public Transform[] PatrolPoints => patrolPoints; // 몬스터가 순회할 순찰 지점
 
    [SerializeField] private Transform returnPoint; // 플레이어 추격 중지 후 복귀할 지점
+   [SerializeField] private ParticleSystem deathEffect;
    
    [SerializeField] private float horizontalViewAngle = 90f;
    [SerializeField] private float verticalViewAngle = 60f;
@@ -145,6 +146,7 @@ public class MonsterController : MonoBehaviourPun
    {
       // 사망 처리
       OnMonsterDied?.Invoke(this);
+      Instantiate(deathEffect, transform.position, Quaternion.identity);
       gameObject.SetActive(false);
    }
 
