@@ -49,5 +49,6 @@ public class DeadState : IState
     public void Exit()
     {
         _character.gameObject.SetActive(true);
+        _character.PlayReviveEffect();
     }
 }
