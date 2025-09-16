@@ -6,27 +6,33 @@ public class DeadState : IState
 {
     
     private readonly CharacterBase _character;
+    private readonly DeathType _deathType;
 
     public DeadState(CharacterBase character) =>_character = character;
-    
+    public DeadState(CharacterBase character, DeathType deathType)
+    {
+        _character = character;
+        _deathType = deathType;
+    }
+
     public void Enter()
     {
         _character.gameObject.SetActive(false);
 
-        if (SceneManager.GetActiveScene().name != "ClockTower")
+        if (SceneManager.GetActiveScene().name == "ClockTower")
         {
-            PuzzleLifeManager.Instance.HandleDeath(_character);
+            if (_deathType == DeathType.None)
+            {
+                Debug.Log("DeathType is None!");
+            }
+            else
+            {
+                BattleLifeManager.Instance.HandleDeath(_character, _deathType);
+            }
         }
         else
         {
-            if(BattleManager.Instance.phaseType == PhaseType.SwingAttack)
-            {
-                // SwingAttack으로 인해 사망했다면 마지막 위치 저장
-                Vector3 hitPos = _character.transform.position;
-                BattleLifeManager.Instance.RecordHitPosition(_character, hitPos);
-            }
-
-            BattleLifeManager.Instance.HandleDeath(_character);
+            PuzzleLifeManager.Instance.HandleDeath(_character);
         }
     }
 

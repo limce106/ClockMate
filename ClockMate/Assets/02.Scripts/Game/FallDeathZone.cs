@@ -2,6 +2,7 @@ using DefineExtension;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FallDeathZone : MonoBehaviour
 {
@@ -10,7 +11,11 @@ public class FallDeathZone : MonoBehaviour
         if(other.IsPlayerCollider())
         {
             CharacterBase character = other.gameObject.GetComponentInParent<CharacterBase>();
-            character.ChangeState<DeadState>();
+
+            if (SceneManager.GetActiveScene().name == "ClockTower")
+                character.ChangeState<DeadState>(Define.Battle.DeathType.Fall);
+            else
+                character.ChangeState<DeadState>();
         }
     }
 }

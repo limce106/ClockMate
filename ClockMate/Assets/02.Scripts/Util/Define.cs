@@ -78,5 +78,12 @@
             CogwheelRecovery,
             ClockTowerOperation
         }
+
+        public enum DeathType
+        {
+            None = 0,
+            Collision,
+            Fall
+        }
     }
 }

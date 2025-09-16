@@ -33,16 +33,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public GameObject clockFace;  // 보스 공격 시 전투 바닥
 
     public int round { get; private set; } = 1;
-    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
+    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.CogwheelRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
     public Slider recoverySlider;
 
-    public float battleFieldRadius = 5f; // 전장 반지름(임시)
+    public float battleFieldRadius = 11f; // 전장 반지름
     private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
-    public readonly Vector3 BattleFieldCenter = new Vector3(0f, 1f, 0f);
+    public readonly Vector3 BattleFieldCenter = Vector3.zero;
     private const float recoveryPerSuccess = 0.334f;
     private const float playerBossAttackHeight = 0f;
 
@@ -84,16 +84,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
         StartCoroutine(StartBattle());
     }
 
-    //public override void OnJoinedRoom()
-    //{
-    //    StartCoroutine(StartBattle());
-    //}
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+    public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.IsMasterClient)
-            StartCoroutine(StartBattle());
+        StartCoroutine(StartBattle());
     }
+
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    if (PhotonNetwork.IsMasterClient)
+    //        StartCoroutine(StartBattle());
+    //}
 
     private void Update()
     {
@@ -122,7 +122,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             // 플레이어 공격 페이즈일 때 시간 제한 설정 및 UI 동기화
             if (phaseType == PhaseType.PlayerAttack)
             {
-                if(playerAttackType == PlayerAttackType.CogwheelRecovery)
+                if (playerAttackType == PlayerAttackType.CogwheelRecovery)
                 {
                     photonView.RPC(nameof(BossToPlayerTransition), RpcTarget.All);
                     yield return new WaitUntil(() => !isHandling);
@@ -154,7 +154,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(HandleFailure), RpcTarget.All);
             }
 
-            if(timeLimitText.enabled)
+            if (timeLimitText.enabled)
             {
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, false);
             }
@@ -195,7 +195,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             clockFace.SetActive(true);
-            foreach(var character in GameManager.Instance.Characters.Values)
+            foreach (var character in GameManager.Instance.Characters.Values)
             {
                 if (character.photonView.IsMine)
                     character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
@@ -226,7 +226,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             TryAdvanceBossAttack();
             round++;
 
-            if(playerAttackType == PlayerAttackType.CogwheelRecovery)
+            if (playerAttackType == PlayerAttackType.CogwheelRecovery)
             {
                 clockFace.SetActive(true);
 
@@ -252,11 +252,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         CharacterBase localCharacter = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
 
+        GameManager.Instance.SetLocalCharacterInput(false);
         localCharacter.GetComponent<Rigidbody>().useGravity = false;
         clockFace.SetActive(false);
         yield return new WaitForSeconds(0.5f);
 
         localCharacter.GetComponent<Rigidbody>().useGravity = true;
+        GameManager.Instance.SetLocalCharacterInput(true);
 
         yield return new WaitUntil(() => localCharacter.IsGrounded);
 
