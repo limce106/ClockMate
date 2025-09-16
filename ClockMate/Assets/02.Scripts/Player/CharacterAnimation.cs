@@ -18,6 +18,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pFanFly = "FanFly";
     [SerializeField] private string pPickUp = "PickUp";
     [SerializeField] private string pCarry = "Carry";
+    [SerializeField] private string pDizzy = "Dizzy";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
@@ -28,9 +29,9 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private float minSpeedForStep = 0.2f;         // 너무 느리면 미재생
 
     // hashes
-    private int _hSpeed, _hIsGrounded, _hJump;
+    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry;
     private int _hFanFly;
-    private int _hPickUp, _hCarry;
+    private int _hDizzy;
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
@@ -66,6 +67,7 @@ public class CharacterAnimation : MonoBehaviourPun
         else
         {
             // 아워만
+            _hDizzy = Animator.StringToHash(pDizzy);
         }
 
         if (animator)
@@ -262,5 +264,24 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_SetCarry(bool on)
     {
         animator.SetBool(_hCarry, on);
+    }
+
+    public void SetDizzy(bool on)
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hDizzy, on);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_SetDizzy), RpcTarget.All, on);
+        }
+    }
+    
+    [PunRPC] 
+    private void RPC_SetDizzy(bool on)
+    {
+        animator.SetBool(_hDizzy, on);
     }
 }
