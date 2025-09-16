@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwingReviveStrategy : IReviveStrategy
+public class BattleHitReviveStrategy : IReviveStrategy
 {
     private Vector3 lastPosition;
 
-    public SwingReviveStrategy(Vector3 hitPos)
+    public BattleHitReviveStrategy(Vector3 hitPos)
     {
         lastPosition = hitPos;
     }

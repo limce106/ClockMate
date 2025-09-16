@@ -79,7 +79,8 @@ public class FallingClockHand : MonoBehaviourPun
         {
             // 플레이어 사망 처리
             CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
-            character.ChangeState<DeadState>();
+            BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
+            character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }
     }
 }
