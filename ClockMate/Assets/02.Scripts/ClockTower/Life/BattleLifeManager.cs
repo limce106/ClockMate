@@ -13,6 +13,7 @@ public class BattleLifeManager : MonoBehaviourPun
     public static BattleLifeManager Instance { get; private set; }
 
     private const float ReviveDelay = 3f;
+    private const float safeTime = 0.1f;
 
     private void Awake()
     {
@@ -47,11 +48,21 @@ public class BattleLifeManager : MonoBehaviourPun
         yield return new WaitForSeconds(ReviveDelay);
 
         IReviveStrategy strategy = GetStrategy(character, deathType);
-
         Vector3 revivePos = strategy.GetRevivePosition();
-        character.transform.position = revivePos;
 
         character.ChangeState<IdleState>();
+        character.transform.position = revivePos;
+
+        if(BattleManager.Instance.phaseType == PhaseType.SwingAttack)
+        {
+            // SwingAttack 중 부활 시 플레이어 미끄러짐 방지
+            Rigidbody rb = character.GetComponent<Rigidbody>();
+
+            rb.isKinematic = true;
+            yield return new WaitForSeconds(safeTime);
+            rb.isKinematic = false;
+        }
+
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 

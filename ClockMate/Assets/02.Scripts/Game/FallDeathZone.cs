@@ -9,11 +9,12 @@ public class FallDeathZone : MonoBehaviour
     {
         if(other.IsPlayerCollider())
         {
+            CharacterBase character = other.gameObject.GetComponentInParent<CharacterBase>();
+
             if (SceneManager.GetActiveScene().name == "ClockTower")
                 character.ChangeState<DeadState>(Define.Battle.DeathType.Fall);
             else
-                CharacterBase character = other.gameObject.GetComponentInParent<CharacterBase>();
-                //character.ChangeState<DeadState>();
+            {
                 Vector3 loadPosition = GameManager.Instance.CurrentStage.LoadPositions[character.Name];
                 character.transform.position = loadPosition;
                 if (poofEffect != null)
@@ -21,6 +22,7 @@ public class FallDeathZone : MonoBehaviour
                     Instantiate(poofEffect, loadPosition, Quaternion.identity);
                 }
                 character.ChangeState<IdleState>();
+            }
         }
     }
 }

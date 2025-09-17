@@ -13,7 +13,6 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
     public GameObject Player2Ready;
 
     private bool _isLoadingStarted = false;
-    private bool _isCutsceneFinished = false;   // 컷씬 끝났는지 확인
 
     private void Start()
     {
