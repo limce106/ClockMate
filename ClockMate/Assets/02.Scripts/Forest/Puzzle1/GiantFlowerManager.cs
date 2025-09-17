@@ -57,27 +57,6 @@ public class GiantFlowerManager : MonoBehaviour
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
     }
 
-    //private void LowerNextFlower()
-    //{
-    //    Transform nextFlower = giantFlowers[currentIndex + 1].transform.parent;
-    //    StartCoroutine(LowerFlower(nextFlower));
-    //}
-
-    //IEnumerator LowerFlower(Transform nextFlower)
-    //{
-    //    Vector3 start = nextFlower.position;
-    //    Vector3 target = start + Vector3.down * dropOffsetY;
-
-    //    while(Vector3.Distance(nextFlower.position, target) > 0.01f)
-    //    {
-    //        nextFlower.position = Vector3.Lerp(nextFlower.position, target, Time.deltaTime * dropSpeed);
-    //        yield return null;
-    //    }
-
-    //    nextFlower.position = target;
-    //    flowerLeveled = false;
-    //}
-
     void TriggerFinalAction()
     {
         if (goalGateLeft == null || goalGateRight == null)

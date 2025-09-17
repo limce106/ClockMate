@@ -12,6 +12,9 @@ using UnityEngine.UI;
 /// </summary>
 public class UISetting : UIBase
 {
+    [Header("UI")]
+    public Slider bgmVolumeSlider;
+    public Slider sfxVolumeSlider;
     public Button micButton;
     public Slider remoteVoiceVolumeSlider;
 
@@ -44,16 +47,28 @@ public class UISetting : UIBase
     /// </summary>
     private void InitSetting()
     {
-        remoteVoiceVolumeSlider.onValueChanged.AddListener((float value) =>
-        {
-            SetRemoteVoiceVolume(value);
-        });
+        bgmVolumeSlider.onValueChanged.AddListener(SetBgmVolume);
+        sfxVolumeSlider.onValueChanged.AddListener(SetSfxVolume);
+        remoteVoiceVolumeSlider.onValueChanged.AddListener(SetRemoteVoiceVolume);
 
-        if(VoiceManager.Instance != null)
+        if (VoiceManager.Instance != null)
         {
             SettingManager.Instance.isMicOn = VoiceManager.Instance.recorder.TransmitEnabled;
         }
         UpdateMicIcon(SettingManager.Instance.isMicOn);
+
+        if(SettingManager.Instance == null)
+        {
+            Debug.Log("null");
+        }
+        else
+        {
+            Debug.Log("not null");
+
+        }
+
+        bgmVolumeSlider.value = SettingManager.Instance.bgmVolume;
+        sfxVolumeSlider.value = SettingManager.Instance.sfxVolume;
         remoteVoiceVolumeSlider.value = SettingManager.Instance.remoteVoiceVolume;
     }
 
@@ -76,7 +91,23 @@ public class UISetting : UIBase
     }
 
     /// <summary>
-    /// 슬라이더 조절 시 상대 음성 크기 조정
+    /// 슬라이더 조절 시 BGM 볼륨 조정
+    /// </summary>
+    public void SetBgmVolume(float value)
+    {
+        SoundManager.Instance.SetBgmVolume(value);
+    }
+
+    /// <summary>
+    /// 슬라이더 조절 시 SFX 볼륨 조정
+    /// </summary>
+    public void SetSfxVolume(float value)
+    {
+        SoundManager.Instance.SetSfxVolume(value);
+    }
+
+    /// <summary>
+    /// 슬라이더 조절 시 상대 음성 볼륨 조정
     /// </summary>
     public void SetRemoteVoiceVolume(float value)
     {

@@ -49,7 +49,10 @@ public class SoundManager : MonoPunSingleton<SoundManager>
     protected override void Init()
     {
         base.Init();
-        
+
+        SetBgmVolume(SettingManager.Instance.bgmVolume);
+        SetSfxVolume(SettingManager.Instance.sfxVolume);
+
         // 클립 로드(중복 방지)
         foreach (AudioClip clip in audioClipList)
         {
@@ -363,5 +366,29 @@ public class SoundManager : MonoPunSingleton<SoundManager>
         {
             from.Stop(); from.clip = null; from.volume = 0f;
         }
+    }
+
+    /// <summary>
+    /// BGM 볼륨 세팅
+    /// </summary>
+    public void SetBgmVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        float db = volume > 0 ? Mathf.Lerp(-80f, 20f, volume) : -80;
+        audioMixer.SetFloat("BGM_Volume", db);
+
+        SettingManager.Instance.bgmVolume = volume;
+    }
+
+    /// <summary>
+    /// SFX 볼륨 세팅
+    /// </summary>
+    public void SetSfxVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        float db = volume > 0 ? Mathf.Lerp(-80f, 20f, volume) : -80;
+        audioMixer.SetFloat("SFX_Volume", db);
+
+        SettingManager.Instance.sfxVolume = volume;
     }
 }

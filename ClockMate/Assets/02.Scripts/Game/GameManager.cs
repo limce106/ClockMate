@@ -152,12 +152,10 @@ public class GameManager : MonoSingleton<GameManager>
 
     public void SetLocalCharacterInput(bool enabled)
     {
-        foreach(var character in Characters)
-        {
-            if(character.Value.photonView.IsMine)
-            {
-                character.Value.InputHandler.enabled = enabled;
-            }
-        }
+        Characters.TryGetValue(SelectedCharacter, out CharacterBase character);
+        if (character == null)
+            return;
+
+        character.InputHandler.enabled = enabled;
     }
 }

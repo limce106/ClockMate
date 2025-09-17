@@ -14,8 +14,8 @@ public class SwingAttack : AttackPattern
     [SerializeField] private float attackOriginY = 0f;
 
     // 공통 회피 가능 구간
-    [SerializeField] private float avoidRadiusMin = 0f;
-    [SerializeField] private float avoidRadiusMax = 0f;
+    [SerializeField] private float avoidZMin = 0f;
+    [SerializeField] private float avoidZMax = 1f;
 
     private List<GameObject> spawnedPendulums = new List<GameObject>();
 
@@ -63,19 +63,13 @@ public class SwingAttack : AttackPattern
 
         while (true)
         {
-            // 랜덤 위치 생성
-            float r = BattleManager.Instance.battleFieldRadius * Mathf.Sqrt(Random.value);
-            float angle = Random.value * 360f;
-
-            float x = BattleManager.Instance.BattleFieldCenter.x + r * Mathf.Cos(angle * Mathf.Deg2Rad);
-            float z = BattleManager.Instance.BattleFieldCenter.z + r * Mathf.Sin(angle * Mathf.Deg2Rad);
+            float x = BattleManager.Instance.BattleFieldCenter.x;
             float y = attackOriginY;
+            float z = Random.Range(BattleManager.Instance.BattleFieldCenter.z - BattleManager.Instance.battleFieldRadius, BattleManager.Instance.BattleFieldCenter.z + BattleManager.Instance.battleFieldRadius);
 
             Vector3 randomPos = new Vector3(x, y, z);
 
-            // 회피 구간 확인. 회피 구간이 원형 전장의 중심으로부터 특정 반지름을 벗어난 도넛 모양이라고 가정
-            float distanceToCenter = Vector3.Distance(randomPos, BattleManager.Instance.BattleFieldCenter);
-            bool isInAvoidableZone = distanceToCenter >= avoidRadiusMin && distanceToCenter <= avoidRadiusMax;
+            bool isInAvoidableZone = z <= avoidZMax && z >= avoidZMin;
 
             if (isInAvoidableZone)
                 continue;
