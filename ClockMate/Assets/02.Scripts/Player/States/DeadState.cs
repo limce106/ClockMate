@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Define.Battle;
@@ -32,7 +33,7 @@ public class DeadState : IState
         }
         else
         {
-            PuzzleLifeManager.Instance.HandleDeath(_character);
+            
         }
     }
 
