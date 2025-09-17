@@ -83,9 +83,10 @@ public class FallingClockHand : MonoBehaviourPun
         else
         {
             CharacterBase character = other.GetComponentInParent<CharacterBase>();
-
             // 상호작용 트리거로 죽지 않도록 플레이어 태그도 검사
-            if (other.IsPlayerCollider() && character != null && _killTrigger.enabled)
+            bool canDie = other.IsPlayerCollider() && character != null && _killTrigger.enabled && character.photonView.IsMine;
+
+            if (canDie)
             {
                 BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
                 character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
