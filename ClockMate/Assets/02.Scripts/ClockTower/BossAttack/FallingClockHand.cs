@@ -75,9 +75,6 @@ public class FallingClockHand : MonoBehaviourPun
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             StickToGround();
