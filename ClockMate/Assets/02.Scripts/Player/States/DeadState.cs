@@ -31,10 +31,6 @@ public class DeadState : IState
                 BattleLifeManager.Instance.HandleDeath(_character, _deathType);
             }
         }
-        else
-        {
-            
-        }
     }
 
     public void FixedUpdate()
