@@ -12,6 +12,8 @@ public class BattleLifeManager : MonoBehaviourPun
 
     public static BattleLifeManager Instance { get; private set; }
 
+    private const float ReviveDelay = 3f;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -23,16 +25,16 @@ public class BattleLifeManager : MonoBehaviourPun
         Instance = this;
     }
 
-    public void HandleDeath(CharacterBase character)
+    public void HandleDeath(CharacterBase character, DeathType deathType)
     {
         int id = character.GetComponent<PhotonView>().ViewID;
         deadPlayers.Add(id);
 
         if (deadPlayers.Count == 1)
         {
-            StartCoroutine(Revive(character));
+            StartCoroutine(Revive(character, deathType));
         }
-        else
+        else if (deadPlayers.Count == 2)
         {
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
             BattleManager.Instance.StopCurAttackPattern();
@@ -40,21 +42,21 @@ public class BattleLifeManager : MonoBehaviourPun
         }
     }
 
-    private IEnumerator Revive(CharacterBase character)
+    private IEnumerator Revive(CharacterBase character, DeathType deathType)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(ReviveDelay);
 
-        IReviveStrategy strategy = GetStrategy(character);
+        IReviveStrategy strategy = GetStrategy(character, deathType);
 
         Vector3 revivePos = strategy.GetRevivePosition();
         character.transform.position = revivePos;
 
-        character.ChangeState<IdleState>(); // TODO 정상적으로 동기화 되는지 확인할 것!
+        character.ChangeState<IdleState>();
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 
     /// <summary>
-    /// SwingPendulum과 부딪혔을 때 마지막 위치 저장용
+    /// 전투 오브젝트와 충돌 시 마지막 위치 저장용
     /// </summary>
     public void RecordHitPosition(CharacterBase character, Vector3 pos)
     {
@@ -62,25 +64,24 @@ public class BattleLifeManager : MonoBehaviourPun
     }
 
     /// <summary>
-    /// 부활 시점 기준으로 부활 전략 선택
+    /// 사망 원인 기준으로 부활 전략 선택
     /// </summary>
-    private IReviveStrategy GetStrategy(CharacterBase character)
+    private IReviveStrategy GetStrategy(CharacterBase character, DeathType deathType)
     {
-        switch(BattleManager.Instance.phaseType)
+        switch(deathType)
         {
-            case PhaseType.SwingAttack:
+            case DeathType.Collision:
                 if (lastHitPositions.TryGetValue(character, out Vector3 pos))
                 {
-                    return new SwingReviveStrategy(pos);
+                    return new BattleHitReviveStrategy(pos);
                 }
                 else
                 {
-                    // 낙사 또는 미기록일때
+                    Debug.Log("Can't Get Last Hit Position!");
                     return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
                 }
-            case PhaseType.FallingAttack:
-                return new FallingReviveStrategy(BattleManager.Instance.currentFallingAttack);
-            case PhaseType.PlayerAttack:
+            case DeathType.Fall:
+                return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
             default:
                 return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
         }

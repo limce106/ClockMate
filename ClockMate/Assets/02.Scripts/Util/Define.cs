@@ -75,8 +75,15 @@
         public enum PlayerAttackType
         {
             ClockHandRecovery,
-            CogwheelRevery,
+            CogwheelRecovery,
             ClockTowerOperation
+        }
+
+        public enum DeathType
+        {
+            None = 0,
+            Collision,
+            Fall
         }
     }
 }

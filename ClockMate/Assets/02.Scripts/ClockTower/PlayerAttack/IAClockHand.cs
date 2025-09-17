@@ -28,7 +28,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _exitString = "나가기";
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // 조작 중인 플레이어가 로컬 플레이어인지 확인
         bool isLocalPlayerControlling = _isControlled && _controller != null && _controller.photonView.IsMine;
@@ -43,7 +43,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
             if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
             {
-                _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.deltaTime);
+                _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
             }
         }
     }
