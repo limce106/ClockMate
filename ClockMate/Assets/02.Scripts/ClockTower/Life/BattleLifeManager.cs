@@ -51,7 +51,7 @@ public class BattleLifeManager : MonoBehaviourPun
         Vector3 revivePos = strategy.GetRevivePosition();
         character.transform.position = revivePos;
 
-        character.ChangeState<IdleState>(); // TODO 정상적으로 동기화 되는지 확인할 것!
+        character.ChangeState<IdleState>();
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 
