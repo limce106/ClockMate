@@ -47,11 +47,11 @@ public class BattleLifeManager : MonoBehaviourPun
         yield return new WaitForSeconds(ReviveDelay);
 
         IReviveStrategy strategy = GetStrategy(character, deathType);
-
         Vector3 revivePos = strategy.GetRevivePosition();
-        character.transform.position = revivePos;
 
         character.ChangeState<IdleState>();
+        character.transform.position = revivePos;
+
         deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
     }
 
