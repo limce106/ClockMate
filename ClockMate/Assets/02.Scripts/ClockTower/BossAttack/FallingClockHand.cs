@@ -24,6 +24,9 @@ public class FallingClockHand : MonoBehaviourPun
 
     private void OnEnable()
     {
+        _killTrigger.enabled = true;
+        _solidCollider.enabled = false;
+
         _rb.isKinematic = false;
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
