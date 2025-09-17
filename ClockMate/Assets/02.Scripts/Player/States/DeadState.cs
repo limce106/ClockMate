@@ -17,7 +17,7 @@ public class DeadState : IState
 
     public void Enter()
     {
-        _character.gameObject.SetActive(false);
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, false);
 
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
@@ -48,7 +48,7 @@ public class DeadState : IState
 
     public void Exit()
     {
-        _character.gameObject.SetActive(true);
-        _character.PlayReviveEffect();
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, true);
+        _character.photonView.RPC("RPC_PlayReviveEffect", Photon.Pun.RpcTarget.All);
     }
 }

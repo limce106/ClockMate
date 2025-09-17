@@ -267,6 +267,12 @@ public abstract class CharacterBase : MonoBehaviourPun
         _curReviveCoroutine = StartCoroutine(HandleReviveEffect());
     }
 
+    [PunRPC]
+    public void RPC_PlayReviveEffect()
+    {
+        PlayReviveEffect();
+    }
+
     /// <summary>
     /// 이펙트 재생 및 종료 처리
     /// </summary>

@@ -213,4 +213,14 @@ public class RPCManager : MonoBehaviourPunCallbacks
 
         StageLifeManager.Instance.TryRevive();
     }
+
+    [PunRPC]
+    public void RPC_SetObjectActive(int viewID, bool active)
+    {
+        PhotonView targetView = PhotonView.Find(viewID);
+        if(targetView != null)
+        {
+            targetView.gameObject.SetActive(active);
+        }
+    }
 }
