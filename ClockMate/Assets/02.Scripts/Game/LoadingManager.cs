@@ -56,6 +56,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
         GameManager.Instance.SetLocalCharacterInput(false);
+        _uiLoading.ShowRandomTip(GetRandomTip());
     }
 
     public void StartSyncedLoading(string nextSceneName)
@@ -161,5 +162,21 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         }
 
         GameManager.Instance.SetLocalCharacterInput(true);
+    }
+
+    private string GetRandomTip()
+    {
+        List<LDClimateTips> tipList = LocalDataManager.Instance.ClimateTips.DataList;
+
+        if (tipList.Count > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, tipList.Count);
+            return tipList[randomIndex].Tip;
+        }
+        else
+        {
+            Debug.LogWarning("기후 위기 팁 데이터가 없습니다.");
+            return "";
+        }
     }
 }

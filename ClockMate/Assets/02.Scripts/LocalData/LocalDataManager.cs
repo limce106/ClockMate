@@ -10,10 +10,12 @@ public class LocalDataManager : Singleton<LocalDataManager>
     private readonly string AbsoluteLocalDataFolder = Application.dataPath + RelativeLocalDataFolder;
 
     public LocalDataList<LDStage> Stage { get; private set; }
+    public LocalDataList<LDClimateTips> ClimateTips { get; private set; }
 
     public LocalDataManager()
     {
         Stage = new LocalDataList<LDStage>();
+        ClimateTips = new LocalDataList<LDClimateTips>();
         
         LoadAll();
     }
