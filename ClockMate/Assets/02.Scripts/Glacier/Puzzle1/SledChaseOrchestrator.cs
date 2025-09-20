@@ -66,6 +66,14 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(RPC_ActivateBreakPoints), RpcTarget.All, _milliActor);
     }
 
+    public void RequestReStart()
+    {
+        // TODO 리셋 과정 자연스럽게 처리
+        _finishedCount = 0;
+        photonView.RPC(nameof(RPC_TeleportAll), RpcTarget.All,
+            sledStart.position, sledStart.rotation.eulerAngles,
+            bearStart.position, bearStart.rotation.eulerAngles);
+    }
 
     [PunRPC]
     private void RPC_ReportSelection(int actorNumber, int characterEnum)
