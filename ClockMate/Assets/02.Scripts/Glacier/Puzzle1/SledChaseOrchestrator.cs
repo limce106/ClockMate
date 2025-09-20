@@ -73,6 +73,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(RPC_TeleportAll), RpcTarget.All,
             sledStart.position, sledStart.rotation.eulerAngles,
             bearStart.position, bearStart.rotation.eulerAngles);
+        SnowballPool.Instance.ReturnAll(); // 눈덩이 풀도 리셋
     }
 
     [PunRPC]

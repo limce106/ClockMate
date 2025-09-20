@@ -89,6 +89,14 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
             photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, viewID);
     }
 
+    public void ReturnAll()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        photonView.RPC(nameof(RPC_DeactivateAllObjects), RpcTarget.All);
+    }
+    
     private T GetInactiveObject()
     {
         foreach (var obj in pool)
@@ -125,6 +133,15 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
 
         T obj = view.GetComponent<T>();
         obj.gameObject.SetActive(false);
+    }
+    
+    [PunRPC]
+    protected void RPC_DeactivateAllObjects()
+    {
+        foreach (T obj in pool)
+        {
+            obj.gameObject.SetActive(false);   
+        }
     }
 
 }
