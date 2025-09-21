@@ -1,13 +1,21 @@
 ﻿using Define;
+using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
+using static Define.Loading;
 
 public class UILoading : UIBase
 {
     [SerializeField] private Slider progressSlider;
     [SerializeField] private Text climateTip;
+    [SerializeField] private RectTransform characterImgRectTransform;
+
+    [SerializeField] private float _characterMoveDuration = 3f;
+
 
     private void Awake()
     {
@@ -36,5 +44,23 @@ public class UILoading : UIBase
     {
         if(climateTip != null && randomTip != null)
             climateTip.text = randomTip;
+    }
+
+    public IEnumerator MoveCharacater(Vector2 endPos)
+    {
+        Vector2 startPos = characterImgRectTransform.anchoredPosition;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < _characterMoveDuration)
+        {
+            characterImgRectTransform.anchoredPosition = Vector2.Lerp(startPos, endPos, elapsedTime / _characterMoveDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        characterImgRectTransform.anchoredPosition = endPos;
+
+        LoadingManager.Instance.photonView.RPC("NotifyLoadState", RpcTarget.MasterClient,
+                    PhotonNetwork.LocalPlayer.ActorNumber, (int)LoadState.Load);
     }
 }

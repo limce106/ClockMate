@@ -40,17 +40,11 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
                 0f,
                 () => 
                 {
-                    photonView.RPC(nameof(RPC_LoadDesertScene), RpcTarget.All);
+                    LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
                 }
             );
         }
-        LoadingManager.Instance?.ShowLoadingUI();
-    }
-
-    [PunRPC]
-    private void RPC_LoadDesertScene()
-    {
-        LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
+        LoadingManager.Instance.ShowLoadingUI();
     }
 
     void Update()

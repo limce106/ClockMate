@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Define.Loading;
 using static Define.Map;
 
 public class LoadingManager : MonoBehaviourPunCallbacks
 {
-    private enum LoadState { Load = 1, Active }
-
     public static LoadingManager Instance { get; private set; }
 
     private UILoading _uiLoading;
@@ -56,6 +56,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
         GameManager.Instance.SetLocalCharacterInput(false);
+
         _uiLoading.ShowRandomTip(GetRandomTip());
     }
 
@@ -75,25 +76,34 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         StartCoroutine(LoadSceneAsync(nextSceneName));
     }
 
+    private void StartMoveCharacter(string nextSceneName)
+    {
+        LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
+            Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
+
+        Vector2 moveEndPos = new Vector2(nextLoadingPos.PosX, nextLoadingPos.PosY);
+        _uiLoading.StartCoroutine(_uiLoading.MoveCharacater(moveEndPos));
+    }
+
     private IEnumerator LoadSceneAsync(string nextSceneName)
     {
         _currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
         _currentLoadOperation.allowSceneActivation = false;
 
-        while(!_currentLoadOperation.isDone)
+        while (!_currentLoadOperation.isDone)
         {
             float progress = Mathf.Clamp01(_currentLoadOperation.progress / 0.9f);
             _uiLoading.UpdateLoadingProgress(progress);
             
             if(progress >= 1f)
             {
-                photonView.RPC(nameof(NotifyLoadState), RpcTarget.MasterClient, 
-                    PhotonNetwork.LocalPlayer.ActorNumber, (int) LoadState.Load);
                 break;
             }
 
             yield return null;
         }
+
+        StartMoveCharacter(nextSceneName);
     }
 
     [PunRPC]
@@ -178,5 +188,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             Debug.LogWarning("기후 위기 팁 데이터가 없습니다.");
             return "";
         }
+    }
+
+    [PunRPC]
+    private void RPC_LoadScene(string mapName)
+    {
+        StartSyncedLoading(mapName);
     }
 }
