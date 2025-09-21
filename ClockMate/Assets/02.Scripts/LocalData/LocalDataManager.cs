@@ -11,11 +11,13 @@ public class LocalDataManager : Singleton<LocalDataManager>
 
     public LocalDataList<LDStage> Stage { get; private set; }
     public LocalDataList<LDClimateTips> ClimateTips { get; private set; }
+    public LocalDataList<LDLoadingPosition> LoadingPosition { get; private set; }
 
     public LocalDataManager()
     {
         Stage = new LocalDataList<LDStage>();
         ClimateTips = new LocalDataList<LDClimateTips>();
+        LoadingPosition = new LocalDataList<LDLoadingPosition>();
         
         LoadAll();
     }
