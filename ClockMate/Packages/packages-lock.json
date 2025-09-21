@@ -1,5 +1,18 @@
 {
   "dependencies": {
+    "com.atteneder.gltfast": {
+      "version": "https://github.com/atteneder/glTFast.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.mathematics": "1.2.6",
+        "com.unity.burst": "1.8.24",
+        "com.unity.collections": "1.2.4"
+      },
+      "hash": "1a2ce4d8befb7783ef2db47f7b1394493f960c02"
+    },
     "com.autodesk.fbx": {
       "version": "4.2.1",
       "depth": 1,
@@ -17,11 +30,17 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
+<<<<<<< Updated upstream
       "version": "1.8.8",
       "depth": 0,
+=======
+      "version": "1.8.24",
+      "depth": 1,
+>>>>>>> Stashed changes
       "source": "registry",
       "dependencies": {
-        "com.unity.mathematics": "1.2.1"
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -39,6 +58,16 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.collections": {
+      "version": "1.2.4",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.6.6",
+        "com.unity.test-framework": "1.1.31"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.editorcoroutines": {
