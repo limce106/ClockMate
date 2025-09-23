@@ -21,7 +21,7 @@ public class SwingAttack : AttackPattern
 
     // 최소/최대 스폰 횟수
     private const int minSpawnNum = 1;
-    private const int maxSpawnNum = 4;
+    private const int maxSpawnNum = 5;
 
     private const int additionalAttackCount = 3; // 라운드 증가할 때마다 늘어날 공격 횟수
     private readonly float[] startAngles = { -60f, 60f };

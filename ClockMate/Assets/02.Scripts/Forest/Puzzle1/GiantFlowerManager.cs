@@ -29,24 +29,11 @@ public class GiantFlowerManager : MonoBehaviour
         if(curFlower.IsLevel() && !flowerLeveled)
         {
             flowerLeveled = true;
-
-            if(HasNextFlower())
-            {
-                GrowSteam();
-            }
-            else
-            {
-                TriggerFinalAction();
-            }
+            GrowSteam();
             curFlower.Lock();
 
             currentIndex++;
         }
-    }
-
-    private bool HasNextFlower()
-    {
-        return currentIndex < giantFlowers.Length - 1;
     }
 
     private void GrowSteam()
@@ -55,15 +42,5 @@ public class GiantFlowerManager : MonoBehaviour
 
         nextFlower.sideSteam.SetActive(true);
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
-    }
-
-    void TriggerFinalAction()
-    {
-        if (goalGateLeft == null || goalGateRight == null)
-            return;
-
-        // 게이트 열기
-        goalGateLeft.ForceOpenDoor();
-        goalGateRight.ForceOpenDoor();
     }
 }

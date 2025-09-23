@@ -84,9 +84,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
             return;
 
         int viewID = obj.photonView.ViewID;
-
-        if (PhotonNetwork.IsMasterClient)
-            photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, viewID);
+        photonView.RPC(nameof(RPC_DeactivateObject), RpcTarget.All, viewID);
     }
 
     public void ReturnAll()

@@ -9,9 +9,12 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
     [System.Serializable]
     public struct SpawnPointInfo
     {
-        public Vector3 spwanPoint;
-        public float spawnInterval;
-        public bool spawnOnce;
+        [Tooltip("스폰 위치")] public Vector3 spwanPoint;
+        [Tooltip("스폰 회전값")] public Quaternion spwanRot;
+        [Tooltip("스폰 주기")] public float spawnInterval;
+        [Tooltip("일회성 여부")] public bool spawnOnce;
+        [Tooltip("굴러가는 힘")] public float torqueForce;
+        [Tooltip("사라지는 높이")] public float returnHeight;
     }
 
     public SpawnPointInfo[] spawnPoints;
@@ -42,27 +45,28 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
 
         foreach (var info in spawnPoints)
         {
-            StartCoroutine(SpawnLoop(info.spwanPoint, info.spawnInterval, info.spawnOnce));
+            StartCoroutine(SpawnLoop(info));
         }
     }
 
-    IEnumerator SpawnLoop(Vector3 point, float interval, bool spawnOnce)
+    IEnumerator SpawnLoop(SpawnPointInfo info)
     {
-        if(spawnOnce)
+        if(info.spawnOnce)
         {
-            SpawnStone(point);
+            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnHeight);
             yield break;
         }
 
         while(true)
         {
-            SpawnStone(point);
-            yield return new WaitForSeconds(interval);
+            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnHeight);
+            yield return new WaitForSeconds(info.spawnInterval);
         }
     }
 
-    private void SpawnStone(Vector3 point)
+    private void SpawnStone(Vector3 point, Quaternion rot, float torque, float returnHeight)
     {
-        RollingStone stone = rollingStonePool.Get(point, Quaternion.identity);
+        RollingStone stone = rollingStonePool.Get(point, rot);
+        stone.Initialize(torque, returnHeight);
     }
 }

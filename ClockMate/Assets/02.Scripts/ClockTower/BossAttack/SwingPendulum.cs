@@ -94,10 +94,9 @@ public class SwingPendulum : MonoBehaviourPun
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        if(collision.collider.IsPlayerCollider())
+        CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
+        if (character != null)
         {
-            // 플레이어 사망 처리
-            CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
             BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
             character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }

@@ -86,4 +86,13 @@
             Fall
         }
     }
+
+    public static class Loading
+    {
+        public enum LoadState
+        {
+            Load = 1,
+            Active
+        }
+    }
 }

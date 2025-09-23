@@ -2,18 +2,27 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DefineExtension;
 
 [RequireComponent(typeof(Rigidbody))]
 public class RollingStone : MonoBehaviourPun
 {
-    public float torqueForce = 10f;
-    private Rigidbody rb;
+    public float _torqueForce;
+    private float _returnHeight;
 
-    private const float ReturnHeight = -10f;
+    private Rigidbody rb;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+    }
+
+    public void Initialize(float torque, float returnHeight)
+    {
+        _torqueForce = torque;
+        _returnHeight = returnHeight;
+
+        ResetPhysics();
     }
 
     private void OnEnable()
@@ -29,7 +38,7 @@ public class RollingStone : MonoBehaviourPun
 
     void Roll()
     {
-        rb.AddTorque(transform.forward * torqueForce);
+        rb.AddTorque(transform.right * _torqueForce);
     }
 
     void ResetPhysics()
@@ -40,10 +49,30 @@ public class RollingStone : MonoBehaviourPun
 
     void CheckReturn()
     {
-        if(transform.position.y <= ReturnHeight)
+        if(transform.position.y <= _returnHeight)
         {
-            RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
-            rollingStoneSpawner.rollingStonePool.Return(this);
+            ReturnRollingStone();
+        }
+    }
+
+    private void ReturnRollingStone()
+    {
+        RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
+        rollingStoneSpawner.rollingStonePool.Return(this);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.IsPlayerCollider())
+        {
+            CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
+
+            if (!character.IsDizzy)
+            {
+                character.ApplyDizzy(3f);
+            }
+
+            ReturnRollingStone();
         }
     }
 }
