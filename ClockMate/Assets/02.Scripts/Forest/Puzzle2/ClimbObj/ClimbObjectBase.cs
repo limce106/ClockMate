@@ -7,10 +7,9 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 {
     protected UIManager _uiManager;
     protected UINotice _uiNotice;
+    private Sprite _exitSprite;
+    private string _exitString;
     protected UIClimbableObj _uiClimbableObj;
-
-    protected Sprite _climbSprite;
-    protected string _climbString;
 
     protected bool _isColliding = false;
 
@@ -26,20 +25,9 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
         topY = topPoint.position.y;
         bottomY = bottomPoint.position.y;
-    }
 
-    protected void ShowNoticeUI(string spritePath, string text)
-    {
-        if (_uiNotice == null || !_uiManager.IsOnScreen(_uiNotice))
-        {
-            _uiNotice = _uiManager.Show<UINotice>("UINotice");
-        }
-
-        _climbSprite = Resources.Load<Sprite>(spritePath);
-        _climbString = text;
-
-        _uiNotice.SetImage(_climbSprite);
-        _uiNotice.SetText(_climbString);
+        _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _exitString = "그만타기";
     }
 
     /// <summary>
@@ -65,22 +53,19 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
             return false;
     }
 
-    public void OnInteractAvailable()
-    {
-        ShowNoticeUI("UI/Sprites/interact_active", "기어올라가기");
-    }
+    public void OnInteractAvailable() { }
 
-    public void OnInteractUnavailable()
-    {
-        _uiManager.Close(_uiNotice);
-    }
+    public void OnInteractUnavailable() { }
 
     public bool Interact(CharacterBase character)
     {
         character.ChangeState<ClimbState>(this);
 
+        _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
+        _uiNotice.SetImage(_exitSprite);
+        _uiNotice.SetText(_exitString);
+
         _uiClimbableObj = _uiManager.Show<UIClimbableObj>("UIClimbableObj");
-        ShowNoticeUI("UI/Sprites/keyboard_q_outline", "기어올라가기 종료");
 
         EnableColliders(false);
 
