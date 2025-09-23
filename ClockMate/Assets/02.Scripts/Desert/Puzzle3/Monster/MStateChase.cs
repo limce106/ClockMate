@@ -11,6 +11,7 @@ public class MStateChase : IMonsterState
     public void Enter()
     {
         _lostSightTimer = 0f; // 타이머 리셋
+        _monster.Anim.SetTrigger("Jump");
     }
 
     public void Update()
