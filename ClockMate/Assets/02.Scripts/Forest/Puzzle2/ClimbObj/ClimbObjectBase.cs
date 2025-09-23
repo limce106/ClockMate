@@ -17,9 +17,8 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
 
-    [Tooltip("인스펙터에서 값 설정할 필요없음")]
-    public float topY;
-    public float bottomY;
+    public float topY { private set; get; }
+    public float bottomY { private set; get; }
 
     protected virtual void Awake()
     {
