@@ -27,6 +27,9 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string walkTag = "Walk";
     [SerializeField] private float[] walkMarks = { 0.23f, 0.73f }; // 루프 내 접지 지점(0~1)
     [SerializeField] private float minSpeedForStep = 0.2f;         // 너무 느리면 미재생
+    
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem dizzyVFX;
 
     // hashes
     private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry;
@@ -271,6 +274,14 @@ public class CharacterAnimation : MonoBehaviourPun
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hDizzy, on);
+            if (on)
+            {
+                dizzyVFX.Play();
+            }
+            else
+            {
+                dizzyVFX.Stop();
+            }
             return;
         }
         if (animator && photonView.IsMine)
@@ -283,5 +294,13 @@ public class CharacterAnimation : MonoBehaviourPun
     private void RPC_SetDizzy(bool on)
     {
         animator.SetBool(_hDizzy, on);
+        if (on)
+        {
+            dizzyVFX.Play();
+        }
+        else
+        {
+            dizzyVFX.Stop();
+        }
     }
 }

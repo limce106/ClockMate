@@ -5,7 +5,6 @@ using System.Reflection;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 using static Define.Character;
 using Random = UnityEngine.Random;
 
@@ -16,6 +15,7 @@ public class MonsterController : MonoBehaviourPun
 
    [SerializeField] private Transform returnPoint; // 플레이어 추격 중지 후 복귀할 지점
    [SerializeField] private ParticleSystem deathEffect;
+   [SerializeField] private GameObject alertGo;
    
    [SerializeField] private float horizontalViewAngle = 90f;
    [SerializeField] private float verticalViewAngle = 60f;
@@ -27,6 +27,8 @@ public class MonsterController : MonoBehaviourPun
    private LayerMask _viewMask; 
    private IMonsterState _currentState;
    private Dictionary<Type, IMonsterState> _states;
+   private static bool _ignoreHour;
+   public Animator Anim { get; private set; }
    public event Action<MonsterController> OnMonsterDied;
    
    // 효과음
@@ -70,6 +72,8 @@ public class MonsterController : MonoBehaviourPun
       {
          Debug.LogError("아워 찾기 실패");
       }
+      alertGo?.SetActive(false);
+      Anim = GetComponent<Animator>();
    }
 
    /// <summary>
@@ -128,11 +132,13 @@ public class MonsterController : MonoBehaviourPun
 
    public void ChaseHour()
    {
+      alertGo?.SetActive(true);
       Agent.SetDestination(hour.transform.position);
    }
 
    public void StopChaseAndReturn()
    {
+      alertGo?.SetActive(false);
       Agent.SetDestination(returnPoint.position);
    }
    

@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
     private bool _jumpRequested;
     private float _currentYaw;
     private bool _hasControl;
+    private SledHP _sledHP;
 
     private void Awake()
     {
@@ -54,6 +56,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
         _jumpRequested = false;
         _currentYaw = 0f;
         _hasControl = true;
+        _sledHP = GetComponent<SledHP>();
     }
 
     /// <summary>
@@ -89,6 +92,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
     
     private void Jump()
     {
+        Debug.Log("Jump pressed");
         _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
@@ -114,6 +118,14 @@ public class SledController : MonoBehaviourPun, IPunObservable
         _hasControl = hasControl;
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        // 물과 충돌하면 바로 추격 재시작
+        if(!other.gameObject.CompareTag("Water")) return;
+        
+        _sledHP.TakeDamage(100);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

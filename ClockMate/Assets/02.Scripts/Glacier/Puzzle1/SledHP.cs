@@ -7,6 +7,7 @@ using UnityEngine;
 public class SledHP : MonoBehaviourPun
 {
     [SerializeField] private int maxHP;
+    [SerializeField] private SledChaseOrchestrator orchestrator;
     private int _currentHP;
     private UISledHP _uiSledHP;
     
@@ -40,6 +41,7 @@ public class SledHP : MonoBehaviourPun
     [PunRPC] 
     private void RPC_GameOver()
     {
+        orchestrator.RequestReStart();
         Debug.Log("[SledHP] Game Over");
     }
 }
