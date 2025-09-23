@@ -47,7 +47,8 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 // 이번 맵의 마지막 스테이지일 경우
                 ResetTestManager.Instance.RemoveAllResettable();
-                LoadingManager.Instance?.StartSyncedLoading(nextStage.Map.ToString());
+                LoadingManager.Instance.ShowLoadingUI();
+                LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, nextStage.Map.ToString());
             }
             CurrentStage = nextStage;
         }

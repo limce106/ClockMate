@@ -13,7 +13,6 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
     public GameObject Player2Ready;
 
     private bool _isLoadingStarted = false;
-    private bool _isCutsceneFinished = false;   // 컷씬 끝났는지 확인
 
     private void Start()
     {
@@ -41,17 +40,11 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
                 0f,
                 () => 
                 {
-                    photonView.RPC(nameof(RPC_LoadDesertScene), RpcTarget.All);
+                    LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
                 }
             );
         }
-        LoadingManager.Instance?.ShowLoadingUI();
-    }
-
-    [PunRPC]
-    private void RPC_LoadDesertScene()
-    {
-        LoadingManager.Instance?.StartSyncedLoading(GameManager.Instance?.CurrentStage.Map.ToString());
+        LoadingManager.Instance.ShowLoadingUI();
     }
 
     void Update()

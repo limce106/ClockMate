@@ -6,7 +6,9 @@ using UnityEngine;
 
 public class FallingClockHand : MonoBehaviourPun
 {
-    private Rigidbody rb;
+    private Rigidbody _rb;
+    [SerializeField] private Collider _killTrigger;   // 플레이어 죽이는 전용 트리거
+    [SerializeField] private Collider _solidCollider; // 물리 충돌용 트리거
 
     private const float fallForce = 700f;
     private const float lifeTime = 3f;
@@ -17,14 +19,17 @@ public class FallingClockHand : MonoBehaviourPun
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
     }
 
     private void OnEnable()
     {
-        rb.isKinematic = false;
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        _killTrigger.enabled = true;
+        _solidCollider.enabled = false;
+
+        _rb.isKinematic = false;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
 
         if (PhotonNetwork.IsMasterClient)
             photonView.RPC(nameof(ApplyFallForce), RpcTarget.All);
@@ -39,7 +44,7 @@ public class FallingClockHand : MonoBehaviourPun
     [PunRPC]
     void ApplyFallForce()
     {
-        rb.AddForce(Vector3.down * fallForce, ForceMode.Acceleration);
+        _rb.AddForce(Vector3.down * fallForce, ForceMode.Acceleration);
     }
 
     private IEnumerator ReturnAfterDelay()
@@ -57,30 +62,35 @@ public class FallingClockHand : MonoBehaviourPun
     /// </summary>
     private void StickToGround()
     {
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = true;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
+        _rb.isKinematic = true;
 
         transform.position += Vector3.down * stickOffset;
+
+        // 땅에 닿은 바늘로 플레이어가 죽을 수 없도록 처리
+        _killTrigger.enabled = false;
+        _solidCollider.enabled = true;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             StickToGround();
             StartCoroutine(ReturnAfterDelay());
         }
-
-        if (collision.collider.IsPlayerCollider())
+        else
         {
-            // 플레이어 사망 처리
-            CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
-            BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
-            character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
+            CharacterBase character = other.GetComponentInParent<CharacterBase>();
+            // 상호작용 트리거로 죽지 않도록 플레이어 태그도 검사
+            bool canDie = other.IsPlayerCollider() && character != null && _killTrigger.enabled && character.photonView.IsMine;
+
+            if (canDie)
+            {
+                BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
+                character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
+            }
         }
     }
 }
