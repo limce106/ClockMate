@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DefineExtension;
 
 [RequireComponent(typeof(Rigidbody))]
 public class RollingStone : MonoBehaviourPun
@@ -50,8 +51,28 @@ public class RollingStone : MonoBehaviourPun
     {
         if(transform.position.y <= _returnHeight)
         {
-            RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
-            rollingStoneSpawner.rollingStonePool.Return(this);
+            ReturnRollingStone();
+        }
+    }
+
+    private void ReturnRollingStone()
+    {
+        RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
+        rollingStoneSpawner.rollingStonePool.Return(this);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.IsPlayerCollider())
+        {
+            CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
+
+            if (!character.IsDizzy)
+            {
+                character.ApplyDizzy(3f);
+            }
+
+            ReturnRollingStone();
         }
     }
 }

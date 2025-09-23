@@ -21,6 +21,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     public InteractionDetector InteractionDetector {get; private set;}
     public PlayerInputHandler InputHandler {get; private set;}
     public bool IsGrounded => _groundChecker.IsGrounded();
+    public bool IsDizzy { get; private set; }
     public IState CurrentState => _stateMachine.CurrentState;
     public CharacterAnimation Anim { get; private set; }
 
@@ -286,5 +287,19 @@ public abstract class CharacterBase : MonoBehaviourPun
         // 재생이 끝나면 자동으로 비활성화됨
 
         _curReviveCoroutine = null;
+    }
+
+    public IEnumerator ApplyDizzy(float seconds)
+    {
+        SetDizzy(true);
+        yield return new WaitForSeconds(seconds);
+        SetDizzy(false);
+    }
+
+    private void SetDizzy(bool isDizzy)
+    {
+        InputHandler.enabled = !isDizzy;
+        Anim.SetDizzy(isDizzy);
+        IsDizzy = isDizzy;
     }
 }

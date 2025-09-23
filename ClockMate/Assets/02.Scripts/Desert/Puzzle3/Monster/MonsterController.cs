@@ -104,7 +104,7 @@ public class MonsterController : MonoBehaviourPun
    /// </summary>
    public bool CanSeeHour()
    {
-      if (_ignoreHour) return false;
+      if (hour.IsDizzy) return false;
       
       Transform hourTransform = hour.transform;
       Vector3 dirToHour = hourTransform.position - transform.position;
@@ -163,7 +163,7 @@ public class MonsterController : MonoBehaviourPun
 //      if (!hour.photonView.IsMine) return;
       
       //hour.ChangeState<DeadState>();
-      StartCoroutine(StopMovementForSeconds(3f));
+      StartCoroutine(hour.ApplyDizzy(3f));
 
       // TODO 실제 사망 처리로 교체하기
       //hour.transform.position = new Vector3(-183.348f,74.57979f,74.57979f);
@@ -197,21 +197,6 @@ public class MonsterController : MonoBehaviourPun
 
          yield return new WaitForSeconds(interval);
       }
-   }
-   
-       
-   private IEnumerator StopMovementForSeconds(float seconds)
-   {
-      SetHourDizzy(true);      
-      yield return new WaitForSeconds(seconds);
-      SetHourDizzy(false);
-   }
-
-   private void SetHourDizzy(bool isDizzy)
-   {
-      hour.InputHandler.enabled = !isDizzy;
-      hour.Anim.SetDizzy(isDizzy);
-      _ignoreHour = isDizzy;
    }
    #region Test
    
