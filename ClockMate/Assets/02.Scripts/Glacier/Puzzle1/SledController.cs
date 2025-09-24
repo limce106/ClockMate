@@ -46,7 +46,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
         if (!_wasGrounded && grounded)
         {
             landVfx.gameObject.SetActive(true);
-            SoundManager.Instance.PlaySfx(key: landSfxKey, pos: transform.position, volume: sfxVolume);
+            SoundManager.Instance.PlaySfx(key: landSfxKey, pos: transform.position, volume: sfxVolume, sync: true);
         }
 
         _wasGrounded = grounded;
@@ -132,7 +132,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
         if (isMoving)
         {
             SoundManager.Instance.PlaySfx(
-                key: movingSfxKey, pos: transform.position, volume: sfxVolume, loop: true);
+                key: movingSfxKey, volume: 0.1f, loop: true);
         }
     }
 

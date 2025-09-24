@@ -93,6 +93,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         if (_hourActor < 0 || _milliActor < 0) return; // 선택 미수신 시 보류
 
         _locked = true;
+        photonView.RPC(nameof(RPC_PrepareChase), RpcTarget.All);
         // 컷신 재생
         CutsceneSyncManager.Instance.PlayForAll(
             "PolarBearAwake",
@@ -103,9 +104,9 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_TeleportAll), RpcTarget.All,
                     sledStart.position, sledStart.rotation.eulerAngles,
                     bearStart.position, bearStart.rotation.eulerAngles);
+                GameManager.Instance.SetAllCharactersActive(false);
             }
         );
-        photonView.RPC(nameof(RPC_PrepareChase), RpcTarget.All);
     }
     
     [PunRPC]
@@ -116,8 +117,6 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         {
             sledTriggerCollider.enabled = false;
         }
-        // 플레이어 캐릭터 비활성화
-        GameManager.Instance.SetAllCharactersActive(false); 
     }
 
     [PunRPC]

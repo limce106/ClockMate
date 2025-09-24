@@ -27,7 +27,7 @@ public class SledHP : MonoBehaviourPun
 
         if (_currentHP <= 0)
         {
-            photonView.RPC(nameof(RPC_GameOver), RpcTarget.All);
+            orchestrator.RequestReStart();
         }
     }
     
@@ -38,10 +38,4 @@ public class SledHP : MonoBehaviourPun
         _uiSledHP?.UpdateHpBar(maxHP, _currentHP);
     }
 
-    [PunRPC] 
-    private void RPC_GameOver()
-    {
-        orchestrator.RequestReStart();
-        Debug.Log("[SledHP] Game Over");
-    }
 }
