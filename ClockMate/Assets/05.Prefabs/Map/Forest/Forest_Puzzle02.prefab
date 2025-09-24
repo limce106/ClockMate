@@ -915,24 +915,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoints:
-  - spwanPoint: {x: 81.1, y: 40, z: 174.4}
+  - spwanPoint: {x: 81.1, y: 50, z: 174.4}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 3
     spawnOnce: 0
     torqueForce: 30
-    returnHeight: 10
+    returnHeight: 15
   - spwanPoint: {x: 110.4, y: 40, z: 181.41}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 5
     spawnOnce: 0
     torqueForce: 30
-    returnHeight: 10
-  - spwanPoint: {x: 142.5, y: 40, z: 189.9}
+    returnHeight: 15
+  - spwanPoint: {x: 142.5, y: 30, z: 189.9}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 2
     spawnOnce: 0
     torqueForce: 30
-    returnHeight: 10
+    returnHeight: 15
   - spwanPoint: {x: 166.86, y: 60.7, z: 277.19}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 3
@@ -953,7 +953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabPath: Prefabs/RollingStone
-  initialPoolSize: 15
+  initialPoolSize: 30
 --- !u!114 &1833923591307834265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1313,7 +1313,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -16084,7 +16084,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -16111,7 +16111,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -16138,7 +16138,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -24719,7 +24719,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -24751,7 +24751,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -24778,7 +24778,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -26005,7 +26005,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -33369,6 +33369,18 @@ PrefabInstance:
     - target: {fileID: 515329944947605258, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.794
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.686
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.069
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
       propertyPath: m_Name
@@ -69127,7 +69139,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -69154,7 +69166,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -69181,7 +69193,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -70990,6 +71002,18 @@ PrefabInstance:
     - target: {fileID: 515329944947605258, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.184
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.258
+      objectReference: {fileID: 0}
+    - target: {fileID: 583710578080108869, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.037
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 79aa50e3a9ddc94419160687b36ee9ac, type: 3}
       propertyPath: m_Name
@@ -73356,7 +73380,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
