@@ -69,10 +69,8 @@ public class RollingStone : MonoBehaviourPun
 
             if (!character.IsDizzy)
             {
-                character.ApplyDizzy(3f);
+                StartCoroutine(character.ApplyDizzy(3f));
             }
-
-            ReturnRollingStone();
         }
     }
 }
