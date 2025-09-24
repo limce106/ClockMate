@@ -27,7 +27,6 @@ public class MonsterController : MonoBehaviourPun
    private LayerMask _viewMask; 
    private IMonsterState _currentState;
    private Dictionary<Type, IMonsterState> _states;
-   private static bool _ignoreHour;
    public Animator Anim { get; private set; }
    public event Action<MonsterController> OnMonsterDied;
    
@@ -159,20 +158,8 @@ public class MonsterController : MonoBehaviourPun
    {
       if (!other.gameObject.CompareTag("Hour")) return;
 
-//      Hour hour = other.gameObject.GetComponent<Hour>();
-//      if (!hour.photonView.IsMine) return;
-      
-      //hour.ChangeState<DeadState>();
       StartCoroutine(hour.ApplyDizzy(3f));
-
-      // TODO 실제 사망 처리로 교체하기
-      //hour.transform.position = new Vector3(-183.348f,74.57979f,74.57979f);
       ChangeStateTo<MStateReturn>();
-
-      // if (_currentState is MStateChase)
-      // {
-      //    ChangeStateTo<MStateReturn>();
-      // }
    }
    
    private void OnEnable()

@@ -291,6 +291,7 @@ public abstract class CharacterBase : MonoBehaviourPun
 
     public IEnumerator ApplyDizzy(float seconds)
     {
+        if (IsDizzy) yield break; // 이미 헤롱헤롱 상태라면 무시
         SetDizzy(true);
         yield return new WaitForSeconds(seconds);
         SetDizzy(false);
