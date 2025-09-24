@@ -1,4 +1,3 @@
-using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -12,9 +11,17 @@ public class SledController : MonoBehaviourPun, IPunObservable
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius;
     [SerializeField] private bool isMoving;
+ 
+    [Header("효과음 & 이펙트")] 
+    [SerializeField] private string movingSfxKey = "sledding_on_snow";
+    [SerializeField] private string jumpSfxKey= "sled_jump";
+    [SerializeField] private string landSfxKey = "sled_ground_hit";
+    [SerializeField] private float sfxVolume = 1.0f;
+    [SerializeField] private ParticleSystem landVfx;
     
     private Rigidbody _rb;
     private bool _jumpRequested;
+    private bool _wasGrounded;
     private float _currentYaw;
     private bool _hasControl;
     private SledHP _sledHP;
@@ -28,12 +35,21 @@ public class SledController : MonoBehaviourPun, IPunObservable
     {
         if (!isMoving || !_hasControl) return;
         // 움직이는 중이고 아워라면 
+        bool grounded = IsGrounded();
         
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        if (Input.GetKeyDown(KeyCode.Space) && grounded)
         {
             // 땅에 있을 때 스페이스 눌리면 점프 요청 처리
             _jumpRequested = true;
         }
+
+        if (!_wasGrounded && grounded)
+        {
+            landVfx.gameObject.SetActive(true);
+            SoundManager.Instance.PlaySfx(key: landSfxKey, pos: transform.position, volume: sfxVolume);
+        }
+
+        _wasGrounded = grounded;
     }
 
     private void FixedUpdate()
@@ -57,6 +73,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
         _currentYaw = 0f;
         _hasControl = true;
         _sledHP = GetComponent<SledHP>();
+        _wasGrounded = IsGrounded();
     }
 
     /// <summary>
@@ -102,8 +119,8 @@ public class SledController : MonoBehaviourPun, IPunObservable
     private bool IsGrounded()
     {
         return Physics.CheckSphere(
-            groundCheck.position, 
-            groundCheckRadius, 
+            groundCheck.position,
+            groundCheckRadius,
             groundMask,
             QueryTriggerInteraction.Ignore);
     }
@@ -111,6 +128,12 @@ public class SledController : MonoBehaviourPun, IPunObservable
     public void SetSledMoving(bool value)
     {
         isMoving = value;
+        SoundManager.Instance.StopByKey(movingSfxKey);
+        if (isMoving)
+        {
+            SoundManager.Instance.PlaySfx(
+                key: movingSfxKey, pos: transform.position, volume: sfxVolume, loop: true);
+        }
     }
 
     public void SetControl(bool hasControl)
