@@ -61,6 +61,7 @@ public class CharacterAnimation : MonoBehaviourPun
         _hJump = Animator.StringToHash(pJump);
         _hPickUp = Animator.StringToHash(pPickUp);
         _hCarry = Animator.StringToHash(pCarry);
+        _hDizzy = Animator.StringToHash(pDizzy);
 
         if (character.Name == CharacterName.Milli)
         {
@@ -70,7 +71,6 @@ public class CharacterAnimation : MonoBehaviourPun
         else
         {
             // 아워만
-            _hDizzy = Animator.StringToHash(pDizzy);
         }
 
         if (animator)
