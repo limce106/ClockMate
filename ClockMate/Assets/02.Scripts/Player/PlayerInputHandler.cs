@@ -150,10 +150,12 @@ public class PlayerInputHandler : MonoBehaviour
         if (Mathf.Abs(verticalInput) > 0.1f)
         {
             climbState.Climb(verticalInput);
+            _character.Anim.SetAnimPlayback(false);
         }
         else
         {
             climbState.Climb(0f);
+            _character.Anim.SetAnimPlayback(true);
         }
 
         if (Keyboard.current.qKey.wasPressedThisFrame)

@@ -12,6 +12,7 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     protected UIClimbableObj _uiClimbableObj;
 
     protected bool _isColliding = false;
+    public bool isInteractFromDown { private set; get; } = false; // 아래에서 상호작용 했는지
 
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
@@ -88,5 +89,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     private void OnCollisionExit(Collision collision)
     {
         _isColliding = false;
+    }
+
+    protected void SetIsInteractFromDown(bool fromDown)
+    {
+        isInteractFromDown = fromDown;
     }
 }

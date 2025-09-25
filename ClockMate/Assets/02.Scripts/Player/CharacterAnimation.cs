@@ -344,4 +344,12 @@ public class CharacterAnimation : MonoBehaviourPun
     {
         animator.SetBool(_hClimbUp, on);
     }
+
+    /// <summary>
+    /// 애니메이션 일시정지/재개
+    /// </summary>
+    public void SetAnimPlayback(bool pause)
+    {
+        animator.speed = pause ? 0f : 1f;
+    }
 }

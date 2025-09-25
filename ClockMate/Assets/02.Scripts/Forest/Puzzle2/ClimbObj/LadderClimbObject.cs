@@ -12,11 +12,15 @@ public class LadderClimbObject : ClimbObjectBase
         // 사다리 밑에 있으면
         if(character.transform.position.y < transform.position.y)
         {
+            SetIsInteractFromDown(true);
             character.transform.position = bottomPoint.position;
+            character.Anim.SetClimbUp(true);
         }
         else
         {
+            SetIsInteractFromDown(false);
             character.transform.position = topPoint.position;
+            character.Anim.SetClimbDown(true);
         }
 
         Vector3 forward = transform.forward;
