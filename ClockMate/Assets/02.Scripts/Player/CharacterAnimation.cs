@@ -342,7 +342,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [PunRPC]
     private void RPC_SetClimbDown(bool on)
     {
-        animator.SetBool(_hClimbUp, on);
+        animator.SetBool(_hClimbDown, on);
     }
 
     /// <summary>
