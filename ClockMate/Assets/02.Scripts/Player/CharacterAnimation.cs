@@ -19,6 +19,8 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pPickUp = "PickUp";
     [SerializeField] private string pCarry = "Carry";
     [SerializeField] private string pDizzy = "Dizzy";
+    [SerializeField] private string pClimbUp = "ClimbUp";
+    [SerializeField] private string pClimbDown = "ClimbDown";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
@@ -32,9 +34,8 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private ParticleSystem dizzyVFX;
 
     // hashes
-    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry;
+    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown;
     private int _hFanFly;
-    private int _hDizzy;
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
@@ -62,6 +63,8 @@ public class CharacterAnimation : MonoBehaviourPun
         _hPickUp = Animator.StringToHash(pPickUp);
         _hCarry = Animator.StringToHash(pCarry);
         _hDizzy = Animator.StringToHash(pDizzy);
+        _hClimbUp = Animator.StringToHash(pClimbUp);
+        _hClimbDown = Animator.StringToHash(pClimbDown);
 
         if (character.Name == CharacterName.Milli)
         {
@@ -302,5 +305,43 @@ public class CharacterAnimation : MonoBehaviourPun
         {
             dizzyVFX.Stop();
         }
+    }
+
+    public void SetClimbUp(bool on)
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hClimbUp, on);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_SetClimbUp), RpcTarget.All, on);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_SetClimbUp(bool on)
+    {
+        animator.SetBool(_hClimbUp, on);
+    }
+
+    public void SetClimbDown(bool on)
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hClimbDown, on);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_SetClimbDown), RpcTarget.All, on);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_SetClimbDown(bool on)
+    {
+        animator.SetBool(_hClimbUp, on);
     }
 }
