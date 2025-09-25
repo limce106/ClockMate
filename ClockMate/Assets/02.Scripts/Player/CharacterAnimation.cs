@@ -309,6 +309,8 @@ public class CharacterAnimation : MonoBehaviourPun
 
     public void SetClimbUp(bool on)
     {
+        Debug.Log($"ClimbUp is {on}");
+
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hClimbUp, on);
@@ -328,6 +330,8 @@ public class CharacterAnimation : MonoBehaviourPun
 
     public void SetClimbDown(bool on)
     {
+        Debug.Log($"ClimbDown is {on}");
+
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hClimbDown, on);

@@ -67,10 +67,8 @@ public class ClimbState : IState
 
     public void StopClimbing()
     {
-        if (climbTarget.isInteractFromDown)
-            _character.Anim.SetClimbDown(false);
-        else
-            _character.Anim.SetClimbUp(false);
+        _character.Anim.SetClimbDown(false);
+        _character.Anim.SetClimbUp(false);
 
         _rb.useGravity = true;
         _rb.constraints = RigidbodyConstraints.FreezeRotation;
