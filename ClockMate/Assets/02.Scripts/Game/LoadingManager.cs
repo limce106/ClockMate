@@ -174,6 +174,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
     }
 
+    /// <summary>
+    /// 랜덤으로 기후위기 정보를 가져온다.
+    /// </summary>
     private string GetRandomTip()
     {
         List<LDClimateTips> tipList = LocalDataManager.Instance.ClimateTips.DataList;

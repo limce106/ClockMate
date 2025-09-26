@@ -50,11 +50,8 @@ public class GameManager : MonoSingleton<GameManager>
                 LoadingManager.Instance.ShowLoadingUI();
                 LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, nextStage.Map.ToString());
             }
+
             CurrentStage = nextStage;
-        }
-        else
-        {
-            // 엔딩 처리
         }
     }
 
