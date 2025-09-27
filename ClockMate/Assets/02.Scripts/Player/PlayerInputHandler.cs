@@ -15,7 +15,7 @@ public class PlayerInputHandler : MonoBehaviour
     private CharacterBase _character;
     private PlayerInputActions _inputActions;
     private bool _isMoving;
-    private ClimbingState _climbingState = ClimbingState.None;
+    public ClimbingState climbingState { private set; get; } = ClimbingState.None;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
 
@@ -145,32 +145,37 @@ public class PlayerInputHandler : MonoBehaviour
     {
         ClimbState climbState = _character.CurrentState as ClimbState;
 
+        if(climbState.isPlayingClimbEnd)
+        {
+            return;
+        }
+
         Vector2 moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
         float verticalInput = moveInput.y;
 
         if (Mathf.Abs(verticalInput) > 0.1f)
         {
             climbState.Climb(verticalInput);
-            _character.Anim.SetAnimPlayback(false);
+            _character.Anim.SetAnimPlayback(true);
 
             // 위로 이동하는 상태로 전환될 때
-            if(verticalInput > 0 && _climbingState != ClimbingState.Up)
+            if(verticalInput > 0 && climbingState != ClimbingState.Up)
             {
                 _character.Anim.SetClimbDown(false);
                 _character.Anim.SetClimbUp(true);
-                _climbingState = ClimbingState.Up;
+                climbingState = ClimbingState.Up;
             }
-            else if(verticalInput < 0 && _climbingState != ClimbingState.Down)
+            else if(verticalInput < 0 && climbingState != ClimbingState.Down)
             {
                 _character.Anim.SetClimbUp(false);
                 _character.Anim.SetClimbDown(true);
-                _climbingState = ClimbingState.Down;
+                climbingState = ClimbingState.Down;
             }
         }
         else
         {
+            _character.Anim.SetAnimPlayback(false);
             climbState.Climb(0f);
-            _character.Anim.SetAnimPlayback(true);
         }
 
         if (Keyboard.current.qKey.wasPressedThisFrame)
