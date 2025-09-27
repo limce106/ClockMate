@@ -21,6 +21,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pDizzy = "Dizzy";
     [SerializeField] private string pClimbUp = "ClimbUp";
     [SerializeField] private string pClimbDown = "ClimbDown";
+    [SerializeField] private string pClimbEnd = "ClimbEnd";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
@@ -34,7 +35,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private ParticleSystem dizzyVFX;
 
     // hashes
-    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown;
+    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown, _hClimbEnd;
     private int _hFanFly;
 
     private Vector3 _prevPos;
@@ -65,6 +66,7 @@ public class CharacterAnimation : MonoBehaviourPun
         _hDizzy = Animator.StringToHash(pDizzy);
         _hClimbUp = Animator.StringToHash(pClimbUp);
         _hClimbDown = Animator.StringToHash(pClimbDown);
+        _hClimbEnd = Animator.StringToHash(pClimbEnd);
 
         if (character.Name == CharacterName.Milli)
         {
@@ -309,8 +311,6 @@ public class CharacterAnimation : MonoBehaviourPun
 
     public void SetClimbUp(bool on)
     {
-        Debug.Log($"ClimbUp is {on}");
-
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hClimbUp, on);
@@ -330,8 +330,6 @@ public class CharacterAnimation : MonoBehaviourPun
 
     public void SetClimbDown(bool on)
     {
-        Debug.Log($"ClimbDown is {on}");
-
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
             animator.SetBool(_hClimbDown, on);
@@ -349,11 +347,30 @@ public class CharacterAnimation : MonoBehaviourPun
         animator.SetBool(_hClimbDown, on);
     }
 
+    public void PlayClimbEnd()
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetTrigger(_hClimbEnd);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_PlayClimbEnd), RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_PlayClimbEnd()
+    {
+        animator.SetTrigger(_hClimbEnd);
+    }
+
     /// <summary>
     /// 애니메이션 일시정지/재개
     /// </summary>
-    public void SetAnimPlayback(bool pause)
+    public void SetAnimPlayback(bool play)
     {
-        animator.speed = pause ? 0f : 1f;
+        animator.enabled = play;
     }
 }
