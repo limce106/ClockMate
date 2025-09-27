@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Define.Character;
 
 public class ClimbState : IState
 {
     private readonly CharacterBase _character;
     public readonly ClimbObjectBase climbTarget;
 
-    private const float climbSpeed = 3f;
-    private const float Margin = 0.05f;
+    private float _climbSpeed = 3f;
+    private const float Margin = 0.3f;
 
     private Rigidbody _rb;
     private bool playerAttached = false;
+    public bool isPlayingClimbEnd { private set; get; } = false;
 
     public ClimbState(CharacterBase character, ClimbObjectBase climbTarget)
     {
@@ -28,11 +30,17 @@ public class ClimbState : IState
 
     public void FixedUpdate()
     {
-        if (!playerAttached)
+        if (!playerAttached || isPlayingClimbEnd)
             return;
 
         float characterY = _character.transform.position.y;
-        if(characterY > climbTarget.topY + Margin || characterY < climbTarget.bottomY - Margin)
+        if (characterY >= climbTarget.topY + Margin && _character.InputHandler.climbingState == ClimbingState.Up)
+        {
+            isPlayingClimbEnd = true;
+            _character.Anim.PlayClimbEnd();
+            return;
+        }
+        else if (characterY <= climbTarget.bottomY - Margin)
         {
             StopClimbing();
             return;
@@ -59,16 +67,19 @@ public class ClimbState : IState
         playerAttached = true;
     }
 
-
     public void Climb(float vertical)
     {
-        _rb.velocity = new Vector3(0f, vertical * climbSpeed, 0f);
+        if (isPlayingClimbEnd)
+            _climbSpeed = 0f;
+
+        _rb.velocity = new Vector3(0f, vertical * _climbSpeed, 0f);
     }
 
     public void StopClimbing()
     {
         _character.Anim.SetClimbDown(false);
         _character.Anim.SetClimbUp(false);
+        _character.Anim.SetAnimPlayback(true);
 
         _rb.useGravity = true;
         _rb.constraints = RigidbodyConstraints.FreezeRotation;
