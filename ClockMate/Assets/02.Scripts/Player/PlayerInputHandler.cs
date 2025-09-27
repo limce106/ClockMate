@@ -68,7 +68,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Update()
     {
-        if (_character.CurrentState is ClimbState)
+        if (_character.CurrentState is ClimbState climbState)
         {
             HandleClimb();
             return;
@@ -144,11 +144,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void HandleClimb()
     {
         ClimbState climbState = _character.CurrentState as ClimbState;
-
-        if(climbState.isPlayingClimbEnd)
-        {
+        if (climbState.isPlayingClimbEnd)
             return;
-        }
 
         Vector2 moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
         float verticalInput = moveInput.y;
@@ -175,6 +172,7 @@ public class PlayerInputHandler : MonoBehaviour
         else
         {
             _character.Anim.SetAnimPlayback(false);
+            climbingState = ClimbingState.None;
             climbState.Climb(0f);
         }
 

@@ -15,6 +15,7 @@ public class ClimbState : IState
     private Rigidbody _rb;
     private bool playerAttached = false;
     public bool isPlayingClimbEnd { private set; get; } = false;
+    private const float climbEndDuration = 4f;
 
     public ClimbState(CharacterBase character, ClimbObjectBase climbTarget)
     {
@@ -36,8 +37,9 @@ public class ClimbState : IState
         float characterY = _character.transform.position.y;
         if (characterY >= climbTarget.topY + Margin && _character.InputHandler.climbingState == ClimbingState.Up)
         {
-            isPlayingClimbEnd = true;
+            _character.GetComponent<Rigidbody>().velocity = Vector3.zero;
             _character.Anim.PlayClimbEnd();
+            _character.StartCoroutine(MoveToTop(_character.transform.position, climbTarget.TopTargetPoint.position, climbEndDuration));
             return;
         }
         else if (characterY <= climbTarget.bottomY - Margin)
@@ -47,15 +49,9 @@ public class ClimbState : IState
         }
     }
 
-    public void Update()
-    {
-        
-    }
+    public void Update() { }
 
-    public void Exit()
-    {
-        
-    }
+    public void Exit() { }
 
     void StartClimbing()
     {
@@ -70,7 +66,10 @@ public class ClimbState : IState
     public void Climb(float vertical)
     {
         if (isPlayingClimbEnd)
-            _climbSpeed = 0f;
+        {
+            _rb.velocity = Vector3.zero;
+            return;
+        }
 
         _rb.velocity = new Vector3(0f, vertical * _climbSpeed, 0f);
     }
@@ -88,5 +87,24 @@ public class ClimbState : IState
         climbTarget.CloseUI();
 
         climbTarget.EnableColliders(true);
+    }
+
+    private IEnumerator MoveToTop(Vector3 start, Vector3 end, float duration)
+    {
+        float timer = 0f;
+
+        isPlayingClimbEnd = true;
+        _character.InputHandler.enabled = false;
+
+        while(timer < duration)
+        {
+            timer += Time.deltaTime;
+            float t = Mathf.Clamp01(timer / duration);
+            _character.transform.position = Vector3.Lerp(start, end, t);
+            yield return null;
+        }
+
+        _character.transform.position = end;
+        isPlayingClimbEnd = false;
     }
 }

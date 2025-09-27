@@ -15,6 +15,8 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
+    [SerializeField] protected Transform topTargetPoint;
+    public Transform TopTargetPoint => topTargetPoint;
 
     public float topY { private set; get; }
     public float bottomY { private set; get; }

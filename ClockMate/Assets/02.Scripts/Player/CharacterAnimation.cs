@@ -351,7 +351,6 @@ public class CharacterAnimation : MonoBehaviourPun
     {
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
-            character.InputHandler.enabled = false;
             animator.SetTrigger(_hClimbEnd);
             return;
         }
@@ -364,7 +363,6 @@ public class CharacterAnimation : MonoBehaviourPun
     [PunRPC]
     private void RPC_PlayClimbEnd()
     {
-        character.InputHandler.enabled = false;
         animator.SetTrigger(_hClimbEnd);
     }
 
