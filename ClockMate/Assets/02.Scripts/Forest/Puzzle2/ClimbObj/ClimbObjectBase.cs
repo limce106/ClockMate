@@ -91,16 +91,6 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
         _isColliding = false;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        _isColliding = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        _isColliding = false;
-    }
-
     protected void SetIsInteractFromDown(bool fromDown)
     {
         isInteractFromDown = fromDown;
