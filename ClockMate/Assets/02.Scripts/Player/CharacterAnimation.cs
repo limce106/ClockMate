@@ -376,7 +376,8 @@ public class CharacterAnimation : MonoBehaviourPun
     /// <summary>
     /// 애니메이션 일시정지/재개
     /// </summary>
-    public void SetAnimPlayback(bool play)
+    [PunRPC]
+    public void RPC_SetAnimPlayback(bool play)
     {
         animator.enabled = play;
     }

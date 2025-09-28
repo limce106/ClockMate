@@ -153,10 +153,10 @@ public class PlayerInputHandler : MonoBehaviour
         if (Mathf.Abs(verticalInput) > 0.1f)
         {
             climbState.Climb(verticalInput);
-            _character.Anim.SetAnimPlayback(true);
+            _character.Anim.photonView.RPC("RPC_SetAnimPlayback", Photon.Pun.RpcTarget.All, true);
 
             // 위로 이동하는 상태로 전환될 때
-            if(verticalInput > 0 && climbingState != ClimbingState.Up)
+            if (verticalInput > 0 && climbingState != ClimbingState.Up)
             {
                 _character.Anim.SetClimbDown(false);
                 _character.Anim.SetClimbUp(true);
@@ -171,7 +171,7 @@ public class PlayerInputHandler : MonoBehaviour
         }
         else
         {
-            _character.Anim.SetAnimPlayback(false);
+            _character.Anim.photonView.RPC("RPC_SetAnimPlayback", Photon.Pun.RpcTarget.All, false);
             climbingState = ClimbingState.None;
             climbState.Climb(0f);
         }
