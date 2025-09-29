@@ -90,8 +90,11 @@ public class ClimbState : IState
     /// </summary>
     public void StopClimbing()
     {
-        _character.Anim.SetClimbDown(false);
-        _character.Anim.SetClimbUp(false);
+        if (_character.InputHandler.climbingState == ClimbingState.Up)
+            _character.Anim.SetClimbUp(false);
+        else if (_character.InputHandler.climbingState == ClimbingState.Down)
+            _character.Anim.SetClimbDown(false);
+        
         _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, true);
 
         _rb.useGravity = true;
@@ -99,7 +102,6 @@ public class ClimbState : IState
 
         _character.ChangeState<IdleState>();
         climbTarget.CloseUI();
-
         climbTarget.EnableColliders(true);
     }
 
@@ -127,5 +129,18 @@ public class ClimbState : IState
 
         _character.transform.position = end;
         isPlayingClimbEnd = false;
+
+        _character.Anim.SetClimbUp(false);
+        _rb.useGravity = true;
+        _rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+        _character.ChangeState<IdleState>();
+
+        if (_character.photonView.IsMine)
+        {
+            climbTarget.CloseUI();
+            climbTarget.EnableColliders(true);
+            _character.InputHandler.enabled = true;
+        }
     }
 }

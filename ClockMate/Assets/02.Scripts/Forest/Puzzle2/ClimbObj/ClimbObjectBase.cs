@@ -38,8 +38,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     /// </summary>
     public void CloseUI()
     {
-        _uiManager.Close(_uiClimbableObj);
-        _uiManager.Close(_uiNotice);
+        if(_uiClimbableObj != null && _uiClimbableObj.gameObject.activeSelf)
+            _uiManager.Close(_uiClimbableObj);
+        if (_uiNotice != null && _uiNotice.gameObject.activeSelf)
+            _uiManager.Close(_uiNotice);
     }
 
     public virtual bool CanInteract(CharacterBase character)

@@ -366,13 +366,6 @@ public class CharacterAnimation : MonoBehaviourPun
         animator.SetTrigger(_hClimbEnd);
     }
 
-    public void OnClimbUpEndComplete()
-    {
-        if (character.CurrentState is ClimbState climbState)
-            climbState.StopClimbing();
-        character.InputHandler.enabled = true;
-    }
-
     /// <summary>
     /// 애니메이션 일시정지/재개
     /// </summary>
