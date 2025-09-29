@@ -44,8 +44,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             statusText.text = "이미 서버 연결됨!";
         }
 
-        PhotonNetwork.SendRate = 30;
-        PhotonNetwork.SerializationRate = 30;
+        PhotonNetwork.SendRate = 20;
+        PhotonNetwork.SerializationRate = 15;
     }
 
     public void EnterTestServerRoom()
