@@ -145,7 +145,7 @@ public class GameManager : MonoSingleton<GameManager>
             case "Glacier":
                 return "";
             case "Forest":
-                return "";
+                return "forest_bgm";
             case "ClockTower":
                 return "";
             default:
