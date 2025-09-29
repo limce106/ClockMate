@@ -226,12 +226,6 @@ public class PlayerInputHandler : MonoBehaviour
         if (_character.CurrentState is ClimbState climbState)
         {
             climbState.StopClimbing();
-
-            if (_character.photonView.IsMine)
-            {
-                climbState.climbTarget.CloseUI();
-                climbState.climbTarget.EnableColliders(true);
-            }
         }
     }
 
