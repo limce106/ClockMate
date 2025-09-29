@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,8 +15,8 @@ public class ClimbState : IState
 
     private Rigidbody _rb;
     private bool playerAttached = false;
-    public bool isPlayingClimbEnd { private set; get; } = false;
-    private const float climbEndDuration = 4f;
+    public bool isPlayingClimbEnd { private set; get; } = false; // 정상 도달 애니메이션 실행 중 여부
+    public const float climbEndDuration = 4f;
 
     public ClimbState(CharacterBase character, ClimbObjectBase climbTarget)
     {
@@ -34,18 +35,25 @@ public class ClimbState : IState
         if (!playerAttached || isPlayingClimbEnd)
             return;
 
-        float characterY = _character.transform.position.y;
-        if (characterY >= climbTarget.topY + Margin && _character.InputHandler.climbingState == ClimbingState.Up)
+        if (_character.photonView.IsMine)
         {
-            _character.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            _character.Anim.PlayClimbEnd();
-            _character.StartCoroutine(MoveToTop(_character.transform.position, climbTarget.TopTargetPoint.position, climbEndDuration));
-            return;
-        }
-        else if (characterY <= climbTarget.bottomY - Margin)
-        {
-            StopClimbing();
-            return;
+            float characterY = _character.transform.position.y;
+
+            // 정상 도달
+            if (characterY >= climbTarget.topY + Margin && _character.InputHandler.climbingState == ClimbingState.Up)
+            {
+                if (!isPlayingClimbEnd)
+                {
+                    _character.photonView.RPC("RPC_ClimbEnd", RpcTarget.All, climbTarget.TopTargetPoint.position);
+                }
+                return;
+            }
+            // 하단 도달
+            else if (characterY <= climbTarget.bottomY - Margin)
+            {
+                _character.photonView.RPC("RPC_StopClimbing", RpcTarget.All);
+                return;
+            }
         }
     }
 
@@ -63,6 +71,9 @@ public class ClimbState : IState
         playerAttached = true;
     }
 
+    /// <summary>
+    /// 기어오르기/내려가기
+    /// </summary>
     public void Climb(float vertical)
     {
         if (isPlayingClimbEnd)
@@ -74,11 +85,14 @@ public class ClimbState : IState
         _rb.velocity = new Vector3(0f, vertical * _climbSpeed, 0f);
     }
 
+    /// <summary>
+    /// 기어오르기 중단
+    /// </summary>
     public void StopClimbing()
     {
         _character.Anim.SetClimbDown(false);
         _character.Anim.SetClimbUp(false);
-        _character.Anim.photonView.RPC("RPC_SetAnimPlayback", Photon.Pun.RpcTarget.All, true);
+        _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, true);
 
         _rb.useGravity = true;
         _rb.constraints = RigidbodyConstraints.FreezeRotation;
@@ -89,14 +103,21 @@ public class ClimbState : IState
         climbTarget.EnableColliders(true);
     }
 
-    private IEnumerator MoveToTop(Vector3 start, Vector3 end, float duration)
+    /// <summary>
+    /// 절벽 정상 위로 이동
+    /// </summary>
+    public IEnumerator MoveToTop(Vector3 start, Vector3 end, float duration)
     {
         float timer = 0f;
 
         isPlayingClimbEnd = true;
-        _character.InputHandler.enabled = false;
 
-        while(timer < duration)
+        if (_character.photonView.IsMine)
+        {
+            _character.InputHandler.enabled = false;
+        }
+
+        while (timer < duration)
         {
             timer += Time.deltaTime;
             float t = Mathf.Clamp01(timer / duration);

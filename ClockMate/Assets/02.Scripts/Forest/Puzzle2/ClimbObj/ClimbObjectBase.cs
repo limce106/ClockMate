@@ -1,4 +1,5 @@
 using DefineExtension;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,7 +62,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>(this);
+        if (character.photonView.IsMine)
+        {
+            character.photonView.RPC("RPC_StartClimbing", RpcTarget.All, GetComponent<PhotonView>().ViewID);
+        }
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
