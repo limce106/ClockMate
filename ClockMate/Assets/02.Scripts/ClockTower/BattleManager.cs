@@ -81,7 +81,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        StartCoroutine(StartBattle());
+        //StartCoroutine(StartBattle());
     }
 
     public override void OnJoinedRoom()

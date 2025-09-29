@@ -1,4 +1,5 @@
 using DefineExtension;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
+    [SerializeField] protected Transform topTargetPoint;
+    public Transform TopTargetPoint => topTargetPoint;
 
     public float topY { private set; get; }
     public float bottomY { private set; get; }
@@ -35,8 +38,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     /// </summary>
     public void CloseUI()
     {
-        _uiManager.Close(_uiClimbableObj);
-        _uiManager.Close(_uiNotice);
+        if(_uiClimbableObj != null && _uiClimbableObj.gameObject.activeSelf)
+            _uiManager.Close(_uiClimbableObj);
+        if (_uiNotice != null && _uiNotice.gameObject.activeSelf)
+            _uiManager.Close(_uiNotice);
     }
 
     public virtual bool CanInteract(CharacterBase character)
@@ -59,7 +64,10 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<ClimbState>(this);
+        if (character.photonView.IsMine)
+        {
+            character.photonView.RPC("RPC_StartClimbing", RpcTarget.All, GetComponent<PhotonView>().ViewID);
+        }
 
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);

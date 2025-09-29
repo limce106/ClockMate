@@ -135,7 +135,6 @@ MonoBehaviour:
   - RPC_MoveDoors
   - RPC_PlayPickUp
   - RPC_SetCarry
-  - RPC_ActivateEndingUI
   - BossToPlayerTransition
   - HandleFailure
   - HandleSuccess
@@ -146,6 +145,15 @@ MonoBehaviour:
   - RPC_SetDizzy
   - RPC_LoadScene
   - RPC_DeactivateAllObjects
+  - RPC_SetClimbDown
+  - RPC_SetClimbUp
+  - RPC_StageComplete
+  - RPC_PlayClimbEnd
+  - RPC_SetAnimPlayback
+  - RPC_ClimbMovement
+  - RPC_StartClimbing
+  - RPC_StopClimbing
+  - RPC_ClimbEnd
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

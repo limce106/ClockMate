@@ -15,6 +15,13 @@
             Interact,
             Climb
         }
+
+        public enum ClimbingState
+        {
+            None,
+            Up,
+            Down
+        }
     }
     public static class UI
     {

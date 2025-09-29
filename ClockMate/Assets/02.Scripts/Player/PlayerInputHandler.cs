@@ -15,6 +15,7 @@ public class PlayerInputHandler : MonoBehaviour
     private CharacterBase _character;
     private PlayerInputActions _inputActions;
     private bool _isMoving;
+    public ClimbingState climbingState { private set; get; } = ClimbingState.None;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
 
@@ -67,7 +68,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Update()
     {
-        if (_character.CurrentState is ClimbState)
+        if (_character.CurrentState is ClimbState climbState)
         {
             HandleClimb();
             return;
@@ -140,25 +141,112 @@ public class PlayerInputHandler : MonoBehaviour
         if (!_actionsAvailable[CharacterAction.Climb]) return;
     }
 
+    /// <summary>
+    /// 기어오르기 입력 처리
+    /// </summary>
     private void HandleClimb()
     {
         ClimbState climbState = _character.CurrentState as ClimbState;
+        if (climbState == null || climbState.isPlayingClimbEnd)
+            return;
 
-        Vector2 moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
-        float verticalInput = moveInput.y;
+        if (_character.photonView.IsMine)
+        {
+            Vector2 moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
+            float verticalInput = moveInput.y;
 
-        if (Mathf.Abs(verticalInput) > 0.1f)
+            _character.photonView.RPC("RPC_ClimbMovement", RpcTarget.All, verticalInput);
+
+            // 기어오르기 중지
+            if (Keyboard.current.qKey.wasPressedThisFrame)
+            {
+                _character.photonView.RPC("RPC_StopClimbing", RpcTarget.All);
+            }
+        }
+    }
+
+    [PunRPC]
+    private void RPC_ClimbMovement(float verticalInput)
+    {
+        if (_character.CurrentState is ClimbState climbState)
         {
             climbState.Climb(verticalInput);
-        }
-        else
-        {
-            climbState.Climb(0f);
-        }
 
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+            if (Mathf.Abs(verticalInput) > 0.1f)
+            {
+                _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, true);
+
+                if (verticalInput > 0 && climbingState != ClimbingState.Up)
+                {
+                    _character.Anim.SetClimbDown(false);
+                    _character.Anim.SetClimbUp(true);
+                    climbingState = ClimbingState.Up;
+                }
+                else if (verticalInput < 0 && climbingState != ClimbingState.Down)
+                {
+                    _character.Anim.SetClimbUp(false);
+                    _character.Anim.SetClimbDown(true);
+                    climbingState = ClimbingState.Down;
+                }
+            }
+            else
+            {
+                _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, false);
+                climbingState = ClimbingState.None;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 모든 클라이언트에서 로컬 캐릭터의 기어오르기 시작
+    /// </summary>
+    [PunRPC]
+    private void RPC_StartClimbing(int climbTargetViewID)
+    {
+        PhotonView climbTargetView = PhotonView.Find(climbTargetViewID);
+
+        if (climbTargetView != null)
+        {
+            ClimbObjectBase climbTarget = climbTargetView.GetComponent<ClimbObjectBase>();
+
+            if (climbTarget != null)
+            {
+                // 모든 클라이언트에서 상태를 ClimbState로 전환
+                _character.ChangeState<ClimbState>(climbTarget);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 모든 클라이언트에서 로컬 캐릭터의 기어오르기 중지
+    /// </summary>
+    [PunRPC]
+    private void RPC_StopClimbing()
+    {
+        if (_character.CurrentState is ClimbState climbState)
         {
             climbState.StopClimbing();
+        }
+    }
+
+    /// <summary>
+    /// 모든 클라이언트에서 정상 이동
+    /// </summary>
+    [PunRPC]
+    private void RPC_ClimbEnd(Vector3 targetPosition)
+    {
+        if (_character.CurrentState is ClimbState climbState)
+        {
+            _character.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+            _character.Anim.PlayClimbEnd();
+
+            _character.StartCoroutine(climbState.MoveToTop(_character.transform.position, targetPosition, ClimbState.climbEndDuration));
+
+            if (_character.photonView.IsMine)
+            {
+                _character.InputHandler.enabled = false;
+            }
         }
     }
 

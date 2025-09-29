@@ -13,10 +13,12 @@ public class LadderClimbObject : ClimbObjectBase
         if(character.transform.position.y < transform.position.y)
         {
             character.transform.position = bottomPoint.position;
+            character.Anim.SetClimbUp(true);
         }
         else
         {
             character.transform.position = topPoint.position;
+            character.Anim.SetClimbDown(true);
         }
 
         Vector3 forward = transform.forward;

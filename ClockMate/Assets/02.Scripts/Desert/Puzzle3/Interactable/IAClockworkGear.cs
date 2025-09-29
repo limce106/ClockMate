@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using Define;
 using Photon.Pun;
+using UnityEngine.SceneManagement;
 
 public class IAClockworkGear : MonoBehaviourPun, IInteractable
 {
+
     public bool CanInteract(CharacterBase character)
     {
         return !CutsceneSyncManager.Instance.IsBusy;
@@ -38,20 +42,27 @@ public class IAClockworkGear : MonoBehaviourPun, IInteractable
         }
 
         CutsceneSyncManager.Instance.PlayForAll(
-            clipName: "DesertEnding", 
+            clipName: GetEndingClipName(), 
             timeoutSec: 0f, 
             masterOnlyOnAllFinished: () =>
             {
-                // TODO: 다음 씬으로 넘어가는 로직
-                // 임시 엔딩
-                photonView.RPC(nameof(RPC_ActivateEndingUI), RpcTarget.All);
+                photonView.RPC(nameof(RPC_StageComplete), RpcTarget.All);
             }
         );
     }
     
     [PunRPC]
-    private void RPC_ActivateEndingUI()
+    private void RPC_StageComplete()
     {
-        UIManager.Instance.Show<UIEnding>("UIEnding");
+        GameManager.Instance.StageComplete();
+    }
+
+    /// <summary>
+    /// 현재 맵의 엔딩 영상명 반환
+    /// </summary>
+    private string GetEndingClipName()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return currentScene + "Ending";
     }
 }
