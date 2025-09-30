@@ -22,6 +22,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string pClimbUp = "ClimbUp";
     [SerializeField] private string pClimbDown = "ClimbDown";
     [SerializeField] private string pClimbEnd = "ClimbEnd";
+    [SerializeField] private string pPush = "Push";
 
     [Header("Speed Smoothing")]
     [SerializeField] private float speedLerp = 0.2f;    // 애니용 속도 평활화
@@ -37,6 +38,7 @@ public class CharacterAnimation : MonoBehaviourPun
     // hashes
     private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown, _hClimbEnd;
     private int _hFanFly;
+    private int _hPush;
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
@@ -76,6 +78,7 @@ public class CharacterAnimation : MonoBehaviourPun
         else
         {
             // 아워만
+            _hPush = Animator.StringToHash(pPush);
         }
 
         if (animator)
@@ -373,5 +376,24 @@ public class CharacterAnimation : MonoBehaviourPun
     public void RPC_SetAnimPlayback(bool play)
     {
         animator.enabled = play;
+    }
+    
+    public void SetPush(bool on)
+    {
+        if (!NetworkManager.Instance.IsInRoomAndReady())
+        {
+            animator.SetBool(_hPush, on);
+            return;
+        }
+        if (animator && photonView.IsMine)
+        {
+            photonView.RPC(nameof(RPC_SetPush), RpcTarget.All, on);
+        }
+    }
+
+    [PunRPC] 
+    private void RPC_SetPush(bool on)
+    {
+        animator.SetBool(_hPush, on);
     }
 }
