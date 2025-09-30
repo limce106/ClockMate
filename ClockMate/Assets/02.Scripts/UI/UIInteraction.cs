@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Define.UI.UIType;
 
@@ -34,6 +35,16 @@ public class UIInteraction : UIBase
         _spriteInactive = Resources.Load<Sprite>("UI/Sprites/interact_inactive");
         _spriteActive = Resources.Load<Sprite>("UI/Sprites/interact_active");
         _mainCamera = Camera.main;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+
+    private void OnSceneUnloaded(Scene scene)
+    {
+        foreach (var pair in _objectToUIImage)
+        {
+            DeactivateUI(pair.Key);
+        }
     }
 
     /// <summary>
