@@ -78,7 +78,7 @@ public class GameManager : MonoSingleton<GameManager>
             return true;
         }
 
-        Debug.LogError($"[GameManager] 캐릭터 프리팹({SelectedCharacter}) 로드 실패: 네트워크 연결 불가");
+        Debug.LogError($"[GameManager] 캐릭터 프리팹({SelectedCharacter}) 로드 실패");
         return false;
     }
 
