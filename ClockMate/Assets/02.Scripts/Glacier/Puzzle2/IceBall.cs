@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 /// 아워가 밀 수 있는 빙벽.
 /// - 빙벽은 구형으로 회전하면서 이동한다.
 /// </summary>
-public class IAIceBall : MonoBehaviour, IInteractable
+public class IceBall : MonoBehaviour
 {
     [SerializeField] private float moveForce;
     [SerializeField] private float torqueForce;
@@ -19,12 +20,12 @@ public class IAIceBall : MonoBehaviour, IInteractable
     private string _exitString;
     
     private Rigidbody _rb; // IceBallObj의 rb
-    private bool _isControlled;
+    public bool IsControlled { get; private set; }
     private CharacterBase _controller;
     private Vector3 _characterLocalOffset;
 
     private float _controllerRadius; // 빙벽 반지름 + 여유 거리
-    
+    public Action<bool> OnControlEnd;
     private void Awake()
     {
         Init();
@@ -32,9 +33,9 @@ public class IAIceBall : MonoBehaviour, IInteractable
     
     private void Init()
     {
-        _rb = GetComponent<Rigidbody>();
+        _rb = GetComponentInParent<Rigidbody>();
         _rb.isKinematic = true;
-        _isControlled = false;
+        IsControlled = false;
         _controller = null;
         
         _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
@@ -47,7 +48,7 @@ public class IAIceBall : MonoBehaviour, IInteractable
     
     private void FixedUpdate()
     {
-        if (!_isControlled) return;
+        if (!IsControlled) return;
 
         // 이동 입력 처리
         Vector3 input = Vector3.zero;
@@ -60,18 +61,17 @@ public class IAIceBall : MonoBehaviour, IInteractable
         {
             Vector3 dir = input.normalized;
             
-            // 빙벽 이동
-            iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime); 
+            iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
 
-            // 빙벽 회전
+            // 빙벽 회전만 수행
             Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
-            _rb.AddTorque(torqueAxis * torqueForce, ForceMode.Force);
+            transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
         }
     }
     
     private void Update()
     {
-        if (!_isControlled) return;
+        if (!IsControlled) return;
 
         if (_controller is not null)
         {
@@ -92,39 +92,21 @@ public class IAIceBall : MonoBehaviour, IInteractable
         _controller.transform.position = target;
     }
 
-    public bool CanInteract(CharacterBase character)
+    public void StartControl(CharacterBase controller)
     {
-        return character is Hour && !_isControlled;
-    }
-
-    public void OnInteractAvailable() { }
-
-    public void OnInteractUnavailable() { }
-
-    public bool Interact(CharacterBase character)
-    {
-        if (character is not Hour hour) return false;
-
-        _isControlled = true;
-        _controller = hour;
+        IsControlled = true;
+        _controller = controller;
         SetControllerPos();
         _controller.ChangeState<PushState>(controllerPos.transform);
         _rb.isKinematic = false;
 
         _controller.InputHandler.enabled = false;
+        _controller.Anim.SetPush(true);
         
         // 그만두기 UI 표시
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
-        
-        // 상호작용 탐지되지 않도록 collider 비활성화
-        if (TryGetComponent(out Collider col))
-        {
-            col.enabled = false;
-        }
-
-        return true;
     }
 
     /// <summary>
@@ -149,9 +131,10 @@ public class IAIceBall : MonoBehaviour, IInteractable
 
     private void ExitControl()
     {
-        _isControlled = false;
+        IsControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
+        _controller.Anim.SetPush(false);
         _controller = null;
         _rb.isKinematic = true;
 
@@ -159,9 +142,6 @@ public class IAIceBall : MonoBehaviour, IInteractable
         _uiNotice = null;
         
         // collider 다시 활성화
-        if (TryGetComponent(out Collider col))
-        {
-            col.enabled = true;
-        }
+        OnControlEnd(true);
     }
 }
