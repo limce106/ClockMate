@@ -10,11 +10,12 @@ public class RollingStone : MonoBehaviourPun
     public float _torqueForce;
     private float _returnTime;
 
-    private Rigidbody rb;
+    private Rigidbody _rb;
+    private SoundHandle _stoneSfxHandle = default;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
     }
 
     public void Initialize(float torque, float returnTime)
@@ -39,13 +40,13 @@ public class RollingStone : MonoBehaviourPun
 
     void Roll()
     {
-        rb.AddTorque(transform.right * _torqueForce);
+        _rb.AddTorque(transform.right * _torqueForce);
     }
 
     void ResetPhysics()
     {
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
     }
 
     IEnumerator ReturnAfterDelay()
@@ -72,9 +73,23 @@ public class RollingStone : MonoBehaviourPun
                 SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
             }
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
         {
-            SoundManager.Instance.PlaySfx(key: "rock_fall", pos: transform.position, volume: 0.7f);
+            _stoneSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "rock_fall",
+                loop: true,
+                pos: transform.position,
+                sync: false,
+                volume: 0.6f);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            SoundManager.Instance.Stop(_stoneSfxHandle);
+            _stoneSfxHandle = default;
         }
     }
 }
