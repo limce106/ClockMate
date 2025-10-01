@@ -8,7 +8,7 @@ using DefineExtension;
 public class RollingStone : MonoBehaviourPun
 {
     public float _torqueForce;
-    private float _returnHeight;
+    private float _returnTime;
 
     private Rigidbody rb;
 
@@ -17,23 +17,24 @@ public class RollingStone : MonoBehaviourPun
         rb = GetComponent<Rigidbody>();
     }
 
-    public void Initialize(float torque, float returnHeight)
+    public void Initialize(float torque, float returnTime)
     {
         _torqueForce = torque;
-        _returnHeight = returnHeight;
+        _returnTime = returnTime;
 
         ResetPhysics();
+        StartCoroutine(ReturnAfterDelay());
     }
 
     private void OnEnable()
     {
         ResetPhysics();
+        StartCoroutine(ReturnAfterDelay());
     }
 
     void FixedUpdate()
     {
         Roll();
-        CheckReturn();
     }
 
     void Roll()
@@ -47,12 +48,10 @@ public class RollingStone : MonoBehaviourPun
         rb.angularVelocity = Vector3.zero;
     }
 
-    void CheckReturn()
+    IEnumerator ReturnAfterDelay()
     {
-        if(transform.position.y <= _returnHeight)
-        {
-            ReturnRollingStone();
-        }
+        yield return new WaitForSeconds(_returnTime);
+        ReturnRollingStone();
     }
 
     private void ReturnRollingStone()
@@ -70,7 +69,12 @@ public class RollingStone : MonoBehaviourPun
             if (!character.IsDizzy)
             {
                 character.StartCoroutine(character.ApplyDizzy(3f));
+                SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
             }
+        }
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            SoundManager.Instance.PlaySfx(key: "rock_fall", pos: transform.position, volume: 0.7f);
         }
     }
 }
