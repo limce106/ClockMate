@@ -224,6 +224,20 @@ public class ClockHandRecovery : AttackPattern
 
     void EndRecovery(bool isSuccess)
     {
+        DestroyClockHands();
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
+    }
+
+    public override void CancelAttack()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        DestroyClockHands();
+    }
+
+    private void DestroyClockHands()
+    {
         photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
 
         photonView.RPC(nameof(RPC_DisableUI), RpcTarget.All);
@@ -235,7 +249,5 @@ public class ClockHandRecovery : AttackPattern
 
         hourClockHand = null;
         minuteClockHand = null;
-
-        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 }
