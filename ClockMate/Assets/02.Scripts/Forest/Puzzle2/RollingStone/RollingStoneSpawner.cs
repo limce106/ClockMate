@@ -14,7 +14,7 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
         [Tooltip("스폰 주기")] public float spawnInterval;
         [Tooltip("일회성 여부")] public bool spawnOnce;
         [Tooltip("굴러가는 힘")] public float torqueForce;
-        [Tooltip("사라지는 높이")] public float returnHeight;
+        [Tooltip("사라지는 시간(초)")] public float returnTime;
     }
 
     public SpawnPointInfo[] spawnPoints;
@@ -53,20 +53,20 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
     {
         if(info.spawnOnce)
         {
-            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnHeight);
+            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnTime);
             yield break;
         }
 
         while(true)
         {
-            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnHeight);
+            SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnTime);
             yield return new WaitForSeconds(info.spawnInterval);
         }
     }
 
-    private void SpawnStone(Vector3 point, Quaternion rot, float torque, float returnHeight)
+    private void SpawnStone(Vector3 point, Quaternion rot, float torque, float returnTime)
     {
         RollingStone stone = rollingStonePool.Get(point, rot);
-        stone.Initialize(torque, returnHeight);
+        stone.Initialize(torque, returnTime);
     }
 }

@@ -8,51 +8,51 @@ using DefineExtension;
 public class RollingStone : MonoBehaviourPun
 {
     public float _torqueForce;
-    private float _returnHeight;
+    private float _returnTime;
 
-    private Rigidbody rb;
+    private Rigidbody _rb;
+    private SoundHandle _stoneSfxHandle = default;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
     }
 
-    public void Initialize(float torque, float returnHeight)
+    public void Initialize(float torque, float returnTime)
     {
         _torqueForce = torque;
-        _returnHeight = returnHeight;
+        _returnTime = returnTime;
 
         ResetPhysics();
+        StartCoroutine(ReturnAfterDelay());
     }
 
     private void OnEnable()
     {
         ResetPhysics();
+        StartCoroutine(ReturnAfterDelay());
     }
 
     void FixedUpdate()
     {
         Roll();
-        CheckReturn();
     }
 
     void Roll()
     {
-        rb.AddTorque(transform.right * _torqueForce);
+        _rb.AddTorque(transform.right * _torqueForce);
     }
 
     void ResetPhysics()
     {
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
     }
 
-    void CheckReturn()
+    IEnumerator ReturnAfterDelay()
     {
-        if(transform.position.y <= _returnHeight)
-        {
-            ReturnRollingStone();
-        }
+        yield return new WaitForSeconds(_returnTime);
+        ReturnRollingStone();
     }
 
     private void ReturnRollingStone()
@@ -70,7 +70,26 @@ public class RollingStone : MonoBehaviourPun
             if (!character.IsDizzy)
             {
                 character.StartCoroutine(character.ApplyDizzy(3f));
+                SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
             }
+        }
+        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
+        {
+            _stoneSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "rock_fall",
+                loop: true,
+                pos: transform.position,
+                sync: false,
+                volume: 0.6f);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            SoundManager.Instance.Stop(_stoneSfxHandle);
+            _stoneSfxHandle = default;
         }
     }
 }
