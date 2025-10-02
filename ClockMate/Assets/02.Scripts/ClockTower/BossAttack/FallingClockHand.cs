@@ -12,7 +12,7 @@ public class FallingClockHand : MonoBehaviourPun
 
     private const float fallForce = 700f;
     private const float lifeTime = 3f;
-    private const float stickOffset = 0.2f;
+    private const float stickOffset = 0.01f;
 
     public delegate void FallingClockHandDisableHandler(GameObject gameObject);
     public event FallingClockHandDisableHandler OnFallingClockHandDisabled;    // 시계 추가 파괴될 때 실행될 콜백
