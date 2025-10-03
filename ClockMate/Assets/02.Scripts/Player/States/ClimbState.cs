@@ -15,6 +15,8 @@ public class ClimbState : IState
 
     private Rigidbody _rb;
     private bool playerAttached = false;
+    private SoundHandle _climbSfxHandle = default;
+
     public bool isPlayingClimbEnd { private set; get; } = false; // 정상 도달 애니메이션 실행 중 여부
     public const float climbEndDuration = 4f;
 
@@ -78,11 +80,14 @@ public class ClimbState : IState
     {
         if (isPlayingClimbEnd)
         {
+            StopClimbSfx();
+
             _rb.velocity = Vector3.zero;
             return;
         }
 
         _rb.velocity = new Vector3(0f, vertical * _climbSpeed, 0f);
+        StartClimbSfx();
     }
 
     /// <summary>
@@ -90,6 +95,8 @@ public class ClimbState : IState
     /// </summary>
     public void StopClimbing()
     {
+        StopClimbSfx();
+
         _character.Anim.SetClimbUp(false);
         _character.Anim.SetClimbDown(false);
 
@@ -115,6 +122,7 @@ public class ClimbState : IState
         float timer = 0f;
 
         isPlayingClimbEnd = true;
+        StopClimbSfx();
 
         if (_character.photonView.IsMine)
         {
@@ -137,6 +145,28 @@ public class ClimbState : IState
         if (_character.photonView.IsMine)
         {
             _character.InputHandler.enabled = true;
+        }
+    }
+
+    public void StartClimbSfx()
+    {
+        if(!_climbSfxHandle.IsValid)
+        {
+            _climbSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "character_climb",
+                loop: true,
+                pos: _character.transform.position,
+                sync: false,
+                volume: 1f);
+        }
+    }
+
+    public void StopClimbSfx()
+    {
+        if(_climbSfxHandle.IsValid)
+        {
+            SoundManager.Instance.Stop(_climbSfxHandle);
+            _climbSfxHandle = default;
         }
     }
 }

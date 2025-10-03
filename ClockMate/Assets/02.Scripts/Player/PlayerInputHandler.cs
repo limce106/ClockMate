@@ -193,6 +193,7 @@ public class PlayerInputHandler : MonoBehaviour
             {
                 _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, false);
                 climbingState = ClimbingState.None;
+                climbState.StopClimbSfx();
             }
         }
     }
