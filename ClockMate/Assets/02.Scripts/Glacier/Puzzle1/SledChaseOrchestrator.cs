@@ -19,6 +19,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
     [SerializeField] private SledHP sledHP;
     [SerializeField] private TargetDetector targetDetector;
     [SerializeField] private GameObject characterModels;
+    [SerializeField] private GameObject visual;
     [SerializeField] private SnowballShooter snowballShooter;
     
     [Header("Cutscene")]
@@ -66,16 +67,30 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(RPC_ActivateBreakPoints), RpcTarget.All, _milliActor);
     }
 
-    public void RequestReStart()
+    public void RequestRestart()
     {
         // TODO 리셋 과정 자연스럽게 처리
         _finishedCount = 0;
+        photonView.RPC(nameof(RPC_WaitAndRestart), RpcTarget.All);
+    }
+    
+    [PunRPC]
+    private void RPC_WaitAndRestart()
+    {
+        sled.SetSledMoving(false);
+        visual.SetActive(false);
+        if (!PhotonNetwork.IsMasterClient) return;
+        StartCoroutine(WaitForRestart());
+    }
+    IEnumerator WaitForRestart()
+    {
+        yield return new WaitForSeconds(1f);
         photonView.RPC(nameof(RPC_TeleportAll), RpcTarget.All,
             sledStart.position, sledStart.rotation.eulerAngles,
             bearStart.position, bearStart.rotation.eulerAngles);
         SnowballPool.Instance.ReturnAll(); // 눈덩이 풀도 리셋
     }
-
+    
     [PunRPC]
     private void RPC_ReportSelection(int actorNumber, int characterEnum)
     {
@@ -122,6 +137,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_TeleportAll(Vector3 sledPos, Vector3 sledEuler, Vector3 bearPos, Vector3 bearEuler)
     {
+        visual.SetActive(true);
         characterModels.SetActive(true);
         sled.transform.SetPositionAndRotation(sledPos, Quaternion.Euler(sledEuler));
         bear.transform.SetPositionAndRotation(bearPos, Quaternion.Euler(bearEuler));

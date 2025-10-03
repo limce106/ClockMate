@@ -27,7 +27,7 @@ public class SledHP : MonoBehaviourPun
 
         if (_currentHP <= 0)
         {
-            orchestrator.RequestReStart();
+            orchestrator.RequestRestart();
         }
     }
     
@@ -37,5 +37,4 @@ public class SledHP : MonoBehaviourPun
         _currentHP = hp;
         _uiSledHP?.UpdateHpBar(maxHP, _currentHP);
     }
-
 }

@@ -16,8 +16,10 @@ public class SledController : MonoBehaviourPun, IPunObservable
     [SerializeField] private string movingSfxKey = "sledding_on_snow";
     [SerializeField] private string jumpSfxKey= "sled_jump";
     [SerializeField] private string landSfxKey = "sled_ground_hit";
+    [SerializeField] private string splashSfxKey = "water_splash";
     [SerializeField] private float sfxVolume = 1.0f;
     [SerializeField] private ParticleSystem landVfx;
+    [SerializeField] private ParticleSystem splashVfx;
     
     private Rigidbody _rb;
     private bool _jumpRequested;
@@ -147,8 +149,11 @@ public class SledController : MonoBehaviourPun, IPunObservable
     {
         // 물과 충돌하면 바로 추격 재시작
         if(!other.gameObject.CompareTag("Water")) return;
-        
+        Instantiate(splashVfx, transform.position, Quaternion.identity);
+        SoundManager.Instance.PlaySfx(key: splashSfxKey, pos: transform.position, volume: sfxVolume, sync: true);
+
         _sledHP.TakeDamage(100);
+        
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
