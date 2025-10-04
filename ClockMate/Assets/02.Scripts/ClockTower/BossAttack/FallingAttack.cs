@@ -86,9 +86,6 @@ public class FallingAttack : AttackPattern
 
     public override void CancelAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         isCanceled = true;
 
         var clockHandsToDestroy = FindObjectsOfType<FallingClockHand>();

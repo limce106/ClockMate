@@ -132,9 +132,6 @@ public class SwingAttack : AttackPattern
 
     public override void CancelAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         isCanceled = true;
 
         var pendulumsToReturn = new List<GameObject>(spawnedPendulums);

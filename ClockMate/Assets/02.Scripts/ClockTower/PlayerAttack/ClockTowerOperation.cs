@@ -59,9 +59,6 @@ public class ClockTowerOperation : AttackPattern
 
     public override void CancelAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         DestroySpring();
     }
 

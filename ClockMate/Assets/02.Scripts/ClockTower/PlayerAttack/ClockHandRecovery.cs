@@ -230,9 +230,6 @@ public class ClockHandRecovery : AttackPattern
 
     public override void CancelAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         DestroyClockHands();
     }
 
