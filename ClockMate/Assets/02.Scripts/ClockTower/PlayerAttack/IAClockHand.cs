@@ -30,6 +30,8 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
     private void Update()
     {
+        if (!_isControlled) return;
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ExitControl();
@@ -38,9 +40,12 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
     void FixedUpdate()
     {
+        if (!_isControlled) return;
+
         if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
             _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
+            _controller.Anim.SetPush(true);
         }
     }
 
@@ -64,7 +69,6 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _controller = character;
         _controller.ChangeState<PushState>(meshRenderer.transform);
         _controller.InputHandler.enabled = false;
-        _controller.Anim.SetPush(true);
 
         _fixedRotationDirection = GetDirectionFromView(character);
 
