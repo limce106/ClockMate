@@ -178,6 +178,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         }
         else
         {
+            if (_holder == null) return;
             HeldCharacterIds.Remove(_holder.photonView.ViewID);
             SetIgnoreCollisionWithHolder(false);
             _holder = null;

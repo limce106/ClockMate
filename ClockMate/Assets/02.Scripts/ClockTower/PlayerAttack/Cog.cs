@@ -119,9 +119,9 @@ public class Cog : MonoBehaviourPun, IPunObservable
         if (!gripA.IsOccupied || !gripB.IsOccupied)
         {
             Carried = false;
-            _rb.isKinematic = false;
+            _rb.isKinematic = Fitted; // 끼워진 상태라면 키네틱 ture, 아니라면 false
             character.Anim.SetCarry(false);
-            _finishedPlayers.Clear();
+            _finishedPlayers.Clear(); // 내려놓았으면 끼우기 완료 취소
             return;
         }
 
@@ -141,6 +141,9 @@ public class Cog : MonoBehaviourPun, IPunObservable
         _rb.angularVelocity = Vector3.zero;
         _rb.isKinematic = true;
         
+        // 기울기 제거
+        transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
+        
         // 들어올림
         Vector3 pos = transform.position;
         pos.y += carryHeight;
@@ -157,6 +160,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void RPC_FitCogToSlot()
     {
+        Fitted = true;
         // 톱니바퀴 슬롯에 끼워져야하는 위치/회전값으로 fix, 키네틱 전환
         gameObject.transform.position = Slot.transform.position;
         gameObject.transform.rotation = Slot.transform.rotation;
@@ -166,8 +170,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         gripB.gameObject.SetActive(false);
         
         _rb.isKinematic = true;
-
-        Fitted = true;
+        
         // todo 톱니바퀴 끼워지는 이펙트와 사운드 추가
     }
     
