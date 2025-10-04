@@ -85,14 +85,19 @@ public class CogRecovery : AttackPattern
      {
          while (true)
          {
-             if (AllCogsFitted())
+            if (BattleLifeManager.Instance.isAllPlayerDead == true)
+            {
+                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                yield break;
+            }
+
+            if (AllCogsFitted())
              {
                  EndRecovery(true);
                  yield break;
              }
          
-             if (PhotonNetwork.IsMasterClient && 
-                (BattleManager.Instance.IsTimeLimitEnd() || BattleLifeManager.Instance.isAllPlayerDead == true))
+             if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
              {
                  EndRecovery(false);
                  yield break;

@@ -32,9 +32,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public GameObject[] clockFace;  // 덮개
 
-    public int round { get; private set; } = 1;
-    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.CogwheelRecovery;
+    public int round { get; private set; } = 4;
+    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
@@ -144,7 +144,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(curAttackPattern.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
-            PhotonNetwork.Destroy(spawnedAttack);
 
             bool success = curAttackSuccess;
             curAttackSuccess = false;
@@ -164,6 +163,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             yield return new WaitUntil(() => !isHandling);
+            PhotonNetwork.Destroy(spawnedAttack);
         }
     }
 
@@ -236,6 +236,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
             TryAdvanceBossAttack();
             round++;
+
+            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
 
             if (playerAttackType == PlayerAttackType.CogwheelRecovery)
             {
@@ -316,6 +318,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
         return recoverySlider.value;
     }
 
+    [PunRPC]
+    public void RPC_StopCurAttackPattern()
+    {
+        StopCurAttackPattern();
+    }
+
     /// <summary>
     /// 현재 공격 중단
     /// </summary>
@@ -385,7 +393,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-        StopCurAttackPattern();
+        photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
         yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
@@ -407,6 +415,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     private void RunTimer()
     {
+        if (BattleLifeManager.Instance.isAllPlayerDead)
+            return;
+
         _timer -= Time.deltaTime;
         photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
     }

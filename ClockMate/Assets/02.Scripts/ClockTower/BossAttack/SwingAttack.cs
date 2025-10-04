@@ -126,7 +126,10 @@ public class SwingAttack : AttackPattern
             yield return new WaitForSeconds(1f);
         }
 
-        if(!isCanceled)
+        if(BattleLifeManager.Instance.isAllPlayerDead)
+            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+
+        if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
     }
 

@@ -184,8 +184,14 @@ public class ClockHandRecovery : AttackPattern
     {
         while (true)
         {
+            if(BattleLifeManager.Instance.isAllPlayerDead == true)
+            {
+                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                yield break;
+            }
+
             // 시간 초과 처리
-            if (BattleManager.Instance.IsTimeLimitEnd() || BattleLifeManager.Instance.isAllPlayerDead == true)
+            if (BattleManager.Instance.IsTimeLimitEnd())
             {
                 EndRecovery(false);
                 yield break;
