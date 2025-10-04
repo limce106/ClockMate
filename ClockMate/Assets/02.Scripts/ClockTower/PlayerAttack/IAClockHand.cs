@@ -28,23 +28,19 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _exitString = "나가기";
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ExitControl();
+        }
+    }
+
     void FixedUpdate()
     {
-        // 조작 중인 플레이어가 로컬 플레이어인지 확인
-        bool isLocalPlayerControlling = _isControlled && _controller != null && _controller.photonView.IsMine;
-
-        if (isLocalPlayerControlling)
+        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                ExitControl();
-                return;
-            }
-
-            if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
-            {
-                _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
-            }
+            _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
         }
     }
 
