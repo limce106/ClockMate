@@ -21,7 +21,7 @@ public class ClockHandRecovery : AttackPattern
     private const float MinDistance = 10f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
-    private const float SpawnPosY = 1f;   // 스폰 위치 Y값
+    private const float SpawnPosY = 0.5f;   // 스폰 위치 Y값
 
     protected override void Init()
     {

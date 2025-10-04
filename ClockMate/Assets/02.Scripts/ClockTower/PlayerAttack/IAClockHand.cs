@@ -68,6 +68,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _controller = character;
         _controller.ChangeState<PushState>(meshRenderer.transform);
         _controller.InputHandler.enabled = false;
+        _controller.Anim.SetPush(true);
 
         _fixedRotationDirection = GetDirectionFromView(character);
 
@@ -97,6 +98,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _isControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
+        _controller.Anim.SetPush(false);
 
         _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_DetachController), RpcTarget.All, _controller.photonView.ViewID);
         if (_controller.photonView.IsMine)

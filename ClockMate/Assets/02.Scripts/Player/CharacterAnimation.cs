@@ -36,9 +36,8 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private ParticleSystem dizzyVFX;
 
     // hashes
-    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown, _hClimbEnd;
+    private int _hSpeed, _hIsGrounded, _hJump, _hPickUp, _hCarry, _hDizzy, _hClimbUp, _hClimbDown, _hClimbEnd, _hPush;
     private int _hFanFly;
-    private int _hPush;
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
@@ -69,6 +68,7 @@ public class CharacterAnimation : MonoBehaviourPun
         _hClimbUp = Animator.StringToHash(pClimbUp);
         _hClimbDown = Animator.StringToHash(pClimbDown);
         _hClimbEnd = Animator.StringToHash(pClimbEnd);
+        _hPush = Animator.StringToHash(pPush);
 
         if (character.Name == CharacterName.Milli)
         {
@@ -78,7 +78,7 @@ public class CharacterAnimation : MonoBehaviourPun
         else
         {
             // 아워만
-            _hPush = Animator.StringToHash(pPush);
+            
         }
 
         if (animator)
