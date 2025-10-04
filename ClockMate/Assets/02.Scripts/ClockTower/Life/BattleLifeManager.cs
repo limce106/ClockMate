@@ -2,13 +2,13 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Define.Character;
 using static Define.Battle;
 
 public class BattleLifeManager : MonoBehaviourPun
 {
-    private HashSet<int> deadPlayers = new HashSet<int>();
-    private Dictionary<CharacterBase, Vector3> lastHitPositions = new Dictionary<CharacterBase, Vector3>();
+    private HashSet<int> _deadPlayers = new HashSet<int>();
+    private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>();
+    private Coroutine _reviveCoroutine;
 
     public static BattleLifeManager Instance { get; private set; }
 
@@ -29,17 +29,19 @@ public class BattleLifeManager : MonoBehaviourPun
     public void HandleDeath(CharacterBase character, DeathType deathType)
     {
         int id = character.GetComponent<PhotonView>().ViewID;
-        deadPlayers.Add(id);
+        photonView.RPC(nameof(RPC_AddDeadPlayers), RpcTarget.All, id);
 
-        if (deadPlayers.Count == 1)
+        if (_deadPlayers.Count == 1)
         {
-            StartCoroutine(Revive(character, deathType));
+            _reviveCoroutine = StartCoroutine(Revive(character, deathType));
         }
-        else if (deadPlayers.Count == 2)
+        else if (_deadPlayers.Count == 2)
         {
+            photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
+            photonView.RPC(nameof(RPC_ClearDeadPlayers), RpcTarget.All);
+
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
             BattleManager.Instance.StopCurAttackPattern();
-            deadPlayers.Clear();
         }
     }
 
@@ -53,7 +55,10 @@ public class BattleLifeManager : MonoBehaviourPun
         character.ChangeState<IdleState>();
         character.transform.position = revivePos;
 
-        if(BattleManager.Instance.phaseType == PhaseType.SwingAttack)
+        int id = character.GetComponent<PhotonView>().ViewID;
+        photonView.RPC(nameof(RPC_RemoveDeadPlayers), RpcTarget.All, id);
+
+        if (BattleManager.Instance.phaseType == PhaseType.SwingAttack)
         {
             // SwingAttack 중 부활 시 플레이어 미끄러짐 방지
             Rigidbody rb = character.GetComponent<Rigidbody>();
@@ -63,7 +68,7 @@ public class BattleLifeManager : MonoBehaviourPun
             rb.isKinematic = false;
         }
 
-        deadPlayers.Remove(character.GetComponent<PhotonView>().ViewID);
+        _reviveCoroutine = null;
     }
 
     /// <summary>
@@ -71,7 +76,7 @@ public class BattleLifeManager : MonoBehaviourPun
     /// </summary>
     public void RecordHitPosition(CharacterBase character, Vector3 pos)
     {
-        lastHitPositions[character] = pos;
+        _lastHitPositions[character] = pos;
     }
 
     /// <summary>
@@ -82,7 +87,7 @@ public class BattleLifeManager : MonoBehaviourPun
         switch(deathType)
         {
             case DeathType.Collision:
-                if (lastHitPositions.TryGetValue(character, out Vector3 pos))
+                if (_lastHitPositions.TryGetValue(character, out Vector3 pos))
                 {
                     return new BattleHitReviveStrategy(pos);
                 }
@@ -95,6 +100,34 @@ public class BattleLifeManager : MonoBehaviourPun
                 return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
             default:
                 return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_AddDeadPlayers(int viewId)
+    {
+        _deadPlayers.Add(viewId);
+    }
+
+    [PunRPC]
+    private void RPC_RemoveDeadPlayers(int viewId)
+    {
+        _deadPlayers.Remove(viewId);
+    }
+
+    [PunRPC]
+    private void RPC_ClearDeadPlayers()
+    {
+        _deadPlayers.Clear();
+    }
+
+    [PunRPC]
+    private void RPC_StopReviveCoroutine()
+    {
+        if (_reviveCoroutine != null)
+        {
+            StopCoroutine(_reviveCoroutine);
+            _reviveCoroutine = null;
         }
     }
 }
