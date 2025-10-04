@@ -103,7 +103,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     /// </summary>
     private void SetIgnoreCollisionWithHolder(bool ignore)
     {
-        Collider cogCol = cog.GetComponent<Collider>();
+        Collider cogCol = cog.GetComponent<MeshCollider>();
         foreach (var holderCol in _holder.GetComponentsInChildren<Collider>())
         {
             Physics.IgnoreCollision(cogCol, holderCol, ignore);
