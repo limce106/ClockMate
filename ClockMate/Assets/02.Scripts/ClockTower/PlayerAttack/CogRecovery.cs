@@ -91,8 +91,8 @@ public class CogRecovery : AttackPattern
                  yield break;
              }
          
-             // 제한 시간이 다 되었는지 if문으로 확인 후 아래 코드 추가
-             if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
+             if (PhotonNetwork.IsMasterClient && 
+                (BattleManager.Instance.IsTimeLimitEnd() || BattleLifeManager.Instance.isAllPlayerDead == true))
              {
                  EndRecovery(false);
                  yield break;

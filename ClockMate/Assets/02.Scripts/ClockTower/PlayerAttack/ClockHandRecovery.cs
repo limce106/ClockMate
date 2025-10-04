@@ -185,7 +185,7 @@ public class ClockHandRecovery : AttackPattern
         while (true)
         {
             // 시간 초과 처리
-            if (BattleManager.Instance.IsTimeLimitEnd())
+            if (BattleManager.Instance.IsTimeLimitEnd() || BattleLifeManager.Instance.isAllPlayerDead == true)
             {
                 EndRecovery(false);
                 yield break;
@@ -230,13 +230,12 @@ public class ClockHandRecovery : AttackPattern
 
     public override void CancelAttack()
     {
-        DestroyClockHands();
+        DestroyClockHands(); 
     }
 
     private void DestroyClockHands()
     {
         photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
-
         photonView.RPC(nameof(RPC_DisableUI), RpcTarget.All);
 
         if (hourClockHand != null)

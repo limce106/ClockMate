@@ -135,6 +135,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
+            BattleLifeManager.Instance.isAllPlayerDead = false;
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
             curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
@@ -230,6 +231,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
             TryAdvanceBossAttack();
@@ -243,7 +245,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
             }
 
+            BattleLifeManager.Instance.ReviveAllPlayer();
+
             yield return new WaitForSeconds(1f);
+            yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
             yield return StartCoroutine(screenEffectController.FadeIn(3f));
         }
         else
@@ -380,6 +385,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
+        StopCurAttackPattern();
         yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));

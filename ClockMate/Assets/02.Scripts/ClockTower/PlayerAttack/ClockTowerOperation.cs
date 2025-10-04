@@ -31,7 +31,7 @@ public class ClockTowerOperation : AttackPattern
     {
         while (true)
         {
-            if (BattleManager.Instance.IsTimeLimitEnd())
+            if (BattleManager.Instance.IsTimeLimitEnd() || BattleLifeManager.Instance.isAllPlayerDead == true)
             {
                 EndOperation(false);
                 yield break;
