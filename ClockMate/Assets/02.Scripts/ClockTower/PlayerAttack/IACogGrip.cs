@@ -84,6 +84,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     
     private void LockLocalCharacter(CharacterBase character, bool lockOn)
     {
+        if (!character.photonView.IsMine) return;
         character.InputHandler.enabled = !lockOn;
         if (lockOn)
         {
@@ -102,7 +103,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     /// </summary>
     private void SetIgnoreCollisionWithHolder(bool ignore)
     {
-        Collider cogCol = cog.GetComponent<Collider>();
+        Collider cogCol = cog.GetComponent<MeshCollider>();
         foreach (var holderCol in _holder.GetComponentsInChildren<Collider>())
         {
             Physics.IgnoreCollision(cogCol, holderCol, ignore);
@@ -159,7 +160,6 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     private void RPC_SetGrabState(bool value, int characterViewId)
     {
         SetGrabState(value, characterViewId);
-        SetIgnoreCollisionWithHolder(value);
         cog.OnGripStateChange();
     }
 
@@ -170,20 +170,26 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         if (value)
         {
             HeldCharacterIds.Add(characterViewId);
-            _holder = characterViewId == -1 ? null : PhotonView.Find(characterViewId)?.GetComponent<CharacterBase>();
+            _holder = PhotonView.Find(characterViewId)?.GetComponent<CharacterBase>();
+            SetIgnoreCollisionWithHolder(true);
             _holderRb = _holder?.GetComponent<Rigidbody>();
             if (_col != null) _col.enabled = false;
             _lastSeq = -1;
         }
         else
         {
+            if (_holder == null) return;
             HeldCharacterIds.Remove(_holder.photonView.ViewID);
+            SetIgnoreCollisionWithHolder(false);
             _holder = null;
             _holderRb = null;
             if (_col != null) _col.enabled = true;
         }
     }
     
+    /// <summary>
+    /// Grip이 비활성화되면 해당 Grip을 잡고 있던 플레이어와의 상호작용을 끊는다.
+    /// </summary>
     private void OnDisable()
     {
         if (IsOccupied && HolderViewId != -1)
