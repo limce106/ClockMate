@@ -28,8 +28,6 @@ public class FallingClockHand : MonoBehaviourPun
         _solidCollider.enabled = false;
 
         _rb.isKinematic = false;
-        _rb.velocity = Vector3.zero;
-        _rb.angularVelocity = Vector3.zero;
 
         if (PhotonNetwork.IsMasterClient)
             photonView.RPC(nameof(ApplyFallForce), RpcTarget.All);
@@ -62,8 +60,6 @@ public class FallingClockHand : MonoBehaviourPun
     /// </summary>
     private void StickToGround()
     {
-        _rb.velocity = Vector3.zero;
-        _rb.angularVelocity = Vector3.zero;
         _rb.isKinematic = true;
 
         transform.position += Vector3.down * stickOffset;
@@ -89,7 +85,7 @@ public class FallingClockHand : MonoBehaviourPun
             if (canDie)
             {
                 BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
-                character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
+                character.ChangeState<DeadState>();
             }
         }
     }

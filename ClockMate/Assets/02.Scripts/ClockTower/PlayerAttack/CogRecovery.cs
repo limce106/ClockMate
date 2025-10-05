@@ -85,13 +85,18 @@ public class CogRecovery : AttackPattern
      {
          while (true)
          {
-             if (AllCogsFitted())
+            if (BattleLifeManager.Instance.isAllPlayerDead == true)
+            {
+                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                yield break;
+            }
+
+            if (AllCogsFitted())
              {
                  EndRecovery(true);
                  yield break;
              }
          
-             // 제한 시간이 다 되었는지 if문으로 확인 후 아래 코드 추가
              if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
              {
                  EndRecovery(false);
@@ -102,7 +107,10 @@ public class CogRecovery : AttackPattern
          }
      }
 
-     public override void CancelAttack() { }
+     public override void CancelAttack()
+     {
+        ClearCogs();
+     }
 
      /// <summary>
      /// 모든 톱니바퀴가 홈에 맞춰졌는지 여부를 반환한다.

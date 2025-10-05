@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,15 +11,10 @@ public class DeadState : IState
     private readonly DeathType _deathType;
 
     public DeadState(CharacterBase character) =>_character = character;
-    public DeadState(CharacterBase character, DeathType deathType)
-    {
-        _character = character;
-        _deathType = deathType;
-    }
 
     public void Enter()
     {
-        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, false);
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, false);
 
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
@@ -28,7 +24,7 @@ public class DeadState : IState
             }
             else
             {
-                BattleLifeManager.Instance.HandleDeath(_character, _deathType);
+                BattleLifeManager.Instance.photonView.RPC(nameof(BattleLifeManager.RPC_ReportDeath), RpcTarget.MasterClient, _character.photonView.ViewID);
             }
         }
     }
@@ -45,7 +41,7 @@ public class DeadState : IState
 
     public void Exit()
     {
-        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, true);
-        _character.photonView.RPC("RPC_PlayReviveEffect", Photon.Pun.RpcTarget.All);
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, true);
+        _character.photonView.RPC("RPC_PlayReviveEffect", RpcTarget.All);
     }
 }

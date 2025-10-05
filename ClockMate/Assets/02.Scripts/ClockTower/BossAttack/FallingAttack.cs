@@ -30,6 +30,12 @@ public class FallingAttack : AttackPattern
             if (isCanceled)
                 yield break;
 
+            if (BattleLifeManager.Instance.isAllPlayerDead)
+            {
+                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                yield break;
+            }
+
             Vector3 pos = GetRandomSpawnPos(spawnOriginY);
 
             FallingClockHand clockHand = BattleManager.Instance.clockhandPool.Get(pos, Quaternion.identity);
@@ -44,11 +50,16 @@ public class FallingAttack : AttackPattern
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
+        if (BattleLifeManager.Instance.isAllPlayerDead)
+        {
+            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+            yield break;
+        }
     }
 
     public Vector3 GetRandomSpawnPos(float y)
     {
-        const float minDistance = 0.5f;
+        const float minDistance = 1f;
         float battleFieldRadius = BattleManager.Instance.battleFieldRadius; // 원형 전장의 반지름
 
         while (true)
@@ -86,9 +97,6 @@ public class FallingAttack : AttackPattern
 
     public override void CancelAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         isCanceled = true;
 
         var clockHandsToDestroy = FindObjectsOfType<FallingClockHand>();

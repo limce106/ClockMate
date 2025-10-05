@@ -32,9 +32,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public GameObject[] clockFace;  // 덮개
 
-    public int round { get; private set; } = 1;
-    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.CogwheelRecovery;
+    public int round { get; private set; } = 4;
+    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
@@ -135,19 +135,23 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
+            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, false);
+            
+            // 현재 수행될 공격 패턴 생성
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
             curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
             currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
 
+            // 공격 실행
             yield return StartCoroutine(curAttackPattern.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
-            PhotonNetwork.Destroy(spawnedAttack);
 
             bool success = curAttackSuccess;
             curAttackSuccess = false;
 
+            // 기믹 성공 여부에 따른 연출
             if (success)
             {
                 photonView.RPC(nameof(HandleSuccess), RpcTarget.All);
@@ -163,6 +167,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             yield return new WaitUntil(() => !isHandling);
+            PhotonNetwork.Destroy(spawnedAttack);
         }
     }
 
@@ -176,9 +181,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
-            screenEffectController.IncreaseWarmth();
+            screenEffectController.IncreaseWarmth(); // 화면 따뜻함 효과 증가
 
-            if (PhotonNetwork.IsMasterClient)
+            if (PhotonNetwork.IsMasterClient) // 성공 컷씬 재생
             {
                 if (playerAttackType != PlayerAttackType.ClockTowerOperation)
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
@@ -200,11 +205,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 );
             }
 
-            SetClockFaceActive(true);
-            foreach (var character in GameManager.Instance.Characters.Values)
+            if (playerAttackType == PlayerAttackType.CogwheelRecovery) // 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
             {
-                if (character.photonView.IsMine)
-                    character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+                SetClockFaceActive(true);
+
+                CharacterBase character = GameManager.Instance.GetLocalCharacter();
+                character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
             }
 
             while (CutsceneSyncManager.Instance.IsBusy)
@@ -214,7 +220,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            TryAdvanceBossAttack();
+            TryAdvanceBossAttack(); // 다음 보스 공격으로 넘어가기
         }
 
         isHandling = false;
@@ -230,20 +236,24 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
             TryAdvanceBossAttack();
             round++;
 
+            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+
             if (playerAttackType == PlayerAttackType.CogwheelRecovery)
             {
                 SetClockFaceActive(true);
 
-                GameManager.Instance.Characters.TryGetValue(GameManager.Instance.SelectedCharacter, out CharacterBase character);
+                CharacterBase character = GameManager.Instance.GetLocalCharacter();
                 character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
             }
 
             yield return new WaitForSeconds(1f);
+            yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
             yield return StartCoroutine(screenEffectController.FadeIn(3f));
         }
         else
@@ -309,6 +319,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public float GetCurrentRecovery()
     {
         return recoverySlider.value;
+    }
+
+    [PunRPC]
+    public void RPC_StopCurAttackPattern()
+    {
+        StopCurAttackPattern();
     }
 
     /// <summary>
@@ -380,6 +396,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
+        photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+        BattleLifeManager.Instance.ReviveAllPlayer();
         yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
@@ -401,6 +419,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     private void RunTimer()
     {
+        if (BattleLifeManager.Instance.isAllPlayerDead)
+            return;
+
         _timer -= Time.deltaTime;
         photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
     }

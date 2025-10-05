@@ -21,7 +21,7 @@ public class ClockHandRecovery : AttackPattern
     private const float MinDistance = 10f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
-    private const float SpawnPosY = 1f;   // 스폰 위치 Y값
+    private const float SpawnPosY = 0.5f;   // 스폰 위치 Y값
 
     protected override void Init()
     {
@@ -184,6 +184,12 @@ public class ClockHandRecovery : AttackPattern
     {
         while (true)
         {
+            if(BattleLifeManager.Instance.isAllPlayerDead == true)
+            {
+                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+                yield break;
+            }
+
             // 시간 초과 처리
             if (BattleManager.Instance.IsTimeLimitEnd())
             {
@@ -224,8 +230,18 @@ public class ClockHandRecovery : AttackPattern
 
     void EndRecovery(bool isSuccess)
     {
-        photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
+        DestroyClockHands();
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
+    }
 
+    public override void CancelAttack()
+    {
+        DestroyClockHands(); 
+    }
+
+    private void DestroyClockHands()
+    {
+        photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
         photonView.RPC(nameof(RPC_DisableUI), RpcTarget.All);
 
         if (hourClockHand != null)
@@ -235,7 +251,5 @@ public class ClockHandRecovery : AttackPattern
 
         hourClockHand = null;
         minuteClockHand = null;
-
-        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 }

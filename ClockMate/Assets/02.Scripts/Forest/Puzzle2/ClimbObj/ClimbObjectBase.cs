@@ -12,7 +12,9 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     private string _exitString;
     protected UIClimbableObj _uiClimbableObj;
 
-    protected bool _isColliding = false;
+    protected bool isColliding = false;
+    public bool playerAttached = false;
+
 
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
@@ -46,13 +48,16 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     public virtual bool CanInteract(CharacterBase character)
     {
+        if(playerAttached)
+            return false;
+
         if (character.CurrentState is ClimbState)
             return false;
 
         if (!character.IsGrounded)
             return false;
 
-        if (_isColliding)
+        if (isColliding)
             return true;
         else
             return false;
@@ -90,11 +95,11 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     private void OnCollisionEnter(Collision collision)
     {
-        _isColliding = true;
+        isColliding = true;
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        _isColliding = false;
+        isColliding = false;
     }
 }
