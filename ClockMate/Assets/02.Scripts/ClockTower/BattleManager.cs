@@ -33,7 +33,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public GameObject[] clockFace;  // µ¤°³
 
     public int round { get; private set; } = 4;
-    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
+    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
@@ -251,8 +251,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 CharacterBase character = GameManager.Instance.GetLocalCharacter();
                 character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
             }
-
-            BattleLifeManager.Instance.ReviveAllPlayer();
 
             yield return new WaitForSeconds(1f);
             yield return StartCoroutine(screenEffectController.EnableGrayscale(false));

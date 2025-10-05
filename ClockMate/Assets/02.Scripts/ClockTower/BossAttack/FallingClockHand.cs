@@ -85,7 +85,7 @@ public class FallingClockHand : MonoBehaviourPun
             if (canDie)
             {
                 BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
-                character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
+                character.ChangeState<DeadState>();
             }
         }
     }

@@ -11,18 +11,16 @@ public class FallDeathZone : MonoBehaviour
         {
             CharacterBase character = other.gameObject.GetComponentInParent<CharacterBase>();
 
-            if (SceneManager.GetActiveScene().name == "ClockTower")
-                character.ChangeState<DeadState>(Define.Battle.DeathType.Fall);
-            else
+            //if (SceneManager.GetActiveScene().name == "ClockTower")
+            //    character.ChangeState<DeadState>(Define.Battle.DeathType.Fall);
+
+            Vector3 loadPosition = GameManager.Instance.CurrentStage.LoadPositions[character.Name];
+            character.transform.position = loadPosition;
+            if (poofEffect != null)
             {
-                Vector3 loadPosition = GameManager.Instance.CurrentStage.LoadPositions[character.Name];
-                character.transform.position = loadPosition;
-                if (poofEffect != null)
-                {
-                    Instantiate(poofEffect, loadPosition, Quaternion.identity);
-                }
-                character.ChangeState<IdleState>();
+                Instantiate(poofEffect, loadPosition, Quaternion.identity);
             }
+            character.ChangeState<IdleState>();
         }
     }
 }

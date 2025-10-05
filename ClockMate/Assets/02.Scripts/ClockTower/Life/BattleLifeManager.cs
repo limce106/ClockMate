@@ -8,7 +8,6 @@ public class BattleLifeManager : MonoBehaviourPun
 {
     private int _deadPlayerNum = 0; // 죽은 플레이어 수
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
-    public DeathType localDeathType = DeathType.None; // 로컬 플레이어의 죽음 타입
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
     public bool isAllPlayerDead = false; // 두 플레이어 모두 사망 여부
     public static BattleLifeManager Instance { get; private set; }
@@ -28,7 +27,7 @@ public class BattleLifeManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void RPC_ReportDeath(int viewID, int deathType)
+    public void RPC_ReportDeath(int viewID)
     {
         if (!PhotonNetwork.IsConnected)
             return;
@@ -39,20 +38,19 @@ public class BattleLifeManager : MonoBehaviourPun
         CharacterBase character = targetView.GetComponent<CharacterBase>();
         if (character == null) return;
 
-        HandleDeath(character, (DeathType)deathType);
+        HandleDeath(character);
     }
 
-    public void HandleDeath(CharacterBase character, DeathType deathType)
+    public void HandleDeath(CharacterBase character)
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
 
         _deadPlayerNum++;
-        localDeathType = deathType;
 
         if (_deadPlayerNum == 1)
         {
-            _reviveCoroutine = StartCoroutine(ReviveAfterDelay(character, deathType));
+            _reviveCoroutine = StartCoroutine(ReviveAfterDelay(character));
         }
         else if (_deadPlayerNum == 2)
         {
@@ -63,24 +61,23 @@ public class BattleLifeManager : MonoBehaviourPun
         }
     }
 
-    private IEnumerator ReviveAfterDelay(CharacterBase character, DeathType deathType)
+    private IEnumerator ReviveAfterDelay(CharacterBase character)
     {
         yield return new WaitForSeconds(ReviveDelay);
 
-        StartCoroutine(Revive(character, deathType));
+        StartCoroutine(Revive(character));
     }
 
-    private IEnumerator Revive(CharacterBase character, DeathType deathType)
+    private IEnumerator Revive(CharacterBase character)
     {
-        IReviveStrategy strategy = GetStrategy(character, deathType);
-        Vector3 revivePos = strategy.GetRevivePosition();
+        _lastHitPositions.TryGetValue(character, out Vector3 pos);
+        Vector3 revivePos = pos;
 
         RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, character.photonView.ViewID, true);
         character.ChangeState<IdleState>();
         character.transform.position = revivePos;
 
         _deadPlayerNum--;
-        localDeathType = DeathType.None;
 
         if (BattleManager.Instance.phaseType == PhaseType.SwingAttack)
         {
@@ -99,7 +96,7 @@ public class BattleLifeManager : MonoBehaviourPun
     public void RPC_ReviveLocalPlayer()
     {
         CharacterBase character = GameManager.Instance.GetLocalCharacter();
-        StartCoroutine(Revive(character, localDeathType));
+        StartCoroutine(Revive(character));
     }
 
     public void ReviveAllPlayer()
@@ -119,7 +116,7 @@ public class BattleLifeManager : MonoBehaviourPun
     }
 
     /// <summary>
-    /// 사망 원인 기준으로 부활 전략 선택
+    /// 사망 원인 기준으로 부활 전략 선택 (현재 사용 안 함)
     /// </summary>
     private IReviveStrategy GetStrategy(CharacterBase character, DeathType deathType)
     {
