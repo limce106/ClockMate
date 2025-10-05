@@ -223,6 +223,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
             if(character.photonView.IsMine)
             {
+                ExitControl(character.photonView.ViewID);
                 character.ChangeState<IdleState>();
                 character.InputHandler.enabled = true;
             }

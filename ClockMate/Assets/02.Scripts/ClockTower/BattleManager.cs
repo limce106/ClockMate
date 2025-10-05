@@ -34,14 +34,14 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public int round { get; private set; } = 4;
     public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockTowerOperation;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
     public Slider recoverySlider;
 
     public float battleFieldRadius = 11f; // 전장 반지름
-    private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
+    private const float playerAttackTimeLimit = 10f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = Vector3.zero;
     private const float recoveryPerSuccess = 0.334f;
     private const float playerBossAttackHeight = 0f;
@@ -181,6 +181,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             screenEffectController.IncreaseWarmth(); // 화면 따뜻함 효과 증가
 
             if (PhotonNetwork.IsMasterClient) // 성공 컷씬 재생
@@ -205,6 +206,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 );
             }
 
+            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+
             if (playerAttackType == PlayerAttackType.CogwheelRecovery) // 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
             {
                 SetClockFaceActive(true);
@@ -217,6 +220,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
             {
                 yield return null;
             }
+
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
         }
         else
         {
@@ -236,8 +241,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
+
+            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
 
             TryAdvanceBossAttack();
             round++;
@@ -253,6 +261,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(1f);
             yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
             yield return StartCoroutine(screenEffectController.FadeIn(3f));
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
         }
         else
         {
@@ -391,6 +400,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     public IEnumerator FailBossAttackSequence()
     {
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
@@ -400,6 +410,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
         yield return StartCoroutine(screenEffectController.FadeIn(3f));
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
     }
     
     /// <summary>

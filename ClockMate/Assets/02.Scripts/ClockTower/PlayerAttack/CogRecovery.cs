@@ -182,8 +182,11 @@ public class CogRecovery : AttackPattern
 
      void EndRecovery(bool isSuccess)
      {
-         if (!PhotonNetwork.IsMasterClient) return;
-         ClearCogs();
          BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
      }
+
+    public override void CancelAttack()
+    {
+        ClearCogs();
+    }
 }
