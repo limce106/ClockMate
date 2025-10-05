@@ -230,7 +230,16 @@ public class ClockHandRecovery : AttackPattern
     [PunRPC]
     void RPC_DetachAllPlayers()
     {
-        if(GameManager.Instance.GetLocalCharacter().CompareTag("Hour"))
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPC_ForceExitControls), RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_ForceExitControls()
+    {
+        if(PhotonNetwork.IsMasterClient)
         {
             IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
             hour?.ExitControl();
@@ -251,17 +260,18 @@ public class ClockHandRecovery : AttackPattern
 
     void EndRecovery(bool isSuccess)
     {
-        // 모든 클라이언트에서 시계 바늘 제거 및 플레이어 Detach 실행
-        photonView.RPC(nameof(RPC_DestroyClockHands), RpcTarget.All);
-
+        photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
         // 공격 결과 보고
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 
-    [PunRPC]
-    private void RPC_DestroyClockHands()
+    public override void CancelAttack()
     {
-        RPC_DetachAllPlayers();
+        DestroyClockHands();
+    }
+
+    private void DestroyClockHands()
+    {
         RPC_DisableUI();
 
         if (PhotonNetwork.IsMasterClient)
