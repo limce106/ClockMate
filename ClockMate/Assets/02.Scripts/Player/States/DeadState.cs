@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,7 +19,7 @@ public class DeadState : IState
 
     public void Enter()
     {
-        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, false);
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, false);
 
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
@@ -28,7 +29,7 @@ public class DeadState : IState
             }
             else
             {
-                BattleLifeManager.Instance.HandleDeath(_character, _deathType);
+                BattleLifeManager.Instance.photonView.RPC(nameof(BattleLifeManager.RPC_ReportDeath), RpcTarget.MasterClient, _character.photonView.ViewID, (int)_deathType);
             }
         }
     }
@@ -45,7 +46,7 @@ public class DeadState : IState
 
     public void Exit()
     {
-        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", Photon.Pun.RpcTarget.All, _character.photonView.ViewID, true);
-        _character.photonView.RPC("RPC_PlayReviveEffect", Photon.Pun.RpcTarget.All);
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, true);
+        _character.photonView.RPC("RPC_PlayReviveEffect", RpcTarget.All);
     }
 }

@@ -6,15 +6,15 @@ using static Define.Battle;
 
 public class BattleLifeManager : MonoBehaviourPun
 {
-    private int _deadPlayerNum = 0;
-    private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>();
-    public DeathType localDeathType = DeathType.None;
-    private Coroutine _reviveCoroutine;
-    public bool isAllPlayerDead = false;
+    private int _deadPlayerNum = 0; // 죽은 플레이어 수
+    private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
+    public DeathType localDeathType = DeathType.None; // 로컬 플레이어의 죽음 타입
+    private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
+    public bool isAllPlayerDead = false; // 두 플레이어 모두 사망 여부
     public static BattleLifeManager Instance { get; private set; }
 
-    private const float ReviveDelay = 3f;
-    private const float safeTime = 0.1f;
+    private const float ReviveDelay = 3f; // 부활 딜레이
+    private const float safeTime = 0.1f; // 부활 후 물리 영향을 받지 않는 시간
 
     private void Awake()
     {
@@ -27,9 +27,27 @@ public class BattleLifeManager : MonoBehaviourPun
         Instance = this;
     }
 
+    [PunRPC]
+    public void RPC_ReportDeath(int viewID, int deathType)
+    {
+        if (!PhotonNetwork.IsConnected)
+            return;
+
+        PhotonView targetView = PhotonView.Find(viewID);
+        if(targetView == null) return;
+
+        CharacterBase character = targetView.GetComponent<CharacterBase>();
+        if (character == null) return;
+
+        HandleDeath(character, (DeathType)deathType);
+    }
+
     public void HandleDeath(CharacterBase character, DeathType deathType)
     {
-        photonView.RPC(nameof(RPC_SetDeadPlayerNum), RpcTarget.All, _deadPlayerNum + 1);
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        _deadPlayerNum++;
         localDeathType = deathType;
 
         if (_deadPlayerNum == 1)
@@ -39,7 +57,7 @@ public class BattleLifeManager : MonoBehaviourPun
         else if (_deadPlayerNum == 2)
         {
             photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
-            photonView.RPC(nameof(RPC_SetDeadPlayerNum), RpcTarget.All, 0);
+            _deadPlayerNum = 0;
 
             photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, true);
         }
@@ -57,11 +75,11 @@ public class BattleLifeManager : MonoBehaviourPun
         IReviveStrategy strategy = GetStrategy(character, deathType);
         Vector3 revivePos = strategy.GetRevivePosition();
 
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, character.photonView.ViewID, true);
         character.ChangeState<IdleState>();
         character.transform.position = revivePos;
 
-        int id = character.GetComponent<PhotonView>().ViewID;
-        photonView.RPC(nameof(RPC_SetDeadPlayerNum), RpcTarget.All, _deadPlayerNum - 1);
+        _deadPlayerNum--;
         localDeathType = DeathType.None;
 
         if (BattleManager.Instance.phaseType == PhaseType.SwingAttack)
@@ -122,12 +140,6 @@ public class BattleLifeManager : MonoBehaviourPun
             default:
                 return new DefaultReviveStrategy(BattleManager.Instance.BattleFieldCenter);
         }
-    }
-
-    [PunRPC]
-    private void RPC_SetDeadPlayerNum(int num)
-    {
-        _deadPlayerNum = num;
     }
 
     [PunRPC]
