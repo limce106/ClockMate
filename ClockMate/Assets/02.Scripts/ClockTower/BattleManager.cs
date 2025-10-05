@@ -242,8 +242,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
             TryAdvanceBossAttack();
             round++;
 
-            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
-
             if (playerAttackType == PlayerAttackType.CogwheelRecovery)
             {
                 SetClockFaceActive(true);
