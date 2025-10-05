@@ -11,7 +11,6 @@ public class BattleLifeManager : MonoBehaviourPun
     public DeathType localDeathType = DeathType.None;
     private Coroutine _reviveCoroutine;
     public bool isAllPlayerDead = false;
-
     public static BattleLifeManager Instance { get; private set; }
 
     private const float ReviveDelay = 3f;
@@ -42,7 +41,7 @@ public class BattleLifeManager : MonoBehaviourPun
             photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
             photonView.RPC(nameof(RPC_SetDeadPlayerNum), RpcTarget.All, 0);
 
-            isAllPlayerDead = true;
+            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, true);
         }
     }
 
@@ -139,5 +138,11 @@ public class BattleLifeManager : MonoBehaviourPun
             StopCoroutine(_reviveCoroutine);
             _reviveCoroutine = null;
         }
+    }
+
+    [PunRPC]
+    public void RPC_SetIsAllPlayerDead(bool isAllPlayerDead)
+    {
+        this.isAllPlayerDead = isAllPlayerDead;
     }
 }

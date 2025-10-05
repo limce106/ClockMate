@@ -135,7 +135,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
-            BattleLifeManager.Instance.isAllPlayerDead = false;
+            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, false);
+            
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
             curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
