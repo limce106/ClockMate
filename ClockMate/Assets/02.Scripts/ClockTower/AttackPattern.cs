@@ -30,5 +30,5 @@ public abstract class AttackPattern : MonoBehaviourPun
     /// <summary>
     /// 플레이어 모두 사망한 경우를 위한 중도 공격 취소 + 오브젝트 제거
     /// </summary>
-    public abstract void CancelAttack();
+    public virtual void CancelAttack() { }
 }

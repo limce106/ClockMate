@@ -57,11 +57,6 @@ public class ClockTowerOperation : AttackPattern
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 
-    public override void CancelAttack()
-    {
-        DestroySpring();
-    }
-
     private void DestroySpring()
     {
         if (_clockSpring != null)

@@ -101,11 +101,6 @@ public class CogRecovery : AttackPattern
          }
      }
 
-     public override void CancelAttack()
-     {
-        ClearCogs();
-     }
-
      /// <summary>
      /// 모든 톱니바퀴가 홈에 맞춰졌는지 여부를 반환한다.
      /// </summary>
