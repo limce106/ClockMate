@@ -9,7 +9,8 @@ using UnityEngine.UI;
 using static Define.Battle;
 
 /// <summary>
-/// 전투 흐름 제어
+/// 전투 흐름을 총괄하는 전투 매니저
+/// 마스터가 전투 루틴 관리 및 동기화 정보 송신
 /// </summary>
 public class BattleManager : MonoBehaviourPunCallbacks
 {
@@ -44,7 +45,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public Slider recoverySlider;
 
     public float battleFieldRadius = 11f; // 전장 반지름
-    private const float playerAttackTimeLimit = 10f;    // 플레이어 반격 제한시간
+    private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = Vector3.zero;
     private const float recoveryPerSuccess = 0.334f;
     private const float playerBossAttackHeight = 0f;
@@ -139,16 +140,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             BattleLifeManager.Instance.allowRevive = true;
-
-            // 현재 수행될 공격 패턴 생성
-            GameObject attackPrefab = GetCurrentPhasePrefab();
-            GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
-            curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
-            currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
+            GameObject spawnedAttack = SpawnCurrentAttack();
 
             attackEnded = false;
             // 공격 실행
-            _runCoroutine = StartCoroutine(RunAttackWrapper(curAttackPattern));
+            _runCoroutine = StartCoroutine(RunAttack(curAttackPattern));
             yield return new WaitUntil(() => attackEnded);
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
@@ -176,7 +172,18 @@ public class BattleManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private IEnumerator RunAttackWrapper(AttackPattern attackPattern)
+    private GameObject SpawnCurrentAttack()
+    {
+        // 현재 수행될 공격 패턴 생성
+        GameObject attackPrefab = GetCurrentPhasePrefab();
+        GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
+        curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
+        currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
+
+        return spawnedAttack;
+    }
+
+    private IEnumerator RunAttack(AttackPattern attackPattern)
     {
         yield return attackPattern.Run();
         attackEnded = true;
@@ -192,15 +199,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            // 연출 중 조작 금지
             GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             screenEffectController.IncreaseWarmth(); // 화면 따뜻함 효과 증가
 
-            if (PhotonNetwork.IsMasterClient) // 성공 컷씬 재생
-            {
-                if (playerAttackType != PlayerAttackType.ClockTowerOperation)
+            // 복구율 증가
+            if (playerAttackType != PlayerAttackType.ClockTowerOperation)
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
-                CutsceneSyncManager.Instance.PlayForAll(
+            // 성공 컷씬 재생
+            CutsceneSyncManager.Instance.PlayForAll(
                     playerCutsceneNames[playerAttackType],
                     0f,
                     () =>
@@ -215,23 +223,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
                         }
                     }
                 );
-            }
 
-            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
-
-            if (playerAttackType == PlayerAttackType.CogwheelRecovery) // 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
-            {
-                SetClockFaceActive(true);
-
-                CharacterBase character = GameManager.Instance.GetLocalCharacter();
-                character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
-            }
+            // 공격 관련 오브젝트 정리
+            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);            
+            PlacePlayerOnClockFace();
 
             while (CutsceneSyncManager.Instance.IsBusy)
             {
                 yield return null;
             }
 
+            // 조작 금지 해제
             GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
         }
         else
@@ -257,19 +259,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
             photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+            PlacePlayerOnClockFace();
 
             TryAdvanceBossAttack();
             round++;
 
-            if (playerAttackType == PlayerAttackType.CogwheelRecovery)
-            {
-                SetClockFaceActive(true);
-
-                CharacterBase character = GameManager.Instance.GetLocalCharacter();
-                character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
-            }
-
             yield return new WaitForSeconds(1f);
+
             yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
             yield return StartCoroutine(screenEffectController.FadeIn(3f));
             GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
@@ -307,18 +303,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// 반격 성공 컷씬이 끝났을 때
+    /// 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
     /// </summary>
-    private IEnumerator OnCutsceneFinished()
+    private void PlacePlayerOnClockFace()
     {
-        TryAdvancePlayerAttack();
-        round++;
-
-        yield return new WaitForSeconds(1f);
-
-        if ((int)playerAttackType < playerAttackPrefabs.Count)
+        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
         {
-            TryAdvanceBossAttack();
+            SetClockFaceActive(true);
+
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
         }
     }
 
