@@ -266,7 +266,7 @@ public class ClockHandRecovery : AttackPattern
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         DestroyClockHands();
     }

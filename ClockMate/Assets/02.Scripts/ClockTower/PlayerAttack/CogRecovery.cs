@@ -185,7 +185,7 @@ public class CogRecovery : AttackPattern
          BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
      }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         ClearCogs();
     }

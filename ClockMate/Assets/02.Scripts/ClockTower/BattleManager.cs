@@ -22,6 +22,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
+    private Coroutine _runCoroutine;
+
     private ScreenEffectController screenEffectController;
     private bool curAttackSuccess = false;
     private bool isHandling = false;
@@ -33,7 +35,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public GameObject[] clockFace;  // 덮개
 
     public int round { get; private set; } = 4;
-    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
+    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockTowerOperation;
     public FallingAttack currentFallingAttack { get; private set; }
 
@@ -135,8 +137,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
-            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, false);
-            
             // 현재 수행될 공격 패턴 생성
             GameObject attackPrefab = GetCurrentPhasePrefab();
             GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
@@ -144,7 +144,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
 
             // 공격 실행
-            yield return StartCoroutine(curAttackPattern.Run());
+            yield return _runCoroutine = StartCoroutine(curAttackPattern.Run());
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
 
@@ -206,7 +206,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 );
             }
 
-            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
 
             if (playerAttackType == PlayerAttackType.CogwheelRecovery) // 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
             {
@@ -245,7 +245,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
 
             TryAdvanceBossAttack();
             round++;
@@ -328,18 +328,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
         return recoverySlider.value;
     }
 
-    [PunRPC]
-    public void RPC_StopCurAttackPattern()
-    {
-        StopCurAttackPattern();
-    }
-
     /// <summary>
-    /// 현재 공격 중단
+    /// 현재 공격 오브젝트, UI 등 리소스를 정리하는 CleanUpAttack 메서드 동기화
     /// </summary>
-    public void StopCurAttackPattern()
+    [PunRPC]
+    public void RPC_CleanUpAttack()
     {
-        curAttackPattern?.CancelAttack();
+        curAttackPattern.CleanUpAttack();
     }
 
     /// <summary>
@@ -404,7 +399,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-        photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+        photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
         BattleLifeManager.Instance.ReviveAllPlayer();
         yield return new WaitForSeconds(1f);
 
@@ -428,9 +423,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     private void RunTimer()
     {
-        if (BattleLifeManager.Instance.isAllPlayerDead)
-            return;
-
         _timer -= Time.deltaTime;
         photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
     }
@@ -461,5 +453,14 @@ public class BattleManager : MonoBehaviourPunCallbacks
         {
             cf.SetActive(isActive);
         }
+    }
+
+    /// <summary>
+    /// 현재 공격을 중단하고 실패 처리
+    /// </summary>
+    public void StopAttackRun()
+    {
+        photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+        curAttackPattern.StopCoroutine(_runCoroutine);
     }
 }

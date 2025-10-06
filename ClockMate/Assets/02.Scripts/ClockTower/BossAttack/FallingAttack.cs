@@ -30,12 +30,6 @@ public class FallingAttack : AttackPattern
             if (isCanceled)
                 yield break;
 
-            if (BattleLifeManager.Instance.isAllPlayerDead)
-            {
-                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-                yield break;
-            }
-
             Vector3 pos = GetRandomSpawnPos(spawnOriginY);
 
             FallingClockHand clockHand = BattleManager.Instance.clockhandPool.Get(pos, Quaternion.identity);
@@ -50,11 +44,6 @@ public class FallingAttack : AttackPattern
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
-        if (BattleLifeManager.Instance.isAllPlayerDead)
-        {
-            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-            yield break;
-        }
     }
 
     public Vector3 GetRandomSpawnPos(float y)
@@ -95,7 +84,7 @@ public class FallingAttack : AttackPattern
         }
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         isCanceled = true;
 

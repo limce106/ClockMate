@@ -63,7 +63,7 @@ public class ClockTowerOperation : AttackPattern
         }
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         DestroySpring();
     }

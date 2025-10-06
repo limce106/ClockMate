@@ -120,12 +120,6 @@ public class SwingAttack : AttackPattern
             if (isCanceled)
                 yield break;
 
-            if (BattleLifeManager.Instance.isAllPlayerDead)
-            {
-                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-                yield break;
-            }
-
             SpawnPendulum(startAngles[i % 2]);
             yield return StartCoroutine(MovePendulum());
 
@@ -134,14 +128,9 @@ public class SwingAttack : AttackPattern
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
-        if (BattleLifeManager.Instance.isAllPlayerDead)
-        {
-            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-            yield break;
-        }
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         isCanceled = true;
 
