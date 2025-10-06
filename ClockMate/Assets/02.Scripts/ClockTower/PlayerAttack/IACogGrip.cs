@@ -17,6 +17,9 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     public int HolderViewId { get; private set; }
     private CharacterBase _holder;
     private Rigidbody _holderRb;
+    private UINotice _uiNotice;
+    private Sprite _dropSprite;
+    private string _dropString;
 
     // 동기화용
     private Vector3 _targetPos;
@@ -42,6 +45,8 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
 
         IsOccupied = false;
         HolderViewId = -1;
+        _dropSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _dropString = "내려놓기";
     }
 
     private void Update()
@@ -79,9 +84,25 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     {
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, true, character.photonView.ViewID);
         LockLocalCharacter(_holder, true);
+        EnableUI(true);
         return true;
     }
-    
+
+    private void EnableUI(bool enable)
+    {
+        if (enable)
+        {
+            _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
+            _uiNotice.SetImage(_dropSprite);
+            _uiNotice.SetText(_dropString);
+        } else if (_uiNotice != null)
+        {
+            UIManager.Instance.Close(_uiNotice);
+            _uiNotice = null;
+        }
+        
+    }
+
     private void LockLocalCharacter(CharacterBase character, bool lockOn)
     {
         if (!character.photonView.IsMine) return;
@@ -151,6 +172,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     private void Release()
     {
         LockLocalCharacter(_holder, false);
+        EnableUI(false);
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, false, -1);
         if (PhotonNetwork.IsMasterClient)
             photonView.RPC(nameof(RPC_GripAnchorClear), RpcTarget.All, ++_anchorSeq);
