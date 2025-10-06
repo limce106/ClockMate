@@ -128,6 +128,7 @@ public class BattleLifeManager : MonoBehaviourPun
     public void ReviveAllPlayer()
     {
         photonView.RPC(nameof(RPC_ReviveLocalPlayer), RpcTarget.All);
+        _deadPlayers.Clear();
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class IAClockSpring : MonoBehaviourPun, IInteractable
@@ -217,9 +218,9 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     [PunRPC]
     public void RPC_ExitControlAll()
     {
-        foreach (var kvp in _attachedPlayers)
+        foreach (var viewID in _attachedPlayers.Keys.ToList())
         {
-            CharacterBase character = kvp.Value;
+            CharacterBase character = _attachedPlayers[viewID];
 
             if(character.photonView.IsMine)
             {

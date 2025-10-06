@@ -203,29 +203,32 @@ public class BattleManager : MonoBehaviourPunCallbacks
             GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             screenEffectController.IncreaseWarmth(); // 화면 따뜻함 효과 증가
 
-            // 복구율 증가
-            if (playerAttackType != PlayerAttackType.ClockTowerOperation)
+            if(PhotonNetwork.IsMasterClient)
+            {
+                // 복구율 증가
+                if (playerAttackType != PlayerAttackType.ClockTowerOperation)
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
-            // 성공 컷씬 재생
-            CutsceneSyncManager.Instance.PlayForAll(
-                    playerCutsceneNames[playerAttackType],
-                    0f,
-                    () =>
-                    {
-                        TryAdvancePlayerAttack();
-                        round++;
-
-
-                        if ((int)playerAttackType < playerAttackPrefabs.Count)
+                // 성공 컷씬 재생
+                CutsceneSyncManager.Instance.PlayForAll(
+                        playerCutsceneNames[playerAttackType],
+                        0f,
+                        () =>
                         {
-                            TryAdvanceBossAttack();
+                            TryAdvancePlayerAttack();
+                            round++;
+
+
+                            if ((int)playerAttackType < playerAttackPrefabs.Count)
+                            {
+                                TryAdvanceBossAttack();
+                            }
                         }
-                    }
-                );
+                    );
+            }
 
             // 공격 관련 오브젝트 정리
-            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);            
+            curAttackPattern?.CleanUpAttack();
             PlacePlayerOnClockFace();
 
             while (CutsceneSyncManager.Instance.IsBusy)
@@ -258,7 +261,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-            photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+            curAttackPattern?.CleanUpAttack();
             PlacePlayerOnClockFace();
 
             TryAdvanceBossAttack();
@@ -334,15 +337,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// 현재 공격 오브젝트, UI 등 리소스를 정리하는 CleanUpAttack 메서드 동기화
-    /// </summary>
-    [PunRPC]
-    public void RPC_CleanUpAttack()
-    {
-        curAttackPattern?.CleanUpAttack();
-    }
-
-    /// <summary>
     /// 현재 보스/플레이어 공격 프리팹 반환
     /// </summary>
     private GameObject GetCurrentPhasePrefab()
@@ -404,7 +398,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-        photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+        curAttackPattern?.CleanUpAttack();
         BattleLifeManager.Instance.ReviveAllPlayer();
         yield return new WaitForSeconds(1f);
 
