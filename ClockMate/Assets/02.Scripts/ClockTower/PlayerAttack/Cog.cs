@@ -22,9 +22,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
     private HashSet<int> _finishedPlayers; // 완료 인원
 
     private Rigidbody _rb;
-    private UINotice _uiNotice;
-    private Sprite _dropSprite;
-    private string _dropString;
+    
 
     // 위치 동기화용
     private Vector3 _netPos;
@@ -33,27 +31,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
     private Vector3 _worldMoveA = Vector3.zero;
     private Vector3 _worldMoveB = Vector3.zero;
 
-    private bool _carried;
-
-    public bool Carried
-    {
-        get => _carried;
-        private set
-        {
-            _carried = value;
-            if (value)
-            {
-                _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
-                _uiNotice.SetImage(_dropSprite);
-                _uiNotice.SetText(_dropString);
-            }
-            else if (_uiNotice != null)
-            {
-                UIManager.Instance.Close(_uiNotice);
-                _uiNotice = null;
-            }
-        }
-    }
+    public bool Carried {get; private set;}
 
     // 톱니바퀴가 올바른 위치에 끼워졌는지 여부
     public bool Fitted {get; private set;}
@@ -62,18 +40,11 @@ public class Cog : MonoBehaviourPun, IPunObservable
     {
         _rb = GetComponent<Rigidbody>();
         _finishedPlayers = new HashSet<int>();
-        _dropSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
-        _dropString = "내려놓기";
     }
 
     private void OnEnable()
     {
         Carried = false;
-        if (_uiNotice != null)
-        {
-            UIManager.Instance.Close(_uiNotice);
-            _uiNotice = null;
-        }
         Fitted = false;
         gripA.gameObject.SetActive(true);
         gripB.gameObject.SetActive(true);
