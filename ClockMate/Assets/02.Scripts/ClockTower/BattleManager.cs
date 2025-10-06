@@ -35,9 +35,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public GameObject[] clockFace;  // 덮개
 
-    public int round { get; private set; } = 4;
+    public int round { get; private set; } = 1;
     public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
-    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockTowerOperation;
+    public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
     [Header("UI")]
@@ -137,6 +137,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 _timer = playerAttackTimeLimit;
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
+
+            BattleLifeManager.Instance.allowRevive = true;
 
             // 현재 수행될 공격 패턴 생성
             GameObject attackPrefab = GetCurrentPhasePrefab();

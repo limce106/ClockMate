@@ -8,7 +8,10 @@ public class BattleLifeManager : MonoBehaviourPun
 {
     private HashSet<int> _deadPlayers = new HashSet<int>();
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
+
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
+    public bool allowRevive = true;
+
     public static BattleLifeManager Instance { get; private set; }
 
     private const float ReviveDelay = 3f; // 부활 딜레이
@@ -53,6 +56,7 @@ public class BattleLifeManager : MonoBehaviourPun
         }
         else if (_deadPlayers.Count == 2)
         {
+            allowRevive = false;
             photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
             BattleManager.Instance.StopAttackRun();
         }
@@ -61,6 +65,9 @@ public class BattleLifeManager : MonoBehaviourPun
     private IEnumerator ReviveAfterDelay(CharacterBase character)
     {
         yield return new WaitForSeconds(ReviveDelay);
+
+        if(!allowRevive)
+            yield break;
 
         StartCoroutine(Revive(character));
     }
