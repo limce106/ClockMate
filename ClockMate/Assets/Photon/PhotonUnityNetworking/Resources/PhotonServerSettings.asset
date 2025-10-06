@@ -81,7 +81,6 @@ MonoBehaviour:
   - RPC_ChangeMonsterState
   - RPC_UpdateDoorConditionWithKey
   - StartPendulum
-  - SetAttackType
   - TryAdvancePlayerAttack
   - TryAdvanceBossAttack
   - ReportAttackResult
@@ -135,7 +134,6 @@ MonoBehaviour:
   - RPC_MoveDoors
   - RPC_PlayPickUp
   - RPC_SetCarry
-  - BossToPlayerTransition
   - HandleFailure
   - HandleSuccess
   - RPC_PlayReviveEffect
@@ -168,6 +166,7 @@ MonoBehaviour:
   - RPC_ReportDeath
   - RPC_SetClockHandRef
   - RPC_ForceExitControls
+  - RPC_CleanUpAttack
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

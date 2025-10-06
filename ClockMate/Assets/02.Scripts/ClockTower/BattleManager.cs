@@ -25,8 +25,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private Coroutine _runCoroutine;
 
     private ScreenEffectController screenEffectController;
-    private bool curAttackSuccess = false;
-    private bool isHandling = false;
+    private bool curAttackSuccess = false; // 현재 공격 성공 여부
+    private bool isHandling = false; // 연출 실행 중
+    private bool attackEnded = false; // 현재 공격 종료 여부
 
     // 보스 공격 오브젝트 풀
     public NetworkObjectPool<SwingPendulum> pendulumPool;
@@ -143,8 +144,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
             curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
             currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
 
+            attackEnded = false;
             // 공격 실행
-            yield return _runCoroutine = StartCoroutine(curAttackPattern.Run());
+            _runCoroutine = StartCoroutine(RunAttackWrapper(curAttackPattern));
+            yield return new WaitUntil(() => attackEnded);
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
 
@@ -169,6 +172,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return new WaitUntil(() => !isHandling);
             PhotonNetwork.Destroy(spawnedAttack);
         }
+    }
+
+    private IEnumerator RunAttackWrapper(AttackPattern attackPattern)
+    {
+        yield return attackPattern.Run();
+        attackEnded = true;
     }
 
     /// <summary>
@@ -334,7 +343,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_CleanUpAttack()
     {
-        curAttackPattern.CleanUpAttack();
+        curAttackPattern?.CleanUpAttack();
     }
 
     /// <summary>
@@ -460,7 +469,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     public void StopAttackRun()
     {
+        if(_runCoroutine != null)
+        {
+            StopCoroutine(_runCoroutine);
+            _runCoroutine = null;
+        }
+
         photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-        curAttackPattern.StopCoroutine(_runCoroutine);
+        attackEnded = true;
     }
 }

@@ -9,7 +9,6 @@ public class BattleLifeManager : MonoBehaviourPun
     private int _deadPlayerNum = 0; // 죽은 플레이어 수
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
-    public bool isAllPlayerDead = false; // 두 플레이어 모두 사망 여부
     public static BattleLifeManager Instance { get; private set; }
 
     private const float ReviveDelay = 3f; // 부활 딜레이
@@ -52,12 +51,12 @@ public class BattleLifeManager : MonoBehaviourPun
         {
             _reviveCoroutine = StartCoroutine(ReviveAfterDelay(character));
         }
-        else if (_deadPlayerNum == 2)
+        else if (_deadPlayerNum >= 2)
         {
             photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
             _deadPlayerNum = 0;
 
-            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, true);
+            BattleManager.Instance.StopAttackRun();
         }
     }
 
@@ -101,10 +100,7 @@ public class BattleLifeManager : MonoBehaviourPun
 
     public void ReviveAllPlayer()
     {
-        if (isAllPlayerDead)
-        {
-            photonView.RPC(nameof(RPC_ReviveLocalPlayer), RpcTarget.All);
-        }
+        photonView.RPC(nameof(RPC_ReviveLocalPlayer), RpcTarget.All);
     }
 
     /// <summary>
@@ -147,11 +143,5 @@ public class BattleLifeManager : MonoBehaviourPun
             StopCoroutine(_reviveCoroutine);
             _reviveCoroutine = null;
         }
-    }
-
-    [PunRPC]
-    public void RPC_SetIsAllPlayerDead(bool isAllPlayerDead)
-    {
-        this.isAllPlayerDead = isAllPlayerDead;
     }
 }

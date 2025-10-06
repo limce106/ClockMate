@@ -98,7 +98,7 @@ public class SwingPendulum : MonoBehaviourPun
         if (character != null)
         {
             BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
-            character.ChangeState<DeadState>();
+            character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }
     }
 }

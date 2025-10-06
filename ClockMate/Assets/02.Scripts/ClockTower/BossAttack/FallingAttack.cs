@@ -48,6 +48,11 @@ public class FallingAttack : AttackPattern
 
     public Vector3 GetRandomSpawnPos(float y)
     {
+        //Vector3[] rnd = new Vector3[2];
+        //rnd[0] = new Vector3(0, 0, 0);
+        //rnd[0] = new Vector3(1, 0, 0);
+        //return rnd[Random.Range(0, 2)];
+
         const float minDistance = 1f;
         float battleFieldRadius = BattleManager.Instance.battleFieldRadius; // 원형 전장의 반지름
 
