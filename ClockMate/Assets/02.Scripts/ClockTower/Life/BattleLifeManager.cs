@@ -6,7 +6,7 @@ using static Define.Battle;
 
 public class BattleLifeManager : MonoBehaviourPun
 {
-    private int _deadPlayerNum = 0; // 죽은 플레이어 수
+    private HashSet<int> _deadPlayers = new HashSet<int>();
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
     public static BattleLifeManager Instance { get; private set; }
@@ -37,6 +37,8 @@ public class BattleLifeManager : MonoBehaviourPun
         CharacterBase character = targetView.GetComponent<CharacterBase>();
         if (character == null) return;
 
+        _deadPlayers.Add(viewID);
+        Debug.Log("_deadPlayerNum: " + _deadPlayers.Count);
         HandleDeath(character);
     }
 
@@ -45,17 +47,13 @@ public class BattleLifeManager : MonoBehaviourPun
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        _deadPlayerNum++;
-
-        if (_deadPlayerNum == 1)
+        if (_deadPlayers.Count == 1)
         {
             _reviveCoroutine = StartCoroutine(ReviveAfterDelay(character));
         }
-        else if (_deadPlayerNum >= 2)
+        else if (_deadPlayers.Count == 2)
         {
             photonView.RPC(nameof(RPC_StopReviveCoroutine), RpcTarget.All);
-            _deadPlayerNum = 0;
-
             BattleManager.Instance.StopAttackRun();
         }
     }
@@ -72,11 +70,12 @@ public class BattleLifeManager : MonoBehaviourPun
         _lastHitPositions.TryGetValue(character, out Vector3 pos);
         Vector3 revivePos = pos;
 
+        int viewID = character.photonView.ViewID;
+        _deadPlayers.Remove(viewID);
+
         RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, character.photonView.ViewID, true);
         character.ChangeState<IdleState>();
         character.transform.position = revivePos;
-
-        _deadPlayerNum--;
 
         if (BattleManager.Instance.phaseType == PhaseType.SwingAttack)
         {

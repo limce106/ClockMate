@@ -91,9 +91,6 @@ public class SwingPendulum : MonoBehaviourPun
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
         if (character != null)
         {
