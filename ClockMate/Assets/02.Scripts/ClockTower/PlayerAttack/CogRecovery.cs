@@ -85,19 +85,13 @@ public class CogRecovery : AttackPattern
      {
          while (true)
          {
-            if (BattleLifeManager.Instance.isAllPlayerDead == true)
-            {
-                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-                yield break;
-            }
-
             if (AllCogsFitted())
              {
                  EndRecovery(true);
                  yield break;
              }
          
-             if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
+             if (BattleManager.Instance.IsTimeLimitEnd())
              {
                  EndRecovery(false);
                  yield break;
@@ -105,11 +99,6 @@ public class CogRecovery : AttackPattern
 
              yield return null;
          }
-     }
-
-     public override void CancelAttack()
-     {
-        ClearCogs();
      }
 
      /// <summary>
@@ -193,8 +182,14 @@ public class CogRecovery : AttackPattern
 
      void EndRecovery(bool isSuccess)
      {
-         if (!PhotonNetwork.IsMasterClient) return;
-         ClearCogs();
          BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
      }
+
+    public override void CleanUpAttack()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        PhotonNetwork.Destroy(photonView);
+    }
 }

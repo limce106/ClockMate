@@ -11,7 +11,7 @@ public class SwingAttack : AttackPattern
     private bool isCanceled = false;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
-    [SerializeField] private float attackOriginY = 0f;
+    [SerializeField] private float attackOriginY = 21f;
 
     // 공통 회피 가능 구간
     [SerializeField] private float avoidZMin = 0f;
@@ -59,7 +59,7 @@ public class SwingAttack : AttackPattern
     /// </summary>
     private Vector3 GetRandomSpawnPos()
     {
-        const float minDistance = 0.5f;
+        const float minDistance = 4f;
 
         while (true)
         {
@@ -120,12 +120,6 @@ public class SwingAttack : AttackPattern
             if (isCanceled)
                 yield break;
 
-            if (BattleLifeManager.Instance.isAllPlayerDead)
-            {
-                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-                yield break;
-            }
-
             SpawnPendulum(startAngles[i % 2]);
             yield return StartCoroutine(MovePendulum());
 
@@ -134,14 +128,9 @@ public class SwingAttack : AttackPattern
 
         if (!isCanceled)
             BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, true);
-        if (BattleLifeManager.Instance.isAllPlayerDead)
-        {
-            BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-            yield break;
-        }
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
         isCanceled = true;
 

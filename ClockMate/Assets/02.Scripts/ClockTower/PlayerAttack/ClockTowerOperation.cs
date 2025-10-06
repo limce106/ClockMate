@@ -31,12 +31,6 @@ public class ClockTowerOperation : AttackPattern
     {
         while (true)
         {
-            if (BattleLifeManager.Instance.isAllPlayerDead == true)
-            {
-                BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, false);
-                yield break;
-            }
-
             if (BattleManager.Instance.IsTimeLimitEnd())
             {
                 EndOperation(false);
@@ -55,26 +49,22 @@ public class ClockTowerOperation : AttackPattern
 
     void EndOperation(bool isSuccess)
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            DestroySpring();
-        }
-
+        IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
+        _clockSpring.GetPhotonView().RPC(nameof(clockSpringComp.RPC_ExitControlAll), RpcTarget.All);
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
-    }
-
-    public override void CancelAttack()
-    {
-        DestroySpring();
     }
 
     private void DestroySpring()
     {
-        if (_clockSpring != null)
+        if (_clockSpring != null && PhotonNetwork.IsMasterClient)
         {
             IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
-            _clockSpring.GetPhotonView().RPC(nameof(clockSpringComp.RPC_ExitControlAll), RpcTarget.All);
             PhotonNetwork.Destroy(_clockSpring);
         }
+    }
+
+    public override void CleanUpAttack()
+    {
+        DestroySpring();
     }
 }

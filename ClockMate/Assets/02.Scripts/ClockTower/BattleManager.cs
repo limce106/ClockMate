@@ -9,7 +9,8 @@ using UnityEngine.UI;
 using static Define.Battle;
 
 /// <summary>
-/// 전투 흐름 제어
+/// 전투 흐름을 총괄하는 전투 매니저
+/// 마스터가 전투 루틴 관리 및 동기화 정보 송신
 /// </summary>
 public class BattleManager : MonoBehaviourPunCallbacks
 {
@@ -22,9 +23,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private AttackPattern curAttackPattern;
+    private Coroutine _runCoroutine;
+
     private ScreenEffectController screenEffectController;
-    private bool curAttackSuccess = false;
-    private bool isHandling = false;
+    private bool curAttackSuccess = false; // 현재 공격 성공 여부
+    private bool isHandling = false; // 연출 실행 중
+    private bool attackEnded = false; // 현재 공격 종료 여부
 
     // 보스 공격 오브젝트 풀
     public NetworkObjectPool<SwingPendulum> pendulumPool;
@@ -32,8 +36,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public GameObject[] clockFace;  // 덮개
 
-    public int round { get; private set; } = 4;
-    public PhaseType phaseType { get; private set; } = PhaseType.PlayerAttack;
+    public int round { get; private set; } = 1;
+    public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
     public PlayerAttackType playerAttackType { get; private set; } = PlayerAttackType.ClockHandRecovery;
     public FallingAttack currentFallingAttack { get; private set; }
 
@@ -135,16 +139,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
-            photonView.RPC("RPC_SetIsAllPlayerDead", RpcTarget.All, false);
-            
-            // 현재 수행될 공격 패턴 생성
-            GameObject attackPrefab = GetCurrentPhasePrefab();
-            GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
-            curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
-            currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
+            BattleLifeManager.Instance.allowRevive = true;
+            GameObject spawnedAttack = SpawnCurrentAttack();
 
+            attackEnded = false;
             // 공격 실행
-            yield return StartCoroutine(curAttackPattern.Run());
+            _runCoroutine = StartCoroutine(RunAttack(curAttackPattern));
+            yield return new WaitUntil(() => attackEnded);
             // 공격 완료 후 대기 시간
             yield return new WaitForSeconds(1f);
 
@@ -167,8 +168,27 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             yield return new WaitUntil(() => !isHandling);
-            PhotonNetwork.Destroy(spawnedAttack);
+
+            if(spawnedAttack != null)
+                PhotonNetwork.Destroy(spawnedAttack);
         }
+    }
+
+    private GameObject SpawnCurrentAttack()
+    {
+        // 현재 수행될 공격 패턴 생성
+        GameObject attackPrefab = GetCurrentPhasePrefab();
+        GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
+        curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
+        currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
+
+        return spawnedAttack;
+    }
+
+    private IEnumerator RunAttack(AttackPattern attackPattern)
+    {
+        yield return attackPattern.Run();
+        attackEnded = true;
     }
 
     /// <summary>
@@ -181,42 +201,45 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            // 연출 중 조작 금지
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             screenEffectController.IncreaseWarmth(); // 화면 따뜻함 효과 증가
 
-            if (PhotonNetwork.IsMasterClient) // 성공 컷씬 재생
+            if(PhotonNetwork.IsMasterClient)
             {
+                // 복구율 증가
                 if (playerAttackType != PlayerAttackType.ClockTowerOperation)
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
+                // 성공 컷씬 재생
                 CutsceneSyncManager.Instance.PlayForAll(
-                    playerCutsceneNames[playerAttackType],
-                    0f,
-                    () =>
-                    {
-                        TryAdvancePlayerAttack();
-                        round++;
-
-
-                        if ((int)playerAttackType < playerAttackPrefabs.Count)
+                        playerCutsceneNames[playerAttackType],
+                        0f,
+                        () =>
                         {
-                            TryAdvanceBossAttack();
+                            TryAdvancePlayerAttack();
+                            round++;
+
+
+                            if ((int)playerAttackType < playerAttackPrefabs.Count)
+                            {
+                                TryAdvanceBossAttack();
+                            }
                         }
-                    }
-                );
-            }
+                    );
 
-            if (playerAttackType == PlayerAttackType.CogwheelRecovery) // 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
-            {
-                SetClockFaceActive(true);
-
-                CharacterBase character = GameManager.Instance.GetLocalCharacter();
-                character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+                // 공격 관련 오브젝트 정리
+                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
             }
 
             while (CutsceneSyncManager.Instance.IsBusy)
             {
                 yield return null;
             }
+
+            // 조작 금지 해제
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
         }
         else
         {
@@ -236,25 +259,25 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         if (phaseType == PhaseType.PlayerAttack)
         {
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
             yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
+
+            if(PhotonNetwork.IsMasterClient)
+            {
+                // 공격 관련 오브젝트 정리
+                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+            }
 
             TryAdvanceBossAttack();
             round++;
 
-            photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
-
-            if (playerAttackType == PlayerAttackType.CogwheelRecovery)
-            {
-                SetClockFaceActive(true);
-
-                CharacterBase character = GameManager.Instance.GetLocalCharacter();
-                character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
-            }
-
             yield return new WaitForSeconds(1f);
+
             yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
             yield return StartCoroutine(screenEffectController.FadeIn(3f));
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
         }
         else
         {
@@ -288,19 +311,24 @@ public class BattleManager : MonoBehaviourPunCallbacks
         isHandling = false;
     }
 
-    /// <summary>
-    /// 반격 성공 컷씬이 끝났을 때
-    /// </summary>
-    private IEnumerator OnCutsceneFinished()
+    [PunRPC]
+    private void RPC_CleanUpAttack()
     {
-        TryAdvancePlayerAttack();
-        round++;
+        curAttackPattern?.CleanUpAttack();
+    }
 
-        yield return new WaitForSeconds(1f);
-
-        if ((int)playerAttackType < playerAttackPrefabs.Count)
+    /// <summary>
+    /// 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
+    /// </summary>
+    [PunRPC]
+    private void RPC_PlacePlayerOnClockFace()
+    {
+        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
         {
-            TryAdvanceBossAttack();
+            SetClockFaceActive(true);
+
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
         }
     }
 
@@ -319,20 +347,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public float GetCurrentRecovery()
     {
         return recoverySlider.value;
-    }
-
-    [PunRPC]
-    public void RPC_StopCurAttackPattern()
-    {
-        StopCurAttackPattern();
-    }
-
-    /// <summary>
-    /// 현재 공격 중단
-    /// </summary>
-    public void StopCurAttackPattern()
-    {
-        curAttackPattern?.CancelAttack();
     }
 
     /// <summary>
@@ -393,15 +407,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     public IEnumerator FailBossAttackSequence()
     {
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
         yield return StartCoroutine(screenEffectController.EnableGrayscale(true));
         yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-        photonView.RPC(nameof(RPC_StopCurAttackPattern), RpcTarget.All);
+        curAttackPattern?.CleanUpAttack();
         BattleLifeManager.Instance.ReviveAllPlayer();
         yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(screenEffectController.EnableGrayscale(false));
         yield return StartCoroutine(screenEffectController.FadeIn(3f));
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
     }
     
     /// <summary>
@@ -419,9 +435,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     private void RunTimer()
     {
-        if (BattleLifeManager.Instance.isAllPlayerDead)
-            return;
-
         _timer -= Time.deltaTime;
         photonView.RPC(nameof(RPC_UpdateTimeLimitTxt), RpcTarget.All, Mathf.CeilToInt(_timer));
     }
@@ -452,5 +465,20 @@ public class BattleManager : MonoBehaviourPunCallbacks
         {
             cf.SetActive(isActive);
         }
+    }
+
+    /// <summary>
+    /// 현재 공격을 중단하고 실패 처리
+    /// </summary>
+    public void StopAttackRun()
+    {
+        if(_runCoroutine != null)
+        {
+            StopCoroutine(_runCoroutine);
+            _runCoroutine = null;
+        }
+
+        photonView.RPC("ReportAttackResult", RpcTarget.All, false);
+        attackEnded = true;
     }
 }
