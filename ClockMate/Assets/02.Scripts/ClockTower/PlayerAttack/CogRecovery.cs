@@ -91,7 +91,7 @@ public class CogRecovery : AttackPattern
                  yield break;
              }
          
-             if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
+             if (BattleManager.Instance.IsTimeLimitEnd())
              {
                  EndRecovery(false);
                  yield break;
@@ -187,6 +187,9 @@ public class CogRecovery : AttackPattern
 
     public override void CleanUpAttack()
     {
-        ClearCogs();
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        PhotonNetwork.Destroy(photonView);
     }
 }

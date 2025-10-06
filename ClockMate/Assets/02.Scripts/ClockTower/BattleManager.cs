@@ -168,7 +168,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             yield return new WaitUntil(() => !isHandling);
-            PhotonNetwork.Destroy(spawnedAttack);
+
+            if(spawnedAttack != null)
+                PhotonNetwork.Destroy(spawnedAttack);
         }
     }
 
@@ -225,11 +227,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
                             }
                         }
                     );
-            }
 
-            // 공격 관련 오브젝트 정리
-            curAttackPattern?.CleanUpAttack();
-            PlacePlayerOnClockFace();
+                // 공격 관련 오브젝트 정리
+                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+            }
 
             while (CutsceneSyncManager.Instance.IsBusy)
             {
@@ -261,8 +263,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(screenEffectController.EnableGrayscale(true)); // 흑백 효과 및 페이드 아웃 시작
             yield return StartCoroutine(screenEffectController.FadeOut(3f));
 
-            curAttackPattern?.CleanUpAttack();
-            PlacePlayerOnClockFace();
+            if(PhotonNetwork.IsMasterClient)
+            {
+                // 공격 관련 오브젝트 정리
+                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+            }
 
             TryAdvanceBossAttack();
             round++;
@@ -305,10 +311,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
         isHandling = false;
     }
 
+    [PunRPC]
+    private void RPC_CleanUpAttack()
+    {
+        curAttackPattern?.CleanUpAttack();
+    }
+
     /// <summary>
     /// 톱니바퀴 복구였다면 덮개 활성화 및 플레이어는 덮개 위로 이동
     /// </summary>
-    private void PlacePlayerOnClockFace()
+    [PunRPC]
+    private void RPC_PlacePlayerOnClockFace()
     {
         if (playerAttackType == PlayerAttackType.CogwheelRecovery)
         {
