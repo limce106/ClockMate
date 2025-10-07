@@ -139,6 +139,25 @@ public class CogRecovery : AttackPattern
          _activeIdx.Clear();
          _usedXZ.Clear();
      }
+
+    private void ReleaseAllCogs()
+    {
+        if (_cogs == null || _cogs.Length == 0) BuildRefs();
+
+        foreach(Cog cog in _cogs)
+        {
+            if(cog == null) continue;
+            IACogGrip[] grips = cog.GetComponentsInChildren<IACogGrip>(true);
+
+            foreach(IACogGrip grip in grips)
+            {
+                if(grip.IsOccupied && grip.HolderViewId != -1)
+                {
+                    grip.photonView.RPC("RPC_Release", RpcTarget.All);
+                }
+            }
+        }
+    }
      
      /// <summary>
      /// 톱니바퀴를 스폰할 랜덤 위치 가져오기
@@ -182,7 +201,8 @@ public class CogRecovery : AttackPattern
 
      void EndRecovery(bool isSuccess)
      {
-         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
+        ReleaseAllCogs();
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
      }
 
     public override void CleanUpAttack()
