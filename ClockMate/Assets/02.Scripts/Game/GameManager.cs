@@ -122,10 +122,13 @@ public class GameManager : MonoSingleton<GameManager>
     {
         string currentScene = SceneManager.GetActiveScene().name;
         string bgmKey = GetBgmKeyForScene(currentScene);
+        string envKey = GetEnvKeyForScene(currentScene);
+        float envVolume = GetEnvVolumeForScene(currentScene);
 
         if (!string.IsNullOrEmpty(bgmKey) && SoundManager.Instance != null)
         {
             SoundManager.Instance.PlayBgm(bgmKey);
+            SoundManager.Instance.PlaySfx(key: envKey, loop: true, pos: null, volume: envVolume);
         }
         else
         {
@@ -141,7 +144,7 @@ public class GameManager : MonoSingleton<GameManager>
         switch (sceneName)
         {
             case "Desert":
-                return "desert_wind";
+                return "";
             case "Glacier":
                 return "";
             case "Forest":
@@ -150,6 +153,46 @@ public class GameManager : MonoSingleton<GameManager>
                 return "";
             default:
                 return null; // BGM이 없는 씬
+        }
+    }
+
+    /// <summary>
+    /// 맵 이름에 해당하는 환경음 반환
+    /// </summary>
+    private string GetEnvKeyForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Desert":
+                return "desert_wind";
+            case "Glacier":
+                return "";
+            case "Forest":
+                return "forest_rain";
+            case "ClockTower":
+                return "";
+            default:
+                return null; // 환경음이 없는 씬
+        }
+    }
+
+    /// <summary>
+    /// 맵 이름에 해당하는 환경음 소리 크기 반환
+    /// </summary>
+    private float GetEnvVolumeForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Desert":
+                return 1f;
+            case "Glacier":
+                return 1f;
+            case "Forest":
+                return 0.05f;
+            case "ClockTower":
+                return 1f;
+            default:
+                return 1f;
         }
     }
 
