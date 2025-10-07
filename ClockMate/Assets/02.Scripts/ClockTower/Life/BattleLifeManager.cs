@@ -13,7 +13,7 @@ public class BattleLifeManager : MonoBehaviourPun
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
 
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
-    public bool allowRevive = true;
+    [HideInInspector] public bool allowRevive = true;
 
     public static BattleLifeManager Instance { get; private set; }
 
