@@ -73,6 +73,8 @@ public class FallingClockHand : MonoBehaviourPun
 
         _shockWave.Play();
         _impact.Play();
+
+        SoundManager.Instance.PlaySfx(key: "falling_clockhand", pos: transform.position, volume: 0.7f);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -90,6 +92,8 @@ public class FallingClockHand : MonoBehaviourPun
 
             if (canDie)
             {
+                SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
+
                 BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
                 character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
             }

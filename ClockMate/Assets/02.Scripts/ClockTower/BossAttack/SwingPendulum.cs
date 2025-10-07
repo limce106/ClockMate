@@ -53,6 +53,14 @@ public class SwingPendulum : MonoBehaviourPun
         startAngle = NormalizeAngle(transform.eulerAngles.z);
         isStarted = true;
         torque = startAngle < 0 ? swingSpeed : -swingSpeed;
+
+        StartCoroutine(PlaySwingSfx());
+    }
+
+    private IEnumerator PlaySwingSfx()
+    {
+        yield return new WaitForSeconds(1f);
+        SoundManager.Instance.PlaySfx(key: "swing_pendulum", pos: transform.position, volume: 0.7f);
     }
 
     private void FixedUpdate()
@@ -94,6 +102,8 @@ public class SwingPendulum : MonoBehaviourPun
         CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
         if (character != null)
         {
+            SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
+
             BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
             character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }

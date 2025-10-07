@@ -258,6 +258,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     public void RPC_PlayReviveEffect()
     {
         _reviveEffect.Play();
+        SoundManager.Instance.PlaySfx(key: "battle_revive", pos: transform.position, volume: 0.7f);
     }
 
     public IEnumerator ApplyDizzy(float seconds)
