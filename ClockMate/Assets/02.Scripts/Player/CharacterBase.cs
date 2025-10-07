@@ -25,7 +25,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     public IState CurrentState => _stateMachine.CurrentState;
     public CharacterAnimation Anim { get; private set; }
 
-    public ParticleSystem reviveEffect;
+    [SerializeField] private ParticleSystem _reviveEffect;
     
     // 서버 관련 필드
     private PhotonTransformView _photonTransformView;
@@ -42,7 +42,6 @@ public abstract class CharacterBase : MonoBehaviourPun
     private GroundChecker _groundChecker;
     private int _jumpCount;
     private int _maxJumpCount;
-    private Coroutine _curReviveCoroutine;
 
     private Dictionary<Type, IState> _states;
 
@@ -255,38 +254,10 @@ public abstract class CharacterBase : MonoBehaviourPun
         Anim?.ResetDelta();
     }
 
-    /// <summary>
-    /// 부활 이펙트 재생
-    /// </summary>
-    public void PlayReviveEffect()
-    {
-        if(_curReviveCoroutine != null)
-        {
-            StopCoroutine(_curReviveCoroutine);
-        }
-
-        _curReviveCoroutine = StartCoroutine(HandleReviveEffect());
-    }
-
     [PunRPC]
     public void RPC_PlayReviveEffect()
     {
-        PlayReviveEffect();
-    }
-
-    /// <summary>
-    /// 이펙트 재생 및 종료 처리
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator HandleReviveEffect()
-    {
-        reviveEffect.gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(reviveEffect.main.duration);
-
-        // 재생이 끝나면 자동으로 비활성화됨
-
-        _curReviveCoroutine = null;
+        _reviveEffect.Play();
     }
 
     public IEnumerator ApplyDizzy(float seconds)
