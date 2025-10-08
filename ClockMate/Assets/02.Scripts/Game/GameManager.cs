@@ -128,11 +128,14 @@ public class GameManager : MonoSingleton<GameManager>
         if (!string.IsNullOrEmpty(bgmKey) && SoundManager.Instance != null)
         {
             SoundManager.Instance.PlayBgm(bgmKey);
+        }
+        else if (!string.IsNullOrEmpty(envKey) && SoundManager.Instance != null)
+        {
             SoundManager.Instance.PlaySfx(key: envKey, loop: true, pos: null, volume: envVolume);
         }
         else
         {
-            Debug.LogError($"[GameManager] BGM 재생 실패. 키: {bgmKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
+            Debug.LogError($"[GameManager] BGM 재생 실패. Bgm 키: {bgmKey}, Env 키: {envKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
         }
     }
 
@@ -150,7 +153,7 @@ public class GameManager : MonoSingleton<GameManager>
             case "Forest":
                 return "forest_bgm";
             case "ClockTower":
-                return "";
+                return "clocktower_bgm";
             default:
                 return null; // BGM이 없는 씬
         }
