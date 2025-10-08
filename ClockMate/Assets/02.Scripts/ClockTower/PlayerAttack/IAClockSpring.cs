@@ -14,6 +14,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     private string _exitString;
 
     private Rigidbody _rb;
+    private SoundHandle _springSfxHandle = default;
 
     private Dictionary<int, CharacterBase> _attachedPlayers = new Dictionary<int, CharacterBase>();
     private Dictionary<int, bool> _pushInput = new Dictionary<int, bool>();
@@ -52,18 +53,33 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         }
 
         // 둘 다 W 누르고 있으면 태엽 회전
-        if (_attachedPlayers.Count == 2 && PhotonNetwork.IsMasterClient)
+        if (_attachedPlayers.Count == 2)
         {
             bool allPushing = true;
-            foreach (var kvp in _pushInput)
+
+            if(PhotonNetwork.IsMasterClient)
             {
-                if (!kvp.Value) { allPushing = false; break; }
+                foreach (var kvp in _pushInput)
+                {
+                    if (!kvp.Value) { allPushing = false; break; }
+                }
+
+                if (allPushing)
+                {
+                    RotateSpring();
+                }
             }
 
-            if (allPushing)
+            // 각 로컬에서 효과음 실행. 추후 sfx 동기화 문제가 해결되면 코드 수정 예정
+            if(allPushing)
             {
-                RotateSpring();
+                PlayRotateSpringSfx();
             }
+        }
+        else if(!_springSfxHandle.Equals(default(SoundHandle)))
+        {
+            SoundManager.Instance.Stop(_springSfxHandle);
+            _springSfxHandle = default;
         }
 
         FollowClockSpring();
@@ -100,6 +116,19 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     {
         _rb.MoveRotation(_rb.rotation * Quaternion.Euler(0, RotationSpeed * Time.fixedDeltaTime, 0));
         BattleManager.Instance.photonView.RPC(nameof(BattleManager.Instance.RPC_UpdateRecovery), RpcTarget.All, RecoveryFillAmount);
+    }
+
+    private void PlayRotateSpringSfx()
+    {
+        if (!_springSfxHandle.IsValid)
+        {
+            _springSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "clock_spring",
+                loop: true,
+                pos: transform.position,
+                sync: false,
+                volume: 0.8f);
+        }
     }
 
     bool IsLocalPlayerAttached(out int localViewID)
