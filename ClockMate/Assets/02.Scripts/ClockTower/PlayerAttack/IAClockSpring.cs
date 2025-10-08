@@ -73,13 +73,14 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
             // 각 로컬에서 효과음 실행. 추후 sfx 동기화 문제가 해결되면 코드 수정 예정
             if(allPushing)
             {
+                RPC_SetLocalPlayerPushAnim(true);
                 PlayRotateSpringSfx();
             }
-        }
-        else if(!_springSfxHandle.Equals(default(SoundHandle)))
-        {
-            SoundManager.Instance.Stop(_springSfxHandle);
-            _springSfxHandle = default;
+            else
+            {
+                RPC_SetLocalPlayerPushAnim(false);
+                RPC_StopRotateSpringSfx();
+            }
         }
 
         FollowClockSpring();
@@ -131,6 +132,22 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         }
     }
 
+    [PunRPC]
+    private void RPC_StopRotateSpringSfx()
+    {
+        if (!_springSfxHandle.Equals(default(SoundHandle)))
+        {
+            SoundManager.Instance.Stop(_springSfxHandle);
+            _springSfxHandle = default;
+        }
+    }
+
+    [PunRPC]
+    private void RPC_SetLocalPlayerPushAnim(bool push)
+    {
+        GameManager.Instance.GetLocalCharacter().Anim.SetPush(push);
+    }
+
     bool IsLocalPlayerAttached(out int localViewID)
     {
         foreach(var kvp in _attachedPlayers)
@@ -148,6 +165,12 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     public void ExitControl(int viewID)
     {
         if (!_attachedPlayers.ContainsKey(viewID)) return;
+
+        if(_attachedPlayers.Count == 2)
+        {
+            photonView.RPC(nameof(RPC_SetLocalPlayerPushAnim), RpcTarget.All, false);
+            photonView.RPC(nameof(RPC_StopRotateSpringSfx), RpcTarget.All);
+        }
 
         CharacterBase character = _attachedPlayers[viewID];
         character.ChangeState<IdleState>();
