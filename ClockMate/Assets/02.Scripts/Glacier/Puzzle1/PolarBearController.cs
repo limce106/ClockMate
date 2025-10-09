@@ -82,6 +82,7 @@ public class PolarBearController : MonoBehaviourPun
 
     public void StartChase()
     {
+        _rb.isKinematic = false;
         _chaseSled = true;
     }
 }
