@@ -169,7 +169,6 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         if(_attachedPlayers.Count == 2)
         {
             photonView.RPC(nameof(RPC_SetLocalPlayerPushAnim), RpcTarget.All, false);
-            photonView.RPC(nameof(RPC_StopRotateSpringSfx), RpcTarget.All);
         }
 
         CharacterBase character = _attachedPlayers[viewID];
