@@ -107,6 +107,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3187237195552332012}
+  - component: {fileID: 2191848776596105947}
+  - component: {fileID: 4557885155018333928}
   m_Layer: 0
   m_Name: IceBall
   m_TagString: Untagged
@@ -132,6 +134,45 @@ Transform:
   - {fileID: 7273760111395175148}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2191848776596105947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451670410499882844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 0}
+  sceneViewId: 14
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &4557885155018333928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451670410499882844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 0
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &681201234286698766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -213,6 +254,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6258571609666801020}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1287856902156068757}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5734884213655925322}
   m_SourcePrefab: {fileID: 100100000, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
 --- !u!1 &411363825195572319 stripped
 GameObject:
@@ -284,6 +331,45 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.009508194
   m_Center: {x: -0.0000006649643, y: -0.0000021751039, z: 0.0000011748634}
+--- !u!114 &1287856902156068757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411363825195572319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 0}
+  sceneViewId: 15
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5734884213655925322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411363825195572319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &1080483018516858597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
