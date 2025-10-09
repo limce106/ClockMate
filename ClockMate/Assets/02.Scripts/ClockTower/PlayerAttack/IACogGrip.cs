@@ -56,7 +56,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         if (_holder.photonView.IsMine && Input.GetKeyDown(KeyCode.Q))
         {
             // 내려놓기 
-            Release();
+            RPC_Release();
         }
     }
 
@@ -169,10 +169,15 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         _lastSeq = seq;
     }
 
-    private void Release()
+    [PunRPC]
+    public void RPC_Release()
     {
-        LockLocalCharacter(_holder, false);
-        EnableUI(false);
+        if (_holder != null && _holder.photonView.IsMine)
+        {
+            LockLocalCharacter(_holder, false);
+            EnableUI(false);
+        }
+            
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, false, -1);
         if (PhotonNetwork.IsMasterClient)
             photonView.RPC(nameof(RPC_GripAnchorClear), RpcTarget.All, ++_anchorSeq);
@@ -208,19 +213,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             if (_col != null) _col.enabled = true;
         }
     }
-    
-    /// <summary>
-    /// Grip이 비활성화되면 해당 Grip을 잡고 있던 플레이어와의 상호작용을 끊는다.
-    /// </summary>
-    private void OnDisable()
-    {
-        if (IsOccupied && HolderViewId != -1)
-        {
-            Release();   
-        }
-    }
 
-    
     public void OnInteractAvailable() { }
     public void OnInteractUnavailable() { }
 }

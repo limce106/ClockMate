@@ -20,22 +20,23 @@ public class GiantFlower : ResettableBase, IPunObservable
     public GameObject sideSteam;
     public Animator steamAnimator;
 
-    private Rigidbody _rb;
     private bool _isLocked = false;
     private bool _hasTilted = false;
     private Vector3 _initialPosition;
+    private Quaternion _previousRotation;
 
     private const float LevelTolerance = 2f;    // 수평 허용 오차
     
     private Vector2 _smoothedTorque;
     public float smoothingFactor = 0.5f;
-    private Dictionary<Transform, Vector3> _smoothedPlayerPositions = new Dictionary<Transform, Vector3>();
+    private SoundHandle _rotationSfxHandle = default;
 
+    private Dictionary<Transform, Vector3> _smoothedPlayerPositions = new Dictionary<Transform, Vector3>();
     private List<Transform> _playersOnFlower = new List<Transform>();
 
     private void Start()
     {
-        _rb = GetComponent<Rigidbody>();
+        _previousRotation = transform.localRotation;
     }
 
     void FixedUpdate()
@@ -47,12 +48,15 @@ public class GiantFlower : ResettableBase, IPunObservable
         _smoothedTorque = Vector2.Lerp(_smoothedTorque, totalTorque, smoothingFactor);
         ApplyRotation(_smoothedTorque);
 
+        // 한 번이라도 기울어졌는지 확인
         if (!_hasTilted)
         {
             float tiltAmount = Quaternion.Angle(transform.rotation, Quaternion.identity);
             if (tiltAmount > LevelTolerance)
                 _hasTilted = true;
         }
+
+        _previousRotation = transform.localRotation;
     }
 
     Vector2 CalculateTotalTorque()
@@ -93,18 +97,36 @@ public class GiantFlower : ResettableBase, IPunObservable
     }
 
     void ApplyRotation(Vector2 totalTorque)
-    {
-        if (totalTorque.magnitude < 0.05f)
-        {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, Time.fixedDeltaTime * _rotationSpeed);
-            return;
-        }
-        
+    {        
         float angleX = Mathf.Clamp(totalTorque.y * sensitivity, -maxAngle, maxAngle);
         float angleZ = Mathf.Clamp(totalTorque.x * sensitivity, -maxAngle, maxAngle);
         
         Quaternion targetRotation = Quaternion.Euler(angleX, 0f, -angleZ);
         transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, Time. fixedDeltaTime * _rotationSpeed);
+
+        // 재생 중이 아니면 효과음 재생
+        if(!_rotationSfxHandle.IsValid)
+        {
+            _rotationSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "giantflower_rotate",
+                loop: true,
+                pos: transform.position,
+                sync: false,
+                volume: 0.6f);
+        }
+
+        // 현재와 이전 각도 차 계산
+        float angularSpeed = Quaternion.Angle(transform.localRotation, _previousRotation) / Time.fixedDeltaTime;
+
+        if (angularSpeed < LevelTolerance)
+        {
+            // 수평으로 돌아갈 때 효과음 정지
+            if (_rotationSfxHandle.IsValid)
+            {
+                SoundManager.Instance.Stop(_rotationSfxHandle);
+                _rotationSfxHandle = default;
+            }
+        }
     }
 
     /// <summary>
@@ -136,6 +158,7 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     public void Lock()
     {
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, Time.fixedDeltaTime * _rotationSpeed);
         _isLocked = true;
         transform.localEulerAngles = Vector3.zero;
     }

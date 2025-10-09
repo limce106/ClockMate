@@ -28,10 +28,7 @@ public abstract class AttackPattern : MonoBehaviourPun
     public abstract IEnumerator Run();
 
     /// <summary>
-    /// 플레이어 모두 사망한 경우를 위한 중도 공격 취소 + 오브젝트 제거
+    /// 공격이 중단/종료된 후 관련 오브젝트, UI 제거, 플레이어 부착 해제 등 실행
     /// </summary>
-    public virtual void CancelAttack()
-    {
-        
-    }
+    public abstract void CleanUpAttack();
 }

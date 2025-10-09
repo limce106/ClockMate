@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System.Collections;
+using System.Net.NetworkInformation;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,12 +17,15 @@ public class ClockHandRecovery : AttackPattern
     private GameObject hourClockHand;
     private GameObject minuteClockHand;
 
+    private int hourClockHandViewID;
+    private int minuteClockHandViewID;
+
     private const string HourClockHandPrefabPath = "Prefabs/RecoveryHourClockHand";
     private const string MinuteClockHandPrefabPath = "Prefabs/RecoveryMinuteClockHand";
     private const float MinDistance = 10f;   // 분침, 시침 스폰 위치 간의 최소 거리
     private const float AnswerMargin = 10f; // 스폰된 시계 바늘들이 정답과 겹치지 않도록 여유 두기
     private const float AnswerOffset = 3f; // 정답 오차 허용 범위
-    private const float SpawnPosY = 1f;   // 스폰 위치 Y값
+    private const float SpawnPosY = 0.5f;   // 스폰 위치 Y값
 
     protected override void Init()
     {
@@ -100,6 +104,21 @@ public class ClockHandRecovery : AttackPattern
 
         hourClockHand = PhotonNetwork.Instantiate(HourClockHandPrefabPath, SpawnPos, Quaternion.Euler(0, -randomHourAngle, 0));
         minuteClockHand = PhotonNetwork.Instantiate(MinuteClockHandPrefabPath, SpawnPos, Quaternion.Euler(0, -randomMinuteAngle, 0));
+
+        hourClockHandViewID = hourClockHand.GetComponent<PhotonView>().ViewID;
+        minuteClockHandViewID = minuteClockHand.GetComponent<PhotonView>().ViewID;
+
+        photonView.RPC(nameof(RPC_SetClockHandRef), RpcTarget.All, hourClockHandViewID, minuteClockHandViewID);
+    }
+
+    [PunRPC]
+    private void RPC_SetClockHandRef(int hourID, int minuteID)
+    {
+        hourClockHandViewID = hourID;
+        minuteClockHandViewID = minuteID;
+
+        hourClockHand = PhotonView.Find(hourID)?.gameObject;
+        minuteClockHand = PhotonView.Find(minuteID)?.gameObject;
     }
 
     float GetRandomAngleExcluding(float avoidAngle, float? hourAngle = null)
@@ -184,35 +203,52 @@ public class ClockHandRecovery : AttackPattern
     {
         while (true)
         {
-            // 시간 초과 처리
-            if (BattleManager.Instance.IsTimeLimitEnd())
+            if (PhotonNetwork.IsMasterClient)
             {
-                EndRecovery(false);
-                yield break;
+                // 시간 초과 처리
+                if (BattleManager.Instance.IsTimeLimitEnd())
+                {
+                    EndRecovery(false);
+                    yield break;
+                }
+
+                // 정답 확인 로직은 모든 클라이언트에서 실행
+                if (IsCorrectTime())
+                {
+                    // 정답을 맞췄을 때
+                    yield return new WaitForSeconds(2f);
+
+                    EndRecovery(true);
+                    yield break;
+                }
+
+                yield return null;
             }
-
-            // 정답 확인 로직은 모든 클라이언트에서 실행
-            if (IsCorrectTime())
-            {
-                // 정답을 맞췄을 때
-                yield return new WaitForSeconds(2f);
-
-                EndRecovery(true);
-                yield break;
-            }
-
-            yield return null;
         }
     }
 
     [PunRPC]
     void RPC_DetachAllPlayers()
     {
-        IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
-        IAClockHand minute = minuteClockHand?.GetComponentInChildren<IAClockHand>();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPC_ForceExitControls), RpcTarget.All);
+        }
+    }
 
-        hour?.ExitControl();
-        minute?.ExitControl();
+    [PunRPC]
+    private void RPC_ForceExitControls()
+    {
+        if(PhotonNetwork.IsMasterClient)
+        {
+            IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
+            hour?.ExitControl();
+        }
+        else
+        {
+            IAClockHand minute = minuteClockHand?.GetComponentInChildren<IAClockHand>();
+            minute?.ExitControl();
+        }
     }
 
     [PunRPC]
@@ -225,17 +261,27 @@ public class ClockHandRecovery : AttackPattern
     void EndRecovery(bool isSuccess)
     {
         photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
-
         photonView.RPC(nameof(RPC_DisableUI), RpcTarget.All);
+        // 공격 결과 보고
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
+    }
 
-        if (hourClockHand != null)
-            PhotonNetwork.Destroy(hourClockHand);
-        if (minuteClockHand != null)
-            PhotonNetwork.Destroy(minuteClockHand);
+    public override void CleanUpAttack()
+    {
+        DestroyClockHands();
+    }
+
+    private void DestroyClockHands()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (hourClockHand != null)
+                PhotonNetwork.Destroy(hourClockHand);
+            if (minuteClockHand != null)
+                PhotonNetwork.Destroy(minuteClockHand);
+        }
 
         hourClockHand = null;
         minuteClockHand = null;
-
-        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 }

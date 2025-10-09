@@ -11,7 +11,7 @@ public class SwingPendulum : MonoBehaviourPun
     private Rigidbody rb;
 
     public float startAngle;
-    private float swingSpeed = 45f;
+    private float swingSpeed = 200f;
     private float torque;
 
     private bool alreadyTriggered = false;  // DestroyObj를 한 번만 실행하기 위함
@@ -91,9 +91,6 @@ public class SwingPendulum : MonoBehaviourPun
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
         if (character != null)
         {

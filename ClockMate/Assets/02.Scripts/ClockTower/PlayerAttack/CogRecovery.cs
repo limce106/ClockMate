@@ -85,14 +85,13 @@ public class CogRecovery : AttackPattern
      {
          while (true)
          {
-             if (AllCogsFitted())
+            if (AllCogsFitted())
              {
                  EndRecovery(true);
                  yield break;
              }
          
-             // 제한 시간이 다 되었는지 if문으로 확인 후 아래 코드 추가
-             if (PhotonNetwork.IsMasterClient && BattleManager.Instance.IsTimeLimitEnd())
+             if (BattleManager.Instance.IsTimeLimitEnd())
              {
                  EndRecovery(false);
                  yield break;
@@ -101,8 +100,6 @@ public class CogRecovery : AttackPattern
              yield return null;
          }
      }
-
-     public override void CancelAttack() { }
 
      /// <summary>
      /// 모든 톱니바퀴가 홈에 맞춰졌는지 여부를 반환한다.
@@ -142,6 +139,25 @@ public class CogRecovery : AttackPattern
          _activeIdx.Clear();
          _usedXZ.Clear();
      }
+
+    private void ReleaseAllCogs()
+    {
+        if (_cogs == null || _cogs.Length == 0) BuildRefs();
+
+        foreach(Cog cog in _cogs)
+        {
+            if(cog == null) continue;
+            IACogGrip[] grips = cog.GetComponentsInChildren<IACogGrip>(true);
+
+            foreach(IACogGrip grip in grips)
+            {
+                if(grip.IsOccupied && grip.HolderViewId != -1)
+                {
+                    grip.photonView.RPC("RPC_Release", RpcTarget.All);
+                }
+            }
+        }
+    }
      
      /// <summary>
      /// 톱니바퀴를 스폰할 랜덤 위치 가져오기
@@ -185,8 +201,15 @@ public class CogRecovery : AttackPattern
 
      void EndRecovery(bool isSuccess)
      {
-         if (!PhotonNetwork.IsMasterClient) return;
-         ClearCogs();
-         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
+        ReleaseAllCogs();
+        BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
      }
+
+    public override void CleanUpAttack()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        PhotonNetwork.Destroy(photonView);
+    }
 }

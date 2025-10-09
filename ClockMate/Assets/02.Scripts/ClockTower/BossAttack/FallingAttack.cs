@@ -48,7 +48,7 @@ public class FallingAttack : AttackPattern
 
     public Vector3 GetRandomSpawnPos(float y)
     {
-        const float minDistance = 0.5f;
+        const float minDistance = 1f;
         float battleFieldRadius = BattleManager.Instance.battleFieldRadius; // 원형 전장의 반지름
 
         while (true)
@@ -84,11 +84,8 @@ public class FallingAttack : AttackPattern
         }
     }
 
-    public override void CancelAttack()
+    public override void CleanUpAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
         isCanceled = true;
 
         var clockHandsToDestroy = FindObjectsOfType<FallingClockHand>();

@@ -161,4 +161,9 @@ public class GameManager : MonoSingleton<GameManager>
 
         character.InputHandler.enabled = enabled;
     }
+
+    public CharacterBase GetLocalCharacter()
+    {
+        return Characters[SelectedCharacter];
+    }
 }

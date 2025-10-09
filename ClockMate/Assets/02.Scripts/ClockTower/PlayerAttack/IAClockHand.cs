@@ -28,23 +28,24 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _exitString = "나가기";
     }
 
+    private void Update()
+    {
+        if (!_isControlled) return;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ExitControl();
+        }
+    }
+
     void FixedUpdate()
     {
-        // 조작 중인 플레이어가 로컬 플레이어인지 확인
-        bool isLocalPlayerControlling = _isControlled && _controller != null && _controller.photonView.IsMine;
+        if (!_isControlled) return;
 
-        if (isLocalPlayerControlling)
+        if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                ExitControl();
-                return;
-            }
-
-            if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
-            {
-                _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
-            }
+            _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
+            _controller.Anim.SetPush(true);
         }
     }
 
@@ -97,6 +98,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _isControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
+        _controller.Anim.SetPush(false);
 
         _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_DetachController), RpcTarget.All, _controller.photonView.ViewID);
         if (_controller.photonView.IsMine)
