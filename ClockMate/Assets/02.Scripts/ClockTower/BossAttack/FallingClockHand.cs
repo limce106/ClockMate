@@ -10,6 +10,9 @@ public class FallingClockHand : MonoBehaviourPun
     [SerializeField] private Collider _killTrigger;   // 플레이어 죽이는 전용 트리거
     [SerializeField] private Collider _solidCollider; // 물리 충돌용 트리거
 
+    [SerializeField] private ParticleSystem _shockWave;
+    [SerializeField] private ParticleSystem _impact;
+
     private const float fallForce = 700f;
     private const float lifeTime = 3f;
     private const float stickOffset = 0.01f;
@@ -67,6 +70,11 @@ public class FallingClockHand : MonoBehaviourPun
         // 땅에 닿은 바늘로 플레이어가 죽을 수 없도록 처리
         _killTrigger.enabled = false;
         _solidCollider.enabled = true;
+
+        _shockWave.Play();
+        _impact.Play();
+
+        SoundManager.Instance.PlaySfx(key: "falling_clockhand", pos: transform.position, volume: 0.7f);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -84,6 +92,8 @@ public class FallingClockHand : MonoBehaviourPun
 
             if (canDie)
             {
+                SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
+
                 BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
                 character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
             }

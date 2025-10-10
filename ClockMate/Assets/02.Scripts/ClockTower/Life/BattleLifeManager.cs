@@ -13,7 +13,7 @@ public class BattleLifeManager : MonoBehaviourPun
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
 
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
-    public bool allowRevive = true;
+    [HideInInspector] public bool allowRevive = true;
 
     public static BattleLifeManager Instance { get; private set; }
 
@@ -81,13 +81,13 @@ public class BattleLifeManager : MonoBehaviourPun
         if(!allowRevive)
             yield break;
 
-        StartCoroutine(Revive(character));
+        StartCoroutine(Revive(character, true));
     }
 
     /// <summary>
     /// 플레이어 부활 수행
     /// </summary>
-    private IEnumerator Revive(CharacterBase character)
+    private IEnumerator Revive(CharacterBase character, bool isSfxOn)
     {
         _lastHitPositions.TryGetValue(character, out Vector3 pos);
         Vector3 revivePos = pos;
@@ -98,6 +98,11 @@ public class BattleLifeManager : MonoBehaviourPun
         RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, character.photonView.ViewID, true);
         character.ChangeState<IdleState>();
         character.transform.position = revivePos;
+
+        if(isSfxOn)
+        {
+            character.photonView.RPC("RPC_PlayReviveEffect", RpcTarget.All);
+        }
 
         if (BattleManager.Instance.phaseType == PhaseType.SwingAttack)
         {
@@ -119,7 +124,7 @@ public class BattleLifeManager : MonoBehaviourPun
     public void RPC_ReviveLocalPlayer()
     {
         CharacterBase character = GameManager.Instance.GetLocalCharacter();
-        StartCoroutine(Revive(character));
+        StartCoroutine(Revive(character, false));
     }
 
     /// <summary>
