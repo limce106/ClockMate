@@ -22,6 +22,7 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
     private bool spawningStarted = false;
 
     public NetworkObjectPool<RollingStone> rollingStonePool;
+    public NetworkObjectPool<EffectWrapper> destroyStoneEffectPool;
 
     void Start()
     {
@@ -68,5 +69,12 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
     {
         RollingStone stone = rollingStonePool.Get(point, rot);
         stone.Initialize(torque, returnTime);
+    }
+
+    public IEnumerator PlayDestroyStoneEffect(Vector3 pos, Quaternion rot)
+    {
+        EffectWrapper effect = destroyStoneEffectPool.Get(pos, rot);
+        yield return new WaitForSeconds(effect.Particle.main.duration);
+        destroyStoneEffectPool.Return(effect);
     }
 }

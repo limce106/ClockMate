@@ -16,10 +16,14 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public TMP_Text statusText;
     public GameObject puzzleHUD;
 
+    [Header("플레이어 스폰")]
     public bool isSpawnPlayer = false;
 
     public Vector3 hourSpawnPos = new Vector3(0f, 0f, 0f);
     public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
+
+    [Header("BGM On/Off")]
+    public bool isBgmOn = false;
 
     private void Start()
     {
@@ -92,6 +96,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     {
         enterTestServerButton.SetActive(false);
         statusText.gameObject.SetActive(false);
+
+        if (isBgmOn)
+            GameManager.Instance.PlayMapBgm();
 
         if (!isSpawnPlayer)
             return;

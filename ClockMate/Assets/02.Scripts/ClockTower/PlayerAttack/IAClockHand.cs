@@ -36,6 +36,12 @@ public class IAClockHand : MonoBehaviour, IInteractable
         {
             ExitControl();
         }
+
+        if(Input.GetKeyUp(KeyCode.W))
+        {
+            _clockHandController.photonView.RPC("RPC_StopPushClockHandSfx", RpcTarget.All);
+            _controller.Anim.SetPush(false);
+        }
     }
 
     void FixedUpdate()
@@ -46,6 +52,8 @@ public class IAClockHand : MonoBehaviour, IInteractable
         {
             _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
             _controller.Anim.SetPush(true);
+
+            _clockHandController.photonView.RPC("RPC_PlayPushClockHandSfx", RpcTarget.All);
         }
     }
 
@@ -106,6 +114,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
             _controller = null;
         }
 
+        _clockHandController.RPC_StopPushClockHandSfx();
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
     }

@@ -3,6 +3,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(HingeJoint))]
@@ -13,6 +14,7 @@ public class SwingPendulum : MonoBehaviourPun
     public float startAngle;
     private float swingSpeed = 200f;
     private float torque;
+    [SerializeField] private ParticleSystem _sparkEffect;
 
     private bool alreadyTriggered = false;  // DestroyObj를 한 번만 실행하기 위함
     private bool isStarted = false;
@@ -53,6 +55,17 @@ public class SwingPendulum : MonoBehaviourPun
         startAngle = NormalizeAngle(transform.eulerAngles.z);
         isStarted = true;
         torque = startAngle < 0 ? swingSpeed : -swingSpeed;
+
+        float sparkEffectRotY = startAngle < 0 ? -90f : 90f;
+        _sparkEffect.transform.rotation = Quaternion.Euler(0, sparkEffectRotY, 0);
+
+        StartCoroutine(PlaySwingSfx());
+    }
+
+    private IEnumerator PlaySwingSfx()
+    {
+        yield return new WaitForSeconds(1f);
+        SoundManager.Instance.PlaySfx(key: "swing_pendulum", pos: transform.position, volume: 0.7f);
     }
 
     private void FixedUpdate()
@@ -94,6 +107,8 @@ public class SwingPendulum : MonoBehaviourPun
         CharacterBase character = collision.collider.GetComponentInParent<CharacterBase>();
         if (character != null)
         {
+            SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
+
             BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
             character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }

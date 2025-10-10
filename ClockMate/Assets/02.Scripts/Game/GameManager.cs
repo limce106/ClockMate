@@ -122,6 +122,8 @@ public class GameManager : MonoSingleton<GameManager>
     {
         string currentScene = SceneManager.GetActiveScene().name;
         string bgmKey = GetBgmKeyForScene(currentScene);
+        string envKey = GetEnvKeyForScene(currentScene);
+        float envVolume = GetEnvVolumeForScene(currentScene);
 
         if (!string.IsNullOrEmpty(bgmKey) && SoundManager.Instance != null)
         {
@@ -129,8 +131,18 @@ public class GameManager : MonoSingleton<GameManager>
         }
         else
         {
-            Debug.LogError($"[GameManager] BGM 재생 실패. 키: {bgmKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
+            Debug.LogError($"[GameManager] BGM 재생 실패. Bgm 키: {bgmKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
         }
+
+        if (!string.IsNullOrEmpty(envKey) && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySfx(key: envKey, loop: true, pos: null, volume: envVolume);
+        }
+        else
+        {
+            Debug.LogError($"[GameManager] BGM 재생 실패. Env 키: {envKey}, SoundManager 인스턴스: {SoundManager.Instance != null}");
+        }
+
     }
 
     /// <summary>
@@ -141,15 +153,55 @@ public class GameManager : MonoSingleton<GameManager>
         switch (sceneName)
         {
             case "Desert":
-                return "desert_wind";
+                return "";
             case "Glacier":
                 return "";
             case "Forest":
                 return "forest_bgm";
             case "ClockTower":
-                return "";
+                return "clocktower_bgm";
             default:
                 return null; // BGM이 없는 씬
+        }
+    }
+
+    /// <summary>
+    /// 맵 이름에 해당하는 환경음 반환
+    /// </summary>
+    private string GetEnvKeyForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Desert":
+                return "desert_wind";
+            case "Glacier":
+                return "";
+            case "Forest":
+                return "forest_rain";
+            case "ClockTower":
+                return "";
+            default:
+                return null; // 환경음이 없는 씬
+        }
+    }
+
+    /// <summary>
+    /// 맵 이름에 해당하는 환경음 소리 크기 반환
+    /// </summary>
+    private float GetEnvVolumeForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Desert":
+                return 1f;
+            case "Glacier":
+                return 1f;
+            case "Forest":
+                return 0.05f;
+            case "ClockTower":
+                return 1f;
+            default:
+                return 1f;
         }
     }
 

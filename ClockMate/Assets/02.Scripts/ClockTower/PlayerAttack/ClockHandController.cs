@@ -2,12 +2,12 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 public class ClockHandController : MonoBehaviourPun
 {
     private Rigidbody _rb;
     private IAClockHand iAClockHand;
+    private SoundHandle _clockhandSfxHandle = default;
 
     private const float ControllerOffset = 1.2f;
 
@@ -100,5 +100,31 @@ public class ClockHandController : MonoBehaviourPun
 
         controllerView.transform.position = targetPos;
         controllerView.transform.rotation = Quaternion.LookRotation(-attachDir);
+    }
+
+    [PunRPC]
+    public void RPC_PlayPushClockHandSfx()
+    {
+        if (!_clockhandSfxHandle.IsValid)
+        {
+            _clockhandSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "clockhand_push",
+                loop: true,
+                pos: transform.position,
+                sync: true,
+                volume: 0.8f);
+
+            Debug.Log("Play");
+        }
+    }
+
+    [PunRPC]
+    public void RPC_StopPushClockHandSfx()
+    {
+        if (!_clockhandSfxHandle.Equals(default(SoundHandle)))
+        {
+            SoundManager.Instance.Stop(_clockhandSfxHandle);
+            _clockhandSfxHandle = default;
+        }
     }
 }

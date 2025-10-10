@@ -47,6 +47,5 @@ public class DeadState : IState
     public void Exit()
     {
         RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, true);
-        _character.photonView.RPC("RPC_PlayReviveEffect", RpcTarget.All);
     }
 }
