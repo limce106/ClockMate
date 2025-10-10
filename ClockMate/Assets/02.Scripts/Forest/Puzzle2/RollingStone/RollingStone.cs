@@ -63,10 +63,11 @@ public class RollingStone : MonoBehaviourPun
     private void ReturnRollingStone()
     {
         _stoneDustEffect.Stop();
-        _rollingStoneSpawner.StartCoroutine(_rollingStoneSpawner.PlayDestroyStoneEffect(transform.position, transform.rotation));
+
+        if (PhotonNetwork.IsMasterClient)
+            _rollingStoneSpawner.StartCoroutine(_rollingStoneSpawner.PlayDestroyStoneEffect(transform.position, transform.rotation));
 
         SoundManager.Instance.PlaySfx(key: "rock_break", pos: transform.position, volume: 0.4f);
-
         _rollingStoneSpawner.rollingStonePool.Return(this);
 
     }
@@ -83,7 +84,7 @@ public class RollingStone : MonoBehaviourPun
                 SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
             }
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
         {
             _stoneSfxHandle = SoundManager.Instance.PlaySfx(
                 key: "rock_fall",

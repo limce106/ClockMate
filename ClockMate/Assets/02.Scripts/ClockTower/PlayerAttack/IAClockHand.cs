@@ -31,15 +31,20 @@ public class IAClockHand : MonoBehaviour, IInteractable
     private void Update()
     {
         if (!_isControlled) return;
+        if (_controller != null && !_controller.photonView.IsMine) return;
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ExitControl();
         }
 
-        if(Input.GetKeyUp(KeyCode.W))
+        if(Input.GetKeyDown(KeyCode.W))
         {
-            _clockHandController.photonView.RPC("RPC_StopPushClockHandSfx", RpcTarget.All);
+            _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_PlayPushClockHandSfx), RpcTarget.All);
+        }
+        else if(Input.GetKeyUp(KeyCode.W))
+        {
+            _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_StopPushClockHandSfx), RpcTarget.All);
             _controller.Anim.SetPush(false);
         }
     }
@@ -52,8 +57,6 @@ public class IAClockHand : MonoBehaviour, IInteractable
         {
             _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
             _controller.Anim.SetPush(true);
-
-            _clockHandController.photonView.RPC("RPC_PlayPushClockHandSfx", RpcTarget.All);
         }
     }
 
@@ -114,7 +117,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
             _controller = null;
         }
 
-        _clockHandController.RPC_StopPushClockHandSfx();
+        _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_StopPushClockHandSfx), RpcTarget.All);
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
     }

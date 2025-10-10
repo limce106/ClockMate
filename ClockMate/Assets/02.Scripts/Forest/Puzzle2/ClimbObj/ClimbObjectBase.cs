@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
+public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
 {
     protected UIManager _uiManager;
     protected UINotice _uiNotice;
@@ -14,7 +14,7 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
 
     protected bool isColliding = false;
     public bool playerAttached = false;
-
+    private SoundHandle _climbSfxHandle = default;
 
     [SerializeField] protected Transform topPoint;
     [SerializeField] protected Transform bottomPoint;
@@ -101,5 +101,29 @@ public abstract class ClimbObjectBase : MonoBehaviour, IInteractable
     private void OnCollisionExit(Collision collision)
     {
         isColliding = false;
+    }
+
+    [PunRPC]
+    public void RPC_StartClimbSfx()
+    {
+        if (!_climbSfxHandle.IsValid)
+        {
+            _climbSfxHandle = SoundManager.Instance.PlaySfx(
+                key: "character_climb",
+                loop: true,
+                pos: transform.position,
+                sync: false,
+                volume: 1f);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_StopClimbSfx()
+    {
+        if (_climbSfxHandle.IsValid)
+        {
+            SoundManager.Instance.Stop(_climbSfxHandle);
+            _climbSfxHandle = default;
+        }
     }
 }

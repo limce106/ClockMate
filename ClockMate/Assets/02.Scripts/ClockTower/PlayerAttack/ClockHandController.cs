@@ -111,17 +111,15 @@ public class ClockHandController : MonoBehaviourPun
                 key: "clockhand_push",
                 loop: true,
                 pos: transform.position,
-                sync: true,
+                sync: false,
                 volume: 0.8f);
-
-            Debug.Log("Play");
         }
     }
 
     [PunRPC]
     public void RPC_StopPushClockHandSfx()
     {
-        if (!_clockhandSfxHandle.Equals(default(SoundHandle)))
+        if (_clockhandSfxHandle.IsValid)
         {
             SoundManager.Instance.Stop(_clockhandSfxHandle);
             _clockhandSfxHandle = default;
