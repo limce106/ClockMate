@@ -602,6 +602,75 @@ Transform:
   - {fileID: 6216083153310043720}
   m_Father: {fileID: 5990466584159587010}
   m_LocalEulerAnglesHint: {x: 0, y: -7.9, z: 0}
+--- !u!1 &2510308054376286732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 963814606493028660}
+  - component: {fileID: 2315159826313924986}
+  - component: {fileID: 692555554223129517}
+  m_Layer: 0
+  m_Name: DestroyStoneEffectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &963814606493028660
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510308054376286732}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -41.911438, y: -16.577667, z: -91.297226}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5990466584159587010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2315159826313924986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510308054376286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &692555554223129517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510308054376286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f967f0cad64cc7d4487e6b05a88c8350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabPath: Effects/DestroyStoneWrapper
+  initialPoolSize: 30
 --- !u!1 &2653034669535334561
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,26 +1020,27 @@ MonoBehaviour:
     spawnInterval: 3
     spawnOnce: 0
     torqueForce: 30
-    returnTime: 10
+    returnTime: 5
   - spwanPoint: {x: 110.4, y: 40, z: 181.41}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 5
     spawnOnce: 0
     torqueForce: 30
-    returnTime: 10
+    returnTime: 5
   - spwanPoint: {x: 142.5, y: 40, z: 189.9}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 2
     spawnOnce: 0
     torqueForce: 30
-    returnTime: 10
+    returnTime: 5
   - spwanPoint: {x: 166.86, y: 60.7, z: 277.19}
     spwanRot: {x: 0, y: -0.9936536, z: 0, w: -0.112483524}
     spawnInterval: 3
     spawnOnce: 0
     torqueForce: 30
-    returnTime: 10
+    returnTime: 5
   rollingStonePool: {fileID: 2363016694694178070}
+  destroyStoneEffectPool: {fileID: 0}
 --- !u!114 &2363016694694178070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1139,6 +1209,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3949940265175414204}
+  - {fileID: 963814606493028660}
   - {fileID: 2834002442591761873}
   - {fileID: 3688677786756275085}
   - {fileID: 6728633263382217913}
@@ -28061,6 +28132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e60409e4789ca44bbba571ffee8a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAttached: 0
   topPoint: {fileID: 2686013650679293291}
   bottomPoint: {fileID: 7437807162255239685}
   topTargetPoint: {fileID: 8792417200914517527}
@@ -36531,6 +36603,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e60409e4789ca44bbba571ffee8a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAttached: 0
   topPoint: {fileID: 1495255103907246405}
   bottomPoint: {fileID: 6546876099970162215}
   topTargetPoint: {fileID: 4355915367910689693}

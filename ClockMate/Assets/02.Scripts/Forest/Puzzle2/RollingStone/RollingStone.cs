@@ -11,11 +11,14 @@ public class RollingStone : MonoBehaviourPun
     private float _returnTime;
 
     private Rigidbody _rb;
+    private RollingStoneSpawner _rollingStoneSpawner;
     private SoundHandle _stoneSfxHandle = default;
+    [SerializeField] ParticleSystem _stoneDustEffect;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
     }
 
     public void Initialize(float torque, float returnTime)
@@ -23,12 +26,14 @@ public class RollingStone : MonoBehaviourPun
         _torqueForce = torque;
         _returnTime = returnTime;
 
+        _stoneDustEffect.Play();
         ResetPhysics();
         StartCoroutine(ReturnAfterDelay());
     }
 
     private void OnEnable()
     {
+        _stoneDustEffect.Play();
         ResetPhysics();
         StartCoroutine(ReturnAfterDelay());
     }
@@ -57,8 +62,13 @@ public class RollingStone : MonoBehaviourPun
 
     private void ReturnRollingStone()
     {
-        RollingStoneSpawner rollingStoneSpawner = FindObjectOfType<RollingStoneSpawner>();
-        rollingStoneSpawner.rollingStonePool.Return(this);
+        _stoneDustEffect.Stop();
+        _rollingStoneSpawner.StartCoroutine(_rollingStoneSpawner.PlayDestroyStoneEffect(transform.position, transform.rotation));
+
+        SoundManager.Instance.PlaySfx(key: "rock_break", pos: transform.position, volume: 0.4f);
+
+        _rollingStoneSpawner.rollingStonePool.Return(this);
+
     }
 
     private void OnCollisionEnter(Collision collision)
