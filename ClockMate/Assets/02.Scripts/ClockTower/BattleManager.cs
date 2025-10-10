@@ -18,10 +18,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private Dictionary<PlayerAttackType, string> playerCutsceneNames;
 
     private float _timer;   // 플레이어 제한 시간용 타이머
-    public TMP_Text timeLimitText;
 
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
+    private GameObject _spawnedAttack;
     private AttackPattern curAttackPattern;
     private Coroutine _runCoroutine;
 
@@ -43,8 +43,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     [Header("UI")]
     public Slider recoverySlider;
+    public TMP_Text timeLimitText;
 
-    public float battleFieldRadius = 11f; // 전장 반지름
+    public float battleFieldRadius { get; private set; } = 11f; // 전장 반지름
     private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = Vector3.zero;
     private const float recoveryPerSuccess = 0.334f;
@@ -140,7 +141,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             BattleLifeManager.Instance.allowRevive = true;
-            GameObject spawnedAttack = SpawnCurrentAttack();
+            _spawnedAttack = SpawnCurrentAttack();
 
             attackEnded = false;
             // 공격 실행
@@ -168,9 +169,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
             yield return new WaitUntil(() => !isHandling);
-
-            if(spawnedAttack != null)
-                PhotonNetwork.Destroy(spawnedAttack);
         }
     }
 
@@ -178,11 +176,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         // 현재 수행될 공격 패턴 생성
         GameObject attackPrefab = GetCurrentPhasePrefab();
-        GameObject spawnedAttack = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
-        curAttackPattern = spawnedAttack.GetComponent<AttackPattern>();
+        GameObject spawnedAttackPrefab = PhotonNetwork.Instantiate("Prefabs/" + attackPrefab.name, Vector3.zero, Quaternion.identity);
+        curAttackPattern = spawnedAttackPrefab.GetComponent<AttackPattern>();
         currentFallingAttack = phaseType == PhaseType.FallingAttack ? curAttackPattern as FallingAttack : null;
 
-        return spawnedAttack;
+        return spawnedAttackPrefab;
     }
 
     private IEnumerator RunAttack(AttackPattern attackPattern)
@@ -315,6 +313,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private void RPC_CleanUpAttack()
     {
         curAttackPattern?.CleanUpAttack();
+
+        if (_spawnedAttack != null && PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(_spawnedAttack);
     }
 
     /// <summary>
