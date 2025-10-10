@@ -269,6 +269,8 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     [PunRPC]
     public void RPC_ExitControlAll()
     {
+        RPC_StopRotateSpringSfx();
+
         foreach (var viewID in _attachedPlayers.Keys.ToList())
         {
             CharacterBase character = _attachedPlayers[viewID];
