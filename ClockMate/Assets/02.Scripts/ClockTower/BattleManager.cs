@@ -16,6 +16,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 {
     private Dictionary<string, PhaseType> AttackNameToType;
     private Dictionary<PlayerAttackType, string> playerCutsceneNames;
+    private Dictionary<PlayerAttackType, float> playerAttackTimeLimit;    // 플레이어 반격 제한시간
 
     private float _timer;   // 플레이어 제한 시간용 타이머
 
@@ -46,7 +47,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public TMP_Text timeLimitText;
 
     public float battleFieldRadius { get; private set; } = 11f; // 전장 반지름
-    private const float playerAttackTimeLimit = 30f;    // 플레이어 반격 제한시간
     public readonly Vector3 BattleFieldCenter = Vector3.zero;
     private const float recoveryPerSuccess = 0.334f;
     private const float playerBossAttackHeight = 0f;
@@ -81,6 +81,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
             { PlayerAttackType.ClockHandRecovery, "ClockHandRecovery_Cutscene" },
             { PlayerAttackType.CogwheelRecovery, "CogwheelRevery_Cutscene" },
             { PlayerAttackType.ClockTowerOperation, "ClockTowerOperation_Cutscene" }
+        };
+
+        playerAttackTimeLimit = new Dictionary<PlayerAttackType, float>
+        {
+            { PlayerAttackType.ClockHandRecovery, 60f },
+            { PlayerAttackType.CogwheelRecovery, 60f },
+            { PlayerAttackType.ClockTowerOperation, 30f }
         };
     }
 
@@ -136,7 +143,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     yield return new WaitUntil(() => !isHandling);
                 }
 
-                _timer = playerAttackTimeLimit;
+                _timer = playerAttackTimeLimit[playerAttackType];
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
             }
 
