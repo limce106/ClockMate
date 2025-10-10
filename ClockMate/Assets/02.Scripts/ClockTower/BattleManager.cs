@@ -326,10 +326,13 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         if (playerAttackType == PlayerAttackType.CogwheelRecovery)
         {
-            SetClockFaceActive(true);
-
             CharacterBase character = GameManager.Instance.GetLocalCharacter();
+
+            character.GetComponent<Rigidbody>().useGravity = false;
             character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+
+            SetClockFaceActive(true);
+            character.GetComponent<Rigidbody>().useGravity = true;
         }
     }
 

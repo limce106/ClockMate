@@ -207,9 +207,6 @@ public class CogRecovery : AttackPattern
 
     public override void CleanUpAttack()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
-        PhotonNetwork.Destroy(photonView);
+        
     }
 }
