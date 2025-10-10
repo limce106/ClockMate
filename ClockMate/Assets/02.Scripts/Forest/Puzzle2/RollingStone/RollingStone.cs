@@ -84,7 +84,7 @@ public class RollingStone : MonoBehaviourPun
                 SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
             }
         }
-        else if(collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && !_stoneSfxHandle.IsValid)
         {
             _stoneSfxHandle = SoundManager.Instance.PlaySfx(
                 key: "rock_fall",
