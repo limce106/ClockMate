@@ -13,9 +13,9 @@ public class FallingClockHand : MonoBehaviourPun
     [SerializeField] private ParticleSystem _shockWave;
     [SerializeField] private ParticleSystem _impact;
 
-    private const float fallForce = 700f;
+    private const float fallForce = 1000f;
     private const float lifeTime = 3f;
-    private const float stickOffset = 0.01f;
+    private const float stickOffset = 0.03f;
 
     public delegate void FallingClockHandDisableHandler(GameObject gameObject);
     public event FallingClockHandDisableHandler OnFallingClockHandDisabled;    // 시계 추가 파괴될 때 실행될 콜백

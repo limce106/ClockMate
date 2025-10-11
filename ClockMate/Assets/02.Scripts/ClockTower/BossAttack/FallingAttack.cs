@@ -8,7 +8,7 @@ public class FallingAttack : AttackPattern
     private int attackClockHandCount = 5;
     private bool isCanceled = false;
 
-    [SerializeField] private float spawnOriginY = 0f;
+    [SerializeField] private float spawnOriginY = 20f;
 
     private List<GameObject> spawnedClockHands = new List<GameObject>();
 
