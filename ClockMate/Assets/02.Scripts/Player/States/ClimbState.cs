@@ -14,7 +14,7 @@ public class ClimbState : IState
     private const float Margin = 0.3f;
 
     private Rigidbody _rb;
-    private SoundHandle _climbSfxHandle = default;
+    private bool _isClimbSfxPlaying = false;
 
     public bool isPlayingClimbEnd { private set; get; } = false; // 정상 도달 애니메이션 실행 중 여부
     public const float climbEndDuration = 4f;
@@ -58,7 +58,27 @@ public class ClimbState : IState
         }
     }
 
-    public void Update() { }
+    public void Update()
+    {
+        if (!climbTarget.playerAttached || isPlayingClimbEnd)
+            return;
+
+        if(_character.photonView.IsMine)
+        {
+            bool isClimbing = _character.InputHandler.climbingState != ClimbingState.None;
+
+            if (isClimbing && !_isClimbSfxPlaying)
+            {
+                climbTarget.photonView.RPC(nameof(climbTarget.RPC_StartClimbSfx), RpcTarget.All);
+                _isClimbSfxPlaying = true;
+            }
+            else if (!isClimbing && _isClimbSfxPlaying)
+            {
+                climbTarget.photonView.RPC(nameof(climbTarget.RPC_StopClimbSfx), RpcTarget.All);
+                _isClimbSfxPlaying = false;
+            }
+        }
+    }
 
     public void Exit() { }
 
@@ -79,14 +99,11 @@ public class ClimbState : IState
     {
         if (isPlayingClimbEnd)
         {
-            StopClimbSfx();
-
             _rb.velocity = Vector3.zero;
             return;
         }
 
         _rb.velocity = new Vector3(0f, vertical * _climbSpeed, 0f);
-        StartClimbSfx();
     }
 
     /// <summary>
@@ -94,12 +111,12 @@ public class ClimbState : IState
     /// </summary>
     public void StopClimbing()
     {
-        StopClimbSfx();
-
         _character.Anim.SetClimbUp(false);
         _character.Anim.SetClimbDown(false);
 
         _character.Anim.photonView.RPC("RPC_SetAnimPlayback", RpcTarget.All, true);
+        climbTarget.photonView.RPC(nameof(climbTarget.RPC_StopClimbSfx), RpcTarget.All);
+        _isClimbSfxPlaying = false;
 
         _rb.useGravity = true;
         _rb.constraints = RigidbodyConstraints.FreezeRotation;
@@ -122,7 +139,7 @@ public class ClimbState : IState
         float timer = 0f;
 
         isPlayingClimbEnd = true;
-        StopClimbSfx();
+        climbTarget.photonView.RPC(nameof(climbTarget.RPC_StopClimbSfx), RpcTarget.All);
 
         if (_character.photonView.IsMine)
         {
@@ -145,28 +162,6 @@ public class ClimbState : IState
         if (_character.photonView.IsMine)
         {
             _character.InputHandler.enabled = true;
-        }
-    }
-
-    public void StartClimbSfx()
-    {
-        if(!_climbSfxHandle.IsValid)
-        {
-            _climbSfxHandle = SoundManager.Instance.PlaySfx(
-                key: "character_climb",
-                loop: true,
-                pos: _character.transform.position,
-                sync: false,
-                volume: 1f);
-        }
-    }
-
-    public void StopClimbSfx()
-    {
-        if(_climbSfxHandle.IsValid)
-        {
-            SoundManager.Instance.Stop(_climbSfxHandle);
-            _climbSfxHandle = default;
         }
     }
 }
