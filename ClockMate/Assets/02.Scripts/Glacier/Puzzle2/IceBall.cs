@@ -20,10 +20,10 @@ public class IceBall : MonoBehaviour
     private Sprite _exitSprite;
     private string _exitString;
     
-    private Rigidbody _rb; // IceBallObj의 rb
     public bool IsControlled { get; private set; }
     private CharacterBase _controller;
     private Vector3 _characterLocalOffset;
+    private SphereCollider _sphereCollider;
 
     private float _controllerRadius; // 빙벽 반지름 + 여유 거리
     public Action<bool> OnControlEnd;
@@ -37,8 +37,6 @@ public class IceBall : MonoBehaviour
     
     private void Init()
     {
-        _rb = GetComponentInParent<Rigidbody>();
-        _rb.isKinematic = true;
         IsControlled = false;
         _controller = null;
         
@@ -46,7 +44,8 @@ public class IceBall : MonoBehaviour
         _exitString = "나가기";
 
         // 반지름 + 여유거리 계산
-        float rawRadius = GetComponent<SphereCollider>().radius * transform.localScale.x;
+        _sphereCollider = GetComponent<SphereCollider>();
+        float rawRadius = _sphereCollider.radius * transform.localScale.x;
         _controllerRadius = rawRadius + radiusOffset;
     }
     
@@ -101,8 +100,9 @@ public class IceBall : MonoBehaviour
         IsControlled = true;
         _controller = controller;
         SetControllerPos();
+        MoveController();
+        _sphereCollider.excludeLayers += LayerMask.GetMask("Player");
         _controller.ChangeState<PushState>(controllerPos.transform);
-        _rb.isKinematic = false;
 
         _controller.InputHandler.enabled = false;
         _controller.Anim.SetPush(true);
@@ -126,7 +126,7 @@ public class IceBall : MonoBehaviour
             dir.Normalize();
 
             // 빙벽 중심 기준 offset 방향으로 controllerPos 위치 이동
-            controllerPos.position = transform.position - dir * _controllerRadius;
+            controllerPos.position = iceBallRootGo.transform.position - dir * _controllerRadius;
 
             // 빙벽을 바라보도록 회전
             controllerPos.rotation = Quaternion.LookRotation(dir);
@@ -136,11 +136,11 @@ public class IceBall : MonoBehaviour
     private void ExitControl()
     {
         IsControlled = false;
+        _sphereCollider.excludeLayers -= LayerMask.GetMask("Player");
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
         _controller.Anim.SetPush(false);
         _controller = null;
-        _rb.isKinematic = true;
 
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
