@@ -14,6 +14,7 @@ public class IceBall : MonoBehaviour
     [SerializeField] private GameObject iceBallRootGo; // 이동 주체(부모)
     [SerializeField] private Transform controllerPos;
     [SerializeField] private float radiusOffset;
+    [SerializeField] private string rollSfxKey;
     
     private UINotice _uiNotice;
     private Sprite _exitSprite;
@@ -26,6 +27,9 @@ public class IceBall : MonoBehaviour
 
     private float _controllerRadius; // 빙벽 반지름 + 여유 거리
     public Action<bool> OnControlEnd;
+    
+    private SoundHandle _soundHandle;
+    private bool _sfxPlayed;
     private void Awake()
     {
         Init();
@@ -66,17 +70,17 @@ public class IceBall : MonoBehaviour
             // 빙벽 회전만 수행
             Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
             transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
+            
+            if (_controller is not null)
+            {
+                MoveController();
+            }
         }
     }
     
     private void Update()
     {
         if (!IsControlled) return;
-
-        if (_controller is not null)
-        {
-            MoveController();
-        }
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -114,7 +118,7 @@ public class IceBall : MonoBehaviour
     /// </summary>
     private void SetControllerPos()
     {
-        Vector3 dir = (transform.position - _controller.transform.position);
+        Vector3 dir = (iceBallRootGo.transform.position - _controller.transform.position);
         dir.y = 0f;
 
         if (dir.sqrMagnitude > 0.01f)
