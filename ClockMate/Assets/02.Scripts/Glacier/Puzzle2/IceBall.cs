@@ -105,7 +105,7 @@ public class IceBall : MonoBehaviour
         _controller.ChangeState<PushState>(controllerPos.transform);
 
         _controller.InputHandler.enabled = false;
-        _controller.Anim.SetPush(true);
+        StartCoroutine(WaitForAnimTransition());
         
         // 그만두기 UI 표시
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
@@ -113,6 +113,11 @@ public class IceBall : MonoBehaviour
         _uiNotice.SetText(_exitString);
     }
 
+    private IEnumerator WaitForAnimTransition()
+    {
+        yield return new WaitForSeconds(0.2f);
+        _controller.Anim.SetPush(true);
+    }
     /// <summary>
     /// controllerPos 위치 및 방향 설정
     /// </summary>
@@ -121,7 +126,7 @@ public class IceBall : MonoBehaviour
         Vector3 dir = (iceBallRootGo.transform.position - _controller.transform.position);
         dir.y = 0f;
 
-        if (dir.sqrMagnitude > 0.01f)
+        if (dir.sqrMagnitude > 0.001f)
         {
             dir.Normalize();
 
