@@ -4,16 +4,17 @@ using UnityEngine;
 /// <summary>
 /// 썰매 명중 영역(Trigger) 처리
 /// </summary>
-[RequireComponent(typeof(SphereCollider))]
-public class SledHitZone : MonoBehaviour
+[RequireComponent(typeof(BoxCollider), typeof(PhotonView))]
+public class SledHitZone : MonoBehaviourPun
 {
     [SerializeField] private SledHP sledHP;
+    [SerializeField] private ParticleSystem hitEffect;
+    [SerializeField] private string hitSfxKey;
 
     private void Reset()
     {
-        var col = GetComponent<SphereCollider>();
+        var col = GetComponent<BoxCollider>();
         col.isTrigger = true;
-        col.radius = 0.4f;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -27,5 +28,13 @@ public class SledHitZone : MonoBehaviour
         if (snow == null) return;
 
         snow.HitSled(sledHP);
+        photonView.RPC(nameof(RPC_HitSledEffect), RpcTarget.All);
+        SoundManager.Instance.PlaySfx(key: hitSfxKey, volume: 0.08f, sync: true);
+    }
+    
+    [PunRPC]
+    private void RPC_HitSledEffect()
+    {
+        hitEffect.Play();
     }
 }

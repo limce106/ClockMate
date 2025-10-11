@@ -63,6 +63,12 @@ public class SoundManager : MonoPunSingleton<SoundManager>
             }
         }
 
+        AudioClip[] loadedClips = Resources.LoadAll<AudioClip>("Sounds/AudioClips");
+        foreach (AudioClip clip in loadedClips)
+        {
+            _clipMap.TryAdd(clip.name, clip);
+        }
+
         // 믹서 그룹 캐시
         CacheMixerGroup(SoundType.BGM);
         CacheMixerGroup(SoundType.Effect);
