@@ -26,12 +26,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27378442632907004}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.00000003774895, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3187237195552332012}
+  m_Father: {fileID: 1080483018516858597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1139986744562107977
 MonoBehaviour:
@@ -65,7 +65,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.79
+  m_Radius: 1.75
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4712450011645748163
 GameObject:
@@ -91,7 +91,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4712450011645748163}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -107,6 +107,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3187237195552332012}
+  - component: {fileID: 8404383011899303599}
   - component: {fileID: 2191848776596105947}
   - component: {fileID: 4557885155018333928}
   m_Layer: 0
@@ -126,14 +127,40 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 7.5, y: 7.5, z: 7.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1080483018516858597}
   - {fileID: 1050822971930189685}
-  - {fileID: 7273760111395175148}
+  - {fileID: 1080483018516858597}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &8404383011899303599
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451670410499882844}
+  serializedVersion: 4
+  m_Mass: 7
+  m_Drag: 5
+  m_AngularDrag: 4
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 122
+  m_CollisionDetection: 0
 --- !u!114 &2191848776596105947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +180,8 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 0}
-  sceneViewId: 14
+  - {fileID: 4557885155018333928}
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &4557885155018333928
@@ -243,14 +270,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7273760111395175148}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3297076616854363627}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8526764543139316747}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6258571609666801020}
@@ -278,38 +305,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b6567893d422742b0221a0ba2059e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 1
+  moveForce: 2
   torqueForce: 40
   iceBallRootGo: {fileID: 8451670410499882844}
   controllerPos: {fileID: 1050822971930189685}
-  radiusOffset: 0.9
---- !u!54 &8526764543139316747
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411363825195572319}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 5
-  m_AngularDrag: 4
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 1
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  radiusOffset: 6
+  rollSfxKey: ice_drag
 --- !u!135 &6258571609666801020
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -329,8 +330,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.009508194
-  m_Center: {x: -0.0000006649643, y: -0.0000021751039, z: 0.0000011748634}
+  m_Radius: 0.009
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1287856902156068757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,8 +351,8 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 0}
-  sceneViewId: 15
+  - {fileID: 5734884213655925322}
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &5734884213655925322
