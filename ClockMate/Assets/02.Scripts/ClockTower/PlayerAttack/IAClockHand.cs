@@ -41,6 +41,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         if(Input.GetKeyDown(KeyCode.W))
         {
             _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_PlayPushClockHandSfx), RpcTarget.All);
+            _controller.Anim.SetPush(true);
         }
         else if(Input.GetKeyUp(KeyCode.W))
         {
@@ -56,7 +57,6 @@ public class IAClockHand : MonoBehaviour, IInteractable
         if (Input.GetKey(KeyCode.W) && _fixedRotationDirection != 0)
         {
             _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_Rotate), RpcTarget.All, _fixedRotationDirection * RotationSpeed * Time.fixedDeltaTime);
-            _controller.Anim.SetPush(true);
         }
     }
 
