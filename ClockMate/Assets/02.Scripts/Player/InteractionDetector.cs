@@ -93,12 +93,16 @@ public class InteractionDetector : MonoBehaviour
             IInteractable interactable = pair.Value;
             if (targetObj == null) continue;
 
-            // 거리 조건
             Vector3 targetObjPos = targetObj.transform.position;
             targetObjPos.y = 0;
             Vector3 dir = targetObjPos - charPos;
             float d2 = dir.sqrMagnitude;
-            if (d2 > _interactDistSqr) continue;
+            
+            // 거리 조건
+            if (!ShouldIgnoreDist(targetObj))
+            {
+                if (d2 > _interactDistSqr) continue;
+            }
 
             // 시야각 조건
             if(!ShouldIgnoreViewAngle(targetObj))
@@ -216,5 +220,13 @@ public class InteractionDetector : MonoBehaviour
         }
 
         return false;
+    }
+    
+    /// <summary>
+    /// 거리 예외 체크 함수
+    /// </summary>
+    private bool ShouldIgnoreDist(GameObject obj)
+    {
+        return obj.TryGetComponent<IAIceBallTrigger>(out var trigger);
     }
 }

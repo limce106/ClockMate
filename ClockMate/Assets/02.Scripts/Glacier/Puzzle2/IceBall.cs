@@ -24,6 +24,7 @@ public class IceBall : MonoBehaviour
     private CharacterBase _controller;
     private Vector3 _characterLocalOffset;
     private SphereCollider _sphereCollider;
+    private Transform _camTransform;
 
     private float _controllerRadius; // 빙벽 반지름 + 여유 거리
     public Action<bool> OnControlEnd;
@@ -47,6 +48,7 @@ public class IceBall : MonoBehaviour
         _sphereCollider = GetComponent<SphereCollider>();
         float rawRadius = _sphereCollider.radius * transform.localScale.x;
         _controllerRadius = rawRadius + radiusOffset;
+        _camTransform = Camera.main.transform;
     }
     
     private void FixedUpdate()
@@ -54,27 +56,30 @@ public class IceBall : MonoBehaviour
         if (!IsControlled) return;
 
         // 이동 입력 처리
-        Vector3 input = Vector3.zero;
-        if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
-        if (Input.GetKey(KeyCode.S)) input += Vector3.back;
-        if (Input.GetKey(KeyCode.A)) input += Vector3.left;
-        if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+        float h = 0f, v = 0f;
+        if (Input.GetKey(KeyCode.A)) h -= 1f;
+        if (Input.GetKey(KeyCode.D)) h += 1f;
+        if (Input.GetKey(KeyCode.S)) v -= 1f;
+        if (Input.GetKey(KeyCode.W)) v += 1f;
 
-        if (input != Vector3.zero)
+        Vector3 camFwd = Vector3.ProjectOnPlane(_camTransform.forward, Vector3.up).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(_camTransform.right,  Vector3.up).normalized;
+
+        Vector3 dir = (camFwd * v + camRight * h);
+        if (dir.sqrMagnitude > 1e-6f)
         {
-            Vector3 dir = input.normalized;
-            
+            dir.Normalize();
+
+            // 이동
             iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
 
-            // 빙벽 회전만 수행
+            // 모델 회전 처리
             Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
             transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
-            
-            if (_controller is not null)
-            {
-                MoveController();
-            }
+
+            if (_controller != null) MoveController();
         }
+
     }
     
     private void Update()
