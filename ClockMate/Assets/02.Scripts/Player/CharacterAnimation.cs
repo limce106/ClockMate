@@ -5,7 +5,7 @@ using Photon.Pun;
 using static Define.Character;
 
 [RequireComponent(typeof(PhotonView))]
-public class CharacterAnimation : MonoBehaviourPun
+public class CharacterAnimation : MonoBehaviourPun, IPunObservable
 {
     [Header("Refs")]
     [SerializeField] private Animator animator;         // 없으면 자동 검색
@@ -31,7 +31,7 @@ public class CharacterAnimation : MonoBehaviourPun
     [SerializeField] private string walkTag = "Walk";
     [SerializeField] private float[] walkMarks = { 0.23f, 0.73f }; // 루프 내 접지 지점(0~1)
     [SerializeField] private float minSpeedForStep = 0.2f;         // 너무 느리면 미재생
-    
+
     [Header("VFX")]
     [SerializeField] private ParticleSystem dizzyVFX;
 
@@ -41,7 +41,8 @@ public class CharacterAnimation : MonoBehaviourPun
 
     private Vector3 _prevPos;
     private float _lastPhase; // 0~1
-    
+    private float _smoothedPlanarSpeed;
+
     private bool _wasGroundedForNetwork;
     private CharacterSfx _characterSfx;
 
@@ -52,11 +53,15 @@ public class CharacterAnimation : MonoBehaviourPun
         {
             _wasGroundedForNetwork = character.IsGrounded;
         }
+
+        _prevPos = transform.position;
+        _lastPhase = 0f;
+        _smoothedPlanarSpeed = 0f;
     }
 
     private void Init()
     {
-        if (!animator)  animator  = GetComponentInChildren<Animator>(true);
+        if (!animator) animator = GetComponentInChildren<Animator>(true);
         if (!character) character = GetComponent<CharacterBase>();
 
         _hSpeed = Animator.StringToHash(pSpeed);
@@ -78,7 +83,6 @@ public class CharacterAnimation : MonoBehaviourPun
         else
         {
             // 아워만
-            
         }
 
         if (animator)
@@ -107,13 +111,11 @@ public class CharacterAnimation : MonoBehaviourPun
         float planarSpeed = new Vector2(positionDelta.x, positionDelta.z).magnitude / deltaTime;
         _prevPos = curr;
 
-        // 애니 파라미터 갱신
-        float prev = animator.GetFloat(_hSpeed);
-        float smoothedPlanarSpeed = Mathf.Lerp(prev, planarSpeed, speedLerp);
-        animator.SetFloat(_hSpeed, smoothedPlanarSpeed);
-        
         if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
+            float prev = animator.GetFloat(_hSpeed);
+            _smoothedPlanarSpeed = Mathf.Lerp(prev, planarSpeed, speedLerp);
+
             // 로컬 플레이어는 직접 상태를 계산, 변경됐을 때만 RPC 호출
             bool isGroundedNow = character.IsGrounded;
             if (isGroundedNow != _wasGroundedForNetwork)
@@ -126,11 +128,17 @@ public class CharacterAnimation : MonoBehaviourPun
         // 로컬에서
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
+            float prev = animator.GetFloat(_hSpeed);
+            _smoothedPlanarSpeed = Mathf.Lerp(prev, planarSpeed, speedLerp);
+
             animator.SetBool(_hIsGrounded, character.IsGrounded);
             TryEndFanFly(character.IsGrounded);
         }
 
-        UpdateFootstepPhase(smoothedPlanarSpeed);
+        if (_smoothedPlanarSpeed >= 0.001f)
+            animator.SetFloat(_hSpeed, _smoothedPlanarSpeed);
+
+        UpdateFootstepPhase(_smoothedPlanarSpeed);
     }
 
     /// <summary>
@@ -149,7 +157,7 @@ public class CharacterAnimation : MonoBehaviourPun
             _lastPhase = phaseNow;
             return;
         }
-        
+
         // 이동하는 상태에서만 처리
         if (!st.IsTag(walkTag))
         {
@@ -163,7 +171,7 @@ public class CharacterAnimation : MonoBehaviourPun
             for (int i = 0; i < walkMarks.Length; i++)
             {
                 float m = walkMarks[i];
-                if ((!wrapped && _lastPhase < m && phaseNow >= m) || ( wrapped && (_lastPhase < m || phaseNow >= m)))
+                if ((!wrapped && _lastPhase < m && phaseNow >= m) || (wrapped && (_lastPhase < m || phaseNow >= m)))
                 {
                     _characterSfx?.PlayFootstepSound();
                 }
@@ -191,14 +199,14 @@ public class CharacterAnimation : MonoBehaviourPun
     }
 
 
-    [PunRPC] 
+    [PunRPC]
     private void RPC_PlayJump()
     {
         animator.SetTrigger(_hJump);
         _characterSfx?.PlayJumpSound();
         ResetDelta();
     }
-    
+
     [PunRPC]
     private void RPC_SyncIsGrounded(bool isGrounded)
     {
@@ -228,7 +236,7 @@ public class CharacterAnimation : MonoBehaviourPun
         }
     }
 
-    [PunRPC] 
+    [PunRPC]
     private void RPC_SetFanFly(bool on)
     {
         animator.SetBool(_hFanFly, on);
@@ -249,14 +257,14 @@ public class CharacterAnimation : MonoBehaviourPun
             photonView.RPC(nameof(RPC_PlayPickUp), RpcTarget.All);
         }
     }
-    
-    [PunRPC] 
+
+    [PunRPC]
     private void RPC_PlayPickUp()
     {
         animator.SetTrigger(_hPickUp);
         _characterSfx?.PlayPickUpSound();
     }
-    
+
     public void SetCarry(bool on)
     {
         Debug.Log($"Carry is {on}");
@@ -271,7 +279,7 @@ public class CharacterAnimation : MonoBehaviourPun
         }
     }
 
-    [PunRPC] 
+    [PunRPC]
     private void RPC_SetCarry(bool on)
     {
         animator.SetBool(_hCarry, on);
@@ -297,8 +305,8 @@ public class CharacterAnimation : MonoBehaviourPun
             photonView.RPC(nameof(RPC_SetDizzy), RpcTarget.All, on);
         }
     }
-    
-    [PunRPC] 
+
+    [PunRPC]
     private void RPC_SetDizzy(bool on)
     {
         animator.SetBool(_hDizzy, on);
@@ -377,7 +385,7 @@ public class CharacterAnimation : MonoBehaviourPun
     {
         animator.enabled = play;
     }
-    
+
     public void SetPush(bool on)
     {
         if (!NetworkManager.Instance.IsInRoomAndReady())
@@ -391,9 +399,21 @@ public class CharacterAnimation : MonoBehaviourPun
         }
     }
 
-    [PunRPC] 
+    [PunRPC]
     private void RPC_SetPush(bool on)
     {
         animator.SetBool(_hPush, on);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_smoothedPlanarSpeed);
+        }
+        else
+        {
+            _smoothedPlanarSpeed = (float)stream.ReceiveNext();
+        }
     }
 }

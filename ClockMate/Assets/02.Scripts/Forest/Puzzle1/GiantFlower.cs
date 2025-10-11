@@ -112,7 +112,7 @@ public class GiantFlower : ResettableBase, IPunObservable
                 loop: true,
                 pos: transform.position,
                 sync: false,
-                volume: 0.6f);
+                volume: 0.8f);
         }
 
         // 현재와 이전 각도 차 계산
