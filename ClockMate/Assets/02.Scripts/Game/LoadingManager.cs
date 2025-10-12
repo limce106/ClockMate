@@ -13,7 +13,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     public static LoadingManager Instance { get; private set; }
 
     private UILoading _uiLoading;
-    private bool _isLoading = false;
+    public bool _isLoading { private set; get; } = false;
     private AsyncOperation _currentLoadOperation;
     private string _targetScene;
 
@@ -151,17 +151,20 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(1f);
 
-        _isLoading = false;
-        _targetScene = null;
-
         if (_uiLoading != null)
         {
             _uiLoading.Close();
             _uiLoading = null;
         }
 
-        GameManager.Instance.PlayMapBgm();
+        _isLoading = false;
+        _targetScene = null;
+
+        // TODO 추후 맵 별로 BGM 실행 시점 변경 필요
         string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene != "ClockTower")
+            GameManager.Instance.PlayMapBgm();
 
         foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
