@@ -91,16 +91,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
         };
     }
 
+    // 테스트용 코드
     //public override void OnJoinedRoom()
     //{
-    //    StartCoroutine(StartBattle());
+    //    StartCoroutine(StartBattleCoroutine());
     //}
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        if (PhotonNetwork.IsMasterClient)
-            StartCoroutine(StartBattle());
+        StartBattle();
     }
+    //
 
     private void Update()
     {
@@ -108,10 +109,16 @@ public class BattleManager : MonoBehaviourPunCallbacks
             RunTimer();
     }
 
+    public void StartBattle()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(StartBattleCoroutine());
+    }
+
     /// <summary>
     /// 마스터가 전투 코루틴 시작
     /// </summary>
-    private IEnumerator StartBattle()
+    private IEnumerator StartBattleCoroutine()
     {
         if (!PhotonNetwork.IsMasterClient)
             yield break;
