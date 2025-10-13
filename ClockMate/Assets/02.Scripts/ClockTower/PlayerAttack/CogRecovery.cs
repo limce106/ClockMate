@@ -14,6 +14,7 @@ public class CogRecovery : AttackPattern
      [SerializeField] private float minDistanceBetweenCogs = 2f;
 
      private Cog[] _cogs;          // 런타임 수집
+     private List<IACogGrip> _grips;          // 런타임 수집
      private CogCenter[] _slots;       // 런타임 수집
      private readonly List<int> _activeIdx = new();     // 이번 라운드 활성 인덱스
      private readonly List<Vector2> _usedXZ = new();    // 스폰한 위치 기록(XZ)
@@ -37,11 +38,20 @@ public class CogRecovery : AttackPattern
          }
 
          _cogs = cogsRoot.GetComponentsInChildren<Cog>(true);
+         _grips = new List<IACogGrip>();
 
-         // 시작 시 전원 비활성
+         // 시작 시 전원 비활성 & grips 캐싱
          foreach (Cog cog in _cogs)
+         {
+             foreach (var grip in cog.GetComponentsInChildren<IACogGrip>(true))
+             {
+                 _grips.Add(grip);
+                 grip.OnGripStateChanged -= EnableAllGripInteraction;
+                 grip.OnGripStateChanged += EnableAllGripInteraction;
+             }
              if (cog && cog.gameObject.activeSelf)
                  cog.gameObject.SetActive(false);
+         }     
      }
 
      /// <summary>
@@ -86,18 +96,18 @@ public class CogRecovery : AttackPattern
          while (true)
          {
             if (AllCogsFitted())
-             {
+            {
                  EndRecovery(true);
                  yield break;
-             }
+            }
          
-             if (BattleManager.Instance.IsTimeLimitEnd())
-             {
-                 EndRecovery(false);
-                 yield break;
-             }
+            if (BattleManager.Instance.IsTimeLimitEnd())
+            {
+                EndRecovery(false);
+                yield break;
+            }
 
-             yield return null;
+            yield return null;
          }
      }
 
@@ -107,7 +117,6 @@ public class CogRecovery : AttackPattern
      private bool AllCogsFitted()
      {
          if (_activeIdx.Count <= 0) return false;
-         // TODO 모든 톱니바퀴가 홈에 끼워졌는지 확인
          foreach (int i in _activeIdx)
          {
              if (i >= 0 && i < _cogs.Length && _cogs[i])
@@ -142,20 +151,29 @@ public class CogRecovery : AttackPattern
 
     private void ReleaseAllCogs()
     {
-        if (_cogs == null || _cogs.Length == 0) BuildRefs();
+        //if (_cogs == null || _cogs.Length == 0) BuildRefs();
+        if (_cogs == null || _cogs.Length == 0) return;
 
         foreach(Cog cog in _cogs)
         {
             if(cog == null) continue;
-            IACogGrip[] grips = cog.GetComponentsInChildren<IACogGrip>(true);
+            //IACogGrip[] grips = cog.GetComponentsInChildren<IACogGrip>(true);
 
-            foreach(IACogGrip grip in grips)
+            foreach(IACogGrip grip in _grips)
             {
                 if(grip.IsOccupied && grip.HolderViewId != -1)
                 {
-                    grip.photonView.RPC("RPC_Release", RpcTarget.All);
+                    grip.Release();
                 }
             }
+        }
+    }
+
+    private void EnableAllGripInteraction(bool enable)
+    {
+        foreach (IACogGrip grip in _grips)
+        {
+            grip.EnableInteraction(enable);
         }
     }
      
