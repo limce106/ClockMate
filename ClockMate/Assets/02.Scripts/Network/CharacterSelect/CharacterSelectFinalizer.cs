@@ -13,22 +13,12 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
     public GameObject Player2Ready;
 
     private bool _isLoadingStarted = false;
-
-    private void Start()
-    {
-        RPCManager.OnSyncedAllReadyAction = () =>
-        {
-            StartCoroutine(HandleAllReadySequence());
-        };
-    }
+    private HashSet<int> actorNums = new HashSet<int>();
 
     private IEnumerator HandleAllReadySequence()
     {
         SaveSelectedCharacter();
         _isLoadingStarted = true;
-
-        Player1Ready?.SetActive(true);
-        Player2Ready?.SetActive(true);
 
         yield return new WaitForSeconds(1f);
 
@@ -55,56 +45,45 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
         if (!PhotonNetwork.InRoom)
             return;
 
-        UpdateReadyUIForAllPlayers();
-    }
+        if (_characterSelectManager.actorNumcharacter.Count != 2)
+            return;
 
-    void UpdateReadyUIForAllPlayers()
-    {
-        var readyDict = RPCManager.GetPlayerReadyStatus();
-
-        foreach (var player in PhotonNetwork.CurrentRoom.Players)
+        if(Input.GetKeyDown(KeyCode.E))
         {
-            int actorNumber = player.Value.ActorNumber;
-            bool isMasterClient = player.Value.IsMasterClient;
-
-            bool isReady = false;
-            readyDict.TryGetValue(actorNumber, out isReady);
-            UpdateReadyUI(actorNumber, isReady, isMasterClient);
+            photonView.RPC(nameof(RPC_UpdateReadyUI), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
 
-    private void UpdateReadyUI(int actorNumber, bool isReady, bool isMasterClient)
+    [PunRPC]
+    private void RPC_UpdateReadyUI(int actorNum)
     {
-        if (isMasterClient)
+        var characterSlot = _characterSelectManager.actorNumcharacter[actorNum];
+
+        bool isActive = !characterSlot.ready.activeSelf;
+        characterSlot.ready.SetActive(isActive);
+
+        if(isActive)
         {
-            Player1Ready?.SetActive(isReady);
-            Debug.Log("Player1: " + isReady);
+            actorNums.Add(actorNum);
         }
         else
         {
-            Player2Ready?.SetActive(isReady);
-            Debug.Log("Player2: " + isReady);
+            actorNums.Remove(actorNum);
         }
+
+        if(actorNums.Count == 2)
+            StartCoroutine(HandleAllReadySequence());
     }
 
     private void SaveSelectedCharacter()
     {
-        if (!_characterSelectManager)
-            return;
-
         int localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        var slot = _characterSelectManager.actorNumcharacter[localActorNumber];
 
-        foreach (var slot in _characterSelectManager.characters)
-        {
-            if (slot.selectedByActorNumber != localActorNumber)
-                continue;
+        int slotIndex = _characterSelectManager.GetCharacterIndex(slot);
+        CharacterName character = (CharacterName)slotIndex;
 
-            int index = _characterSelectManager.GetCharacterIndex(slot);
-            CharacterName character = (CharacterName)index;
-
-            GameManager.Instance.SetSelectedCharacter(character);
-            Debug.Log($"[CharacterSelectReadyUI] 내 선택 캐릭터 저장됨: {character}");
-            break;
-        }
+        GameManager.Instance.SetSelectedCharacter(character);
+        Debug.Log($"[CharacterSelectReadyUI] 내 선택 캐릭터 저장됨: {character}");
     }
 }
