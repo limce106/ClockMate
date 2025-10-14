@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
@@ -27,6 +28,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     private int _lastSeq = -1;
     
     private static readonly HashSet<int> HeldCharacterIds = new HashSet<int>();
+    public Action<bool> OnGripStateChanged;
     
     private void Awake()
     {
@@ -56,7 +58,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         if (_holder.photonView.IsMine && Input.GetKeyDown(KeyCode.Q))
         {
             // 내려놓기 
-            RPC_Release();
+            Release();
         }
     }
 
@@ -83,8 +85,8 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     public bool Interact(CharacterBase character)
     {
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, true, character.photonView.ViewID);
-        LockLocalCharacter(_holder, true);
-        EnableUI(true);
+        // LockLocalCharacter(_holder, true);
+        // EnableUI(true);
         return true;
     }
 
@@ -116,6 +118,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             {
                 character.transform.rotation = Quaternion.LookRotation(toCog.normalized, Vector3.up);        
             }
+            UpdateAttachedPoseLocal();
         }
     }
 
@@ -162,25 +165,15 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         _targetPos = anchorPos;
     }
 
-    [PunRPC]
-    private void RPC_GripAnchorClear(int seq)
+    private void GripAnchorClear(int seq)
     {
         if (seq <= _lastSeq) return;
         _lastSeq = seq;
     }
 
-    [PunRPC]
-    public void RPC_Release()
+    public void Release()
     {
-        if (_holder != null && _holder.photonView.IsMine)
-        {
-            LockLocalCharacter(_holder, false);
-            EnableUI(false);
-        }
-            
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, false, -1);
-        if (PhotonNetwork.IsMasterClient)
-            photonView.RPC(nameof(RPC_GripAnchorClear), RpcTarget.All, ++_anchorSeq);
     }
 
     [PunRPC]
@@ -188,6 +181,10 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     {
         SetGrabState(value, characterViewId);
         cog.OnGripStateChange();
+        if (!value)
+        {
+            GripAnchorClear(++_anchorSeq);
+        }
     }
 
     private void SetGrabState(bool value, int characterViewId)
@@ -200,7 +197,20 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             _holder = PhotonView.Find(characterViewId)?.GetComponent<CharacterBase>();
             SetIgnoreCollisionWithHolder(true);
             _holderRb = _holder?.GetComponent<Rigidbody>();
-            if (_col != null) _col.enabled = false;
+            //if (_col != null) _col.enabled = false;
+            if (_holder != null && _holder.photonView.IsMine)
+            {
+                // 상호작용 주체라면 전체 grip 상호작용 비활성화
+                OnGripStateChanged?.Invoke(false);
+                LockLocalCharacter(_holder, true);
+                EnableUI(true);
+            }
+            else
+            {
+                // 상호작용 주체가 아니라면 해당 grip만 상호작용 비활성화
+                EnableInteraction(false);
+            }
+            _holder?.Anim.ResetDelta();
             _lastSeq = -1;
         }
         else
@@ -208,10 +218,28 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             if (_holder == null) return;
             HeldCharacterIds.Remove(_holder.photonView.ViewID);
             SetIgnoreCollisionWithHolder(false);
+            if (_holder != null && _holder.photonView.IsMine)
+            {
+                // 상호작용 주체라면
+                OnGripStateChanged?.Invoke(true); // 전체 grip 상호작용 활성화
+                LockLocalCharacter(_holder, false);
+                EnableUI(false);
+            }
+            else
+            {
+                // 상호작용 주체가 아니라면
+                EnableInteraction(true); // 해당 grip만 상호작용 활성화
+            }
             _holder = null;
             _holderRb = null;
-            if (_col != null) _col.enabled = true;
+            //if (_col != null) _col.enabled = true;
         }
+    }
+
+    public void EnableInteraction(bool enable)
+    {
+        if (_col == null) return;
+        _col.enabled = enable;
     }
 
     public void OnInteractAvailable() { }

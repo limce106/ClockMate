@@ -1,35 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 using UnityEngine.UI;
 using TMPro;
+using Photon.Pun;
+using System;
 
-[System.Serializable]
-public class CharacterSlot
+public class CharacterSelectManager : MonoBehaviourPun
 {
-    public Button characterButton;
-    public Image nonSelectableImg;
-    public int selectedByActorNumber = -1;
-    public string characterName;
-} 
+    [System.Serializable]
+    public class CharacterSlot
+    {
+        public Image pageImg;
+        public Image controlImg;
+        public TMP_Text controller;
+        public Button characterButton;
+        public Image cancelImg;
+        public GameObject ready;
+        public int selectedByActorNumber = -1;
+        public string pageLR;
+    }
 
-public class CharacterSelectManager : MonoBehaviourPunCallbacks
-{
-    public static CharacterSelectManager instance;
+    public static CharacterSelectManager Instance;
 
-    public CharacterSlot[] characters;
+    [SerializeField] private CharacterSlot[] characters;
     public TMP_Text statusText;
     public GameObject gameReady;
 
-    public Image player1CharacterImg;
-    public Image player2CharacterImg;
-
+    public Dictionary<int, CharacterSlot> actorNumcharacter { private set; get; } = new Dictionary<int, CharacterSlot>();
     private int _localActorNumber;
+
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
 
         SoundManager.Instance.StopAll(SoundType.BGM);
 
@@ -51,69 +55,19 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         {
             character.characterButton.onClick.AddListener(() => OnCharacterClicked(character));
         }
+
     }
 
     void OnCharacterClicked(CharacterSlot character)
     {
-        if(character.selectedByActorNumber == _localActorNumber)
+        if (character.selectedByActorNumber == _localActorNumber)
         {
             photonView.RPC("DeselectCharacter", RpcTarget.All, GetCharacterIndex(character), _localActorNumber);
         }
-        else if(character.selectedByActorNumber == -1 && !HasPlayerSelected(_localActorNumber))
+        else if (character.selectedByActorNumber == -1 && !HasPlayerSelected(_localActorNumber))
         {
             photonView.RPC("SelectCharacter", RpcTarget.All, GetCharacterIndex(character), _localActorNumber);
         }
-    }
-
-    [PunRPC]
-    void SelectCharacter(int index, int actorNumber)
-    {
-        characters[index].selectedByActorNumber = actorNumber;
-        characters[index].nonSelectableImg.gameObject.SetActive(true);
-
-        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + characters[index].characterName + "_Image");
-        if (characterSprite == null)
-        {
-            Debug.LogWarning($"Sprite for {characters[index].characterName} not found in Resources.");
-            return;
-        }
-
-        if(actorNumber == PhotonNetwork.MasterClient.ActorNumber)
-        {
-            player1CharacterImg.sprite = characterSprite;
-            player1CharacterImg.gameObject.SetActive(true);
-        }
-        else
-        {
-            player2CharacterImg.sprite = characterSprite;
-            player2CharacterImg.gameObject.SetActive(true);
-        }
-
-        UpdateButtonsInteractable();
-        UpdateStatusText();
-    }
-
-    [PunRPC]
-    void DeselectCharacter(int index, int actorNumber)
-    {
-        characters[index].selectedByActorNumber = -1;
-        characters[index].nonSelectableImg.gameObject.SetActive(false);
-
-        if (actorNumber == PhotonNetwork.MasterClient.ActorNumber)
-        {
-            player1CharacterImg.sprite = null;
-            player1CharacterImg.gameObject.SetActive(false);
-        }
-        else
-        {
-            player2CharacterImg.sprite = null;
-            player2CharacterImg.gameObject.SetActive(false);
-        }
-
-        UpdateButtonsInteractable();
-        UpdateStatusText();
-
-        RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
     }
 
     public int GetCharacterIndex(CharacterSlot character)
@@ -126,31 +80,86 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         return -1;
     }
 
-    
     bool HasPlayerSelected(int actorNumber)
     {
-        // ì´ë¯¸ ìºë¦­í„°ë¥¼ ì„ íƒí–ˆëŠ”ì§€
+        // ÀÌ¹Ì Ä³¸¯ÅÍ¸¦ ¼±ÅÃÇß´ÂÁö
         foreach (var c in characters)
         {
             if (c.selectedByActorNumber == actorNumber)
+            {
                 return true;
+            }
         }
         return false;
     }
 
+    [PunRPC]
+    void SelectCharacter(int slotIndex, int actorNumber)
+    {
+        string owner = (_localActorNumber == actorNumber) ? "Local" : "Remote";
+
+        Sprite pageSprite = Resources.Load<Sprite>("UI/Sprites/" + owner + "_Select_" + characters[slotIndex].pageLR);
+        characters[slotIndex].pageImg.GetComponent<Image>().sprite = pageSprite;
+        characters[slotIndex].pageImg.gameObject.SetActive(true);
+
+        characters[slotIndex].controller.text = (owner == "Local") ? "³ª" : "»ó´ë";
+
+        Sprite controlSprite = Resources.Load<Sprite>("UI/Sprites/" + owner + "_Control");
+        characters[slotIndex].controlImg.GetComponent<Image>().sprite = controlSprite;
+        characters[slotIndex].controlImg.gameObject.SetActive(true);
+
+        characters[slotIndex].selectedByActorNumber = actorNumber;
+
+        actorNumcharacter.Add(actorNumber, characters[slotIndex]);
+
+        UpdateButtonsInteractable();
+        UpdateStatusText();
+    }
+
+    [PunRPC]
+    void DeselectCharacter(int slotIndex, int actorNumber)
+    {
+        characters[slotIndex].pageImg.gameObject.SetActive(false);
+        characters[slotIndex].controlImg.gameObject.SetActive(false);
+        characters[slotIndex].selectedByActorNumber = -1;
+
+        actorNumcharacter.Remove(actorNumber);
+
+        UpdateButtonsInteractable();
+        UpdateStatusText();
+
+        RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
+    }
+
     void UpdateButtonsInteractable()
     {
-        // ë‚´ê°€ ì•„ë¬´ ìºë¦­í„°ë„ ì„ íƒí•˜ì§€ ì•ŠìŒ
+        // ³»°¡ ¾Æ¹« Ä³¸¯ÅÍµµ ¼±ÅÃÇÏÁö ¾ÊÀ½
         bool hasSelected = HasPlayerSelected(_localActorNumber);
 
-        foreach (var c in characters)
+        foreach (var character in characters)
         {
-            // ì•„ì§ ì„ íƒ ì•ˆ ëœ ìºë¦­í„°
-            bool isUnselected = c.selectedByActorNumber == -1;
-            // ë‚´ê°€ ì„ íƒí•œ ìºë¦­í„°
-            bool isMySelection = c.selectedByActorNumber == _localActorNumber;
+            // ¾ÆÁ÷ ¼±ÅÃ ¾È µÈ Ä³¸¯ÅÍ
+            bool isUnselected = character.selectedByActorNumber == -1;
+            // ³»°¡ ¼±ÅÃÇÑ Ä³¸¯ÅÍ
+            bool isMySelection = character.selectedByActorNumber == _localActorNumber;
+            // ´Ù¸¥ ÇÃ·¹ÀÌ¾î°¡ ¼±ÅÃÇÑ Ä³¸¯ÅÍ
+            bool isSelectedByOther = character.selectedByActorNumber != -1 && !isMySelection;
 
-            c.characterButton.interactable = !hasSelected || isUnselected || isMySelection;
+            if (isSelectedByOther)
+            {
+                // »ó´ë°¡ ¼±ÅÃÇÑ ½½·ÔÀ» Ç×»ó ºñÈ°¼ºÈ­
+                character.characterButton.interactable = false;
+            }
+            else if (hasSelected)
+            {
+                // ³»°¡ ¼±ÅÃÇÑ »óÅÂ¸é ³» ½½·Ô¸¸ È°¼ºÈ­
+                character.characterButton.interactable = isMySelection;
+            }
+            else
+            {
+                // ³»°¡ ¼±ÅÃ ÀüÀÌ¸é ºó ½½·Ô¸¸ È°¼ºÈ­
+                character.characterButton.interactable = isUnselected;
+            }
         }
     }
 
@@ -159,9 +168,9 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
         bool localSelected = HasPlayerSelected(_localActorNumber);
         bool otherSelected = false;
 
-        foreach(var c in characters)
+        foreach (var c in characters)
         {
-            if(c.selectedByActorNumber != -1 && c.selectedByActorNumber != _localActorNumber)
+            if (c.selectedByActorNumber != -1 && c.selectedByActorNumber != _localActorNumber)
             {
                 otherSelected = true;
                 break;
@@ -170,25 +179,25 @@ public class CharacterSelectManager : MonoBehaviourPunCallbacks
 
         bool canAcceptReady = false;
 
-        if(!localSelected && !otherSelected)
+        if (!localSelected && !otherSelected)
         {
-            statusText.text = "ì–´ë–¤ ìºë¦­í„°ë¥¼ ì„ íƒí•˜ì‹œê² ì–´ìš”?";
+            statusText.text = "¿øÇÏ´Â Ä³¸¯ÅÍ¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä.";
         }
         else if (!localSelected && otherSelected)
         {
-            statusText.text = "ìƒëŒ€ë°©ì´ ìºë¦­í„° ì„ íƒì„ ì™„ë£Œí–ˆìŠµë‹ˆë‹¤.";
+            statusText.text = "»ó´ë¹æÀÌ Ä³¸¯ÅÍ ¼±ÅÃÀ» ¿Ï·áÇß½À´Ï´Ù.";
         }
         else if (localSelected && !otherSelected)
         {
-            statusText.text = "ìƒëŒ€ë°© ìºë¦­í„° ì„ íƒì„ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘...";
+            statusText.text = "»ó´ë¹æ Ä³¸¯ÅÍ ¼±ÅÃÀ» ±â´Ù¸®´Â Áß...";
         }
         else
         {
-            statusText.text = "ëª¨ë“  í”Œë ˆì´ì–´ ìºë¦­í„° ì„ íƒ ì™„ë£Œ!";
+            statusText.text = "¸ğµç ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍ ¼±ÅÃ ¿Ï·á!";
             canAcceptReady = true;
         }
 
-        if(canAcceptReady)
+        if (canAcceptReady)
         {
             gameReady.SetActive(true);
         }
