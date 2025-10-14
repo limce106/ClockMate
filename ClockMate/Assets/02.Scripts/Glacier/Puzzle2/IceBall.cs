@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using Define;
+using DefineExtension;
 using UnityEngine;
 
 /// <summary>
@@ -40,7 +42,7 @@ public class IceBall : MonoBehaviour
         IsControlled = false;
         _controller = null;
         
-        _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _exitSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _exitString = "나가기";
 
         // 반지름 + 여유거리 계산

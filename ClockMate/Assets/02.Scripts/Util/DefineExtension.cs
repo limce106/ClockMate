@@ -1,9 +1,9 @@
 ﻿using System;
 using Define;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using static Define.Block;
 using static Define.Character;
+using static Define.Icon;
 
 namespace DefineExtension
 {
@@ -90,6 +90,54 @@ namespace DefineExtension
             {
                 localAction?.Invoke();
             }
+        }
+    }
+
+    public static class IconExtension
+    {
+        private const string Base = "UI/Sprites/Key";
+        
+        // Key -> 파일명의 앞부분 매핑
+        private static string ToToken(this Key key) => key switch
+        {
+            Key.E      => "interact_active",
+            Key.Q      => "keyboard_q",
+            Key.W      => "keyboard_w",
+            Key.A      => "keyboard_a",
+            Key.S      => "keyboard_s",
+            Key.D      => "keyboard_d",
+            Key.Space  => "keyboard_space",
+            Key.Arrows => "keyboard_arrows",
+            _               => null
+        };
+
+        // Style -> 파일명 뒷부분 매핑
+        private static string ToSuffix(this Style style) => style switch
+        {
+            Style.Default => "", // 디폴트는 접미사x
+            Style.Outline => "_outline",
+            Style.Filled  => "_filled",
+            _                  => ""
+        };
+
+        // 경로 조합: "UI/Sprites/Key/{token}{suffix}"
+        public static string GetPath(this Key key, Style style = Style.Default)
+        {
+            string token = key.ToToken();
+            if (string.IsNullOrEmpty(token)) return string.Empty;
+
+            string suffix = style.ToSuffix();
+            return $"{Base}/{token}{suffix}";
+        }
+
+        public static Sprite LoadSprite(this Key key, Style style = Style.Default)
+        {
+            Sprite sprite = Resources.Load<Sprite>(GetPath(key, style));
+            if (sprite == null)
+            {
+                Debug.LogError($"[IconExtension] Failed to load sprite: {GetPath(key, style)}");
+            }
+            return sprite;
         }
     }
 }

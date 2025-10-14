@@ -2,6 +2,8 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Define;
+using DefineExtension;
 using UnityEngine;
 
 public class IAClockSpring : MonoBehaviourPun, IInteractable
@@ -28,7 +30,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         _rb = GetComponent<Rigidbody>();
         _rb.isKinematic = true;
 
-        _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _exitSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);
         _exitString = "³ª°¡±â";
     }
 

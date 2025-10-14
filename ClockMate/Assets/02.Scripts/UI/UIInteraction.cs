@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Define;
+using DefineExtension;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -32,8 +34,8 @@ public class UIInteraction : UIBase
             _uiImagePool[i].gameObject.SetActive(false);
         }
         _objectToUIImage = new Dictionary<GameObject, Image>();
-        _spriteInactive = Resources.Load<Sprite>("UI/Sprites/interact_inactive");
-        _spriteActive = Resources.Load<Sprite>("UI/Sprites/interact_active");
+        _spriteInactive = Resources.Load<Sprite>("UI/Sprites/Key/interact_inactive");
+        _spriteActive = Icon.Key.E.LoadSprite(Icon.Style.Outline);
         _mainCamera = Camera.main;
 
         SceneManager.sceneUnloaded += OnSceneUnloaded;
