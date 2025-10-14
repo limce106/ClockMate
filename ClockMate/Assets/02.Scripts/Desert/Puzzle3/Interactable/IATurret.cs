@@ -36,7 +36,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     private CharacterBase _character; // 조작 중인 캐릭터
     private MonsterController _currentTarget;
     private UINotice _uiNotice;
-    private UITurretAcive _uiTurretActive;
+    private UITurretActive _uiTurretActive;
     
     private Sprite _dropSprite;
     private string _dropString;
@@ -116,7 +116,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         camera.Priority = 100;
         attackLineRenderer.enabled = true;
 
-        _uiTurretActive = UIManager.Instance.Show<UITurretAcive>("UITurretActive");
+        _uiTurretActive = UIManager.Instance.Show<UITurretActive>("UITurretActive");
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
 
         return true;
