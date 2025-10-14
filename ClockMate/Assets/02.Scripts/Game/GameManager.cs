@@ -153,9 +153,9 @@ public class GameManager : MonoSingleton<GameManager>
         switch (sceneName)
         {
             case "Desert":
-                return "";
+                return "desert_bgm";
             case "Glacier":
-                return "";
+                return "glacier_bgm";
             case "Forest":
                 return "forest_bgm";
             case "ClockTower":
@@ -175,7 +175,7 @@ public class GameManager : MonoSingleton<GameManager>
             case "Desert":
                 return "desert_wind";
             case "Glacier":
-                return "";
+                return "glacier_storm";
             case "Forest":
                 return "forest_rain";
             case "ClockTower":

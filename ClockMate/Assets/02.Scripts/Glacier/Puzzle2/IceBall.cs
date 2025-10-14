@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -27,7 +26,7 @@ public class IceBall : MonoBehaviour
     private Transform _camTransform;
 
     private float _controllerRadius; // 빙벽 반지름 + 여유 거리
-    public Action<bool> OnControlEnd;
+    public Action<bool, CharacterBase> OnControlEnd;
     
     private SoundHandle _soundHandle;
     private bool _sfxPlayed;
@@ -106,7 +105,6 @@ public class IceBall : MonoBehaviour
         _controller = controller;
         SetControllerPos();
         MoveController();
-        _sphereCollider.excludeLayers += LayerMask.GetMask("Player");
         _controller.ChangeState<PushState>(controllerPos.transform);
 
         _controller.InputHandler.enabled = false;
@@ -146,16 +144,13 @@ public class IceBall : MonoBehaviour
     private void ExitControl()
     {
         IsControlled = false;
-        _sphereCollider.excludeLayers -= LayerMask.GetMask("Player");
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
         _controller.Anim.SetPush(false);
+        OnControlEnd(false, _controller); // 충돌 다시 활성화
         _controller = null;
 
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
-        
-        // collider 다시 활성화
-        OnControlEnd(true);
     }
 }
