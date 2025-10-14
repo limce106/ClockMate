@@ -109,7 +109,6 @@ public class SwingPendulum : MonoBehaviourPun
         {
             SoundManager.Instance.PlaySfx(key: "hit", pos: transform.position, volume: 0.7f);
 
-            BattleLifeManager.Instance.RecordHitPosition(character, character.transform.position);
             character.ChangeState<DeadState>(Define.Battle.DeathType.Collision);
         }
     }

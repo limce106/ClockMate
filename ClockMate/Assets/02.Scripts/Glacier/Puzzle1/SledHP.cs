@@ -9,13 +9,13 @@ public class SledHP : MonoBehaviourPun
     [SerializeField] private int maxHP;
     [SerializeField] private SledChaseOrchestrator orchestrator;
     private int _currentHP;
-    private UISledHP _uiSledHP;
+    private UIHpBar _uiHpBar;
     
     public void Init()
     {
         _currentHP = maxHP;
-        _uiSledHP = UIManager.Instance.Show<UISledHP>("UISledHP");
-        _uiSledHP.UpdateHpBar(maxHP, _currentHP);
+        _uiHpBar = UIManager.Instance.Show<UIHpBar>("UIHpBar");
+        _uiHpBar.UpdateHpBar(maxHP, _currentHP);
     }
 
     public void TakeDamage(int damage)
@@ -35,6 +35,6 @@ public class SledHP : MonoBehaviourPun
     private void RPC_SyncHP(int hp)
     {
         _currentHP = hp;
-        _uiSledHP?.UpdateHpBar(maxHP, _currentHP);
+        _uiHpBar?.UpdateHpBar(maxHP, _currentHP);
     }
 }
