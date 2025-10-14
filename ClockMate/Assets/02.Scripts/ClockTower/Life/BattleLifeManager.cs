@@ -11,8 +11,8 @@ public class BattleLifeManager : MonoBehaviourPun
 {
     private HashSet<int> _deadPlayers = new HashSet<int>(); // 죽은 플레이어의 포톤 뷰 ID 저장
     private Dictionary<CharacterBase, Vector3> _lastHitPositions = new Dictionary<CharacterBase, Vector3>(); // 죽기 전 충돌 위치
-
     private Coroutine _reviveCoroutine; // 로컬 부활 코루틴
+    private UIBattleRevive _uiBattleRevive;
     [HideInInspector] public bool allowRevive = true;
 
     public static BattleLifeManager Instance { get; private set; }
@@ -35,7 +35,7 @@ public class BattleLifeManager : MonoBehaviourPun
     /// 플레이어 사망 전달
     /// </summary>
     [PunRPC]
-    public void RPC_ReportDeath(int viewID)
+    public void RPC_ReportDeath(int viewID, Vector3 deadPos)
     {
         if (!PhotonNetwork.IsConnected)
             return;
@@ -46,8 +46,9 @@ public class BattleLifeManager : MonoBehaviourPun
         CharacterBase character = targetView.GetComponent<CharacterBase>();
         if (character == null) return;
 
+        RecordHitPosition(character, deadPos);
+
         _deadPlayers.Add(viewID);
-        Debug.Log("_deadPlayerNum: " + _deadPlayers.Count);
         HandleDeath(character);
     }
 
@@ -76,6 +77,7 @@ public class BattleLifeManager : MonoBehaviourPun
     /// </summary>
     private IEnumerator ReviveAfterDelay(CharacterBase character)
     {
+        photonView.RPC(nameof(RPC_ShowAndPlayReviveTimerUI), RpcTarget.All, _lastHitPositions[character]);
         yield return new WaitForSeconds(ReviveDelay);
 
         if(!allowRevive)
@@ -115,6 +117,15 @@ public class BattleLifeManager : MonoBehaviourPun
         }
 
         _reviveCoroutine = null;
+    }
+
+    [PunRPC]
+    private void RPC_ShowAndPlayReviveTimerUI(Vector3 deadPos)
+    {
+        Vector3 uiPos = Camera.main.WorldToScreenPoint(deadPos);
+
+        _uiBattleRevive = UIManager.Instance.Show<UIBattleRevive>("UIBattleRevive");
+        _uiBattleRevive.PlayReviveTimerUI(ReviveDelay, uiPos);
     }
 
     /// <summary>
@@ -178,6 +189,11 @@ public class BattleLifeManager : MonoBehaviourPun
         {
             StopCoroutine(_reviveCoroutine);
             _reviveCoroutine = null;
+        }
+
+        if(_uiBattleRevive != null)
+        {
+            _uiBattleRevive.StopReviveTimerUI();
         }
     }
 }

@@ -19,8 +19,6 @@ public class DeadState : IState
 
     public void Enter()
     {
-        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, false);
-
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
             if (_deathType == DeathType.None)
@@ -29,9 +27,11 @@ public class DeadState : IState
             }
             else
             {
-                BattleLifeManager.Instance.photonView.RPC(nameof(BattleLifeManager.RPC_ReportDeath), RpcTarget.MasterClient, _character.photonView.ViewID);
+                BattleLifeManager.Instance.photonView.RPC(nameof(BattleLifeManager.RPC_ReportDeath), RpcTarget.MasterClient, _character.photonView.ViewID, _character.transform.position);
             }
         }
+
+        RPCManager.Instance.photonView.RPC("RPC_SetObjectActive", RpcTarget.All, _character.photonView.ViewID, false);
     }
 
     public void FixedUpdate()

@@ -2099,11 +2099,10 @@ RectTransform:
   - {fileID: 1623134349}
   - {fileID: 1552640681}
   - {fileID: 1157242489}
-  - {fileID: 1365566216}
-  - {fileID: 1546648013}
+  - {fileID: 1441166480}
   - {fileID: 522222843}
-  - {fileID: 430341490}
   - {fileID: 1754656842}
+  - {fileID: 430341490}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3619,11 +3618,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 634919397}
+  m_Father: {fileID: 1441166480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 434.5, y: 330}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 32, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1365566217
@@ -3980,6 +3979,43 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c7ec24ca3902bde429b0a5cdae3f305b, type: 3}
   m_PrefabInstance: {fileID: 1430890918}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1441166479
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1441166480}
+  m_Layer: 5
+  m_Name: TimeLimitUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1441166480
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441166479}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1365566216}
+  - {fileID: 1546648013}
+  m_Father: {fileID: 634919397}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 434.5, y: 330}
+  m_SizeDelta: {x: 32, y: 32}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &1457639857 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6895000928091654904, guid: e30871b7cac5d5644918ace52f02267a, type: 3}
@@ -4284,11 +4320,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 634919397}
+  m_Father: {fileID: 1441166480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 562.7, y: 318.8}
+  m_AnchoredPosition: {x: 128.20001, y: -11.200012}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1546648014
@@ -5019,38 +5055,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1635334542689445631, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: isBgmOn
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: isSpawnPlayer
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: hourSpawnPos.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: hourSpawnPos.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: hourSpawnPos.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: milliSpawnPos.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: milliSpawnPos.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3148098582866131112, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
-      propertyPath: milliSpawnPos.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3447095921055497446, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
@@ -6744,6 +6748,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2450420614455622168, guid: 8f9146f25f23e4448a77b6dada02a8aa, type: 3}
+      propertyPath: timeLimitUI
+      value: 
+      objectReference: {fileID: 1441166479}
     - target: {fileID: 2450420614455622168, guid: 8f9146f25f23e4448a77b6dada02a8aa, type: 3}
       propertyPath: pendulumPool
       value: 
