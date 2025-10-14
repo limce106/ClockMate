@@ -44,6 +44,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     [Header("UI")]
     public Slider recoverySlider;
+    public GameObject timeLimitUI;
     public TMP_Text timeLimitText;
 
     public float battleFieldRadius { get; private set; } = 11f; // 전장 반지름
@@ -177,7 +178,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(HandleFailure), RpcTarget.All);
             }
 
-            if (timeLimitText.enabled)
+            if (timeLimitUI.activeSelf)
             {
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, false);
             }
@@ -471,7 +472,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_EnableTimeLimit(bool isEnable)
     {
-        timeLimitText.GetComponent<TMP_Text>().enabled = isEnable;
+        timeLimitUI.SetActive(isEnable);
     }
 
     /// <summary>
