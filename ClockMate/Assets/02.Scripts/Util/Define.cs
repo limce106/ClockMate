@@ -102,4 +102,26 @@
             Active
         }
     }
+
+    public static class Icon
+    {
+        public enum Key
+        {
+            E = 0,
+            Q,
+            W,
+            A,
+            S,
+            D,
+            Arrows,
+            Space
+        }
+        
+        public enum Style
+        {
+            Default = 0,
+            Outline,
+            Filled
+        }
+    }
 }

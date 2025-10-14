@@ -1,3 +1,5 @@
+using Define;
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
@@ -24,7 +26,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _clockHandRecovery = FindObjectOfType<ClockHandRecovery>();
         _clockHandController = transform.root.GetComponent<ClockHandController>();
 
-        _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _exitSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);
         _exitString = "³ª°¡±â";
     }
 

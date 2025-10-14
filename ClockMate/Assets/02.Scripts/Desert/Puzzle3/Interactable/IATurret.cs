@@ -1,4 +1,5 @@
 using Cinemachine;
+using Define;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
@@ -50,7 +51,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     {
         _isOccupied = false;
         _character = null;
-        _dropSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _dropSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _dropString = "나가기";
         if (attackLineRenderer != null)
         {
@@ -136,8 +137,8 @@ public class IATurret : MonoBehaviourPun, IInteractable
         // 터렛 UI 닫기
         
         _uiTurretActive.Reset();
-        UIManager.Instance.Close(_uiTurretActive);
-        UIManager.Instance.Close(_uiNotice);
+        _uiTurretActive.Close();
+        _uiNotice.Close();
         _uiTurretActive = null;
         _uiNotice = null;
         

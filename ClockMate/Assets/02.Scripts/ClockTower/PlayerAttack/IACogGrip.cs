@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Define;
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
@@ -47,7 +49,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
 
         IsOccupied = false;
         HolderViewId = -1;
-        _dropSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _dropSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _dropString = "내려놓기";
     }
 

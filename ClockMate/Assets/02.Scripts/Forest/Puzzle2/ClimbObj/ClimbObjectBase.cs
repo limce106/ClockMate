@@ -2,6 +2,7 @@ using DefineExtension;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Define;
 using UnityEngine;
 
 public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
@@ -31,7 +32,7 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
         topY = topPoint.position.y;
         bottomY = bottomPoint.position.y;
 
-        _exitSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _exitSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _exitString = "그만타기";
     }
 

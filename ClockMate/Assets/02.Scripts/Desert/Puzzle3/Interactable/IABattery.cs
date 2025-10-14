@@ -1,4 +1,5 @@
 using System;
+using Define;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class IABattery : ResettableBase, IInteractable
     {
         _isHeld = false;
         _uiManager = UIManager.Instance;
-        _dropSprite = Resources.Load<Sprite>("UI/Sprites/keyboard_q_outline");
+        _dropSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _dropString = "내려놓기";
     }
     
