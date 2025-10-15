@@ -192,7 +192,7 @@ public class CharacterSelectManager : MonoBehaviourPun
         }
         else
         {
-            statusText.text = "잠시 후 <color=#FFD13A>아워와 밀리의 모험</color>이 시작됩니다!";
+            statusText.text = "E키를 눌러 게임을 준비할 수 있어요";
             canAcceptReady = true;
         }
 

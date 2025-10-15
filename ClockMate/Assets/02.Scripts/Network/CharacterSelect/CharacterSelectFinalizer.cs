@@ -17,10 +17,11 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
 
     private IEnumerator HandleAllReadySequence()
     {
+        _characterSelectManager.statusText.text = "잠시 후 <color=#FFD13A>아워와 밀리의 모험</color>이 시작됩니다!";
         SaveSelectedCharacter();
         _isLoadingStarted = true;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         GameManager.Instance?.CreateNewSaveData();
         if (PhotonNetwork.IsMasterClient)
