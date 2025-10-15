@@ -7,6 +7,8 @@ public class UINotice : UIBase
     [SerializeField] private Image img;
     [SerializeField] private Text text;
     
+    [SerializeField] private RectTransform[] rectTransforms;
+    
     private void Awake()
     {
         Init();
@@ -30,5 +32,21 @@ public class UINotice : UIBase
     public void SetImageActive(bool value)
     {
         img.enabled = value;
+    }
+
+    public void SetVerticalPos(bool isTop)
+    {
+        float yPos = isTop ? -100f : -980f;
+        foreach (RectTransform rt in rectTransforms)
+        {
+            Vector2 ap = rt.anchoredPosition;
+            ap.y = yPos;
+            rt.anchoredPosition = ap;
+        }
+    }
+
+    private void OnDisable()
+    {
+        SetVerticalPos(true);
     }
 }
