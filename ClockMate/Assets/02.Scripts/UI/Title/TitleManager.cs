@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
+using static Define.Battle;
 
 public class TitleManager : MonoBehaviour
 {
@@ -20,13 +21,23 @@ public class TitleManager : MonoBehaviour
 
     [Header("Panel")]
     public GameObject titlePanel;
-    public GameObject lobbyPanel;
+    public GameObject roomPanel;
     public GameObject playTypePanel;
+    public GameObject joinCodePanel;
 
     private bool suppressCallback = false;
+    private Dictionary<GameObject, GameObject> backNavigationMap; // 현재 화면, 이전 화면
+    private GameObject currentPanel; // 현재 화면
 
     void Start()
     {
+        backNavigationMap = new Dictionary<GameObject, GameObject>
+        {
+            { roomPanel, titlePanel },
+            { playTypePanel, roomPanel },
+            { joinCodePanel, roomPanel }
+        };
+
         SoundManager.Instance.PlayBgm("title_bgm");
 
         joinCodeInputField.onValueChanged.AddListener(OnInputValueChanged);
@@ -59,7 +70,8 @@ public class TitleManager : MonoBehaviour
     public void OnClick_Start()
     {
         titlePanel.SetActive(false);
-        lobbyPanel.SetActive(true);
+        roomPanel.SetActive(true);
+        currentPanel = roomPanel;
 
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
@@ -73,10 +85,31 @@ public class TitleManager : MonoBehaviour
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
         Application.Quit();
     }
-    public void OnClick_CreateCode()
+    public void OnClick_MakeRoom()
     {
-        lobbyPanel.SetActive(false);
+        roomPanel.SetActive(false);
         playTypePanel.SetActive(true);
+        currentPanel = playTypePanel;
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_JoinRoom()
+    {
+        roomPanel.SetActive(false);
+        joinCodePanel.SetActive(true);
+        currentPanel = joinCodePanel;
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_Back()
+    {
+        GameObject previousPanel = backNavigationMap[currentPanel];
+
+        currentPanel.SetActive(false);
+        previousPanel.SetActive(true);
+        currentPanel = previousPanel;
 
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }

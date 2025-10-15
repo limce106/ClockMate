@@ -181,19 +181,19 @@ public class CharacterSelectManager : MonoBehaviourPun
 
         if (!localSelected && !otherSelected)
         {
-            statusText.text = "원하는 캐릭터를 선택해주세요.";
+            statusText.text = "<color=#FFD13A>원하는 캐릭터</color>를 선택해주세요.";
         }
         else if (!localSelected && otherSelected)
         {
-            statusText.text = "상대방이 캐릭터 선택을 완료했습니다.";
+            statusText.text = "상대방이 <color=#FFD13A>캐릭터 선택</color>을 완료했습니다.";
         }
         else if (localSelected && !otherSelected)
         {
-            statusText.text = "상대방 캐릭터 선택을 기다리는 중...";
+            statusText.text = "상대방 <color=#FFD13A>캐릭터 선택</color>을 기다리는 중...";
         }
         else
         {
-            statusText.text = "모든 플레이어 캐릭터 선택 완료!";
+            statusText.text = "잠시 후 <color=#FFD13A>아워와 밀리의 모험</color>이 시작됩니다!";
             canAcceptReady = true;
         }
 
