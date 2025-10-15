@@ -62,7 +62,6 @@ MonoBehaviour:
   - SelectCharacter
   - SetCanAcceptReady
   - SetCharacterActive
-  - SetPlayer2PanelActive
   - SyncReadyStatus
   - UnmarkReady
   - UpdateStatusText
@@ -179,6 +178,9 @@ MonoBehaviour:
   - RPC_HitSledEffect
   - RPC_UpdateReadyUI
   - RPC_ShowAndPlayReviveTimerUI
+  - RPC_SetPlayer2Name
+  - SetReady
+  - SetEKeyActive
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

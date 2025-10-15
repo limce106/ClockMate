@@ -5,27 +5,50 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using static UnityEngine.SceneManagement.SceneManager;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MatchManager : MonoBehaviourPunCallbacks
 {
-    [Header("Text")]
+    [System.Serializable]
+    public class PlayerConnectSlot
+    {
+        public TMP_Text playerName;
+        public Image readyImg;
+        public int actorNumber = -1;
+    }
+
+    [Header("UI")]
     public TMP_InputField joinCodeInputField;
     public TMP_Text joinCodeText;
     public TMP_Text joinCodeStatusText;
     public TMP_Text connectStatusText;
+    public Image EKey;
 
     [Header("Panel")]
-    public GameObject lobbyPanel;
+    public GameObject titlePanel;
+    public GameObject joinCodePanel;
     public GameObject playTypePanel;
     public GameObject connectPanel;
-    public GameObject player2;
+
+    [SerializeField] private PlayerConnectSlot[] players;
 
     private string _joinCode;
+    private HashSet<int> readyPlayerId = new HashSet<int>();
+
     private const int MaxPlayer = 2;
     private const int MaxRetry = 3;
     private const int RoomCodeLen = 6;
 
     private static readonly char[] RoomCodeChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".ToCharArray();
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            photonView.RPC(nameof(SetReady), RpcTarget.All, FindMySlotNum(), PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
 
     // 친구와 함께하기
     public void OnClick_CreateRoom()
@@ -49,7 +72,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
             };
 
             PhotonNetwork.CreateRoom(_joinCode, options, TypedLobby.Default);
-            //statusText.text = "방 생성 중...";
 
             // Photon 응답 지연 시간
             float elapsed = 0f;
@@ -126,37 +148,40 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         ShowConnectUI();
 
-        if(PhotonNetwork.IsMasterClient)
+        int slotNum = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        players[slotNum].actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+
+        if (PhotonNetwork.IsMasterClient)
         {
             if (RPCManager.Instance == null)
                 PhotonNetwork.Instantiate("Prefabs/RPCManager", Vector3.zero, Quaternion.identity);
-        }
-
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            photonView.RPC("SetPlayer2PanelActive", RpcTarget.All, true);
         }
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        photonView.RPC("RPC_SetPlayer2Name", RpcTarget.All, "플레이어 2");
+        photonView.RPC("SetEKeyActive", RpcTarget.All, true);
         photonView.RPC("UpdateStatusText", RpcTarget.All, "E키를 눌러 게임을 시작하세요.");
-
-        StartCoroutine(WaitAndSetupRPC());
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        photonView.RPC("SetPlayer2PanelActive", RpcTarget.All, false);
-        photonView.RPC("UpdateStatusText", RpcTarget.All, "함께 모험 할 동료를 기다리는 중..");
-
-        RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, false);
+        RPC_SetPlayer2Name("...");
+        SetEKeyActive(false);
+        UpdateStatusText("함께 모험 할 동료를 기다리는 중..");
     }
 
     [PunRPC]
-    void SetPlayer2PanelActive(bool isActive)
+    private void SetEKeyActive(bool isActive)
     {
-        player2.SetActive(isActive);
+        EKey.gameObject.SetActive(isActive);
+    }
+
+    [PunRPC]
+    void RPC_SetPlayer2Name(string name)
+    {
+        players[1].playerName.text = name;
     }
 
     [PunRPC]
@@ -167,7 +192,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     private void ShowConnectUI()
     {
-        lobbyPanel.SetActive(false);
+        joinCodePanel.SetActive(false);
         playTypePanel.SetActive(false);
         connectPanel.SetActive(true);
 
@@ -178,47 +203,60 @@ public class MatchManager : MonoBehaviourPunCallbacks
         joinCodeText.text = _joinCode;
         connectStatusText.text = "함께 모험 할 동료를 기다리는 중..";
     }
-
-    IEnumerator WaitAndSetupRPC()
+    
+    [PunRPC]
+    void LoadCharacterSelectScene()
     {
-        float timeout = 3f;
-        float timer = 0f;
+        LoadScene("CharacterSelect");
+        Debug.Log("CharacterSelect");
+    }
 
-        while((RPCManager.Instance == null || RPCManager.Instance.photonView == null) && timer < timeout)
+    public void OnClick_ConnectBack()
+    {
+        if (PhotonNetwork.InRoom)
         {
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        yield return null;
-
-        if (RPCManager.Instance != null)
-        {
-            RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, true);
-
-            RPCManager.OnSyncedAllReadyAction = () =>
-            {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    if (PlayModeSelector.IsNewGameRoom)
-                    {
-                        RPCManager.Instance.photonView.RPC("DeleteAllSaveData", RpcTarget.All);
-                        Debug.Log("Delete Data");
-                    }
-
-                    photonView.RPC(nameof(LoadSceneForAll), RpcTarget.All, "CharacterSelect");
-                }
-            };
+            PhotonNetwork.LeaveRoom();
         }
         else
         {
-            Debug.Log("RPCManager 초기화 실패!");
+            connectPanel.SetActive(false);
+            titlePanel.SetActive(true);
         }
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
-    
-    [PunRPC]
-    void LoadSceneForAll(string sceneName)
+
+    private int FindMySlotNum()
     {
-        LoadScene(sceneName);
+        for(int i = 0; i < players.Length; i++)
+        {
+            var slot = players[i];
+
+            if (slot.actorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+                return i;
+        }
+
+        return -1;
+    }
+
+    [PunRPC]
+    private void SetReady(int playerSlotNum, int actorNum)
+    {
+        bool isActive = !players[playerSlotNum].readyImg.gameObject.activeSelf;
+        players[playerSlotNum].readyImg.gameObject.SetActive(isActive);
+
+        if (isActive)
+            readyPlayerId.Add(actorNum);
+        else
+            readyPlayerId.Remove(actorNum);
+
+        if (readyPlayerId.Count == 2)
+            photonView.RPC(nameof(LoadCharacterSelectScene), RpcTarget.All);
+    }
+
+    public override void OnLeftRoom()
+    {
+        connectPanel.SetActive(false);
+        titlePanel.SetActive(true);
     }
 }

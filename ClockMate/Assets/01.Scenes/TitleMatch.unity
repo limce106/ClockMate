@@ -1343,6 +1343,138 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363333253}
   m_CullTransparentMesh: 1
+--- !u!1 &385184092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 385184093}
+  - component: {fileID: 385184096}
+  - component: {fileID: 385184095}
+  - component: {fileID: 385184094}
+  m_Layer: 5
+  m_Name: Back Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &385184093
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385184092}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1673160946}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -854.89996, y: 308}
+  m_SizeDelta: {x: 163, y: 181}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &385184094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385184092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 385184095}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1451651613}
+        m_TargetAssemblyTypeName: MatchManager, Assembly-CSharp
+        m_MethodName: OnClick_ConnectBack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &385184095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385184092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e3acbd5af1004154a9206cc24705e196, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &385184096
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385184092}
+  m_CullTransparentMesh: 1
 --- !u!1 &392582786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1360,7 +1492,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &392582787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1696,7 +1828,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 340279582}
         m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-        m_MethodName: OnClick_Exit
+        m_MethodName: OnClick_Back
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3122,7 +3254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1342429577
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3530,7 +3662,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1441050722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3647,10 +3779,18 @@ MonoBehaviour:
   joinCodeText: {fileID: 26752175}
   joinCodeStatusText: {fileID: 854687159}
   connectStatusText: {fileID: 256082835}
-  lobbyPanel: {fileID: 1342429576}
-  playTypePanel: {fileID: 1280721661}
+  EKey: {fileID: 363333255}
+  titlePanel: {fileID: 392582786}
+  joinCodePanel: {fileID: 1342429576}
+  playTypePanel: {fileID: 504443351}
   connectPanel: {fileID: 1673160945}
-  player2: {fileID: 0}
+  players:
+  - playerName: {fileID: 1406036691}
+    readyImg: {fileID: 1131992680}
+    actorNumber: -1
+  - playerName: {fileID: 1510519579}
+    readyImg: {fileID: 1996234447}
+    actorNumber: -1
 --- !u!114 &1451651616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4948,7 +5088,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1673160946
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4966,6 +5106,7 @@ RectTransform:
   - {fileID: 1066321142}
   - {fileID: 1441050722}
   - {fileID: 1188536367}
+  - {fileID: 385184093}
   m_Father: {fileID: 1013685257}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5293,7 +5434,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 340279582}
         m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-        m_MethodName: OnClick_Exit
+        m_MethodName: OnClick_Back
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5500,7 +5641,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 340279582}
         m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-        m_MethodName: OnClick_Exit
+        m_MethodName: OnClick_Back
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
