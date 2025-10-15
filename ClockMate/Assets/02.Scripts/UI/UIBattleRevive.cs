@@ -30,11 +30,8 @@ public class UIBattleRevive : UIBase
         reviveIcon.sprite = reviveBegin;
     }
 
-    public void PlayReviveTimerUI(float duration, Vector3 uiPos)
+    public void PlayReviveTimerUI(float duration)
     {
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        rectTransform.position = uiPos;
-
         _fillTimerCoroutine = StartCoroutine(FillTimer(duration));
     }
 
