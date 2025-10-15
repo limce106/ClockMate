@@ -20,10 +20,13 @@ public class TitleManager : MonoBehaviour
 
     [Header("Panel")]
     public GameObject titlePanel;
-    public GameObject lobbyPanel;
+    public GameObject roomPanel;
     public GameObject playTypePanel;
+    public GameObject joinCodePanel;
 
     private bool suppressCallback = false;
+    private GameObject prevPanel;
+    private GameObject curPanel;
 
     void Start()
     {
@@ -59,7 +62,10 @@ public class TitleManager : MonoBehaviour
     public void OnClick_Start()
     {
         titlePanel.SetActive(false);
-        lobbyPanel.SetActive(true);
+        roomPanel.SetActive(true);
+
+        prevPanel = titlePanel;
+        curPanel = roomPanel;
 
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
@@ -73,10 +79,32 @@ public class TitleManager : MonoBehaviour
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
         Application.Quit();
     }
-    public void OnClick_CreateCode()
+    public void OnClick_MakeRoom()
     {
-        lobbyPanel.SetActive(false);
+        roomPanel.SetActive(false);
         playTypePanel.SetActive(true);
+
+        prevPanel = roomPanel;
+        curPanel = playTypePanel;
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_JoinRoom()
+    {
+        roomPanel.SetActive(false);
+        joinCodePanel.SetActive(true);
+
+        prevPanel = roomPanel;
+        curPanel = joinCodePanel;
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_Back()
+    {
+        curPanel.SetActive(false);
+        prevPanel.SetActive(true);
 
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
