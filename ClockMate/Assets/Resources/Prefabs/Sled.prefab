@@ -122,15 +122,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 12
-  rotationSpeed: 50
-  maxYawAngle: 90
+  rotationSpeed: 60
+  maxYawAngle: 120
   jumpForce: 20
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 7805100095963884218}
   groundCheckRadius: 0.4
-  isMoving: 0
+  <IsMoving>k__BackingField: 0
   movingSfxKey: sledding_on_snow
   jumpSfxKey: sled_jump
   landSfxKey: sled_ground_hit
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c871675834d83a942bc14eb98fc395f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 8
+  maxHp: 10
   orchestrator: {fileID: 2553442452354247041}
 --- !u!114 &2911105993055671484
 MonoBehaviour:
@@ -404,7 +404,7 @@ MonoBehaviour:
   sled: {fileID: 6620577699376586345}
   sledTriggerCollider: {fileID: 7665338694461136512}
   bear: {fileID: 0}
-  sledHP: {fileID: 4736492925987194603}
+  sledHp: {fileID: 4736492925987194603}
   targetDetector: {fileID: 7271074764959637988}
   characterModels: {fileID: 2180073009526025953}
   visual: {fileID: 8488361963334377880}
