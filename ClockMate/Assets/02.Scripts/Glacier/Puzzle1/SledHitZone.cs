@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider), typeof(PhotonView))]
 public class SledHitZone : MonoBehaviourPun
 {
-    [SerializeField] private SledHP sledHP;
+    [SerializeField] private SledHp sledHP;
     [SerializeField] private ParticleSystem hitEffect;
     [SerializeField] private string hitSfxKey;
 

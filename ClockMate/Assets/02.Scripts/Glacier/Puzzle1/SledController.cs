@@ -1,5 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SledController : MonoBehaviourPun, IPunObservable
 {
@@ -10,7 +11,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius;
-    [SerializeField] private bool isMoving;
+    [field: SerializeField] public bool IsMoving {get; private set;}
  
     [Header("효과음 & 이펙트")] 
     [SerializeField] private string movingSfxKey = "sledding_on_snow";
@@ -26,16 +27,26 @@ public class SledController : MonoBehaviourPun, IPunObservable
     private bool _wasGrounded;
     private float _currentYaw;
     private bool _hasControl;
-    private SledHP _sledHP;
+    private SledHp _sledHp;
 
     private void Awake()
     {
         Init();
     }
 
+    private void Init()
+    {
+        _rb = GetComponent<Rigidbody>();
+        _jumpRequested = false;
+        _currentYaw = 0f;
+        _hasControl = true;
+        _sledHp = GetComponent<SledHp>();
+        _wasGrounded = IsGrounded();
+    }
+
     private void Update()
     {
-        if (!isMoving || !_hasControl) return;
+        if (!IsMoving || !_hasControl) return;
         // 움직이는 중이고 아워라면 
         bool grounded = IsGrounded();
         
@@ -56,7 +67,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
 
     private void FixedUpdate()
     {
-        if (!isMoving || !_hasControl) return;
+        if (!IsMoving || !_hasControl) return;
 
         MoveForward(); 
         HandleTurn();
@@ -68,15 +79,6 @@ public class SledController : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void Init()
-    {
-        _rb = GetComponent<Rigidbody>();
-        _jumpRequested = false;
-        _currentYaw = 0f;
-        _hasControl = true;
-        _sledHP = GetComponent<SledHP>();
-        _wasGrounded = IsGrounded();
-    }
 
     /// <summary>
     /// 썰매가 바라보는 정면 방향으로 이동
@@ -129,9 +131,9 @@ public class SledController : MonoBehaviourPun, IPunObservable
 
     public void SetSledMoving(bool value)
     {
-        isMoving = value;
+        IsMoving = value;
         SoundManager.Instance.StopByKey(movingSfxKey);
-        if (isMoving)
+        if (IsMoving)
         {
             SoundManager.Instance.PlaySfx(
                 key: movingSfxKey, volume: 0.1f, loop: true);
@@ -152,7 +154,7 @@ public class SledController : MonoBehaviourPun, IPunObservable
         Instantiate(splashVfx, transform.position, Quaternion.identity);
         SoundManager.Instance.PlaySfx(key: splashSfxKey, pos: transform.position, volume: sfxVolume, sync: true);
 
-        _sledHP.TakeDamage(100);
+        _sledHp.TakeDamage(100);
         
     }
 

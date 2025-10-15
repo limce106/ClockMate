@@ -1,8 +1,11 @@
 using System.Collections;
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Video;
 using static Define.Character;
+using static Define.Icon;
 
 /// <summary>
 /// 썰매 상호작용 승인 및 컷신 동기 재생, 추격 시작 동작을 처리한다.
@@ -16,7 +19,7 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
     [SerializeField] private SledController sled;
     [SerializeField] private Collider sledTriggerCollider;
     [SerializeField] private PolarBearController bear;
-    [SerializeField] private SledHP sledHP;
+    [SerializeField] private SledHp sledHp;
     [SerializeField] private TargetDetector targetDetector;
     [SerializeField] private GameObject characterModels;
     [SerializeField] private GameObject visual;
@@ -139,7 +142,11 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
     {
         visual.SetActive(true);
         characterModels.SetActive(true);
-        sled.transform.SetPositionAndRotation(sledPos, Quaternion.Euler(sledEuler));
+        if (PhotonNetwork.IsMasterClient)
+        {
+            sled.transform.SetPositionAndRotation(sledPos, Quaternion.Euler(sledEuler));
+        }
+        
         bear.transform.SetPositionAndRotation(bearPos, Quaternion.Euler(bearEuler));
         sled.GetComponent<Rigidbody>().isKinematic = false;
         bear.GetComponent<Rigidbody>().isKinematic = false;
@@ -152,18 +159,18 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
         
         _finishedCount++;
-        if (_finishedCount == PhotonNetwork.CurrentRoom.PlayerCount)
+        Debug.Log($"[teleportDone] finCount: {_finishedCount}");
+        if (_finishedCount != PhotonNetwork.CurrentRoom.PlayerCount) return;
+        
+        // 썰매 소유권을 Hour에게 양도
+        if (_hourActor > 0)
         {
-            // 썰매 소유권을 Hour에게 양도
-            if (_hourActor > 0)
-            {
-                PhotonView sledView = sled.GetComponent<PhotonView>();
-                if (sledView != null && sledView.OwnerActorNr != _hourActor)
-                    sledView.TransferOwnership(_hourActor);
-            }
-
-            photonView.RPC(nameof(RPC_BeginChase), RpcTarget.All, _hourActor, _milliActor);
+            PhotonView sledView = sled.GetComponent<PhotonView>();
+            if (sledView != null && sledView.OwnerActorNr != _hourActor)
+                sledView.TransferOwnership(_hourActor);
         }
+
+        photonView.RPC(nameof(RPC_BeginChase), RpcTarget.All, _hourActor, _milliActor);
     }
 
     [PunRPC]
@@ -182,7 +189,15 @@ public class SledChaseOrchestrator : MonoBehaviourPunCallbacks
         vCamBack.SetActive(isMilli);
 
         // UI
-        sledHP.Init();
+        sledHp.Init();
+        
+        var uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        Sprite s1 = isHour ? Key.AD.LoadSprite() : Key.WASD.LoadSprite();
+        string t1 = isHour ? "좌우이동" : "조준하기";
+        Sprite s2 = Key.Space.LoadSprite(Style.Outline);
+        string t2 = isHour ? "점프하기" : "발사하기";
+        uiControlHelp.SetControl(s1, t1, s2, t2);
+        
         if (isMilli && targetDetector != null)
         {
             targetDetector.enabled = true;

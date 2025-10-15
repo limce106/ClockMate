@@ -106,8 +106,10 @@ namespace DefineExtension
             Key.A      => "keyboard_a",
             Key.S      => "keyboard_s",
             Key.D      => "keyboard_d",
-            Key.Space  => "keyboard_space",
             Key.Arrows => "keyboard_arrows",
+            Key.Space  => "keyboard_space",
+            Key.WASD => "keyboard_wasd",
+            Key.AD => "keyboard_ad",
             _               => null
         };
 

@@ -52,7 +52,7 @@ public class Snowball : MonoBehaviourPun, ITurretTarget
     /// SledHitZone에서 마스터 클라이언트만 호출.
     /// HP 감소 + 파괴 브로드캐스트
     /// </summary>
-    public void HitSled(SledHP sledHP)
+    public void HitSled(SledHp sledHP)
     {
         if (!_isActive) return;
         if (!PhotonNetwork.IsMasterClient) return;
