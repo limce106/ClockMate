@@ -114,7 +114,9 @@
             S,
             D,
             Arrows,
-            Space
+            Space,
+            WASD,
+            AD
         }
         
         public enum Style
