@@ -163,8 +163,9 @@ public class Cog : MonoBehaviourPun, IPunObservable
         
         // 톱니바퀴 grip 두개 모두 비활성화
         gripA.gameObject.SetActive(false);
+        gripA.Release();
         gripB.gameObject.SetActive(false);
-        
+        gripB.Release();
         _rb.isKinematic = true;
         
         // todo 톱니바퀴 끼워지는 이펙트와 사운드 추가
