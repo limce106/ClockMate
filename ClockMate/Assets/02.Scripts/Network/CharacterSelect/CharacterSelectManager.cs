@@ -25,7 +25,6 @@ public class CharacterSelectManager : MonoBehaviourPun
 
     [SerializeField] private CharacterSlot[] characters;
     public TMP_Text statusText;
-    public GameObject gameReady;
 
     public Dictionary<int, CharacterSlot> actorNumcharacter { private set; get; } = new Dictionary<int, CharacterSlot>();
     private int _localActorNumber;
@@ -193,17 +192,8 @@ public class CharacterSelectManager : MonoBehaviourPun
         }
         else
         {
-            statusText.text = "잠시 후 <color=#FFD13A>아워와 밀리의 모험</color>이 시작됩니다!";
+            statusText.text = "E키를 눌러 게임을 준비할 수 있어요";
             canAcceptReady = true;
-        }
-
-        if (canAcceptReady)
-        {
-            gameReady.SetActive(true);
-        }
-        else
-        {
-            gameReady.SetActive(false);
         }
 
         RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, canAcceptReady);
