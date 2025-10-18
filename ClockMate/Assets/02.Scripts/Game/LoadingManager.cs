@@ -175,6 +175,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         }
 
         GameManager.Instance.SetLocalCharacterInput(true);
+        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
     /// <summary>
