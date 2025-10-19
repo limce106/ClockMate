@@ -48,7 +48,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && PhotonNetwork.InRoom)
         {
             int slotNum = FindMySlotNum();
             if (slotNum != -1)
