@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Define;
 using UnityEngine;
 
 public class TargetDetector : MonoBehaviour
@@ -13,20 +10,32 @@ public class TargetDetector : MonoBehaviour
 
     private void Awake()
     {
-        enabled = false;
+        //enabled = false;
+        Init();
     }
 
-    public void Init()
+    private void Init()
     {
         _mainCam = Camera.main;
         _activeTargets = new List<ITurretTarget>();
-        _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
         
         // 눈덩이 비활성화 이벤트 구독
         Snowball.OnInactive -= HandleTargetInactive;
         Snowball.OnInactive += HandleTargetInactive;
     }
 
+    public void SetActive(bool isActive)
+    {
+        if (isActive)
+        {
+            _uiAim = UIManager.Instance.Show<UIAim>("UIAim");
+        }
+        else
+        {
+            _uiAim.Close();
+            _uiAim = null;
+        }
+    }
     private void Update()
     {
         if (_uiAim is null) return;
