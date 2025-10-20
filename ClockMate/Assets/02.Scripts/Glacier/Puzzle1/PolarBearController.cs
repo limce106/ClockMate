@@ -1,21 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class PolarBearController : MonoBehaviourPun
+public class PolarBearController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private SledController sled;
     [SerializeField] private float followDistance;
-    [SerializeField] private float jumpForce;
     [SerializeField] private float moveSpeed;
-    [SerializeField] private Transform front;
+    [SerializeField] private SnowballShooter shooter;
+//    [SerializeField] private float jumpForce;
+//    [SerializeField] private Transform front;
     
     private Rigidbody _rb;
-    private bool _isJumping;
-    private LayerMask _layerMask;
+    //private bool _isJumping;
+    //private LayerMask _layerMask;
     private bool _chaseSled;
-
+    private Vector3 _initPos;
+    private Quaternion _initRot;
+    
     private void Awake()
     {
         Init();
@@ -24,11 +25,15 @@ public class PolarBearController : MonoBehaviourPun
     private void Init()
     {
         _rb = GetComponent<Rigidbody>();
-        _layerMask = LayerMask.GetMask("Ground");
+        //_layerMask = LayerMask.GetMask("Ground");
+        _initPos = transform.position;
+        _initRot = transform.rotation;
     }
 
     private void FixedUpdate()
     {
+        if (NetworkManager.Instance.IsInRoomAndReady() && !photonView.IsMine) return;
+
         if (!_chaseSled) return; 
 
         // 썰매를 따라서 이동
@@ -44,14 +49,15 @@ public class PolarBearController : MonoBehaviourPun
             return;
         }
         
-        if (NeedToJump())
-        {
-            Jump();
-        }
-        else 
-        {
-            Move(toSled.normalized);
-        }
+        // if (NeedToJump())
+        // {
+        //     Jump();
+        // }
+        // else 
+        // {
+        //     Move(toSled.normalized);
+        // }
+        Move(toSled.normalized);
     }
 
     private void Move(Vector3 direction)
@@ -60,29 +66,52 @@ public class PolarBearController : MonoBehaviourPun
         transform.forward = direction;
     }
 
-    private bool NeedToJump()
-    {
-        Ray ray = new Ray(front.position, Vector3.down);
-        return !_isJumping && Physics.Raycast(ray, 5.5f, _layerMask) == false;
-    }
+    // private bool NeedToJump()
+    // {
+    //     Ray ray = new Ray(front.position, Vector3.down);
+    //     return !_isJumping && Physics.Raycast(ray, 5.5f, _layerMask) == false;
+    // }
 
-    private void Jump()
-    {
-        _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        _isJumping = true;
-    }
+    // private void Jump()
+    // {
+    //     _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    //     _isJumping = true;
+    // }
 
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            _isJumping = false;
-        }
-    }
+    // private void OnCollisionEnter(Collision other)
+    // {
+    //     if (other.gameObject.CompareTag("Ground"))
+    //     {
+    //         _isJumping = false;
+    //     }
+    // }
 
     public void StartChase()
     {
-        _rb.isKinematic = false;
+        //_rb.isKinematic = false;
         _chaseSled = true;
+        shooter.SetActive(true);
+    }
+
+    public void ResetTransform()
+    {
+        if (NetworkManager.Instance.IsInRoomAndReady() && !photonView.IsMine) return;
+
+        transform.position = _initPos;
+        transform.rotation = _initRot;
+    }
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+            transform.rotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

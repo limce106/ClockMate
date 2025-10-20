@@ -1,6 +1,5 @@
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// 썰매 HP. RPC로 HP 전체 동기화
@@ -8,18 +7,20 @@ using UnityEngine.Serialization;
 public class SledHp : MonoBehaviourPun
 {
     [SerializeField] private int maxHp;
-    [SerializeField] private SledChaseOrchestrator orchestrator;
-    private int _currentHp;
+    [SerializeField] private ChaseControlModule chaseControl;
+    private float _currentHp;
     private UIHpBar _uiHpBar;
     
     public void Init()
     {
-        _currentHp = maxHp;
-        _uiHpBar = UIManager.Instance.Show<UIHpBar>("UIHpBar");
-        _uiHpBar.UpdateHpBar(maxHp, _currentHp);
+        if (_uiHpBar == null)
+        {
+            _uiHpBar = UIManager.Instance.Show<UIHpBar>("UIHpBar");
+        }
+        ResetValues();
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
@@ -28,12 +29,18 @@ public class SledHp : MonoBehaviourPun
 
         if (_currentHp <= 0)
         {
-            orchestrator.RequestRestart();
+            chaseControl.RestartChase();
         }
     }
     
+    private void ResetValues()
+    {
+        _currentHp = maxHp;
+        _uiHpBar.UpdateHpBar(maxHp, _currentHp);
+    }
+    
     [PunRPC] 
-    private void RPC_SyncHP(int hp)
+    private void RPC_SyncHP(float hp)
     {
         _currentHp = hp;
         _uiHpBar?.UpdateHpBar(maxHp, _currentHp);

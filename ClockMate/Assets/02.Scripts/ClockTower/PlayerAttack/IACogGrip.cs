@@ -99,6 +99,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
             _uiNotice.SetImage(_dropSprite);
             _uiNotice.SetText(_dropString);
+            _uiNotice.SetVerticalPos(false);
         } else if (_uiNotice != null)
         {
             UIManager.Instance.Close(_uiNotice);

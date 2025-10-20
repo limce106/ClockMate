@@ -11,7 +11,7 @@ using UnityEngine;
 public class Snowball : MonoBehaviourPun, ITurretTarget 
 {
     [SerializeField] private float speed;
-    [SerializeField] private int damage;
+    [SerializeField] private float damage;
     [SerializeField] private Transform target;
     
     private ParticleSystem _destroyEffect;
