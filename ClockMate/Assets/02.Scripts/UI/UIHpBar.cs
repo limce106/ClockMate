@@ -16,7 +16,7 @@ public class UIHpBar : UIBase {
     /// <summary>
     /// SledHP에서 호출하여 hp바 fillAmount를 업데이트한다.
     /// </summary>
-    public void UpdateHpBar(int maxHP, int currentHP)
+    public void UpdateHpBar(float maxHP, float currentHP)
     {
         float target = Mathf.Clamp01(maxHP <= 0 ? 0f : (float)currentHP / maxHP);
 

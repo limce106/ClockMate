@@ -6,16 +6,12 @@ public class SledTurret : MonoBehaviour
     [SerializeField] private TargetDetector targetDetector;
     [SerializeField] private string fireSfxKey;
     
-    private SledController _sled;
-    private void Start()
-    {
-        _sled = GetComponent<SledController>();
-    }
+    private bool _isActive;
 
     private void Update()
     {
+        if (!_isActive) return;
         if (GameManager.Instance.SelectedCharacter != CharacterName.Milli) return;
-        if (!_sled.IsMoving) return;
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Fire();
@@ -30,5 +26,11 @@ public class SledTurret : MonoBehaviour
         
         target.OnHit();
         targetDetector.RemoveTarget(target);
+    }
+    
+    public void SetActive(bool isActive)
+    {
+        _isActive = isActive;
+        targetDetector.SetActive(isActive);            
     }
 }

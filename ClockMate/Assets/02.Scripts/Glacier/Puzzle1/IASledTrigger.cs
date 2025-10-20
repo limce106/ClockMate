@@ -1,31 +1,54 @@
-using Define;
+using Photon.Pun;
 using UnityEngine;
 
-public class IASledTrigger : MonoBehaviour, IInteractable
+[RequireComponent(typeof(PhotonView))]
+public class IASledTrigger : MonoBehaviourPun, IInteractable
 {
-    [SerializeField] private SledChaseOrchestrator orchestrator;
     private bool _available = true;
-
+    [SerializeField] private ChaseControlModule chaseControl;
+    [SerializeField] private GameObject rootGo;
+    
     public bool CanInteract(CharacterBase character)
     {
         return _available;
     }
 
+    public bool Interact(CharacterBase character)
+    {
+        photonView.RPC(nameof(RPC_OnSledTriggerInteract), RpcTarget.All);
+        
+        return false;
+    }
+
+    [PunRPC]
+    private void RPC_OnSledTriggerInteract()
+    {
+        _available = false;
+        // 상호작용 감지용 콜라이더 비활성화
+        if (TryGetComponent(out Collider col))
+        {
+            col.enabled = false;
+        }
+        if (!PhotonNetwork.IsMasterClient) return;
+        CutsceneSyncManager.Instance.PlayForAll(
+            "PolarBearAwake",
+            0f,
+            () =>
+            {
+                chaseControl.StartChase();
+                GameManager.Instance.SetAllCharactersActive(false); // 캐릭터 모두 비활성화
+                photonView.RPC(nameof(RPC_DisableTriggerGo), RpcTarget.All);
+            }
+        );
+    }
+    
+    [PunRPC]
+    private void RPC_DisableTriggerGo()
+    {
+        rootGo.SetActive(false);
+    }
+    
     public void OnInteractAvailable() { }
 
     public void OnInteractUnavailable() { }
-
-    public bool Interact(CharacterBase character)
-    {
-        _available = false;
-        
-        if (orchestrator != null)
-        {
-            orchestrator.RequestStartFromTrigger();
-            return true;
-        }
-
-        Debug.LogError("[IASledTrigger] Orchestrator not found.");
-        return false;
-    }
 }
