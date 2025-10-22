@@ -20,6 +20,7 @@ public class ClockTowerEntranceTrigger : MonoBehaviour
             () =>
             {
                 GameManager.Instance.PlayMapBgm();
+                UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
             }
         );
     }

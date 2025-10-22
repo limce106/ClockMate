@@ -160,11 +160,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         _isLoading = false;
         _targetScene = null;
 
-        // TODO 추후 맵 별로 BGM 실행 시점 변경 필요
         string currentScene = SceneManager.GetActiveScene().name;
-
-        if (currentScene != "ClockTower")
-            GameManager.Instance.PlayMapBgm();
 
         foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
@@ -175,7 +171,12 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         }
 
         GameManager.Instance.SetLocalCharacterInput(true);
-        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+
+        if (currentScene != "ClockTower")
+        {
+            GameManager.Instance.PlayMapBgm();
+            UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+        }
     }
 
     /// <summary>

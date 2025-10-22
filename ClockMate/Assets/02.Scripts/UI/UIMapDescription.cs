@@ -22,7 +22,8 @@ public class UIMapDescription : UIBase
         {
             { "Desert", "버려진 모래 언덕" },
             { "Glacier", "꽁꽁 얼어붙은 바다" },
-            { "Forest", "잊힌 숲의 속삭임" }
+            { "Forest", "잊힌 숲의 속삭임" },
+            { "ClockTower", "시간이 멈춘 탑" }
         };
 
         _canvasGroup = _mapDescriptionObj.GetComponent<CanvasGroup>();
