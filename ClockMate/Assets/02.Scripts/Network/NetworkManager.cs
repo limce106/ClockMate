@@ -84,11 +84,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        if (SceneManager.GetActiveScene().name == "TitleMatch") return;
+
         TryHandleDisconnect();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
+        if (SceneManager.GetActiveScene().name == "TitleMatch") return;
+
         TryHandleDisconnect();
     }
 
