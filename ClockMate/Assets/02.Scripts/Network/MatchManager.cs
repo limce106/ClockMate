@@ -154,6 +154,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        joinCodeText.text = "";
         ShowConnectUI();
         UpdatePlayerSlotsUI();
 
@@ -177,8 +178,8 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        // 모든 준비 상태를 해제
-        readyPlayerId.Clear();
+        // 준비 완료 목록에서 나간 플레이어 제거
+        readyPlayerId.Remove(otherPlayer.ActorNumber);
 
         // 플레이어가 나갔을 때 마스터 클라이언트가 슬롯 해제
         if (PhotonNetwork.IsMasterClient)
@@ -351,7 +352,14 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.InRoom)
         {
-            PhotonNetwork.LeaveRoom();
+            if(PhotonNetwork.IsMasterClient)
+            {
+                StartCoroutine(MasterClientLeaveRoom());
+            }
+            else
+            {
+                PhotonNetwork.LeaveRoom();
+            }
         }
         else
         {
@@ -412,5 +420,28 @@ public class MatchManager : MonoBehaviourPunCallbacks
         connectPanel.SetActive(false);
         titlePanel.SetActive(true);
         readyPlayerId.Clear();
+    }
+
+    [PunRPC]
+    private void ForceLeaveRoom()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+    }
+
+    /// <summary>
+    /// 마스터 이양 문제 방지를 위해 비마스터 먼저 퇴장
+    /// </summary>
+    IEnumerator MasterClientLeaveRoom()
+    {
+        // 비마스터 먼저 퇴장
+        photonView.RPC(nameof(ForceLeaveRoom), RpcTarget.Others);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 마스터도 퇴장
+        PhotonNetwork.LeaveRoom();
     }
 }
