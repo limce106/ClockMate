@@ -154,7 +154,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        joinCodeText.text = "";
         ShowConnectUI();
         UpdatePlayerSlotsUI();
 
@@ -331,6 +330,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     private void ShowConnectUI()
     {
+        joinCodeInputField.text = "";
         joinCodePanel.SetActive(false);
         playTypePanel.SetActive(false);
         connectPanel.SetActive(true);
