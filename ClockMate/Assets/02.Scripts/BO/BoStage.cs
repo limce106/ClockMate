@@ -40,12 +40,10 @@ public class BoStage
 
     public void Reset()
     {
-        // 각 캐릭터를 로드 위치로 이동
-        foreach (CharacterName character in LoadPositions.Keys)
-        {
-            GameManager.Instance.Characters[character].transform.position = LoadPositions[character];
-        }
-
+        // 선택한 캐릭터를 로드 위치로 이동
+        CharacterName myCharacter = GameManager.Instance.SelectedCharacter;
+        GameManager.Instance.Characters[myCharacter].transform.position = LoadPositions[myCharacter];
+        
         // 블럭 초기화
         ResetTestManager.Instance.ResetAllBlocks();
 
