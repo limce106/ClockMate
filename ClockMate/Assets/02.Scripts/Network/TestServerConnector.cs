@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ExitGames.Client.Photon;
+using UnityEngine.Serialization;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
@@ -24,6 +25,10 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     [Header("BGM On/Off")]
     public bool isBgmOn = false;
+    
+    [Header("Current Stage")]
+    public bool useExistingData = true;
+    public int stageId = 1; // save data를 사용하지 않을 시 설정할 스테이지 id
 
     private void Start()
     {
@@ -108,6 +113,11 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
+            if (!useExistingData)
+            {
+                SaveManager.Instance.Save(stageId);   
+            }
+            GameManager.Instance?.LoadExistingSaveData();
         }
         else
         {
