@@ -147,7 +147,8 @@ public class ChaseControlModule : MonoBehaviourPun
     [PunRPC]
     private void RPC_OnChaseFinCutsceneEnd()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         GameManager.Instance.StageComplete();
-        GameManager.Instance.ResetStageAndCharacter();
+        GameManager.Instance.ResetStage();
     }
 }

@@ -46,7 +46,7 @@ public class IAClockworkGear : MonoBehaviourPun, IInteractable
             timeoutSec: 0f, 
             masterOnlyOnAllFinished: () =>
             {
-                photonView.RPC(nameof(RPC_StageComplete), RpcTarget.All);
+                GameManager.Instance.StageComplete();
             }
         );
     }
