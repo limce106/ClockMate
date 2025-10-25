@@ -27,8 +27,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
     public bool isBgmOn = false;
     
     [Header("Current Stage")]
-    public bool useExistingData = true;
-    public int stageId = 1; // save data를 사용하지 않을 시 설정할 스테이지 id
+    public int stageId = 1; // 설정할 스테이지 id
 
     private void Start()
     {
@@ -113,10 +112,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
-            if (!useExistingData)
-            {
-                SaveManager.Instance.Save(stageId);   
-            }
+            SaveManager.Instance.Save(stageId);   
             GameManager.Instance?.LoadExistingSaveData();
         }
         else
@@ -124,6 +120,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Milli, milli.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
+            GameManager.Instance?.SetCurrentStage(stageId);
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
