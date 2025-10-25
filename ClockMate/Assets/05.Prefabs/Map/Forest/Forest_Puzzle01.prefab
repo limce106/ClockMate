@@ -116,6 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2191758812912952324}
   - component: {fileID: 1011095065468162219}
+  - component: {fileID: 6377898690568425518}
   m_Layer: 0
   m_Name: GiantFlowerManager
   m_TagString: Untagged
@@ -156,6 +157,28 @@ MonoBehaviour:
   - {fileID: 4413564483754049309}
   - {fileID: 2276610955035171444}
   - {fileID: 8648177496546461472}
+--- !u!114 &6377898690568425518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82560809508586644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &3483788250447023754
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,11 +1001,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: maxAngle
-      value: 30
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: hourWeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: milliWeight
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sensitivity
-      value: 30
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3626708002921695564, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sceneViewId
@@ -2318,11 +2349,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: maxAngle
-      value: 35
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: hourWeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: milliWeight
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sensitivity
-      value: 40
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 3626708002921695564, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sceneViewId
@@ -3874,11 +3913,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: maxAngle
-      value: 40
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: hourWeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: milliWeight
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sensitivity
-      value: 50
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 3626708002921695564, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sceneViewId
@@ -4819,11 +4866,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: maxAngle
-      value: 25
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: hourWeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: milliWeight
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sensitivity
-      value: 20
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 3626708002921695564, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sceneViewId
@@ -6266,8 +6321,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
-      propertyPath: sensitivity
+      propertyPath: maxAngle
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: hourWeight
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: milliWeight
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3543098905104676273, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
+      propertyPath: sensitivity
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3626708002921695564, guid: e6a50fe0a191a4b4f9d944118cb0ffd5, type: 3}
       propertyPath: sceneViewId

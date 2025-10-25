@@ -14,7 +14,7 @@ public class GiantFlower : ResettableBase, IPunObservable
 
     [Header("플레이어별 하중 가중치")]
     public float hourWeight = 20f;
-    public float milliWeight = 10f;
+    public float milliWeight = 15f;
 
     [Header("줄기")]
     public GameObject sideSteam;
@@ -26,7 +26,7 @@ public class GiantFlower : ResettableBase, IPunObservable
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
 
-    private const float LevelTolerance = 2f;    // 수평 허용 오차
+    private const float LevelTolerance = 5f;    // 수평 허용 오차
     
     private SoundHandle _rotationSfxHandle = default;
 
@@ -116,7 +116,7 @@ public class GiantFlower : ResettableBase, IPunObservable
         float targetZ = Mathf.Clamp(-totalTorque.x * sensitivity, -maxAngle, maxAngle); // 좌-우
 
         // 작은 변화 무시
-        const float deadZone = 0.9f;
+        const float deadZone = 0.3f;
         if (Mathf.Abs(targetX - currentEuler.x) < deadZone) targetX = currentEuler.x;
         if (Mathf.Abs(targetZ - currentEuler.z) < deadZone) targetZ = currentEuler.z;
 
