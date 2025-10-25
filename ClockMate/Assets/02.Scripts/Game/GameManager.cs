@@ -65,7 +65,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 // 이번 맵의 마지막 스테이지일 경우 다음 맵으로 이동
                 _rpcManager.photonView.RPC(
-                    nameof(_rpcManager.RPC_MoveToNextMap), RpcTarget.All, nextStage.Map.ToString()
+                    nameof(_rpcManager.RPC_MoveToMap), RpcTarget.All, nextStage.Map.ToString()
                 );
             }
 

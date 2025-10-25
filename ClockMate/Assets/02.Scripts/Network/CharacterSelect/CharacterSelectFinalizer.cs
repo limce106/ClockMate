@@ -35,7 +35,7 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
                     //LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
                     string targetMap = GameManager.Instance?.CurrentStage.Map.ToString();
                     RPCManager.Instance?.photonView.RPC(
-                        nameof(RPCManager.Instance.RPC_MoveToNextMap), 
+                        nameof(RPCManager.Instance.RPC_MoveToMap), 
                         RpcTarget.All, 
                         targetMap);
                     

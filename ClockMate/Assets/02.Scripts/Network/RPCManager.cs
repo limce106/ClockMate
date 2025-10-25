@@ -225,7 +225,7 @@ public class RPCManager : MonoBehaviourPunCallbacks
     }
     
     [PunRPC]
-    public void RPC_MoveToNextMap(string targetMap)
+    public void RPC_MoveToMap(string targetMap)
     {
         ResetTestManager.Instance.RemoveAllResettable();
         LoadingManager.Instance.ShowLoadingUI();
