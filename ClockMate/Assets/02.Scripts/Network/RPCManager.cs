@@ -223,4 +223,25 @@ public class RPCManager : MonoBehaviourPunCallbacks
             targetView.gameObject.SetActive(active);
         }
     }
+    
+    [PunRPC]
+    public void RPC_MoveToMap(string targetMap)
+    {
+        ResetTestManager.Instance.RemoveAllResettable();
+        LoadingManager.Instance.ShowLoadingUI();
+        LoadingManager.Instance.LoadScene(targetMap);
+    }
+
+    [PunRPC]
+    public void RPC_SyncStage(int stageID)
+    {
+        GameManager.Instance.SetCurrentStage(stageID);
+    }
+    
+    [PunRPC]
+    public void RPC_SyncReset()
+    {
+        GameManager.Instance.CurrentStage?.Reset();
+        GameManager.Instance.SetAllCharactersActive(true);
+    }
 }

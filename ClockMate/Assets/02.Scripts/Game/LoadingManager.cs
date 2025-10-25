@@ -198,8 +198,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    private void RPC_LoadScene(string mapName)
+    public void LoadScene(string mapName)
     {
         StartSyncedLoading(mapName);
     }

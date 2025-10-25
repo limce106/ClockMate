@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ExitGames.Client.Photon;
+using UnityEngine.Serialization;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
@@ -24,6 +25,9 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     [Header("BGM On/Off")]
     public bool isBgmOn = false;
+    
+    [Header("Current Stage")]
+    public int stageId = 1; // 설정할 스테이지 id
 
     private void Start()
     {
@@ -108,12 +112,15 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
+            SaveManager.Instance.Save(stageId);   
+            GameManager.Instance?.LoadExistingSaveData();
         }
         else
         {
             var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Milli, milli.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
+            GameManager.Instance?.SetCurrentStage(stageId);
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");

@@ -23,19 +23,26 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
 
         yield return new WaitForSeconds(1.5f);
 
-        GameManager.Instance?.CreateNewSaveData();
+        //GameManager.Instance?.CreateNewSaveData();
         if (PhotonNetwork.IsMasterClient)
         {
+            GameManager.Instance?.CreateNewSaveData();
             CutsceneSyncManager.Instance.PlayForAll(
                 "KronosAdvent",
                 0f,
                 () => 
                 {
-                    LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
+                    //LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
+                    string targetMap = GameManager.Instance?.CurrentStage.Map.ToString();
+                    RPCManager.Instance?.photonView.RPC(
+                        nameof(RPCManager.Instance.RPC_MoveToMap), 
+                        RpcTarget.All, 
+                        targetMap);
+                    
                 }
             );
         }
-        LoadingManager.Instance.ShowLoadingUI();
+        //LoadingManager.Instance.ShowLoadingUI();
     }
 
     void Update()
