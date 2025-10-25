@@ -33,9 +33,12 @@ public class GiantFlower : ResettableBase, IPunObservable
     private Dictionary<Transform, Vector3> _smoothedPlayerPositions = new Dictionary<Transform, Vector3>();
     private List<Transform> _playersOnFlower = new List<Transform>();
 
+    private Quaternion _networkRotation;
+
     private void Start()
     {
         _initialRotation = transform.localRotation;
+        _networkRotation = transform.localRotation;
     }
 
     void FixedUpdate()
@@ -43,8 +46,19 @@ public class GiantFlower : ResettableBase, IPunObservable
         if(_isLocked) 
             return;
 
-        Vector2 totalTorque = CalculateTotalTorque();
-        ApplyTorqueAndLimitRotation(totalTorque);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 마스터에서 회전값 갱신
+            Vector2 totalTorque = CalculateTotalTorque();
+            ApplyTorqueAndLimitRotation(totalTorque);
+            _networkRotation = _rb.rotation;
+        }
+        else
+        {
+            // 다른 클라이언트는 마스터 회전값만 적용
+            _rb.MoveRotation(Quaternion.Slerp(_rb.rotation, _networkRotation, Time.fixedDeltaTime * 10f));
+        }
+
         UpdateTiltStateAndSound();
     }
 
@@ -263,23 +277,11 @@ public class GiantFlower : ResettableBase, IPunObservable
 
         if (stream.IsWriting)
         {
-            stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation);
-            stream.SendNext(_rb.velocity);
-            stream.SendNext(_rb.angularVelocity);
+            stream.SendNext(_networkRotation);
         }
         else
         {
-            Vector3 networkPosition = (Vector3)stream.ReceiveNext();
-            Quaternion networkRotation = (Quaternion)stream.ReceiveNext();
-            Vector3 networkVelocity = (Vector3)stream.ReceiveNext();
-            Vector3 networkAngularVelocity = (Vector3)stream.ReceiveNext();
-            
-            _rb.position = Vector3.Lerp(_rb.position, networkPosition, Time.deltaTime * 10f);
-            _rb.rotation = Quaternion.Lerp(_rb.rotation, networkRotation, Time.deltaTime * 10f);
-
-            _rb.velocity = networkVelocity;
-            _rb.angularVelocity = networkAngularVelocity;
+            _networkRotation = (Quaternion)stream.ReceiveNext();
         }
     }
 }
