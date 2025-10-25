@@ -203,12 +203,6 @@ public class GiantFlower : ResettableBase, IPunObservable
     {
         _isLocked = true;
 
-        if (_rb != null)
-        {
-            _rb.velocity = Vector3.zero;
-            _rb.angularVelocity = Vector3.zero;
-        }
-
         transform.localRotation = Quaternion.identity;
 
         if (_rotationSfxHandle.IsValid)

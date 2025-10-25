@@ -24,20 +24,21 @@ public class GiantFlowerManager : MonoBehaviourPun
 
         GiantFlower curFlower = giantFlowers[currentIndex];
 
-        if(curFlower.IsLevel() && !flowerLeveled)
+        if(PhotonNetwork.IsMasterClient && curFlower.IsLevel() && !flowerLeveled)
         {
             flowerLeveled = true;
-            photonView.RPC(nameof(RPC_GrowSteam), RpcTarget.All);
+            photonView.RPC(nameof(RPC_GrowSteam), RpcTarget.All, currentIndex);
             curFlower.Lock();
 
             currentIndex++;
+            flowerLeveled = false;
         }
     }
 
     [PunRPC]
-    private void RPC_GrowSteam()
+    private void RPC_GrowSteam(int index)
     {
-        GiantFlower nextFlower = giantFlowers[currentIndex];
+        GiantFlower nextFlower = giantFlowers[index];
 
         nextFlower.sideSteam.SetActive(true);
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
