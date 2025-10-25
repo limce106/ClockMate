@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class GiantFlowerManager : MonoBehaviour
+public class GiantFlowerManager : MonoBehaviourPun
 {
     public GiantFlower[] giantFlowers;
 
@@ -23,19 +24,21 @@ public class GiantFlowerManager : MonoBehaviour
 
         GiantFlower curFlower = giantFlowers[currentIndex];
 
-        if(curFlower.IsLevel() && !flowerLeveled)
+        if(PhotonNetwork.IsMasterClient && curFlower.IsLevel() && !flowerLeveled)
         {
             flowerLeveled = true;
-            GrowSteam();
+            photonView.RPC(nameof(RPC_GrowSteam), RpcTarget.All, currentIndex);
             curFlower.Lock();
 
             currentIndex++;
+            flowerLeveled = false;
         }
     }
 
-    private void GrowSteam()
+    [PunRPC]
+    private void RPC_GrowSteam(int index)
     {
-        GiantFlower nextFlower = giantFlowers[currentIndex];
+        GiantFlower nextFlower = giantFlowers[index];
 
         nextFlower.sideSteam.SetActive(true);
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
