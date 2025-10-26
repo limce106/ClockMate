@@ -216,6 +216,7 @@ GameObject:
   - component: {fileID: 6165784720282224874}
   - component: {fileID: 6322831126143765736}
   - component: {fileID: 1152832992358516018}
+  - component: {fileID: 8701448102709047717}
   m_Layer: 0
   m_Name: CutsceneManager
   m_TagString: Untagged
@@ -253,6 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cutscenePlayer: {fileID: 76044151775784228}
+  cinematicPlayer: {fileID: 8701448102709047717}
 --- !u!114 &1152832992358516018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,6 +277,21 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &8701448102709047717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673550230338590441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b8b6dca10262648bb6146f13ec192b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  director: {fileID: 0}
+  cutsceneCameraGroup: {fileID: 0}
+  maxExtraTimeout: 1
 --- !u!1 &5007484051091014640
 GameObject:
   m_ObjectHideFlags: 0
