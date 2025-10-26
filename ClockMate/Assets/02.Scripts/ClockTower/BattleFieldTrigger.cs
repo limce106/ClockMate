@@ -11,19 +11,16 @@ public class BattleFieldTrigger : MonoBehaviour
 
     public GameObject wall;
 
-    // 테스트용
-    public bool isTriggerOn;
-
     private void Start()
     {
-        if (!isTriggerOn) return;
+        if (!BattleManager.Instance.isCutSceneTriggerOn) return;
 
         wall.SetActive(false);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isTriggerOn) return;
+        if (!BattleManager.Instance.isCutSceneTriggerOn) return;
         if (_triggered) return;
 
         if(collision.collider.IsPlayerCollider())

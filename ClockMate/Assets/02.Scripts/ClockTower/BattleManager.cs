@@ -20,6 +20,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     private float _timer;   // 플레이어 제한 시간용 타이머
 
+    [Header("공격 프리팹")]
     [SerializeField] private List<GameObject> bossAttackPrefabs;
     [SerializeField] private List<GameObject> playerAttackPrefabs;
     private GameObject _spawnedAttack;
@@ -32,9 +33,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private bool attackEnded = false; // 현재 공격 종료 여부
 
     // 보스 공격 오브젝트 풀
+    [Header("오브젝트 풀")]
     public NetworkObjectPool<SwingPendulum> pendulumPool;
     public NetworkObjectPool<FallingClockHand> clockhandPool;
 
+    [Header("전장 바닥")]
     public GameObject[] clockFace;  // 덮개
 
     public int round { get; private set; } = 1;
@@ -56,6 +59,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private readonly PlayerAttackType[] PlayerAttackTypes = (PlayerAttackType[])Enum.GetValues(typeof(PlayerAttackType));
 
     public static BattleManager Instance { get; private set; }
+
+    [Header("테스트용 변수")]
+    public bool isCutSceneTriggerOn = true;
 
     private void Awake()
     {
@@ -98,10 +104,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
     //    StartCoroutine(StartBattleCoroutine());
     //}
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        StartBattle();
-    }
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    StartBattle();
+    //}
     //
 
     private void Update()

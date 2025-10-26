@@ -13,7 +13,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     public static LoadingManager Instance { get; private set; }
 
     private UILoading _uiLoading;
-    public bool _isLoading { private set; get; } = false;
+    public bool isLoading { private set; get; } = false;
     private AsyncOperation _currentLoadOperation;
     private string _targetScene;
 
@@ -62,7 +62,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     public void StartSyncedLoading(string nextSceneName)
     {
-        if(_isLoading) 
+        if(isLoading) 
             return;
 
         if (nextSceneName == null)
@@ -70,8 +70,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             Debug.Log("Next Scene Name Is Null!");
             return;
         }
-        
-        _isLoading = true;
+
+        isLoading = true;
         _targetScene = nextSceneName;
         StartCoroutine(LoadSceneAsync(nextSceneName));
     }
@@ -157,7 +157,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             _uiLoading = null;
         }
 
-        _isLoading = false;
+        isLoading = false;
         _targetScene = null;
 
         string currentScene = SceneManager.GetActiveScene().name;
