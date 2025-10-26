@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class ClockTowerEntranceTrigger : MonoBehaviour
 {
+    private bool _triggered = false;
+
     private void OnCollisionEnter(Collision collision)
     {
+        if (_triggered) return;
+
         StartCoroutine(WaitAndStartCutScene());
     }
 
@@ -23,5 +27,7 @@ public class ClockTowerEntranceTrigger : MonoBehaviour
                 UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
             }
         );
+
+        _triggered = true;
     }
 }
