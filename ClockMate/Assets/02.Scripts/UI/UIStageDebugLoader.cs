@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIStageDebugLoader : MonoSingleton<UIStageDebugLoader>
+public class UIStageDebugLoader : UIBase
 {
     [SerializeField] private InputField stageInput; // 이동한 스테이지 id 입력 필드
     [SerializeField] private Button goButton;
@@ -11,15 +11,13 @@ public class UIStageDebugLoader : MonoSingleton<UIStageDebugLoader>
     [SerializeField] private int minStageId = 1;
     [SerializeField] private int maxStageId = 8;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         goButton.onClick.AddListener(OnClickGo);
     }
 
-    protected override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
         goButton.onClick.RemoveListener(OnClickGo);
     }
 
@@ -68,6 +66,8 @@ public class UIStageDebugLoader : MonoSingleton<UIStageDebugLoader>
         rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncStage), RpcTarget.All, stageId);
         rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncReset), RpcTarget.All);
         SetInteractable(true);
+
+        GameManager.Instance.ToggleStageLoader();
     }
 
     private void SetStatus(string msg)
