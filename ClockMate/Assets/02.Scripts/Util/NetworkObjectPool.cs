@@ -56,7 +56,9 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         }
     }
 
-    // 풀에서 오브젝트 꺼내기
+    /// <summary>
+    /// 풀에서 오브젝트 꺼내기
+    /// </summary>
     public T Get(Vector3 position, Quaternion rotation)
     {
         if (!PhotonNetwork.IsMasterClient)
@@ -77,7 +79,9 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         return obj;
     }
 
-    // 오브젝트 풀에 반환하기
+    /// <summary>
+    /// 오브젝트 풀에 반환하기
+    /// </summary>
     public void Return(T obj)
     {
         if (!PhotonNetwork.IsMasterClient)
@@ -111,6 +115,9 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         return null;
     }
 
+    /// <summary>
+    /// viewID 가진 게임 오브젝트를 찾아 활성화 및 위치와 회전값 동기화
+    /// </summary>
     [PunRPC]
     public void RPC_ActivateObject(int viewID, Vector3 position, Quaternion rotation)
     {
@@ -126,6 +133,9 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         obj.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// viewID 가진 게임 오브젝트를 찾아 비활성화
+    /// </summary>
     [PunRPC]
     public void RPC_DeactivateObject(int viewID)
     {
@@ -138,7 +148,7 @@ public class NetworkObjectPool<T> : MonoBehaviourPunCallbacks where T : MonoBeha
         T obj = view.GetComponent<T>();
         obj.gameObject.SetActive(false);
     }
-    
+
     [PunRPC]
     protected void RPC_DeactivateAllObjects(int[] viewIDs)
     {

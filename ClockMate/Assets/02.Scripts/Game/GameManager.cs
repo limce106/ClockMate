@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,11 +12,20 @@ public class GameManager : MonoSingleton<GameManager>
     public BoStage CurrentStage { get; private set; }
 
     private RPCManager _rpcManager;
+    private UIStageDebugLoader _uiStageDebugLoader;
 
     protected override void Init()
     {
         Characters = new Dictionary<CharacterName, CharacterBase>();
         _rpcManager = RPCManager.Instance;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ToggleStageLoader();
+        }
     }
 
     /// <summary>
@@ -257,5 +267,21 @@ public class GameManager : MonoSingleton<GameManager>
     public CharacterBase GetLocalCharacter()
     {
         return Characters[SelectedCharacter];
+    }
+
+    /// <summary>
+    /// 개발자용 치트키 UI 토글
+    /// </summary>
+    public void ToggleStageLoader()
+    {
+        if(_uiStageDebugLoader == null)
+        {
+            _uiStageDebugLoader = UIManager.Instance.Show<UIStageDebugLoader>("UIStageDebugLoader");
+        }
+        else
+        {
+            UIManager.Instance.Close(_uiStageDebugLoader);
+            _uiStageDebugLoader = null;
+        }
     }
 }
