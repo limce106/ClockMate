@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Cinemachine;
+using UnityEngine;
+using static Define.Character;
 
 public class CinemachineTargetSetter : MonoBehaviour
 {
@@ -11,10 +10,15 @@ public class CinemachineTargetSetter : MonoBehaviour
     {
         freeLookCamera = GetComponent<CinemachineFreeLook>();
 
-        string characterName = GameManager.Instance?.SelectedCharacter.ToString();
-        GameObject player = GameObject.FindWithTag(characterName);
-
-        freeLookCamera.Follow = player.transform;
-        freeLookCamera.LookAt = player.transform;
+        CharacterName characterName = GameManager.Instance.SelectedCharacter;
+        CharacterBase character = GameManager.Instance.Characters[characterName];
+        GameObject target = character != null ? character.gameObject : GameObject.FindWithTag(characterName.ToString());
+        if (target != null)
+        {
+            freeLookCamera.Follow = target.transform;
+            freeLookCamera.LookAt = target.transform;
+            return;
+        }
+        Debug.LogError($"[CinemachineTargetSetter] No target found for {characterName}");
     }
 }
