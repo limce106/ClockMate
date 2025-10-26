@@ -138,13 +138,14 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     private void RPC_InstantiateCharacters()
     {
         GameManager.Instance.LoadSelectedCharacter();
+        GameManager.Instance.SetAllCharactersActive(false);
         StartCoroutine(nameof(EndLoading));
     }
 
     IEnumerator EndLoading()
     {
-        yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= 2);
-
+        yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= PhotonNetwork.CurrentRoom.PlayerCount);
+        
         CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
         if(cinemachineTargetSetter != null)
             cinemachineTargetSetter.SetTarget();
@@ -162,21 +163,33 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         string currentScene = SceneManager.GetActiveScene().name;
 
+        if (!PhotonNetwork.IsMasterClient) yield break;
+        CutsceneSyncManager.Instance.PlayCinematicForAll(
+            cutsceneName: currentScene + "_Intro",
+            masterOnlyOnAllFinished:
+            () =>
+            {
+                photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
+            });
+    }
+    
+    [PunRPC]
+    private void RPC_FinishIntroAndActivatePlayerControl(string currentScene)
+    {
         foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
             if(currentScene.Equals(puzzleMap.ToString()))
             {
-                UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
+                UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
             }
         }
 
+        GameManager.Instance.SetAllCharactersActive(true);
         GameManager.Instance.SetLocalCharacterInput(true);
 
-        if (currentScene != "ClockTower")
-        {
-            GameManager.Instance.PlayMapBgm();
-            UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
-        }
+        if (currentScene == "ClockTower") return;
+        GameManager.Instance.PlayMapBgm();
+        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
     /// <summary>
