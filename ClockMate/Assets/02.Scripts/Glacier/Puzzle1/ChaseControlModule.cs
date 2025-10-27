@@ -24,6 +24,12 @@ public class ChaseControlModule : MonoBehaviourPun
         if (NetworkManager.Instance.IsInRoomAndReady())
         {
             photonView.RPC(nameof(RPC_StartChase), RpcTarget.All);
+            // 썰매 소유권은 아워가 가지도록 설정
+            int houActorNr = GameManager.Instance.Characters[CharacterName.Hour].photonView.OwnerActorNr;
+            if (sled.photonView.OwnerActorNr != houActorNr)
+            {
+                sled.photonView.TransferOwnership(houActorNr);
+            }
         }
         else
         {
@@ -39,16 +45,6 @@ public class ChaseControlModule : MonoBehaviourPun
     [PunRPC]
     private void RPC_StartChase()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // 썰매 소유권은 아워가 가지도록 설정
-            int houActorNr = GameManager.Instance.Characters[CharacterName.Hour].photonView.OwnerActorNr;
-            if (photonView.OwnerActorNr != houActorNr)
-            {
-                photonView.TransferOwnership(houActorNr);
-            }
-        }
-        
         sled.gameObject.SetActive(true);
         sled.SetSledMoveState(true);
         bear.gameObject.SetActive(true);
@@ -150,6 +146,9 @@ public class ChaseControlModule : MonoBehaviourPun
             VcamMilli.gameObject.SetActive(false);
         }
         sled.Hp.CloseUI();
+        sled.SetSledMoveState(false);
+        sled.gameObject.SetActive(false);
+        bear.gameObject.SetActive(false);
         _uiControlHelp?.Close();
     }
     
