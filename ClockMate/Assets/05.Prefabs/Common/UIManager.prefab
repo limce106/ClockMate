@@ -45,6 +45,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8807287479645933233}
   - component: {fileID: 6616356915731753825}
+  - component: {fileID: 2937684906376680714}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -83,6 +84,22 @@ MonoBehaviour:
   <CommonScaler>k__BackingField: {fileID: 3129609884303366992}
   rtSafeArea: {fileID: 5626931295045630231}
   rtCachedArea: {fileID: 6297347295623267962}
+--- !u!114 &2937684906376680714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4565520256372390494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9be484858949b74e812c53c3421519b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgmVolume: 0.8
+  sfxVolume: 0.93
+  isMicOn: 1
+  remoteVoiceVolume: 1
 --- !u!1 &7044851529485136555
 GameObject:
   m_ObjectHideFlags: 0
