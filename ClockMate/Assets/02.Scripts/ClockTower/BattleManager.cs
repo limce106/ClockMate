@@ -131,6 +131,18 @@ public class BattleManager : MonoBehaviourPunCallbacks
             yield break;
 
         yield return StartCoroutine(RunBattle());
+
+        CutsceneSyncManager.Instance.PlayForAll(
+            "Ending",
+            0f,
+            () =>
+            {
+                RPCManager.Instance.photonView.RPC(
+                    nameof(RPCManager.Instance.RPC_MoveToMap), RpcTarget.All, "TitleMatch"
+                );
+                RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_SyncStage), RpcTarget.All, 1);
+            }
+        );
     }
 
     /// <summary>
