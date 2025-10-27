@@ -45,4 +45,9 @@ public class SledHp : MonoBehaviourPun
         _currentHp = hp;
         _uiHpBar?.UpdateHpBar(maxHp, _currentHp);
     }
+    
+    public void CloseUI()
+    {
+        _uiHpBar?.Close();
+    }
 }

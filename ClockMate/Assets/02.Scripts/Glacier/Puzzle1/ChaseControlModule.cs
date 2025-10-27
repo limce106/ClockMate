@@ -15,7 +15,7 @@ public class ChaseControlModule : MonoBehaviourPun
     [SerializeField] private CinemachineVirtualCamera VcamMilli;
     [SerializeField] private float restartWaitTime = 3f;
 
-    
+    private UIControlHelp _uiControlHelp; 
     /// <summary>
     /// 북극곰 썰매 추격 메서드를 호출한다. 서버 연결 상태에 따라 분기한다.
     /// </summary>
@@ -139,19 +139,21 @@ public class ChaseControlModule : MonoBehaviourPun
         {
             VcamMilli.gameObject.SetActive(false);
         }
+        sled.Hp.CloseUI();
+        _uiControlHelp?.Close();
     }
     
     private void ActivateChaseUI()
     {
         sled.Hp.Init();
         
-        var uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
         bool isHour = GameManager.Instance.SelectedCharacter == CharacterName.Hour;
         Sprite s1 = isHour ? Key.AD.LoadSprite() : Key.WASD.LoadSprite();
         string t1 = isHour ? "좌우이동" : "조준하기";
         Sprite s2 = Key.Space.LoadSprite(Style.Outline);
         string t2 = isHour ? "점프하기" : "발사하기";
-        uiControlHelp.SetControl(s1, t1, s2, t2);
+        _uiControlHelp.SetControl(s1, t1, s2, t2);
     }
     
     [PunRPC]
