@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using Photon.Pun;
@@ -139,10 +140,16 @@ public class GameManager : MonoSingleton<GameManager>
         Characters[character] = characterBase;
         if (NetworkManager.Instance.IsInRoomAndReady())
         {
-            RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_RegisterCharacter), 
-                RpcTarget.Others, character, characterBase.photonView.ViewID);
-
+            StartCoroutine(WaitAndRegister(character, characterBase.photonView.ViewID));
         }
+    }
+
+    private IEnumerator WaitAndRegister(CharacterName character, int viewID)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_RegisterCharacter),
+                RpcTarget.Others, character, viewID);
     }
 
     public void SetAllCharactersActive(bool isActive)

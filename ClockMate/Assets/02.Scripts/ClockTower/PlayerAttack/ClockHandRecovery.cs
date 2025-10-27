@@ -9,6 +9,7 @@ public class ClockHandRecovery : AttackPattern
 {
     [SerializeField] private Image hourClockHandUI;
     [SerializeField] private Image minuteClockHandUI;
+    [SerializeField] private TMP_Text answerTimeTxt;
 
     // 맞춰야 할 목표 시간
     private int targetHour;
@@ -66,6 +67,9 @@ public class ClockHandRecovery : AttackPattern
 
         hourClockHandUI.GetComponent<Image>().enabled = true;
         minuteClockHandUI.GetComponent<Image>().enabled = true;
+
+        answerTimeTxt.text = targetHour + "시 " + targetMinute + "분";
+        answerTimeTxt.GetComponent<TextMeshPro>().enabled = true;
     }
 
     /// <summary>
@@ -256,6 +260,7 @@ public class ClockHandRecovery : AttackPattern
     {
         hourClockHandUI.GetComponent<Image>().enabled = false;
         minuteClockHandUI.GetComponent<Image>().enabled = false;
+        answerTimeTxt.GetComponent<TextMeshPro>().enabled = false;
     }
 
     void EndRecovery(bool isSuccess)
