@@ -86,7 +86,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
             Debug.LogError("[CutsceneSync] cutsceneName null/empty.");
             return;
         }
-
+        
         // 상태 초기화
         IsBusy = true;
         _currentId = ++_seq;
@@ -134,6 +134,9 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 
         // 입력 잠금
         GameManager.Instance.SetLocalCharacterInput(false);
+        // BGM 끄기
+        SoundManager.Instance.StopAll(SoundType.BGM);
+        SoundManager.Instance.StopAll(SoundType.Effect);
 
         // 타입에 따라 분기
         if (_currentType == CutsceneType.Video)
@@ -190,6 +193,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         
         ResetState(); // 상태 리셋
         GameManager.Instance.SetLocalCharacterInput(true);
+        GameManager.Instance.PlayMapBgm();
     }
     
     #endregion
