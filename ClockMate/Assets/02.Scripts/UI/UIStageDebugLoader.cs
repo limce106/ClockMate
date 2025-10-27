@@ -45,6 +45,7 @@ public class UIStageDebugLoader : UIBase
     /// </summary>
     private void TrySubmit(string input)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         if (input == string.Empty)
         {
             SetStatus("id 입력 필요");
@@ -103,12 +104,14 @@ public class UIStageDebugLoader : UIBase
         {
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
             
         }
         else
         {
             canvasGroup.alpha = 1;
             canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
         }
         _isActive = !_isActive;
     }
