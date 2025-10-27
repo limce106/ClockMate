@@ -11,6 +11,7 @@ using ExitGames.Client.Photon;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     private const string firstSceneName = "TitleMatch";
+    private const string BestRegionKey = "PUNCloudBestRegion";
 
     private static NetworkManager _instance;
     public static NetworkManager Instance
@@ -47,8 +48,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             AppSettings appSettings = GetAppSettingsFromEnv();
+            appSettings.FixedRegion = "kr";
+            appSettings.AppVersion = "1.0";
+
             if(appSettings != null)
             {
+                Debug.Log($"Fixed Region: {appSettings.FixedRegion}");
+                if (PlayerPrefs.HasKey(BestRegionKey))
+                {
+                    PlayerPrefs.DeleteKey(BestRegionKey);
+                    PlayerPrefs.Save();
+                }
+
                 PhotonNetwork.ConnectUsingSettings(appSettings);
             }
             else
@@ -56,7 +67,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Debug.LogError("App ID를 불러올 수 없습니다. 연결을 시도하지 않습니다.");
             }
         }
-
 
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 60;
@@ -181,6 +191,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Destroy(cutsceneSyncManager.gameObject);
         }
 
+        RPCManager[] rpcManagers = FindObjectsOfType<RPCManager>(true);
+        foreach (var rpcManager in rpcManagers)
+        {
+            if (rpcManager != RPCManager.Instance)
+                Destroy(rpcManager.gameObject);
+        }
+
         NetworkManager[] networkManagers = FindObjectsOfType<NetworkManager>(true);
         foreach (var networkManager in networkManagers)
         {
@@ -196,6 +213,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(SoundManager.Instance.gameObject);
         if (CutsceneSyncManager.Instance)
             Destroy(CutsceneSyncManager.Instance.gameObject);
+        if (RPCManager.Instance)
+            Destroy(RPCManager.Instance.gameObject);
         if (NetworkManager.Instance)
             Destroy(NetworkManager.Instance.gameObject);
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Photon.Pun;
 using UnityEngine;
@@ -17,15 +18,11 @@ public class GameManager : MonoSingleton<GameManager>
     protected override void Init()
     {
         Characters = new Dictionary<CharacterName, CharacterBase>();
-        _rpcManager = RPCManager.Instance;
     }
 
-    private void Update()
+    private void Start()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ToggleStageLoader();
-        }
+        _rpcManager = RPCManager.Instance;
     }
 
     /// <summary>
@@ -267,21 +264,5 @@ public class GameManager : MonoSingleton<GameManager>
     public CharacterBase GetLocalCharacter()
     {
         return Characters[SelectedCharacter];
-    }
-
-    /// <summary>
-    /// 개발자용 치트키 UI 토글
-    /// </summary>
-    public void ToggleStageLoader()
-    {
-        if(_uiStageDebugLoader == null)
-        {
-            _uiStageDebugLoader = UIManager.Instance.Show<UIStageDebugLoader>("UIStageDebugLoader");
-        }
-        else
-        {
-            UIManager.Instance.Close(_uiStageDebugLoader);
-            _uiStageDebugLoader = null;
-        }
     }
 }

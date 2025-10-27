@@ -17,7 +17,7 @@ MonoBehaviour:
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
-    AppVersion: 
+    AppVersion: 1.0
     UseNameServer: 1
     FixedRegion: kr
     Server: 
@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: 
+  DevRegion: kr
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -194,6 +194,10 @@ MonoBehaviour:
   - RPC_MoveToMap
   - RPC_SyncReset
   - RPC_SyncStage
+  - RPC_FinishIntroAndActivatePlayerControl
+  - RPC_PlayBGMAndShowMapDescription
+  - RPC_ShowBattleUI
+  - RPC_ReportPlayerEntered
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

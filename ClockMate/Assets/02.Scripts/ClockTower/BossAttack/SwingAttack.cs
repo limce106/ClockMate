@@ -7,7 +7,7 @@ using static Define.Battle;
 
 public class SwingAttack : AttackPattern
 {
-    private int attackCount = 5;
+    private int attackCount = 4;
     private bool isCanceled = false;
 
     // 공격 가능(오브젝트 스폰 가능) 구간
@@ -21,9 +21,9 @@ public class SwingAttack : AttackPattern
 
     // 최소/최대 스폰 횟수
     private const int minSpawnNum = 1;
-    private const int maxSpawnNum = 5;
+    private const int maxSpawnNum = 3;
 
-    private const int additionalAttackCount = 3; // 라운드 증가할 때마다 늘어날 공격 횟수
+    private const int additionalAttackCount = 2; // 라운드 증가할 때마다 늘어날 공격 횟수
     private readonly float[] startAngles = { -60f, 60f };
 
     protected override void Init()
@@ -41,7 +41,7 @@ public class SwingAttack : AttackPattern
 
         spawnedPendulums.Clear();
         // 한 공격당 스폰될 시계 추 개수
-        int spawnNum = Mathf.Clamp(BattleManager.Instance.round, minSpawnNum, maxSpawnNum);
+        int spawnNum = BattleManager.Instance.round <= maxSpawnNum ? BattleManager.Instance.round : maxSpawnNum;
 
         for (int i = 0; i < spawnNum; i++)
         {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
@@ -12,7 +11,12 @@ using UnityEngine;
 public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 {
     [SerializeField] private VideoCutscenePlayer cutscenePlayer;
-
+    [SerializeField] private CinematicCutscenePlayer cinematicPlayer;
+    
+    // 컷신 타입
+    private enum CutsceneType { Video = 0, Cinematic = 1 }
+    private CutsceneType _currentType = CutsceneType.Video;
+    
     // 진행 상태
     public bool IsBusy { get; private set; } 
     private int  _seq; // 컷신마다 증가하는 식별자 번호
@@ -47,8 +51,26 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         float timeoutSec = 0f,
         Action masterOnlyOnAllFinished = null)
     {
-        GameManager.Instance.SetLocalCharacterInput(false);
-
+        PlayForAll_Internal(clipName, CutsceneType.Video, timeoutSec, masterOnlyOnAllFinished);
+    }
+    
+    /// <summary>
+    /// 마스터 전용, 모든 클라 대상 시네마틱 컷신 시작
+    /// </summary>
+    public void PlayCinematicForAll(
+        string cutsceneName,
+        float timeoutSec = 0f,
+        Action masterOnlyOnAllFinished = null)
+    {
+        PlayForAll_Internal(cutsceneName, CutsceneType.Cinematic, timeoutSec, masterOnlyOnAllFinished);
+    }
+    
+    private void PlayForAll_Internal(
+        string cutsceneName,
+        CutsceneType type,
+        float timeoutSec,
+        Action masterOnlyOnAllFinished)
+    {
         if (!PhotonNetwork.IsMasterClient)
         {
             Debug.LogWarning("[CutsceneSync] PlayForAll: Only Master can start.");
@@ -59,15 +81,15 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
             Debug.LogWarning("[CutsceneSync] Already running.");
             return;
         }
-        if (string.IsNullOrEmpty(clipName))
+        if (string.IsNullOrEmpty(cutsceneName))
         {
-            Debug.LogError("[CutsceneSync] clipName null/empty.");
+            Debug.LogError("[CutsceneSync] cutsceneName null/empty.");
             return;
         }
 
         // 상태 초기화
         IsBusy = true;
-        _currentId = ++_seq; // 고유 Id 생성
+        _currentId = ++_seq;
 
         _expectedActors.Clear();
         _finishedActors.Clear();
@@ -79,10 +101,11 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 
         _masterOnlyOnAllFinished = masterOnlyOnAllFinished;
 
-        // 전원 시작
-        photonView.RPC(nameof(RPC_Begin), RpcTarget.All, clipName, _currentId);
-        Debug.Log($"[CutsceneSync] Begin: clip={clipName}, id={_currentId}, expect={_expectedActors.Count}");
+        // 타입 전달
+        photonView.RPC(nameof(RPC_Begin), RpcTarget.All, cutsceneName, _currentId, (int)type);
+        Debug.Log($"[CutsceneSync] Begin: id={cutsceneName}, type={type}, cutsceneId={_currentId}, expect={_expectedActors.Count}");
     }
+
 
     // 로컬 재생 완료 시 호출(등록된 startLocal 내부에서 onLocalFinished로 전달)
     private void NotifyLocalFinished()
@@ -95,8 +118,9 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
     #region RPC
 
     [PunRPC]
-    private void RPC_Begin(string clipName, int cutsceneId)
+    private void RPC_Begin(string clipName, int cutsceneId, int typeInt)
     {
+        // 동시 재생 중복 방지
         if (IsBusy && _currentId != cutsceneId)
         {
             Debug.LogWarning($"[CutsceneSync] Begin ignored. Local busy id={_currentId} incoming={cutsceneId}");
@@ -106,8 +130,35 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         IsBusy = true;
         _currentId = cutsceneId;
 
-        cutscenePlayer.PlayClip(clipName, NotifyLocalFinished); // 로컬 비디오 재생 시작
+        _currentType = (CutsceneType)typeInt;
+
+        // 입력 잠금
+        GameManager.Instance.SetLocalCharacterInput(false);
+
+        // 타입에 따라 분기
+        if (_currentType == CutsceneType.Video)
+        {
+            cutscenePlayer.PlayClip(clipName, NotifyLocalFinished);
+        }
+        else // Cinematic
+        {
+            if (cinematicPlayer == null)
+            {
+                Debug.LogError("[CutsceneSync] Cinematic player not assigned.");
+                // 즉시 종료 보고
+                NotifyLocalFinished();
+                return;
+            }
+
+            // 중복 구독 방지
+            cinematicPlayer.OnFinished -= OnCinematicFinished;
+            cinematicPlayer.OnFinished += OnCinematicFinished;
+
+            cinematicPlayer.Prepare(clipName); // Resources/Cutscenes/Timelines/{id}.playable 로드
+            cinematicPlayer.Play();
+        }
     }
+
 
     [PunRPC]
     private void RPC_ReportFinished(int actorNumber, int cutsceneId)
@@ -124,7 +175,19 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
     {
         if (!IsBusy || _currentId != cutsceneId) return; // 상태 & 컷신 식별자 확인
 
-        cutscenePlayer.Skip(); // 타임아웃 등으로 인해 컷신이 종료되지 않은 경우 강제 스킵
+        if (_currentType == CutsceneType.Video)
+        {
+            cutscenePlayer.Skip();
+        }
+        else
+        {
+            if (cinematicPlayer != null)
+            {
+                cinematicPlayer.OnFinished -= OnCinematicFinished; // 구독 해제
+                cinematicPlayer.Stop(); // 재생 중이면 정지 + 카메라 그룹 비활성 등 처리
+            }
+        }
+        
         ResetState(); // 상태 리셋
         GameManager.Instance.SetLocalCharacterInput(true);
     }
@@ -155,6 +218,11 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         _expectedActors.Clear();
         _finishedActors.Clear();
         _masterOnlyOnAllFinished = null;
+    }
+    
+    private void OnCinematicFinished()
+    {
+        NotifyLocalFinished();
     }
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
