@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Photon.Pun;
 using UnityEngine;
@@ -17,6 +18,10 @@ public class GameManager : MonoSingleton<GameManager>
     protected override void Init()
     {
         Characters = new Dictionary<CharacterName, CharacterBase>();
+    }
+
+    private void Start()
+    {
         _rpcManager = RPCManager.Instance;
     }
 
