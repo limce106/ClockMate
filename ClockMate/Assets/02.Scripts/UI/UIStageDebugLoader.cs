@@ -45,6 +45,7 @@ public class UIStageDebugLoader : UIBase
     /// </summary>
     private void TrySubmit(string input)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         if (input == string.Empty)
         {
             SetStatus("id 입력 필요");
