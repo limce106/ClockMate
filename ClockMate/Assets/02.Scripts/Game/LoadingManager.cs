@@ -138,7 +138,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     private void RPC_InstantiateCharacters()
     {
         GameManager.Instance.LoadSelectedCharacter();
-        GameManager.Instance.SetAllCharactersActive(false);
         StartCoroutine(nameof(EndLoading));
     }
 
@@ -146,6 +145,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= PhotonNetwork.CurrentRoom.PlayerCount);
         
+        GameManager.Instance.SetAllCharactersActive(false);
+
         CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
         if(cinemachineTargetSetter != null)
             cinemachineTargetSetter.SetTarget();
