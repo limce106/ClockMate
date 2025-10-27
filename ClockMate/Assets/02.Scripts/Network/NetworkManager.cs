@@ -181,6 +181,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Destroy(cutsceneSyncManager.gameObject);
         }
 
+        RPCManager[] rpcManagers = FindObjectsOfType<RPCManager>(true);
+        foreach (var rpcManager in rpcManagers)
+        {
+            if (rpcManager != RPCManager.Instance)
+                Destroy(rpcManager.gameObject);
+        }
+
         NetworkManager[] networkManagers = FindObjectsOfType<NetworkManager>(true);
         foreach (var networkManager in networkManagers)
         {
@@ -196,6 +203,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(SoundManager.Instance.gameObject);
         if (CutsceneSyncManager.Instance)
             Destroy(CutsceneSyncManager.Instance.gameObject);
+        if (RPCManager.Instance)
+            Destroy(RPCManager.Instance.gameObject);
         if (NetworkManager.Instance)
             Destroy(NetworkManager.Instance.gameObject);
     }

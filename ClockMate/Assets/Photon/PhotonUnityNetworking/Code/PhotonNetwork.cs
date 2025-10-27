@@ -153,7 +153,8 @@ namespace Photon.Pun
         {
             get
             {
-                return PlayerPrefs.GetString(PlayerPrefsKey, null);
+                // return PlayerPrefs.GetString(PlayerPrefsKey, null);
+                return null;
             }
             internal set
             {
