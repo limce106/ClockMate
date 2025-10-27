@@ -56,6 +56,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         _uiLoading = UIManager.Instance.Show<UILoading>("UILoading");
         GameManager.Instance.SetLocalCharacterInput(false);
+        SoundManager.Instance.StopAll(SoundType.BGM);
+        SoundManager.Instance.StopAll(SoundType.Effect);
 
         _uiLoading.ShowRandomTip(GetRandomTip());
     }
