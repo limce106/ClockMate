@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using static Define.Map;
 
 public class CinematicCutscenePlayer : MonoBehaviour
 {
@@ -21,15 +22,23 @@ public class CinematicCutscenePlayer : MonoBehaviour
     }
     
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        // 씬에 배치된 디렉터 자동 연결
-        if (director == null)
+        foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
         {
-            director = FindObjectOfType<PlayableDirector>(includeInactive: true);
-            if (director == null)
+            if(SceneManager.GetActiveScene().name.Equals(puzzleMap.ToString()))
             {
-                Debug.LogError("[CinematicCutscenePlayer] No Playable Director found");
+                // 씬에 배치된 디렉터 자동 연결
+                if (director == null)
+                {
+                    director = FindObjectOfType<PlayableDirector>(includeInactive: true);
+                    if (director == null)
+                    {
+                        Debug.LogError("[CinematicCutscenePlayer] No Playable Director found");
+                    }
+                }
+                return;
             }
         }
+        
     }
     public void Prepare(string clipName)
     {
