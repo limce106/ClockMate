@@ -39,6 +39,16 @@ public class ChaseControlModule : MonoBehaviourPun
     [PunRPC]
     private void RPC_StartChase()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 썰매 소유권은 아워가 가지도록 설정
+            int houActorNr = GameManager.Instance.Characters[CharacterName.Hour].photonView.OwnerActorNr;
+            if (photonView.OwnerActorNr != houActorNr)
+            {
+                photonView.TransferOwnership(houActorNr);
+            }
+        }
+        
         sled.gameObject.SetActive(true);
         sled.SetSledMoveState(true);
         bear.gameObject.SetActive(true);
