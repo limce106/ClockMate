@@ -65,11 +65,7 @@ public class ClockHandRecovery : AttackPattern
         hourClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetHourAngle());
         minuteClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
 
-        hourClockHandUI.GetComponent<Image>().enabled = true;
-        minuteClockHandUI.GetComponent<Image>().enabled = true;
-
         answerTimeTxt.text = targetHour + "시 " + targetMinute + "분";
-        answerTimeTxt.GetComponent<TextMeshPro>().enabled = true;
     }
 
     /// <summary>
@@ -255,18 +251,10 @@ public class ClockHandRecovery : AttackPattern
         }
     }
 
-    [PunRPC]
-    private void RPC_DisableUI()
-    {
-        hourClockHandUI.GetComponent<Image>().enabled = false;
-        minuteClockHandUI.GetComponent<Image>().enabled = false;
-        answerTimeTxt.GetComponent<TextMeshPro>().enabled = false;
-    }
-
     void EndRecovery(bool isSuccess)
     {
         photonView.RPC(nameof(RPC_DetachAllPlayers), RpcTarget.All);
-        photonView.RPC(nameof(RPC_DisableUI), RpcTarget.All);
+        
         // 공격 결과 보고
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
