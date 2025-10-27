@@ -31,6 +31,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private bool curAttackSuccess = false; // 현재 공격 성공 여부
     private bool isHandling = false; // 연출 실행 중
     private bool attackEnded = false; // 현재 공격 종료 여부
+    private bool successBattle = false; // 전투 성공 여부
 
     // 보스 공격 오브젝트 풀
     [Header("오브젝트 풀")]
@@ -155,7 +156,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         while (true)
         {
             // 마지막 반격에 성공하면 종료
-            if (phaseType == PhaseType.PlayerAttack && (int)playerAttackType >= playerAttackPrefabs.Count)
+            if (successBattle)
             {
                 yield break;
             }
@@ -190,6 +191,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if (success)
             {
                 photonView.RPC(nameof(HandleSuccess), RpcTarget.All);
+
+                if(phaseType == PhaseType.PlayerAttack && playerAttackType == PlayerAttackType.ClockTowerOperation)
+                    successBattle = true;
             }
             else
             {
