@@ -183,9 +183,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if (success)
             {
                 photonView.RPC(nameof(HandleSuccess), RpcTarget.All);
-
-                if(phaseType == PhaseType.PlayerAttack && playerAttackType == PlayerAttackType.ClockTowerOperation)
-                    successBattle = true;
             }
             else
             {
@@ -244,8 +241,15 @@ public class BattleManager : MonoBehaviourPunCallbacks
                         0f,
                         () =>
                         {
-                            TryAdvancePlayerAttack();
-                            round++;
+                            if (phaseType == PhaseType.PlayerAttack && playerAttackType == PlayerAttackType.ClockTowerOperation)
+                            {
+                                successBattle = true;
+                            }
+                            else
+                            {
+                                TryAdvancePlayerAttack();
+                                round++;
+                            }
 
 
                             if ((int)playerAttackType < playerAttackPrefabs.Count)
@@ -257,7 +261,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
                 // 공격 관련 오브젝트 정리
                 photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
-                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+
+                if(phaseType == PhaseType.PlayerAttack)
+                {
+                    photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+                }
             }
 
             while (CutsceneSyncManager.Instance.IsBusy)
@@ -294,7 +302,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
             {
                 // 공격 관련 오브젝트 정리
                 photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
-                photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+
+                if (phaseType == PhaseType.PlayerAttack)
+                {
+                    photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+                }
             }
 
             TryAdvanceBossAttack();
@@ -353,16 +365,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_PlacePlayerOnClockFace()
     {
-        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
-        {
-            CharacterBase character = GameManager.Instance.GetLocalCharacter();
-
-            character.GetComponent<Rigidbody>().useGravity = false;
-            character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
-
-            SetClockFaceActive(true);
-            character.GetComponent<Rigidbody>().useGravity = true;
-        }
+        CharacterBase character = GameManager.Instance.GetLocalCharacter();
+        SetClockFaceActive(true);
+        character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
     }
 
     /// <summary>
