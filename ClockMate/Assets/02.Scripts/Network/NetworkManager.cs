@@ -11,6 +11,7 @@ using ExitGames.Client.Photon;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     private const string firstSceneName = "TitleMatch";
+    private const string BestRegionKey = "PUNCloudBestRegion";
 
     private static NetworkManager _instance;
     public static NetworkManager Instance
@@ -49,6 +50,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             AppSettings appSettings = GetAppSettingsFromEnv();
             if(appSettings != null)
             {
+                if (PlayerPrefs.HasKey(BestRegionKey))
+                {
+                    PlayerPrefs.DeleteKey(BestRegionKey);
+                    PlayerPrefs.Save();
+                }
+
                 PhotonNetwork.ConnectUsingSettings(appSettings);
             }
             else
