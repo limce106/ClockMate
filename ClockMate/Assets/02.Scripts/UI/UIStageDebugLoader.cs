@@ -2,8 +2,12 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 개발자용 스테이지 이동 치트키 
+/// </summary>
 public class UIStageDebugLoader : UIBase
 {
+    [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private InputField stageInput; // 이동한 스테이지 id 입력 필드
     [SerializeField] private Button goButton;
     [SerializeField] private Text statusText;
@@ -11,6 +15,7 @@ public class UIStageDebugLoader : UIBase
     [SerializeField] private int minStageId = 1;
     [SerializeField] private int maxStageId = 8;
 
+    private bool _isActive = false;
     private void Awake()
     {
         goButton.onClick.AddListener(OnClickGo);
@@ -26,6 +31,14 @@ public class UIStageDebugLoader : UIBase
         TrySubmit(stageInput.text);
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ToggleStageLoader();
+        }
+    }
+    
     /// <summary>
     /// InputField에 입력한 스테이지로의 이동을 처리한다.
     /// 잘못된 값이 입력되면 status text로 알린다.
@@ -67,7 +80,7 @@ public class UIStageDebugLoader : UIBase
         rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncReset), RpcTarget.All);
         SetInteractable(true);
 
-        GameManager.Instance.ToggleStageLoader();
+        ToggleStageLoader();
     }
 
     private void SetStatus(string msg)
@@ -79,5 +92,24 @@ public class UIStageDebugLoader : UIBase
     {
         stageInput.interactable = isInteractable;
         goButton.interactable = isInteractable;
+    }
+    
+    /// <summary>
+    /// UI 토글
+    /// </summary>
+    private void ToggleStageLoader()
+    {
+        if (_isActive)
+        {
+            canvasGroup.alpha = 0;
+            canvasGroup.interactable = false;
+            
+        }
+        else
+        {
+            canvasGroup.alpha = 1;
+            canvasGroup.interactable = true;
+        }
+        _isActive = !_isActive;
     }
 }

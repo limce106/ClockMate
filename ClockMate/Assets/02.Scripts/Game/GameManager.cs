@@ -20,14 +20,6 @@ public class GameManager : MonoSingleton<GameManager>
         _rpcManager = RPCManager.Instance;
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ToggleStageLoader();
-        }
-    }
-
     /// <summary>
     /// 기존에 저장해둔 세이브 데이터를 불러와 현재 스테이지로 설정한다.
     /// 이어하기를 선택할 시 마스터가 호출한다
@@ -267,21 +259,5 @@ public class GameManager : MonoSingleton<GameManager>
     public CharacterBase GetLocalCharacter()
     {
         return Characters[SelectedCharacter];
-    }
-
-    /// <summary>
-    /// 개발자용 치트키 UI 토글
-    /// </summary>
-    public void ToggleStageLoader()
-    {
-        if(_uiStageDebugLoader == null)
-        {
-            _uiStageDebugLoader = UIManager.Instance.Show<UIStageDebugLoader>("UIStageDebugLoader");
-        }
-        else
-        {
-            UIManager.Instance.Close(_uiStageDebugLoader);
-            _uiStageDebugLoader = null;
-        }
     }
 }

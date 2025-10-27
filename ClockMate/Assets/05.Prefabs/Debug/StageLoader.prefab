@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f96096c580bbdb54f886f3891920edeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <UIType>k__BackingField: 0
+  canvasGroup: {fileID: 5490706572131454239}
   stageInput: {fileID: 6436549416479198553}
   goButton: {fileID: 1219246552318121350}
   statusText: {fileID: 8626296573663823304}
@@ -248,8 +250,28 @@ PrefabInstance:
     - {fileID: 4793225458916744327, guid: 04add228ebfdef149b21d66d1ca0b6cc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6818437911667170988, guid: 04add228ebfdef149b21d66d1ca0b6cc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5490706572131454239}
   m_SourcePrefab: {fileID: 100100000, guid: 04add228ebfdef149b21d66d1ca0b6cc, type: 3}
+--- !u!1 &110672317766714220 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6818437911667170988, guid: 04add228ebfdef149b21d66d1ca0b6cc, type: 3}
+  m_PrefabInstance: {fileID: 6851904424161189312}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &5490706572131454239
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110672317766714220}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &1219246552318121350 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5763895601494526022, guid: 04add228ebfdef149b21d66d1ca0b6cc, type: 3}
