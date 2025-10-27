@@ -146,6 +146,9 @@ public class ChaseControlModule : MonoBehaviourPun
             VcamMilli.gameObject.SetActive(false);
         }
         sled.Hp.CloseUI();
+        sled.SetSledMoveState(false);
+        sled.gameObject.SetActive(false);
+        bear.gameObject.SetActive(false);
         _uiControlHelp?.Close();
     }
     
