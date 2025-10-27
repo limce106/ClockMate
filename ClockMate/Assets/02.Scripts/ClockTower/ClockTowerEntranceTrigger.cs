@@ -1,10 +1,8 @@
-using DefineExtension;
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ClockTowerEntranceTrigger : MonoBehaviour
+public class ClockTowerEntranceTrigger : MonoBehaviourPun
 {
     private bool _triggered = false;
 
@@ -34,11 +32,17 @@ public class ClockTowerEntranceTrigger : MonoBehaviour
             0f,
             () =>
             {
-                GameManager.Instance.PlayMapBgm();
-                UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+                photonView.RPC(nameof(RPC_PlayBGMAndShowMapDescription), RpcTarget.All);
             }
         );
 
         _triggered = true;
+    }
+
+    [PunRPC]
+    private void RPC_PlayBGMAndShowMapDescription()
+    {
+        GameManager.Instance.PlayMapBgm();
+        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 }
