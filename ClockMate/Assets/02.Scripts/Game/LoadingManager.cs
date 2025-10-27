@@ -144,8 +144,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     IEnumerator EndLoading()
     {
         yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= PhotonNetwork.CurrentRoom.PlayerCount);
-        
-        GameManager.Instance.SetAllCharactersActive(false);
+
+        CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
+        character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, false);
 
         CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
         if(cinemachineTargetSetter != null)
@@ -185,7 +186,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             }
         }
 
-        GameManager.Instance.SetAllCharactersActive(true);
+        CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
+        character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, true);
         GameManager.Instance.SetLocalCharacterInput(true);
 
         if (currentScene == "ClockTower") return;

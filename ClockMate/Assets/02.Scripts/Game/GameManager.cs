@@ -139,7 +139,7 @@ public class GameManager : MonoSingleton<GameManager>
         Characters[character] = characterBase;
         if (NetworkManager.Instance.IsInRoomAndReady())
         {
-            RPCManager.Instance.photonView.RPC("RPC_RegisterCharacter", 
+            RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_RegisterCharacter), 
                 RpcTarget.Others, character, characterBase.photonView.ViewID);
 
         }
@@ -149,7 +149,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         foreach (CharacterBase character in Characters.Values)
         {
-            character.photonView.RPC("SetCharacterActive", RpcTarget.All, isActive);
+            character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, isActive);
         }
     }
 
