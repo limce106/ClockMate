@@ -48,8 +48,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             AppSettings appSettings = GetAppSettingsFromEnv();
+            appSettings.FixedRegion = "kr";
+            appSettings.AppVersion = "1.0";
+
             if(appSettings != null)
             {
+                Debug.Log($"Fixed Region: {appSettings.FixedRegion}");
                 if (PlayerPrefs.HasKey(BestRegionKey))
                 {
                     PlayerPrefs.DeleteKey(BestRegionKey);
@@ -63,7 +67,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Debug.LogError("App ID를 불러올 수 없습니다. 연결을 시도하지 않습니다.");
             }
         }
-
 
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 60;
