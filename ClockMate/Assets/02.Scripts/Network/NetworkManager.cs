@@ -53,7 +53,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
             if(appSettings != null)
             {
-                Debug.Log($"Fixed Region: {appSettings.FixedRegion}");
                 if (PlayerPrefs.HasKey(BestRegionKey))
                 {
                     PlayerPrefs.DeleteKey(BestRegionKey);
