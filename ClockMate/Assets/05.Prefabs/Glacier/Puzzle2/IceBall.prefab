@@ -109,7 +109,6 @@ GameObject:
   - component: {fileID: 3187237195552332012}
   - component: {fileID: 8404383011899303599}
   - component: {fileID: 2191848776596105947}
-  - component: {fileID: 4557885155018333928}
   m_Layer: 0
   m_Name: IceBall
   m_TagString: Untagged
@@ -177,29 +176,12 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 4557885155018333928}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &4557885155018333928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8451670410499882844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!1001 &681201234286698766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -284,9 +266,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1287856902156068757}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5734884213655925322}
   m_SourcePrefab: {fileID: 100100000, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
 --- !u!1 &411363825195572319 stripped
 GameObject:
@@ -348,29 +327,12 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 5734884213655925322}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5734884213655925322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411363825195572319}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!4 &1080483018516858597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
