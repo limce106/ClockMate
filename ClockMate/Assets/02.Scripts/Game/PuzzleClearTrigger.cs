@@ -7,6 +7,9 @@ public class PuzzleClearTrigger : MonoBehaviour
     {
         if (other.IsPlayerCollider())
         {
+            CharacterBase character = other.GetComponent<CharacterBase>();
+            if (!character.photonView.IsMine) return;
+
             GameManager.Instance.StageComplete();
         }
     }
