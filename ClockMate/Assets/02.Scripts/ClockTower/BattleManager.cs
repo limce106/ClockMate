@@ -31,7 +31,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private bool curAttackSuccess = false; // 현재 공격 성공 여부
     private bool isHandling = false; // 연출 실행 중
     private bool attackEnded = false; // 현재 공격 종료 여부
-    private bool successBattle = false; // 전투 성공 여부
+    public bool successBattle = false; // 전투 성공 여부
 
     // 보스 공격 오브젝트 풀
     [Header("오브젝트 풀")]
@@ -241,16 +241,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
                         0f,
                         () =>
                         {
-                            if (phaseType == PhaseType.PlayerAttack && playerAttackType == PlayerAttackType.ClockTowerOperation)
-                            {
-                                successBattle = true;
-                            }
-                            else
-                            {
-                                TryAdvancePlayerAttack();
-                                round++;
-                            }
-
+                            TryAdvancePlayerAttack();
+                            round++;
 
                             if ((int)playerAttackType < playerAttackPrefabs.Count)
                             {
