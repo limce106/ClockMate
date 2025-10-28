@@ -134,13 +134,13 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 
         // 입력 잠금
         GameManager.Instance.SetLocalCharacterInput(false);
-        // BGM 끄기
-        SoundManager.Instance.StopAll(SoundType.BGM);
-        SoundManager.Instance.StopAll(SoundType.Effect);
 
         // 타입에 따라 분기
         if (_currentType == CutsceneType.Video)
         {
+            // BGM 끄기
+            SoundManager.Instance.StopAll(SoundType.BGM);
+            SoundManager.Instance.StopAll(SoundType.Effect);
             cutscenePlayer.PlayClip(clipName, NotifyLocalFinished);
         }
         else // Cinematic
@@ -181,6 +181,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         if (_currentType == CutsceneType.Video)
         {
             cutscenePlayer.Skip();
+            GameManager.Instance.PlayMapBgm();
         }
         else
         {
@@ -193,7 +194,6 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         
         ResetState(); // 상태 리셋
         GameManager.Instance.SetLocalCharacterInput(true);
-        GameManager.Instance.PlayMapBgm();
     }
     
     #endregion
