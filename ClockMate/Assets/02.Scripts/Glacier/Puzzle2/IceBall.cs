@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using Define;
 using DefineExtension;
+using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
 /// 아워가 밀 수 있는 빙벽.
 /// - 빙벽은 구형으로 회전하면서 이동한다.
 /// </summary>
-public class IceBall : MonoBehaviour
+public class IceBall : MonoBehaviourPun
 {
     [SerializeField] private float moveForce;
     [SerializeField] private float torqueForce;
@@ -71,16 +72,28 @@ public class IceBall : MonoBehaviour
         {
             dir.Normalize();
 
-            // 이동
-            iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
-
-            // 모델 회전 처리
-            Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
-            transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
+            photonView.RPC(nameof(RPC_MoveBall), RpcTarget.All, dir);
+            // // 이동
+            // iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
+            //
+            // // 모델 회전 처리
+            // Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
+            // transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
 
             if (_controller != null) MoveController();
         }
 
+    }
+    
+    [PunRPC]
+    private void RPC_MoveBall(Vector3 dir)
+    {
+        // 이동
+        iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
+
+        // 모델 회전 처리
+        Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
+        transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
     }
     
     private void Update()
