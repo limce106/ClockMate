@@ -65,7 +65,21 @@ public class ChaseControlModule : MonoBehaviourPun
     
     public void StopChase()
     {
-        
+        // 아워 & 밀리 각자 카메라
+        CharacterName character = GameManager.Instance.SelectedCharacter;
+        if (character is CharacterName.Hour)
+        {
+            VcamHour.gameObject.SetActive(false);
+        }
+        else
+        {
+            VcamMilli.gameObject.SetActive(false);
+        }
+        _uiControlHelp?.Close();
+        sled.Hp.CloseUI();
+        sled.SetSledMoveState(false);
+        sled.gameObject.SetActive(false);
+        bear.gameObject.SetActive(false);
     }
     
     /// <summary>
@@ -135,21 +149,7 @@ public class ChaseControlModule : MonoBehaviourPun
                 photonView.RPC(nameof(RPC_OnChaseFinCutsceneEnd), RpcTarget.All);
             }
         );
-        // 아워 & 밀리 각자 카메라
-        CharacterName character = GameManager.Instance.SelectedCharacter;
-        if (character is CharacterName.Hour)
-        {
-            VcamHour.gameObject.SetActive(false);
-        }
-        else
-        {
-            VcamMilli.gameObject.SetActive(false);
-        }
-        _uiControlHelp?.Close();
-        sled.Hp.CloseUI();
-        sled.SetSledMoveState(false);
-        sled.gameObject.SetActive(false);
-        bear.gameObject.SetActive(false);
+        StopChase();
     }
     
     private void ActivateChaseUI()

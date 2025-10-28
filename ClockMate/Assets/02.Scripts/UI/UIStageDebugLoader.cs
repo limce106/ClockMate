@@ -73,7 +73,7 @@ public class UIStageDebugLoader : UIBase
         if (GameManager.Instance.CurrentStage.ID == 4)
         {
             ChaseControlModule controlModule = FindObjectOfType<ChaseControlModule>();
-            controlModule.FinishChase();
+            controlModule.StopChase();
         }
         if (stage.Map != GameManager.Instance.CurrentStage.Map)
         {
