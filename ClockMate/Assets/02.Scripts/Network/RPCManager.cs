@@ -244,4 +244,11 @@ public class RPCManager : MonoBehaviourPunCallbacks
         GameManager.Instance.CurrentStage?.Reset();
         GameManager.Instance.SetAllCharactersActive(true);
     }
+    
+    [PunRPC]
+    public void RPC_StopSledChase()
+    {
+        ChaseControlModule controlModule = FindObjectOfType<ChaseControlModule>();
+        controlModule.StopChase();
+    }
 }
