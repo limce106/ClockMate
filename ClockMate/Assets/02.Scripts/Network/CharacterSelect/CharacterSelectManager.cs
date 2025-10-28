@@ -25,6 +25,7 @@ public class CharacterSelectManager : MonoBehaviourPun
 
     [SerializeField] private CharacterSlot[] characters;
     public TMP_Text statusText;
+    public Image blackImg;
 
     public Dictionary<int, CharacterSlot> actorNumcharacter { private set; get; } = new Dictionary<int, CharacterSlot>();
     private int _localActorNumber;
@@ -41,9 +42,18 @@ public class CharacterSelectManager : MonoBehaviourPun
             CutsceneSyncManager.Instance.PlayForAll(
                 "Intro",
                 0f,
-                () => { }
+                () =>
+                {
+                    photonView.RPC(nameof(RPC_SetBlackImgActive), RpcTarget.All, false);
+                }
             );
         }
+    }
+
+    [PunRPC]
+    private void RPC_SetBlackImgActive(bool isActive)
+    {
+        blackImg.gameObject.SetActive(isActive);
     }
 
     void Start()
