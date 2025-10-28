@@ -181,7 +181,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7400314706188248694}
-  sceneViewId: 10
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &7400314706188248694
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b6567893d422742b0221a0ba2059e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 2
+  moveForce: 6
   torqueForce: 40
   iceBallRootGo: {fileID: 8451670410499882844}
   controllerPos: {fileID: 1050822971930189685}
@@ -350,8 +350,9 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 1
   observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 8
+  ObservedComponents:
+  - {fileID: 5815739134596760776}
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &5815739134596760776
