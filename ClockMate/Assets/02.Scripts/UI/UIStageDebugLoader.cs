@@ -70,6 +70,11 @@ public class UIStageDebugLoader : UIBase
         RPCManager rpcManager = RPCManager.Instance;
 
         BoStage stage = new BoStage(stageId);
+        if (GameManager.Instance.CurrentStage.ID == 4)
+        {
+            ChaseControlModule controlModule = FindObjectOfType<ChaseControlModule>();
+            controlModule.FinishChase();
+        }
         if (stage.Map != GameManager.Instance.CurrentStage.Map)
         {
             // 다른 맵의 스테이지라면 해당 맵(씬)으로 이동
