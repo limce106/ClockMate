@@ -167,14 +167,17 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         string currentScene = SceneManager.GetActiveScene().name;
 
-        if (!PhotonNetwork.IsMasterClient) yield break;
-        CutsceneSyncManager.Instance.PlayCinematicForAll(
-            cutsceneName: currentScene + "_Intro",
-            masterOnlyOnAllFinished:
-            () =>
-            {
-                photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
-            });
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CutsceneSyncManager.Instance.PlayCinematicForAll(
+                cutsceneName: currentScene + "_Intro",
+                masterOnlyOnAllFinished:
+                () =>
+                {
+                    photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
+                });
+        }
+        GameManager.Instance.PlayMapBgm();
     }
     
     [PunRPC]
@@ -185,6 +188,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             if(currentScene.Equals(puzzleMap.ToString()))
             {
                 UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+                break;
             }
         }
 
@@ -193,7 +197,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
 
         if (currentScene == "ClockTower") return;
-        GameManager.Instance.PlayMapBgm();
         UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
