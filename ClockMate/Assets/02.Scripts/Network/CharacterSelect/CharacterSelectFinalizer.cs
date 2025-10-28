@@ -32,7 +32,6 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
                 0f,
                 () => 
                 {
-                    //LoadingManager.Instance.photonView.RPC("RPC_LoadScene", RpcTarget.All, GameManager.Instance?.CurrentStage.Map.ToString());
                     string targetMap = GameManager.Instance?.CurrentStage.Map.ToString();
                     RPCManager.Instance?.photonView.RPC(
                         nameof(RPCManager.Instance.RPC_MoveToMap), 
@@ -42,7 +41,8 @@ public class CharacterSelectFinalizer : MonoBehaviourPun
                 }
             );
         }
-        //LoadingManager.Instance.ShowLoadingUI();
+
+        _characterSelectManager.blackImg.gameObject.SetActive(true);
     }
 
     void Update()

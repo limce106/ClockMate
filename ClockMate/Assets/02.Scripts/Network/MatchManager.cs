@@ -444,4 +444,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
         // 마스터도 퇴장
         PhotonNetwork.LeaveRoom();
     }
+
+    public void ResetStatusAndJoinCode()
+    {
+        joinCodeStatusText.text = "";
+        joinCodeInputField.text = "";
+    }
 }
