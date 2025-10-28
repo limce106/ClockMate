@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 3187237195552332012}
   - component: {fileID: 8404383011899303599}
   - component: {fileID: 2191848776596105947}
+  - component: {fileID: 7400314706188248694}
   m_Layer: 0
   m_Name: IceBall
   m_TagString: Untagged
@@ -178,10 +179,27 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 1
   observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
+  ObservedComponents:
+  - {fileID: 7400314706188248694}
+  sceneViewId: 10
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &7400314706188248694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451670410499882844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 0
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &681201234286698766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -266,6 +284,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1287856902156068757}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5815739134596760776}
   m_SourcePrefab: {fileID: 100100000, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
 --- !u!1 &411363825195572319 stripped
 GameObject:
@@ -330,9 +351,25 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 0
+  sceneViewId: 8
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &5815739134596760776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411363825195572319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &1080483018516858597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
