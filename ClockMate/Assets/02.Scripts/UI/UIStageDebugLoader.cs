@@ -72,8 +72,7 @@ public class UIStageDebugLoader : UIBase
         BoStage stage = new BoStage(stageId);
         if (GameManager.Instance.CurrentStage.ID == 4)
         {
-            ChaseControlModule controlModule = FindObjectOfType<ChaseControlModule>();
-            controlModule.StopChase();
+            RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_StopSledChase), RpcTarget.All);
         }
         if (stage.Map != GameManager.Instance.CurrentStage.Map)
         {
