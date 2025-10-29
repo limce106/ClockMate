@@ -57,6 +57,10 @@ public class SnowballShooter : MonoBehaviourPun
     public void SetActive(bool active)
     {
         _active = active;
+        if (!active)
+        {
+            SnowballPool.Instance.ReturnAll();
+        }
     }
     
     [PunRPC]

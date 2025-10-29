@@ -86,11 +86,11 @@ public class PolarBearController : MonoBehaviourPun, IPunObservable
     //     }
     // }
 
-    public void StartChase()
+    public void SetChaseState(bool isActive)
     {
         //_rb.isKinematic = false;
-        _chaseSled = true;
-        shooter.SetActive(true);
+        _chaseSled = isActive;
+        shooter.SetActive(isActive);
     }
 
     public void ResetTransform()
