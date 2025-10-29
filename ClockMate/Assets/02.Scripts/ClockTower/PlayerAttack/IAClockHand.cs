@@ -90,6 +90,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
+        _uiNotice.SetVerticalPos(false);
 
         return true;
     }
