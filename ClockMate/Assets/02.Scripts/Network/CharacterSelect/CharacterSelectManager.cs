@@ -138,6 +138,16 @@ public class CharacterSelectManager : MonoBehaviourPun
         UpdateStatusText();
 
         RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
+        InActiveAllReadyUI();
+    }
+
+    private void InActiveAllReadyUI()
+    {
+        foreach(var characterSlot in characters)
+        {
+            if(characterSlot.ready.activeSelf)
+                characterSlot.ready.SetActive(false);
+        }
     }
 
     void UpdateButtonsInteractable()

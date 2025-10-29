@@ -46,9 +46,8 @@ public class UILoading : UIBase
             climateTip.text = randomTip;
     }
 
-    public IEnumerator MoveCharacater(Vector2 endPos)
+    public IEnumerator MoveCharacater(Vector2 startPos, Vector2 endPos)
     {
-        Vector2 startPos = characterImgRectTransform.anchoredPosition;
         float elapsedTime = 0f;
 
         while (elapsedTime < _characterMoveDuration)

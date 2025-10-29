@@ -80,15 +80,24 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void StartMoveCharacter(string nextSceneName)
     {
+        // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
+        LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
+            Where(data => data.Map.ToString() == SceneManager.GetActiveScene().name).First<LDLoadingPosition>();
+
         LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
 
+
+        Vector2 moveStartPos = new Vector2(currentLoadingPos.PosX, currentLoadingPos.PosY);
         Vector2 moveEndPos = new Vector2(nextLoadingPos.PosX, nextLoadingPos.PosY);
-        _uiLoading.StartCoroutine(_uiLoading.MoveCharacater(moveEndPos));
+
+        _uiLoading.StartCoroutine(_uiLoading.MoveCharacater(moveStartPos, moveEndPos));
     }
 
     private IEnumerator LoadSceneAsync(string nextSceneName)
     {
+        StartMoveCharacter(nextSceneName);
+
         _currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
         _currentLoadOperation.allowSceneActivation = false;
 
@@ -104,8 +113,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
             yield return null;
         }
-
-        StartMoveCharacter(nextSceneName);
     }
 
     [PunRPC]
