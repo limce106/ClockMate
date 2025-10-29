@@ -254,6 +254,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
+        _uiNotice.SetVerticalPos(false);
 
         Collider[] cols = GetComponentsInChildren<Collider>();
         foreach(var col in cols)

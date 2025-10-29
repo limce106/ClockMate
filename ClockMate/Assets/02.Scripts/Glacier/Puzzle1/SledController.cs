@@ -5,7 +5,7 @@ using static Define.Character;
 
 public class SledController : MonoBehaviourPunCallbacks, IPunObservable
 {
-    [SerializeField] private SledTurret turret;
+    [field: SerializeField] public SledTurret Turret { get; private set; }
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float maxYawAngle; // 좌우 최대 회전 각도
@@ -160,10 +160,6 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     private void RPC_SetSledMoveState(bool value)
     {
         IsMoving = value;
-        if (GameManager.Instance.SelectedCharacter == CharacterName.Milli)
-        {
-            turret.SetActive(value);
-        }
         SoundManager.Instance.StopByKey(movingSfxKey);
         if (IsMoving)
         {

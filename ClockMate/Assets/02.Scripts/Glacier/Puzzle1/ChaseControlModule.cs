@@ -48,7 +48,7 @@ public class ChaseControlModule : MonoBehaviourPun
         sled.gameObject.SetActive(true);
         sled.SetSledMoveState(true);
         bear.gameObject.SetActive(true);
-        bear.StartChase();
+        bear.SetChaseState(true);
         // 아워 & 밀리 각자 카메라 세팅
         CharacterName character = GameManager.Instance.SelectedCharacter;
         if (character is CharacterName.Hour)
@@ -58,15 +58,33 @@ public class ChaseControlModule : MonoBehaviourPun
         else
         {
             VcamMilli.gameObject.SetActive(true);
+            sled.Turret.SetActive(true);
         }
         // UI 표시 - 체력 & 조작 도움
-        ActivateChaseUI();
+        sled.Hp.Init();
+        ActivateHelpUI();
     }
     
     public void StopChase()
     {
+        if (NetworkManager.Instance.IsInRoomAndReady())
+        {
+            photonView.RPC(nameof(RPC_StopChase), RpcTarget.All);
+        }
+        else
+        {
+            RPC_StopChase();
+        }
+    }
+
+    [PunRPC]
+    private void RPC_StopChase()
+    {
         // 아워 & 밀리 각자 카메라
         CharacterName character = GameManager.Instance.SelectedCharacter;
+        _uiControlHelp?.Close();
+        sled.Hp.CloseUI();
+        sled.SetSledMoveState(false);
         if (character is CharacterName.Hour)
         {
             VcamHour.gameObject.SetActive(false);
@@ -74,11 +92,10 @@ public class ChaseControlModule : MonoBehaviourPun
         else
         {
             VcamMilli.gameObject.SetActive(false);
+            sled.Turret.SetActive(false);
         }
-        _uiControlHelp?.Close();
-        sled.Hp.CloseUI();
-        sled.SetSledMoveState(false);
         sled.gameObject.SetActive(false);
+        bear.SetChaseState(false);
         bear.gameObject.SetActive(false);
     }
     
@@ -129,7 +146,7 @@ public class ChaseControlModule : MonoBehaviourPun
         bear.gameObject.SetActive(true);
         
         // 체력 리셋
-        sled.Hp.Init();
+        sled.Hp.ResetValues();
         
         // 눈덩이 풀 리셋
         SnowballPool.Instance.ReturnAll();
@@ -152,10 +169,8 @@ public class ChaseControlModule : MonoBehaviourPun
         StopChase();
     }
     
-    private void ActivateChaseUI()
+    private void ActivateHelpUI()
     {
-        sled.Hp.Init();
-        
         _uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
         bool isHour = GameManager.Instance.SelectedCharacter == CharacterName.Hour;
         Sprite s1 = isHour ? Key.AD.LoadSprite() : Key.WASD.LoadSprite();
