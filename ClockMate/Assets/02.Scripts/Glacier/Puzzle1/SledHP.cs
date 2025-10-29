@@ -33,7 +33,7 @@ public class SledHp : MonoBehaviourPun
         }
     }
     
-    private void ResetValues()
+    public void ResetValues()
     {
         _currentHp = maxHp;
         _uiHpBar.UpdateHpBar(maxHp, _currentHp);
