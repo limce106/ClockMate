@@ -19,7 +19,7 @@ public class ThirdPersonFollowPOVCam : MonoBehaviour
     private CinemachinePOV pov;
     public Transform POVTransform => pov != null ? pov.transform : null;
 
-    public void SetupCamera()
+    public void Start()
     {
         vcam = GetComponent<CinemachineVirtualCamera>();
 
