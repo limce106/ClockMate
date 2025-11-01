@@ -15,6 +15,9 @@ public class PlayerInputHandler : MonoBehaviour
     private CharacterBase _character;
     private PlayerInputActions _inputActions;
     private bool _isMoving;
+
+    private Vector3 lastMoveDirection;
+
     public ClimbingState climbingState { private set; get; } = ClimbingState.None;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
@@ -63,6 +66,7 @@ public class PlayerInputHandler : MonoBehaviour
         _inputActions.Player.Interact.performed += OnInteractPressed;
         _inputActions.Player.Ability.performed += OnAbilityPressed;
         _inputActions.Player.Move.performed += OnMovePressed;
+        _inputActions.Player.Move.canceled += OnMoveReleased;
         _inputActions.Player.Climb.performed += OnClimbPressed;
     }
 
@@ -79,30 +83,32 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!_isMoving) return;
 
-        HandleMovement();
+        _character.Move(lastMoveDirection);
     }
 
     /// <summary>
     /// 사용자 입력을 읽고 카메라 기준으로 이동 벡터를 계산한 후 캐릭터 이동을 처리한다.
+    /// 현재 사용 안 함
     /// </summary>
     private void HandleMovement()
     {
         Vector2 inputDirection = _inputActions.Player.Move.ReadValue<Vector2>().normalized;
-        
+
         // 카메라 기준 이동 방향 벡터 (y축 제거 후 정규화)
         Vector3 camForward = Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized;
         Vector3 camRight = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
-        
+
         // 카메라(화면) 기준 이동 방향 계산
         Vector3 moveDirection = (camForward * inputDirection.y) + (camRight * inputDirection.x);
-        
+
         // 캐릭터 이동 처리
         _character.Move(moveDirection);
-        
+
         // 입력이 거의 없으면 이동 상태 종료 처리
         if (!(inputDirection.sqrMagnitude < 0.01f)) return;
         _isMoving = false;
         _character.ChangeState<IdleState>();
+        _character.Move(lastMoveDirection);
     }
 
     private void OnMovePressed(InputAction.CallbackContext context)
@@ -110,10 +116,26 @@ public class PlayerInputHandler : MonoBehaviour
         if (!_actionsAvailable[CharacterAction.Move]) return;
         if (_character.CurrentState is ClimbState) return;
 
+        Vector2 inputDir = _inputActions.Player.Move.ReadValue<Vector2>();
+        if (inputDir.sqrMagnitude < 0.01f) return;
+
+        // 카메라 기준 이동 방향 계산
+        Transform camTransform = Camera.main.transform;
+        Vector3 camForward = Vector3.ProjectOnPlane(camTransform.forward, Vector3.up).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(camTransform.right, Vector3.up).normalized;
+
+        lastMoveDirection = (camRight * inputDir.x + camForward * inputDir.y).normalized;
+
         _isMoving = true;
         _character.ChangeState<WalkState>();
     }
 
+    private void OnMoveReleased(InputAction.CallbackContext context)
+    {
+        _isMoving = false;
+        lastMoveDirection = Vector3.zero;
+        _character.ChangeState<IdleState>();
+    }
 
     private void OnJumpPressed(InputAction.CallbackContext context)
     {

@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using Define;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
-using ExitGames.Client.Photon;
-using UnityEngine.Serialization;
 
 public class TestServerConnector : MonoBehaviourPunCallbacks
 {
@@ -124,10 +121,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
-
-        CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
-        if (cinemachineTargetSetter != null)
-            cinemachineTargetSetter.SetTarget();
     }
 
     private AppSettings GetAppSettingsFromEnv()

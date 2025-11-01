@@ -157,10 +157,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
         character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, false);
 
-        CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
-        if(cinemachineTargetSetter != null)
-            cinemachineTargetSetter.SetTarget();
-
         yield return new WaitForSeconds(1f);
 
         if (_uiLoading != null)
