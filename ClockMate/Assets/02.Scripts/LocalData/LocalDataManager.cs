@@ -13,6 +13,7 @@ public class LocalDataManager : Singleton<LocalDataManager>
     public LocalDataList<LDClimateTips> ClimateTips { get; private set; }
     public LocalDataList<LDLoadingPosition> LoadingPosition { get; private set; }
     public LocalDataList<LDPuzzleQuest> PuzzleQuest { get; private set; }
+    public LocalDataList<LDPlayerAttackQuest> PlayerAttackQuest { get; private set; }
 
     public LocalDataManager()
     {
@@ -20,6 +21,7 @@ public class LocalDataManager : Singleton<LocalDataManager>
         ClimateTips = new LocalDataList<LDClimateTips>();
         LoadingPosition = new LocalDataList<LDLoadingPosition>();
         PuzzleQuest = new LocalDataList<LDPuzzleQuest>();
+        PlayerAttackQuest = new LocalDataList<LDPlayerAttackQuest>();
         
         LoadAll();
     }
