@@ -130,7 +130,17 @@ public class LocalDataManager : Singleton<LocalDataManager>
                 else
                 {
                     // 그 외 타입인경우
-                    currentProperty.SetValue(newData, Convert.ChangeType(lineList[j], currentType));
+                    object parsedValue;
+                    string data = lineList[j];
+
+                    // string 타입이면서 데이터가 따옴표로 시작하고 끝난다면 따옴표를 제거
+                    if (currentType == typeof(string) && data.StartsWith("\"") && data.EndsWith("\"") && data.Length >= 2)
+                    {
+                        data = data.Trim('"');
+                    }
+
+                    parsedValue = Convert.ChangeType(data, currentType);
+                    currentProperty.SetValue(newData, parsedValue);
                 }
             }
 
