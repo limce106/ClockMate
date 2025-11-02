@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LDLoadingPosition : LocalDataBase
 {
-    public Map.MapName Map { get; set; }
+    public string Map { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
 }

@@ -80,15 +80,35 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void StartMoveCharacter(string nextSceneName)
     {
+        string currentMap = "";
+
+        if(SceneManager.GetActiveScene().name == "TitleMatch" || SceneManager.GetActiveScene().name == "CharacterSelect")
+        {
+            currentMap = "Village";
+        }
+        else
+        {
+            currentMap = SceneManager.GetActiveScene().name;
+        }
+
+        // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
+        LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
+            Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
+
         LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
 
+
+        Vector2 moveStartPos = new Vector2(currentLoadingPos.PosX, currentLoadingPos.PosY);
         Vector2 moveEndPos = new Vector2(nextLoadingPos.PosX, nextLoadingPos.PosY);
-        _uiLoading.StartCoroutine(_uiLoading.MoveCharacater(moveEndPos));
+
+        _uiLoading.StartCoroutine(_uiLoading.MoveCharacater(moveStartPos, moveEndPos));
     }
 
     private IEnumerator LoadSceneAsync(string nextSceneName)
     {
+        StartMoveCharacter(nextSceneName);
+
         _currentLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
         _currentLoadOperation.allowSceneActivation = false;
 
@@ -104,8 +124,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
             yield return null;
         }
-
-        StartMoveCharacter(nextSceneName);
     }
 
     [PunRPC]
@@ -150,10 +168,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
         character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, false);
 
-        CinemachineTargetSetter cinemachineTargetSetter = FindObjectOfType<CinemachineTargetSetter>();
-        if(cinemachineTargetSetter != null)
-            cinemachineTargetSetter.SetTarget();
-
         yield return new WaitForSeconds(1f);
 
         if (_uiLoading != null)
@@ -197,6 +211,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
 
         if (currentScene == "ClockTower") return;
+
+        UIManager.Instance.Show<UIQuest>("UIQuest");
         UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 

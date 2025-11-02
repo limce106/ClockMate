@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 using System;
+using static Define.Character;
 
 public class CharacterSelectManager : MonoBehaviourPun
 {
@@ -27,8 +28,11 @@ public class CharacterSelectManager : MonoBehaviourPun
     public TMP_Text statusText;
     public Image blackImg;
 
-    public Dictionary<int, CharacterSlot> actorNumcharacter { private set; get; } = new Dictionary<int, CharacterSlot>();
+    public Dictionary<int, CharacterSlot> actorNumcharacter { private set; get; } = new Dictionary<int, CharacterSlot>(); // 캐릭터를 고른 플레이어
+    private HashSet<int> readyPlayerId = new HashSet<int>(); // 준비 상태
     private int _localActorNumber;
+    private bool _isLoadingStarted = false;
+    private const int PlayerNum = 2;
 
 
     private void Awake()
@@ -47,6 +51,17 @@ public class CharacterSelectManager : MonoBehaviourPun
                     photonView.RPC(nameof(RPC_SetBlackImgActive), RpcTarget.All, false);
                 }
             );
+        }
+    }
+
+    private void Update()
+    {
+        if (_isLoadingStarted)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.E) && actorNumcharacter.Count == PlayerNum)
+        {
+            photonView.RPC(nameof(RPC_UpdateReadyUI), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
 
@@ -133,11 +148,21 @@ public class CharacterSelectManager : MonoBehaviourPun
         characters[slotIndex].selectedByActorNumber = -1;
 
         actorNumcharacter.Remove(actorNumber);
+        readyPlayerId.Clear();
+
+        InActiveAllReadyUI();
 
         UpdateButtonsInteractable();
         UpdateStatusText();
+    }
 
-        RPCManager.Instance.photonView.RPC("ResetAllReadyStates", RpcTarget.All);
+    private void InActiveAllReadyUI()
+    {
+        foreach(var characterSlot in characters)
+        {
+            if(characterSlot.ready.activeSelf)
+                characterSlot.ready.SetActive(false);
+        }
     }
 
     void UpdateButtonsInteractable()
@@ -186,8 +211,6 @@ public class CharacterSelectManager : MonoBehaviourPun
             }
         }
 
-        bool canAcceptReady = false;
-
         if (!localSelected && !otherSelected)
         {
             statusText.text = "<color=#FFD13A>원하는 캐릭터</color>를 선택해주세요.";
@@ -203,14 +226,73 @@ public class CharacterSelectManager : MonoBehaviourPun
         else
         {
             statusText.text = "E키를 눌러 게임을 준비할 수 있어요";
-            canAcceptReady = true;
         }
-
-        RPCManager.Instance.photonView.RPC("SetCanAcceptReady", RpcTarget.All, canAcceptReady);
     }
 
     public void PlayUIClickSFX()
     {
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    [PunRPC]
+    private void RPC_UpdateReadyUI(int actorNum)
+    {
+        var characterSlot = actorNumcharacter[actorNum];
+
+        bool isActive = !characterSlot.ready.activeSelf;
+        characterSlot.ready.SetActive(isActive);
+
+        if (isActive)
+        {
+            readyPlayerId.Add(actorNum);
+        }
+        else
+        {
+            readyPlayerId.Remove(actorNum);
+        }
+
+        if (readyPlayerId.Count == 2)
+            StartCoroutine(HandleAllReadySequence());
+    }
+
+    private IEnumerator HandleAllReadySequence()
+    {
+        statusText.text = "잠시 후 <color=#FFD13A>아워와 밀리의 모험</color>이 시작됩니다!";
+        SaveSelectedCharacter();
+        _isLoadingStarted = true;
+
+        yield return new WaitForSeconds(1.5f);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GameManager.Instance?.CreateNewSaveData();
+            CutsceneSyncManager.Instance.PlayForAll(
+                "KronosAdvent",
+                0f,
+                () =>
+                {
+                    string targetMap = GameManager.Instance?.CurrentStage.Map.ToString();
+                    RPCManager.Instance?.photonView.RPC(
+                        nameof(RPCManager.Instance.RPC_MoveToMap),
+                        RpcTarget.All,
+                        targetMap);
+
+                }
+            );
+        }
+
+        blackImg.gameObject.SetActive(true);
+    }
+
+    private void SaveSelectedCharacter()
+    {
+        int localActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        var slot = actorNumcharacter[localActorNumber];
+
+        int slotIndex = GetCharacterIndex(slot);
+        CharacterName character = (CharacterName)slotIndex;
+
+        GameManager.Instance.SetSelectedCharacter(character);
+        Debug.Log($"[CharacterSelectReadyUI] 내 선택 캐릭터 저장됨: {character}");
     }
 }

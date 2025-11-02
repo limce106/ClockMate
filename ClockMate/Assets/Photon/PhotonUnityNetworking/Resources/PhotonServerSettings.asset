@@ -46,10 +46,7 @@ MonoBehaviour:
   - ExecuteSyncedAllPlayersReady
   - Fire
   - ForceReturnToTitle
-  - MarkReady
   - NotifyPlayerLoaded
-  - ResetAllReadyStates
-  - ResetReadyState
   - RespawnSpaceship
   - RPC_Move
   - RPC_OpenDoor
@@ -60,10 +57,7 @@ MonoBehaviour:
   - RPC_SwitchFan
   - RPC_SyncJump
   - SelectCharacter
-  - SetCanAcceptReady
   - SetCharacterActive
-  - SyncReadyStatus
-  - UnmarkReady
   - UpdateStatusText
   - RPC_HandleDeath
   - RPC_Revive
@@ -200,6 +194,9 @@ MonoBehaviour:
   - RPC_MoveBall
   - SetBlackImgActive
   - RPC_SetBlackImgActive
+  - RPC_StopSledChase
+  - RPC_StopChase
+  - RPC_ShowQuest
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

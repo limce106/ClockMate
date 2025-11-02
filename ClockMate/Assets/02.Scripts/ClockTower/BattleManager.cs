@@ -164,6 +164,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
                 _timer = playerAttackTimeLimit[playerAttackType];
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
+                photonView.RPC(nameof(RPC_ShowQuest), RpcTarget.All);
             }
 
             BattleLifeManager.Instance.allowRevive = true;
@@ -510,5 +511,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         photonView.RPC("ReportAttackResult", RpcTarget.All, false);
         attackEnded = true;
+    }
+
+    [PunRPC]
+    private void RPC_ShowQuest()
+    {
+        UIManager.Instance.Show<UIQuest>("UIQuest");
     }
 }
