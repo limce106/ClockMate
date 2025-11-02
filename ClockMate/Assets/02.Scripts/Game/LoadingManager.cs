@@ -80,9 +80,20 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private void StartMoveCharacter(string nextSceneName)
     {
+        string currentMap = "";
+
+        if(SceneManager.GetActiveScene().name == "TitleMatch" || SceneManager.GetActiveScene().name == "CharacterSelect")
+        {
+            currentMap = "Village";
+        }
+        else
+        {
+            currentMap = SceneManager.GetActiveScene().name;
+        }
+
         // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
-            Where(data => data.Map.ToString() == SceneManager.GetActiveScene().name).First<LDLoadingPosition>();
+            Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
         LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
@@ -200,7 +211,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
 
         if (currentScene == "ClockTower") return;
+
         UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+        UIManager.Instance.Show<UIQuest>("UIQuest");
     }
 
     /// <summary>
