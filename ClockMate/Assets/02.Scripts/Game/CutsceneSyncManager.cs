@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using DefineExtension;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 컷신 동기화 유틸
@@ -181,7 +183,10 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         if (_currentType == CutsceneType.Video)
         {
             cutscenePlayer.Skip();
-            GameManager.Instance.PlayMapBgm();
+            if (SceneManager.GetActiveScene().ToString().IsPuzzleMap())
+            {
+                GameManager.Instance.PlayMapBgm();
+            }
         }
         else
         {
