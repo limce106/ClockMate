@@ -212,8 +212,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         if (currentScene == "ClockTower") return;
 
-        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
         UIManager.Instance.Show<UIQuest>("UIQuest");
+        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
     /// <summary>
