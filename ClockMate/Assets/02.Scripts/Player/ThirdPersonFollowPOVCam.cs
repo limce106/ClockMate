@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Cinemachine;
+using Photon.Pun;
 
 public class ThirdPersonFollowPOVCam : MonoBehaviour
 {
@@ -21,6 +22,13 @@ public class ThirdPersonFollowPOVCam : MonoBehaviour
 
     public void Start()
     {
+        // 자기 캐릭터가 아니라면 끄기
+        PhotonView photonView = GetComponentInParent<PhotonView>();
+        if (!photonView.IsMine)
+        {
+            gameObject.SetActive(false);
+        }
+
         vcam = GetComponent<CinemachineVirtualCamera>();
 
         // 위치 제어
