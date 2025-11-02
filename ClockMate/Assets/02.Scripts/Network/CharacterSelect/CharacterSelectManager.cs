@@ -62,26 +62,6 @@ public class CharacterSelectManager : MonoBehaviourPun
         if (Input.GetKeyDown(KeyCode.E) && actorNumcharacter.Count == PlayerNum)
         {
             photonView.RPC(nameof(RPC_UpdateReadyUI), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
-
-            //CharacterSlot slot;
-            //actorNumcharacter.TryGetValue(_localActorNumber, out slot);
-
-            //bool active = !slot.ready.activeSelf;
-            //slot.ready.SetActive(active);
-            
-            //if(active)
-            //{
-            //    readyPlayerId.Add(_localActorNumber);
-            //}
-            //else
-            //{
-            //    readyPlayerId.Remove(_localActorNumber);
-            //}
-
-            //if(readyPlayerId.Count == 2)
-            //{
-
-            //}
         }
     }
 
