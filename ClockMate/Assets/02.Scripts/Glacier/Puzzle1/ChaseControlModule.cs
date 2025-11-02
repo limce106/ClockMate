@@ -16,6 +16,7 @@ public class ChaseControlModule : MonoBehaviourPun
     [SerializeField] private float restartWaitTime = 3f;
 
     private UIControlHelp _uiControlHelp; 
+    private bool _chaseStarted;
     /// <summary>
     /// 북극곰 썰매 추격 메서드를 호출한다. 서버 연결 상태에 따라 분기한다.
     /// </summary>
@@ -45,6 +46,7 @@ public class ChaseControlModule : MonoBehaviourPun
     [PunRPC]
     private void RPC_StartChase()
     {
+        _chaseStarted = true;
         sled.gameObject.SetActive(true);
         sled.SetSledMoveState(true);
         bear.gameObject.SetActive(true);
@@ -80,11 +82,14 @@ public class ChaseControlModule : MonoBehaviourPun
     [PunRPC]
     private void RPC_StopChase()
     {
+        if (!_chaseStarted) return;
+        _chaseStarted = false;
+
         // 아워 & 밀리 각자 카메라
         CharacterName character = GameManager.Instance.SelectedCharacter;
         _uiControlHelp?.Close();
-        sled.Hp.CloseUI();
-        sled.SetSledMoveState(false);
+        sled?.Hp?.CloseUI();
+        sled?.SetSledMoveState(false);
         if (character is CharacterName.Hour)
         {
             VcamHour.gameObject.SetActive(false);
@@ -92,11 +97,11 @@ public class ChaseControlModule : MonoBehaviourPun
         else
         {
             VcamMilli.gameObject.SetActive(false);
-            sled.Turret.SetActive(false);
+            sled?.Turret.SetActive(false);
         }
-        sled.gameObject.SetActive(false);
-        bear.SetChaseState(false);
-        bear.gameObject.SetActive(false);
+        sled?.gameObject.SetActive(false);
+        bear?.SetChaseState(false);
+        bear?.gameObject.SetActive(false);
     }
     
     /// <summary>
