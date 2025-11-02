@@ -5,6 +5,7 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using JetBrains.Annotations;
 using System;
+using DefineExtension;
 using static Define.Character;
 
 public class RPCManager : MonoBehaviourPunCallbacks
@@ -124,9 +125,19 @@ public class RPCManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void RPC_SyncStage(int stageID)
+    public void RPC_MoveToStage(int stageID)
     {
+        GameManager.Instance.CurrentStage?.Exit();
+        BoStage targetStage = new BoStage(stageID);
         GameManager.Instance.SetCurrentStage(stageID);
+
+        if (targetStage.Map.GetMapSceneName() != SceneManager.GetActiveScene().name)
+        {
+            // 이동하려고 하는 스테이지와 현재 씬이 일치하지 않으면 씬 이동
+            ResetTestManager.Instance.RemoveAllResettable();
+            LoadingManager.Instance.ShowLoadingUI();
+            LoadingManager.Instance.LoadScene(targetStage.Map.GetMapSceneName());
+        }
     }
     
     [PunRPC]

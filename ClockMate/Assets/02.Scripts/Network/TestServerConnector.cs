@@ -110,7 +110,7 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
             SaveManager.Instance.Save(stageId);   
-            GameManager.Instance?.LoadExistingSaveData();
+            GameManager.Instance?.SetStageWithExistingData();
         }
         else
         {
