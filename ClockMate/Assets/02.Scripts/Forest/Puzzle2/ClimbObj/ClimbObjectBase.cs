@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Define;
 using UnityEngine;
+using static Define.Icon;
 
 public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
 {
@@ -11,7 +12,7 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
     protected UINotice _uiNotice;
     private Sprite _exitSprite;
     private string _exitString;
-    protected UIClimbableObj _uiClimbableObj;
+    protected UIControlHelp _uiControlHelp;
 
     protected bool isColliding = false;
     public bool playerAttached = false;
@@ -41,8 +42,8 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
     /// </summary>
     public void CloseUI()
     {
-        if(_uiClimbableObj != null && _uiClimbableObj.gameObject.activeSelf)
-            _uiManager.Close(_uiClimbableObj);
+        if (_uiControlHelp != null && _uiControlHelp.gameObject.activeSelf)
+            _uiManager.Close(_uiControlHelp);
         if (_uiNotice != null && _uiNotice.gameObject.activeSelf)
             _uiManager.Close(_uiNotice);
     }
@@ -79,8 +80,7 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
 
-        _uiClimbableObj = _uiManager.Show<UIClimbableObj>("UIClimbableObj");
-
+        ActivateHelpUI();
         EnableColliders(false);
 
         return true;
@@ -126,5 +126,11 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
             SoundManager.Instance.Stop(_climbSfxHandle);
             _climbSfxHandle = default;
         }
+    }
+
+    private void ActivateHelpUI()
+    {
+        _uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiControlHelp.SetControl(Key.W.LoadSprite(Style.Outline), "올라가기", Key.S.LoadSprite(Style.Outline), "내려가기");
     }
 }
