@@ -109,7 +109,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
             var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
             GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
             GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
-            SaveManager.Instance.Save(stageId);   
+            SaveManager.Instance.SaveNewGame(Character.CharacterName.Hour);
+            SaveManager.Instance.SaveStage(stageId);   
             GameManager.Instance?.SetStageWithExistingData();
         }
         else

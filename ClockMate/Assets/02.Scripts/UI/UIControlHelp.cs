@@ -7,7 +7,15 @@ public class UIControlHelp : UIBase
     [SerializeField] private Image img2;
     [SerializeField] private Text txt1;
     [SerializeField] private Text txt2;
-    
+
+    private void OnEnable()
+    {
+        img1.enabled = true;
+        img2.enabled = true;
+        txt1.enabled = true;
+        txt2.enabled = true;
+    }
+
     public void SetControl(Sprite s1, string t1, Sprite s2, string t2)
     {
         img1.sprite = s1;
@@ -28,5 +36,12 @@ public class UIControlHelp : UIBase
             img2.sprite = s;
             txt2.text = t;
         }
+    }
+
+    public void SetOnlyFirst(Sprite s, string t)
+    {
+       SetControl(true, s, t);
+       img2.enabled = false;
+       txt2.enabled = false;
     }
 }

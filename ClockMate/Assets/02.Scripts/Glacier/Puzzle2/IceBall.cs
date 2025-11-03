@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using Define;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
+using static Define.Icon;
 
 /// <summary>
 /// 아워가 밀 수 있는 빙벽.
@@ -21,6 +21,7 @@ public class IceBall : MonoBehaviourPun
     private UINotice _uiNotice;
     private Sprite _exitSprite;
     private string _exitString;
+    private UIControlHelp _uiHelp;
     
     public bool IsControlled { get; private set; }
     private CharacterBase _controller;
@@ -43,7 +44,7 @@ public class IceBall : MonoBehaviourPun
         IsControlled = false;
         _controller = null;
         
-        _exitSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
+        _exitSprite = Key.Q.LoadSprite(Style.Outline);;
         _exitString = "나가기";
 
         // 반지름 + 여유거리 계산
@@ -129,6 +130,11 @@ public class IceBall : MonoBehaviourPun
         _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
+        _uiHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiHelp.SetOnlyFirst(Key.Arrows.LoadSprite(), "움직이기");
+        
+        GameManager.Instance.CurrentStage.CbExit -= ExitControl;
+        GameManager.Instance.CurrentStage.CbExit += ExitControl;
     }
 
     private IEnumerator WaitForAnimTransition()
@@ -165,7 +171,9 @@ public class IceBall : MonoBehaviourPun
         OnControlEnd(false, _controller); // 충돌 다시 활성화
         _controller = null;
 
-        UIManager.Instance.Close(_uiNotice);
+        _uiHelp.Close();
+        _uiHelp = null;
+        _uiNotice.Close();
         _uiNotice = null;
     }
 }

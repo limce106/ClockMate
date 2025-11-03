@@ -36,6 +36,9 @@ public class GameManager : MonoSingleton<GameManager>
         
         // 저장 데이터가 존재하면 불러오기
         SaveData saveData = SaveManager.Instance.Load();
+        SetSelectedCharacter(saveData.character);
+        CharacterName otherCh = saveData.character == CharacterName.Hour ? CharacterName.Milli : CharacterName.Hour;
+        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SetSelectedCharacter), RpcTarget.Others, (int) otherCh);
         _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, saveData.stageId);
     }
     
@@ -49,7 +52,7 @@ public class GameManager : MonoSingleton<GameManager>
         if (!PhotonNetwork.IsMasterClient) return;
         
         // 저장된 데이터가 없으면 (새 게임이면)
-        SaveManager.Instance.Save(1); // 사막 맵 stage 1으로 저장
+        SaveManager.Instance.SaveNewGame(SelectedCharacter); // 사막 맵 stage 1으로 저장
         _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, 1);
     }
 
@@ -66,7 +69,7 @@ public class GameManager : MonoSingleton<GameManager>
         {
             // 다음 스테이지 존재하는 경우
             
-            SaveManager.Instance.Save(nextStage.ID); // 진행 상태 저장
+            SaveManager.Instance.SaveStage(nextStage.ID); // 진행 상태 저장
             _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
         }
     }
