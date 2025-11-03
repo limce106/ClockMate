@@ -1,9 +1,10 @@
 ﻿using System;
-using Define;
+using System.Linq;
 using UnityEngine;
 using static Define.Block;
 using static Define.Character;
 using static Define.Icon;
+using static Define.Map;
 
 namespace DefineExtension
 {
@@ -25,39 +26,45 @@ namespace DefineExtension
     }
     public static class MapExtension
     {
-        public static int GetLastStageIndex(this Map.MapName mapName)
+        public static int GetLastStageIndex(this MapName mapName)
         {
             return mapName switch
             {
-                Map.MapName.Desert => 3,
-                Map.MapName.Glacier => 3,
-                Map.MapName.Forest => 3,
-                Map.MapName.ClockTower => 1,
+                MapName.Desert => 3,
+                MapName.Glacier => 3,
+                MapName.Forest => 3,
+                MapName.ClockTower => 1,
                 _ => 0
             };
         }
 
-        public static Map.MapName GetNextMap(this Map.MapName mapName)
+        public static MapName GetNextMap(this MapName mapName)
         {
             return mapName switch
             {
-                Map.MapName.Desert => Map.MapName.Glacier,
-                Map.MapName.Glacier => Map.MapName.Forest,
-                Map.MapName.Forest => Map.MapName.ClockTower,
-                _ => Map.MapName.None
+                MapName.Desert => MapName.Glacier,
+                MapName.Glacier => MapName.Forest,
+                MapName.Forest => MapName.ClockTower,
+                _ => MapName.None
             };
         }
 
-        public static string GetMapSceneName(this Map.MapName mapName)
+        public static string GetMapSceneName(this MapName mapName)
         {
             return mapName switch
             {
-                Map.MapName.Desert => "Desert",
-                Map.MapName.Glacier => "Glacier",
-                Map.MapName.Forest => "Forest",
-                Map.MapName.ClockTower => "ClockTower",
+                MapName.Desert => "Desert",
+                MapName.Glacier => "Glacier",
+                MapName.Forest => "Forest",
+                MapName.ClockTower => "ClockTower",
                 _ => "None"
             };
+        }
+
+        public static bool IsPuzzleMap(this string sceneName)
+        {
+            return Enum.GetValues(typeof(PuzzleMapName)).Cast<PuzzleMapName>()
+                .Any(puzzleMap => sceneName.Equals(puzzleMap.ToString()));
         }
     }
 

@@ -104,7 +104,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         if (isA) _worldMoveA = worldMove;
         else     _worldMoveB = worldMove;
     }
-    
+
     /// <summary>
     /// 두 개의 Grip이 모두 점유되었다면 들어올려지도록 한다.
     /// 둘 중 하나라도 점유되지 않았다면 운반 상태를 취소한다.
@@ -112,12 +112,28 @@ public class Cog : MonoBehaviourPun, IPunObservable
     public void OnGripStateChange()
     {
         CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
+        if (gripA.IsOccupied || gripB.IsOccupied)
+        {
+            // _rb.velocity = Vector3.zero;
+            // _rb.angularVelocity = Vector3.zero;
+            _rb.isKinematic = true;
+            Vector3 pos = transform.position;
+            transform.position = new Vector3(pos.x, -1.4f, pos.z);
+            transform.rotation = new Quaternion(0, 0, 0, 0);
+            GetComponent<MeshCollider>().enabled = false;
+        }
+        else if(!Fitted)
+        {
+            _rb.isKinematic = false;
+            GetComponent<MeshCollider>().enabled = true;
+        }
         if (!gripA.IsOccupied || !gripB.IsOccupied)
         {
             Carried = false;
-            _rb.isKinematic = Fitted; // 끼워진 상태라면 키네틱 ture, 아니라면 false
+            _rb.velocity = Vector3.zero;
             character.Anim.SetCarry(false);
             _finishedPlayers.Clear(); // 내려놓았으면 끼우기 완료 취소
+            Slot.ActivateTrigger(false);
             return;
         }
 
@@ -131,11 +147,6 @@ public class Cog : MonoBehaviourPun, IPunObservable
     {
         yield return new WaitForSeconds(1.0f);
         // 들어올리는 애니메이션 재생 기다린 뒤 물건 위치 이동
-        
-        // 톱니 키네틱 전환
-        _rb.velocity = Vector3.zero;
-        _rb.angularVelocity = Vector3.zero;
-        _rb.isKinematic = true;
         
         // 기울기 제거
         transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
@@ -157,16 +168,19 @@ public class Cog : MonoBehaviourPun, IPunObservable
     private void RPC_FitCogToSlot()
     {
         Fitted = true;
-        // 톱니바퀴 슬롯에 끼워져야하는 위치/회전값으로 fix, 키네틱 전환
-        gameObject.transform.position = Slot.transform.position;
-        gameObject.transform.rotation = Slot.transform.rotation;
         
         // 톱니바퀴 grip 두개 모두 비활성화
         gripA.gameObject.SetActive(false);
         gripA.Release();
         gripB.gameObject.SetActive(false);
         gripB.Release();
+        
         _rb.isKinematic = true;
+        GetComponent<MeshCollider>().enabled = true;
+        
+        // 톱니바퀴 슬롯에 끼워져야하는 위치/회전값으로 fix, 키네틱 전환
+        gameObject.transform.position = Slot.transform.position;
+        gameObject.transform.rotation = Slot.transform.rotation;
         
         // todo 톱니바퀴 끼워지는 이펙트와 사운드 추가
     }

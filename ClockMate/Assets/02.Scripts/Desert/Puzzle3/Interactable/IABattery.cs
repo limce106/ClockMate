@@ -69,6 +69,9 @@ public class IABattery : ResettableBase, IInteractable
         _uiNotice.SetImage(_dropSprite);
         _uiNotice.SetText(_dropString);
         
+        GameManager.Instance.CurrentStage.CbExit -= ForceRemoveFromHolder;
+        GameManager.Instance.CurrentStage.CbExit += ForceRemoveFromHolder;
+        
         return true;
     }
 
@@ -92,6 +95,12 @@ public class IABattery : ResettableBase, IInteractable
         _currentHolder = null;
         _isHeld = false;
         return true;
+    }
+    
+    private void ForceRemoveFromHolder()
+    {
+        _currentHolder?.TryDropHoldingObj();
+        _uiNotice?.Close();
     }
 
     public void UseToCharge()

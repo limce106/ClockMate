@@ -19,7 +19,7 @@ public class SledCollisionChecker : MonoBehaviour
         {
             sledController.Drown();
         } 
-        else if (other.CompareTag("Ground"))
+        else if (other.CompareTag("Ground") && sledController.photonView.IsMine)
         {
             sledController.IsGrounded = true;
             Debug.Log($"[Sled Collision Checker] Trigger Enter {other.name}]");
@@ -28,6 +28,7 @@ public class SledCollisionChecker : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (!sledController.photonView.IsMine) return;
         if (other.CompareTag("Ground") && !sledController.IsGrounded)
         {
             sledController.IsGrounded = true;
@@ -37,6 +38,8 @@ public class SledCollisionChecker : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (!sledController.photonView.IsMine) return;
+
         if (!other.CompareTag("Ground")) return;
         
         sledController.IsGrounded = false;

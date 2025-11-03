@@ -126,15 +126,11 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     }
 
     /// <summary>
-    /// 상호작용하는 캐릭터와 톱니바퀴의 충돌 여부를 설정한다.
+    /// 톱니바퀴의 kinematic 여부와 물리 충돌 여부를 설정한다.
     /// </summary>
-    private void SetIgnoreCollisionWithHolder(bool ignore)
+    private void SetIgnoreCollisionOfCog(bool ignore)
     {
-        Collider cogCol = cog.GetComponent<MeshCollider>();
-        foreach (var holderCol in _holder.GetComponentsInChildren<Collider>())
-        {
-            Physics.IgnoreCollision(cogCol, holderCol, ignore);
-        }
+
     }
 
     private void UpdateAttachedPoseLocal()
@@ -198,7 +194,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         {
             HeldCharacterIds.Add(characterViewId);
             _holder = PhotonView.Find(characterViewId)?.GetComponent<CharacterBase>();
-            SetIgnoreCollisionWithHolder(true);
+            SetIgnoreCollisionOfCog(true);
             _holderRb = _holder?.GetComponent<Rigidbody>();
             //if (_col != null) _col.enabled = false;
             if (_holder != null && _holder.photonView.IsMine)
@@ -220,7 +216,7 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
         {
             if (_holder == null) return;
             HeldCharacterIds.Remove(_holder.photonView.ViewID);
-            SetIgnoreCollisionWithHolder(false);
+            SetIgnoreCollisionOfCog(false);
             if (_holder != null && _holder.photonView.IsMine)
             {
                 // 상호작용 주체라면

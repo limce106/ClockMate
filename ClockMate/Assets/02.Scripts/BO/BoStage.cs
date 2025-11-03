@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Define;
 using UnityEngine;
 using static Define.Character;
@@ -12,6 +13,8 @@ public class BoStage
     public int LeftReviveCount { get; private set; }
     public bool IsReviveImpossible => LeftReviveCount < 0;
     public BoStage NextStage {get; private set;}
+    public Action CbExit; // 스테이지 종료할 때 호출할 콜백
+
     
     public Dictionary<CharacterName, Vector3> LoadPositions { get; set; }
 
@@ -49,5 +52,11 @@ public class BoStage
 
         // 부활 가능 횟수 초기화
         //LeftReviveCount = MaxReviveCount;
+    }
+    
+    public void Exit()
+    {
+        CbExit?.Invoke();
+        CbExit = null;
     }
 }

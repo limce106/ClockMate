@@ -11,9 +11,16 @@ public class UITurretActive : UIBase
     private Sprite _filled;
     private Sprite _unfilled;
 
+    private UINotice _uiNotice;
+    private UIControlHelp _uiHelp;
+    private Sprite _dropSprite;
+    private string _dropString;
+    
     private void Awake()
     {
         UIType = UI.UIType.Windowed;
+        _dropSprite = Key.Q.LoadSprite(Style.Outline);;
+        _dropString = "나가기";
         _filled = Resources.Load<Sprite>("UI/Sprites/Icon_Battery_Filled");
         _unfilled = Resources.Load<Sprite>("UI/Sprites/Icon_Battery_Unfilled");
         if (_filled == null) Debug.LogWarning("[UITurretActive] filled sprite not found]");
@@ -23,9 +30,17 @@ public class UITurretActive : UIBase
     public override void Show()
     {
         base.Show();
-        var helpUI = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
-        helpUI.SetControl(Key.Arrows.LoadSprite(), "조준하기", Key.Space.LoadSprite(Style.Outline), "발사하기");
-        cbClose += helpUI.Close;
+        // 터렛 조작 그만두기 UI 표시
+        _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
+        _uiNotice.SetImage(_dropSprite);
+        _uiNotice.SetText(_dropString);
+        _uiHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiHelp.SetControl(Key.Arrows.LoadSprite(), "조준하기", Key.Space.LoadSprite(Style.Outline), "발사하기");
+        
+        cbClose -= _uiHelp.Close;
+        cbClose += _uiHelp.Close;
+        cbClose -= _uiNotice.Close;
+        cbClose += _uiNotice.Close;
     }
 
     public void Reset()

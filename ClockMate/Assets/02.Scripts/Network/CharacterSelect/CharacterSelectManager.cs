@@ -265,18 +265,12 @@ public class CharacterSelectManager : MonoBehaviourPun
 
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance?.CreateNewSaveData();
             CutsceneSyncManager.Instance.PlayForAll(
                 "KronosAdvent",
                 0f,
                 () =>
                 {
-                    string targetMap = GameManager.Instance?.CurrentStage.Map.ToString();
-                    RPCManager.Instance?.photonView.RPC(
-                        nameof(RPCManager.Instance.RPC_MoveToMap),
-                        RpcTarget.All,
-                        targetMap);
-
+                    GameManager.Instance?.CreateNewSaveDataAndSetStage();
                 }
             );
         }

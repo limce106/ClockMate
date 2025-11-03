@@ -36,11 +36,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     private bool _isOccupied; // 터렛 조작 중 여부
     private CharacterBase _character; // 조작 중인 캐릭터
     private MonsterController _currentTarget;
-    private UINotice _uiNotice;
     private UITurretActive _uiTurretActive;
-    
-    private Sprite _dropSprite;
-    private string _dropString;
 
     private void Awake()
     { 
@@ -51,8 +47,6 @@ public class IATurret : MonoBehaviourPun, IInteractable
     {
         _isOccupied = false;
         _character = null;
-        _dropSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
-        _dropString = "나가기";
         if (attackLineRenderer != null)
         {
             attackLineRenderer.positionCount = 2;
@@ -103,11 +97,6 @@ public class IATurret : MonoBehaviourPun, IInteractable
         character.InputHandler.enabled = false; // 캐릭터 조작 모두 비활성화
         _character = character;
         
-        // 터렛 조작 그만두기 UI 표시
-        _uiNotice = UIManager.Instance.Show<UINotice>("UINotice");
-        _uiNotice.SetImage(_dropSprite);
-        _uiNotice.SetText(_dropString);
-        
         // 상호작용 탐지되지 않도록 collider 비활성화
         if (TryGetComponent(out Collider collider))
         {
@@ -119,6 +108,9 @@ public class IATurret : MonoBehaviourPun, IInteractable
 
         _uiTurretActive = UIManager.Instance.Show<UITurretActive>("UITurretActive");
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
+
+        GameManager.Instance.CurrentStage.CbExit -= ExitTurret;
+        GameManager.Instance.CurrentStage.CbExit += ExitTurret;
 
         return true;
     }
@@ -138,9 +130,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         
         _uiTurretActive.Reset();
         _uiTurretActive.Close();
-        _uiNotice.Close();
         _uiTurretActive = null;
-        _uiNotice = null;
         
         // collider 다시 활성화
         if (TryGetComponent(out Collider collider))

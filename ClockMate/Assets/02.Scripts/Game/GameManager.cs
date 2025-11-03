@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,7 +28,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// 기존에 저장해둔 세이브 데이터를 불러와 현재 스테이지로 설정한다.
     /// 이어하기를 선택할 시 마스터가 호출한다
     /// </summary>
-    public void LoadExistingSaveData()
+    public void SetStageWithExistingData()
     {
         if (!PhotonNetwork.IsMasterClient) return;
         
@@ -38,7 +36,7 @@ public class GameManager : MonoSingleton<GameManager>
         
         // 저장 데이터가 존재하면 불러오기
         SaveData saveData = SaveManager.Instance.Load();
-        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SyncStage), RpcTarget.All, saveData.stageId);
+        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, saveData.stageId);
     }
     
     /// <summary>
@@ -46,13 +44,13 @@ public class GameManager : MonoSingleton<GameManager>
     /// 현재 스테이지를 1로 설정하고 저장한다.
     /// 기존 저장 데이터가 있다면 덮어쓴다.
     /// </summary>
-    public void CreateNewSaveData()
+    public void CreateNewSaveDataAndSetStage()
     {
         if (!PhotonNetwork.IsMasterClient) return;
         
         // 저장된 데이터가 없으면 (새 게임이면)
         SaveManager.Instance.Save(1); // 사막 맵 stage 1으로 저장
-        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SyncStage), RpcTarget.All, 1);
+        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, 1);
     }
 
     /// <summary>
@@ -69,15 +67,7 @@ public class GameManager : MonoSingleton<GameManager>
             // 다음 스테이지 존재하는 경우
             
             SaveManager.Instance.Save(nextStage.ID); // 진행 상태 저장
-            if (nextStage.Map != CurrentStage.Map)
-            {
-                // 이번 맵의 마지막 스테이지일 경우 다음 맵으로 이동
-                _rpcManager.photonView.RPC(
-                    nameof(_rpcManager.RPC_MoveToMap), RpcTarget.All, nextStage.Map.ToString()
-                );
-            }
-
-            _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SyncStage), RpcTarget.All, nextStage.ID);
+            _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
         }
     }
 
@@ -87,7 +77,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     public void SetCurrentStage(int stageID)
     {
-        CurrentStage = new BoStage(stageID);   
+        CurrentStage = new BoStage(stageID);
     }
     
     /// <summary>

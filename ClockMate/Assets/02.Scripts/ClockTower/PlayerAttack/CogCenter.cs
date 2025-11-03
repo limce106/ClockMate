@@ -10,6 +10,7 @@ public class CogCenter : MonoBehaviour
     {
         _cogRenderer = cog.GetComponent<MeshRenderer>();
     }
+    
     private void OnTriggerEnter(Collider other)
     {
         if (cog.Fitted || !cog.Carried) return; // 이미 끼워진 상태 또는 운반중이 아니라면 무시

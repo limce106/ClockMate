@@ -69,19 +69,11 @@ public class UIStageDebugLoader : UIBase
 
         RPCManager rpcManager = RPCManager.Instance;
 
-        BoStage stage = new BoStage(stageId);
         if (GameManager.Instance.CurrentStage.ID == 4)
         {
             FindObjectOfType<ChaseControlModule>().StopChase();
         }
-        if (stage.Map != GameManager.Instance.CurrentStage.Map)
-        {
-            // 다른 맵의 스테이지라면 해당 맵(씬)으로 이동
-            rpcManager.photonView.RPC(
-                nameof(rpcManager.RPC_MoveToMap), RpcTarget.All, stage.Map.ToString()
-            );
-        }
-        rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncStage), RpcTarget.All, stageId);
+        rpcManager.photonView.RPC(nameof(rpcManager.RPC_MoveToStage), RpcTarget.All, stageId);
         rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncReset), RpcTarget.All);
         SetInteractable(true);
 
