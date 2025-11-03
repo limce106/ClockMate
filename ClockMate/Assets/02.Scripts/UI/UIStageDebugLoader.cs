@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,7 @@ public class UIStageDebugLoader : UIBase
     [SerializeField] private InputField stageInput; // 이동한 스테이지 id 입력 필드
     [SerializeField] private Button goButton;
     [SerializeField] private Text statusText;
+    [SerializeField] private Text infoText;
     
     [SerializeField] private int minStageId = 1;
     [SerializeField] private int maxStageId = 8;
@@ -19,6 +22,30 @@ public class UIStageDebugLoader : UIBase
     private void Awake()
     {
         goButton.onClick.AddListener(OnClickGo);
+    }
+
+    private void Start()
+    {
+        SetInfo();
+    }
+
+    private void SetInfo()
+    {
+        SaveData saveData = SaveManager.Instance.Load();
+        int saved = saveData.stageId;
+        string savedCh = saveData.character.ToString();
+        if (GameManager.Instance.CurrentStage == null)
+        {
+            infoText.text = "게임 시작되지 않음" +
+                            $"\nsaved: {saved}" +
+                            $"\nsavedCh: {savedCh}";;
+            return;
+        }
+        int current = GameManager.Instance.CurrentStage.ID;
+
+        infoText.text = $"current: {current}" +
+                        $"\nsaved: {saved}" +
+                        $"\nsavedCh: {savedCh}";
     }
 
     private void OnDestroy()
@@ -33,7 +60,7 @@ public class UIStageDebugLoader : UIBase
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if(Input.GetKeyDown(KeyCode.F1))
         {
             ToggleStageLoader();
         }
@@ -73,11 +100,33 @@ public class UIStageDebugLoader : UIBase
         {
             FindObjectOfType<ChaseControlModule>().StopChase();
         }
-        rpcManager.photonView.RPC(nameof(rpcManager.RPC_MoveToStage), RpcTarget.All, stageId);
-        rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncReset), RpcTarget.All);
-        SetInteractable(true);
+
+        try
+        {
+            rpcManager.photonView.RPC(nameof(rpcManager.RPC_MoveToStage), RpcTarget.All, stageId);
+            SaveManager.Instance.SaveStage(stageId);
+            rpcManager.photonView.RPC(nameof(rpcManager.RPC_SyncReset), RpcTarget.All);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+        finally
+        {
+            SetInteractable(true);
+        }
 
         ToggleStageLoader();
+        StartCoroutine(CheckStageLoadFinish(stageId));
+    }
+    
+    private IEnumerator CheckStageLoadFinish(int stageId)
+    {
+        yield return GameManager.Instance.CurrentStage.ID == stageId; // 이동 완료까지 기다리기
+        
+        stageInput.text = string.Empty;
+        SetStatus("id 입력 필요");
+        SetInfo();
     }
 
     private void SetStatus(string msg)
