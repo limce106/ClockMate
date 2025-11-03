@@ -408,10 +408,16 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         if (readyPlayerId.Count == MaxPlayer && PhotonNetwork.CurrentRoom.PlayerCount == MaxPlayer)
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (!PhotonNetwork.IsMasterClient) return;
+            if (PlayModeSelector.IsNewGameRoom)
             {
                 photonView.RPC(nameof(LoadCharacterSelectScene), RpcTarget.All);
             }
+            else
+            {
+                GameManager.Instance.SetStageWithExistingData();
+            }
+
         }
     }
 

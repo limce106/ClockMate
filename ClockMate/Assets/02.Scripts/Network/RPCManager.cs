@@ -146,4 +146,10 @@ public class RPCManager : MonoBehaviourPunCallbacks
         GameManager.Instance.CurrentStage?.Reset();
         GameManager.Instance.SetAllCharactersActive(true);
     }
+    
+    [PunRPC]
+    public void RPC_SetSelectedCharacter(int characterNum)
+    {
+        GameManager.Instance.SetSelectedCharacter((CharacterName) characterNum);
+    }
 }
