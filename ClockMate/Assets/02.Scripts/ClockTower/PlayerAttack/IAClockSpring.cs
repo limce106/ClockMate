@@ -5,6 +5,7 @@ using System.Linq;
 using Define;
 using DefineExtension;
 using UnityEngine;
+using static Define.Icon;
 
 public class IAClockSpring : MonoBehaviourPun, IInteractable
 {
@@ -14,6 +15,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
     private UINotice _uiNotice;
     private Sprite _exitSprite;
     private string _exitString;
+    private UIControlHelp _uiControlHelp;
 
     private Rigidbody _rb;
     private SoundHandle _springSfxHandle = default;
@@ -164,6 +166,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         localViewID = -1;
         return false;
     }
+
     public void ExitControl(int viewID)
     {
         if (!_attachedPlayers.ContainsKey(viewID)) return;
@@ -183,6 +186,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         if(_attachedPlayers.Count == 0)
             _rb.isKinematic = true;
 
+        UIManager.Instance.Close(_uiControlHelp);
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
 
@@ -255,6 +259,7 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
         _uiNotice.SetVerticalPos(false);
+        ActivateHelpUI();
 
         Collider[] cols = GetComponentsInChildren<Collider>();
         foreach(var col in cols)
@@ -285,5 +290,11 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
                 character.InputHandler.enabled = true;
             }
         }
+    }
+
+    private void ActivateHelpUI()
+    {
+        _uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiControlHelp.SetOnlyFirst(Key.W.LoadSprite(Style.Outline), "¹Ð±â");
     }
 }

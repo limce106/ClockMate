@@ -3,6 +3,7 @@ using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
+using static Define.Icon;
 
 public class IAClockHand : MonoBehaviour, IInteractable
 {
@@ -14,6 +15,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
     private UINotice _uiNotice;
     private Sprite _exitSprite;
     private string _exitString;
+    private UIControlHelp _uiControlHelp;
 
     public MeshRenderer meshRenderer;
     private CharacterBase _controller;
@@ -91,6 +93,7 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _uiNotice.SetImage(_exitSprite);
         _uiNotice.SetText(_exitString);
         _uiNotice.SetVerticalPos(false);
+        ActivateHelpUI();
 
         return true;
     }
@@ -121,7 +124,15 @@ public class IAClockHand : MonoBehaviour, IInteractable
         }
 
         _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_StopPushClockHandSfx), RpcTarget.All);
+
+        UIManager.Instance.Close(_uiControlHelp);
         UIManager.Instance.Close(_uiNotice);
         _uiNotice = null;
+    }
+
+    private void ActivateHelpUI()
+    {
+        _uiControlHelp = UIManager.Instance.Show<UIControlHelp>("UIControlHelp");
+        _uiControlHelp.SetOnlyFirst(Key.W.LoadSprite(Style.Outline), "¹Ð±â");
     }
 }

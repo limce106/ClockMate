@@ -37,9 +37,6 @@ public class ClockHandRecovery : AttackPattern
     {
         ShowRandomTargetTime();
         SpawnClockHands();
-
-        Debug.Log("Hour: " + GetTargetHourAngle());
-        Debug.Log("Minute: " + GetTargetMinuteAngle());
     }
 
     /// <summary>
@@ -66,6 +63,7 @@ public class ClockHandRecovery : AttackPattern
         minuteClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
 
         answerTimeTxt.text = targetHour + "시 " + targetMinute + "분";
+        Debug.Log("정답 시간: " + targetHour + "시 " + targetMinute + "분");
     }
 
     /// <summary>
