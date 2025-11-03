@@ -66,7 +66,6 @@ public class PlayerInputHandler : MonoBehaviour
         _inputActions.Player.Interact.performed += OnInteractPressed;
         _inputActions.Player.Ability.performed += OnAbilityPressed;
         _inputActions.Player.Move.performed += OnMovePressed;
-        _inputActions.Player.Move.canceled += OnMoveReleased;
         _inputActions.Player.Climb.performed += OnClimbPressed;
     }
 
@@ -83,12 +82,11 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (!_isMoving) return;
 
-        _character.Move(lastMoveDirection);
+        HandleMovement();
     }
 
     /// <summary>
     /// 사용자 입력을 읽고 카메라 기준으로 이동 벡터를 계산한 후 캐릭터 이동을 처리한다.
-    /// 현재 사용 안 함
     /// </summary>
     private void HandleMovement()
     {
@@ -116,25 +114,8 @@ public class PlayerInputHandler : MonoBehaviour
         if (!_actionsAvailable[CharacterAction.Move]) return;
         if (_character.CurrentState is ClimbState) return;
 
-        Vector2 inputDir = _inputActions.Player.Move.ReadValue<Vector2>();
-        if (inputDir.sqrMagnitude < 0.01f) return;
-
-        // 카메라 기준 이동 방향 계산
-        Transform camTransform = Camera.main.transform;
-        Vector3 camForward = Vector3.ProjectOnPlane(camTransform.forward, Vector3.up).normalized;
-        Vector3 camRight = Vector3.ProjectOnPlane(camTransform.right, Vector3.up).normalized;
-
-        lastMoveDirection = (camRight * inputDir.x + camForward * inputDir.y).normalized;
-
         _isMoving = true;
         _character.ChangeState<WalkState>();
-    }
-
-    private void OnMoveReleased(InputAction.CallbackContext context)
-    {
-        _isMoving = false;
-        lastMoveDirection = Vector3.zero;
-        _character.ChangeState<IdleState>();
     }
 
     private void OnJumpPressed(InputAction.CallbackContext context)
