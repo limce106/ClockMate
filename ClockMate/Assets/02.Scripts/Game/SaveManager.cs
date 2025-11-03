@@ -12,13 +12,23 @@ public class SaveManager : Singleton<SaveManager>
     /// <summary>
     /// 게임 저장.
     /// </summary>
-    public void Save(int stageId)
+    public void SaveStage(int stageId)
     {
         string json = JsonUtility.ToJson(new SaveData(stageId), true);
         File.WriteAllText(SaveFilePath, json);
         
         Debug.Log($"[SaveManager] 저장 완료: {SaveFilePath}\n" +
                   $"stageId = {stageId}");
+    }
+    
+    public void SaveNewGame(CharacterName character)
+    {
+        string json = JsonUtility.ToJson(new SaveData(character, 1), true);
+        File.WriteAllText(SaveFilePath, json);
+        
+        Debug.Log($"[SaveManager] 새 게임 저장 완료: {SaveFilePath}\n" +
+                  $"character = {character}" +
+                  $"stageId = 1");
     }
 
     /// <summary>
