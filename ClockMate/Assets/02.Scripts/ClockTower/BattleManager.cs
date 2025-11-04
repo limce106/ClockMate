@@ -514,6 +514,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_ShowQuest()
     {
-        UIManager.Instance.Show<UIQuest>("UIQuest");
+        PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
+        puzzleHUD.ShowQuestForDuration();
     }
 }

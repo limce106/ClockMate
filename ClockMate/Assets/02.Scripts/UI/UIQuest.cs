@@ -8,19 +8,22 @@ using UnityEngine.SceneManagement;
 public class UIQuest : UIBase
 {
     public TMP_Text quest;
+    public Coroutine showQuestCoroutine;
 
-    private const float duration = 10f;
+    private const float duration = 5f;
 
-    private void OnEnable()
+    public void ShowQuestForDuration()
     {
-        StartCoroutine(ShowQuest());
+        showQuestCoroutine = StartCoroutine(ShowQuestCoroutine());
     }
 
-    private IEnumerator ShowQuest()
+    private IEnumerator ShowQuestCoroutine()
     {
         SetQuestText();
         yield return new WaitForSeconds(duration);
-        UIManager.Instance.Close(this);
+
+        gameObject.SetActive(false);
+        showQuestCoroutine = null;
     }
 
     private void SetQuestText()

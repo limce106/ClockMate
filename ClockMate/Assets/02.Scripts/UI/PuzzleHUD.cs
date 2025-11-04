@@ -1,24 +1,19 @@
-using Define;
 using Photon.Voice.PUN;
-using Photon.Voice.Unity;
-using Photon.Voice.Unity.Demos.DemoVoiceUI;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 public class PuzzleHUD : UIBase
 {
     public GameObject remoteSpeakerUI;   // 상대가 말하는 중 아이콘
     public Image remoteCharacterImg;
+    [SerializeField] private UIQuest _uiQuest; 
 
     private PhotonVoiceView _remotePhotonVoiceView;  // 상대 스피커
 
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
+        _uiQuest.gameObject.SetActive(true);
     }
 
     void Update()
@@ -65,9 +60,28 @@ public class PuzzleHUD : UIBase
         }
     }
 
+    public void ShowQuestForDuration()
+    {
+        _uiQuest.gameObject.SetActive(true);
+        _uiQuest.ShowQuestForDuration();
+    }
+
     public void OnClick_Setting()
     {
         UISetting uiSetting = UIManager.Instance?.Show<UISetting>("UISetting");
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_QuestIcon()
+    {
+        if (_uiQuest.showQuestCoroutine != null)
+        {
+            StopCoroutine(_uiQuest.showQuestCoroutine);
+        }
+        else
+        {
+            bool active = _uiQuest.gameObject.activeSelf;
+            _uiQuest.gameObject.SetActive(!active);
+        }
     }
 }
