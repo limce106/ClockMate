@@ -197,22 +197,13 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_FinishIntroAndActivatePlayerControl(string currentScene)
     {
-        foreach (PuzzleMapName puzzleMap in Enum.GetValues(typeof(PuzzleMapName)))
-        {
-            if(currentScene.Equals(puzzleMap.ToString()))
-            {
-                UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
-                break;
-            }
-        }
-
         CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
         character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, true);
         GameManager.Instance.SetLocalCharacterInput(true);
 
         if (currentScene == "ClockTower") return;
 
-        UIManager.Instance.Show<UIQuest>("UIQuest");
+        UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
         UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
