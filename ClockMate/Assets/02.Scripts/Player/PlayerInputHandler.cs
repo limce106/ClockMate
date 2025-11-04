@@ -16,8 +16,6 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerInputActions _inputActions;
     private bool _isMoving;
 
-    private Vector3 lastMoveDirection;
-
     public ClimbingState climbingState { private set; get; } = ClimbingState.None;
 
     private Dictionary<CharacterAction, bool> _actionsAvailable;
@@ -106,7 +104,6 @@ public class PlayerInputHandler : MonoBehaviour
         if (!(inputDirection.sqrMagnitude < 0.01f)) return;
         _isMoving = false;
         _character.ChangeState<IdleState>();
-        _character.Move(lastMoveDirection);
     }
 
     private void OnMovePressed(InputAction.CallbackContext context)
