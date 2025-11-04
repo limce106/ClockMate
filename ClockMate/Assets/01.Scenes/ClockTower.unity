@@ -3042,7 +3042,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 60
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -3069,7 +3069,7 @@ Transform:
   m_GameObject: {fileID: 718348352}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -186.215, y: 66.71591, z: -139.8085}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6299,7 +6299,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3447095921055497446, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6565259508050173770, guid: fcdd2678ca4764a49844665f7009bf63, type: 3}
       propertyPath: sceneViewId
@@ -6716,6 +6716,27 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e30871b7cac5d5644918ace52f02267a, type: 3}
+--- !u!65 &1749842849
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002807071815544878}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 7, y: 0.5, z: 7}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1754656841
 GameObject:
   m_ObjectHideFlags: 0
@@ -8281,6 +8302,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1834129249909257349, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1549353253}
+    - targetCorrespondingSourceObject: {fileID: 1834129249909257349, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1749842849}
     - targetCorrespondingSourceObject: {fileID: 5685576507714838003, guid: c03fe2d86a337ee46b5f3c55704d7871, type: 3}
       insertIndex: -1
       addedObject: {fileID: 29660374}
