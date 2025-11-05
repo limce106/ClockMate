@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// 컷신 동기화 유틸
@@ -14,6 +15,15 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
 {
     [SerializeField] private VideoCutscenePlayer cutscenePlayer;
     [SerializeField] private CinematicCutscenePlayer cinematicPlayer;
+    
+    [SerializeField] private float holdSeconds = 1f;
+    [SerializeField] private KeyCode key = KeyCode.Space;
+    [SerializeField] private GameObject skipPanel;
+    [SerializeField] private Image imgSkipProgress;
+    [SerializeField] private Text txtSkipState;
+    
+    private float _holdTime;
+    private bool _isSkipped;
     
     // 컷신 타입
     private enum CutsceneType { Video = 0, Cinematic = 1 }
@@ -35,6 +45,8 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
     
     void Update()
     {
+        UpdateSkipProgress();
+        
         // 마스터: 타임아웃 감시
         if (!IsBusy || !PhotonNetwork.IsMasterClient) return;
         if (Time.realtimeSinceStartup >= _deadline)
@@ -43,6 +55,39 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
             photonView.RPC(nameof(RPC_AllFinished), RpcTarget.All, _currentId); // 종료 브로드캐스트
             _masterOnlyOnAllFinished?.Invoke(); // 마스터 전용 후처리 실행
         }
+    }
+
+    private void UpdateSkipProgress()
+    {
+        if (!IsBusy)
+        {
+            _holdTime = 0f;
+            _isSkipped = false;
+            txtSkipState.text = "Hold Space To Skip";
+            imgSkipProgress.fillAmount = 0f;
+            skipPanel.SetActive(false);
+            return;
+        }
+
+        if (_isSkipped) return;
+        
+        if (Input.GetKey(key))
+        {
+            if (!skipPanel.activeSelf) skipPanel.SetActive(true);
+            _holdTime += Time.unscaledDeltaTime;
+            imgSkipProgress.fillAmount = _holdTime / holdSeconds;
+            if (_holdTime >= holdSeconds)
+            {
+                _holdTime = 0f;
+                imgSkipProgress.fillAmount = 1f;
+                txtSkipState.text = "Waiting For Other Player";
+                _isSkipped = true;
+                Skip();
+            }
+            return;
+        }
+        if (Input.GetKeyUp(key)) _holdTime = 0f;
+        skipPanel.SetActive(false);
     }
 
     /// <summary>
@@ -112,10 +157,15 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
     // 로컬 재생 완료 시 호출(등록된 startLocal 내부에서 onLocalFinished로 전달)
     private void NotifyLocalFinished()
     {
-        if (_currentId < 0) return;
+        if (!IsBusy || _currentId < 0) return;
+        if (_finishedActors.Contains(PhotonNetwork.LocalPlayer.ActorNumber)) return;
         photonView.RPC(nameof(RPC_ReportFinished), RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber, _currentId);
     }
-
+    
+    private void Skip()
+    {
+        NotifyLocalFinished();
+    }
 
     #region RPC
 
@@ -174,7 +224,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         _finishedActors.Add(actorNumber); // 완료 저장
         TryConcludeByMaster(); // 종료 조건 만족 여부 확인
     }
-
+    
     [PunRPC]
     private void RPC_AllFinished(int cutsceneId)
     {
@@ -242,3 +292,19 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
             TryConcludeByMaster();
     }
 }
+
+    // private void OnGUI()
+    // {
+    //     if (_sync == null || !_sync.IsBusy) return;
+    //
+    //     int w = 360, h = 48;
+    //     var r = new Rect(Screen.width/2 - w/2, Screen.height - h - 24, w, h);
+    //     GUI.Box(r, $"스킵: [{key}] 길게  ({_sync._finishedActors}/{_sync._expectedActors})");
+    //
+    //     // 진행 게이지
+    //     float p = Mathf.Clamp01(_holdTime / holdSeconds);
+    //     var barBg = new Rect(r.x + 10, r.y + h - 18, w - 20, 8);
+    //     var barFg = new Rect(barBg.x, barBg.y, barBg.width * p, barBg.height);
+    //     GUI.Box(barBg, GUIContent.none);
+    //     GUI.Box(barFg, GUIContent.none);
+    // }

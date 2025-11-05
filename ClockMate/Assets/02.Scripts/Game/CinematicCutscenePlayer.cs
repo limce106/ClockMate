@@ -75,7 +75,15 @@ public class CinematicCutscenePlayer : MonoBehaviour
 
     public void Stop()
     {
-        if (director != null && director.state == PlayState.Playing)
+        if (director == null) return;
+        if (director.playableAsset != null)
+        {
+            // 끝 프레임까지 이동
+            director.time = director.duration;
+            director.Evaluate();
+        }
+
+        if (director.state == PlayState.Playing)
         {
             director.Stop();
         }
