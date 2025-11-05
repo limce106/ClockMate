@@ -66,6 +66,18 @@ namespace DefineExtension
             return Enum.GetValues(typeof(PuzzleMapName)).Cast<PuzzleMapName>()
                 .Any(puzzleMap => sceneName.Equals(puzzleMap.ToString()));
         }
+
+        public static bool HasCinematicIntro(this MapName mapName)
+        {
+            return mapName switch
+            {
+                MapName.Desert => true,
+                MapName.Glacier => true,
+                MapName.Forest => true,
+                MapName.ClockTower => false,
+                _ => false
+            };
+        }
     }
 
     public static class BlockExtension
