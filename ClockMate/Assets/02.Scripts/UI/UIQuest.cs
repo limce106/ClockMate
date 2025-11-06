@@ -10,7 +10,7 @@ public class UIQuest : UIBase
 {
     public TMP_Text questTxt;
     public Image questName;
-    public Coroutine showQuestCoroutine;
+    public Coroutine showQuestCoroutine { get; private set; }
 
     private const float duration = 5f;
 
@@ -19,13 +19,26 @@ public class UIQuest : UIBase
         showQuestCoroutine = StartCoroutine(ShowQuestCoroutine());
     }
 
+    /// <summary>
+    /// 퀘스트 UI 비활성화
+    /// </summary>
+    public void InactiveQuest()
+    {
+        if(showQuestCoroutine != null)
+        {
+            StopCoroutine(showQuestCoroutine);
+            showQuestCoroutine = null;
+        }
+
+        gameObject.SetActive(false);
+    }
+
     private IEnumerator ShowQuestCoroutine()
     {
         SetQuest();
         yield return new WaitForSeconds(duration);
 
-        gameObject.SetActive(false);
-        showQuestCoroutine = null;
+        InactiveQuest();
     }
 
     private void SetQuest()
