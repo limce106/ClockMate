@@ -213,9 +213,6 @@ public class ClockHandRecovery : AttackPattern
                 // 정답 확인 로직은 모든 클라이언트에서 실행
                 if (IsCorrectTime())
                 {
-                    // 정답을 맞췄을 때
-                    yield return new WaitForSeconds(2f);
-
                     EndRecovery(true);
                     yield break;
                 }
