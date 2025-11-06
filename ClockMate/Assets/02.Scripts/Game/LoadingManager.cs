@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -181,7 +182,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         string currentScene = SceneManager.GetActiveScene().name;
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && GameManager.Instance.CurrentStage.Map.HasCinematicIntro())
         {
             CutsceneSyncManager.Instance.PlayCinematicForAll(
                 cutsceneName: currentScene + "_Intro",
@@ -190,6 +191,10 @@ public class LoadingManager : MonoBehaviourPunCallbacks
                 {
                     photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
                 });
+        }
+        else
+        {
+            photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
         }
         GameManager.Instance.PlayMapBgm();
     }
