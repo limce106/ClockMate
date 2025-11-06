@@ -48,7 +48,7 @@ public class UISetting : UIBase
     private void InitSetting()
     {
         bgmVolumeSlider.onValueChanged.AddListener(SetBgmVolume);
-        sfxVolumeSlider.onValueChanged.AddListener(SetSfxVolume);
+        sfxVolumeSlider.onValueChanged.AddListener(UpdateSettingSfxVolume);
         remoteVoiceVolumeSlider.onValueChanged.AddListener(SetRemoteVoiceVolume);
 
         if (VoiceManager.Instance != null)
@@ -70,6 +70,11 @@ public class UISetting : UIBase
         bgmVolumeSlider.value = SettingManager.Instance.bgmVolume;
         sfxVolumeSlider.value = SettingManager.Instance.sfxVolume;
         remoteVoiceVolumeSlider.value = SettingManager.Instance.remoteVoiceVolume;
+    }
+
+    private void UpdateSettingSfxVolume(float value)
+    {
+        SettingManager.Instance.sfxVolume = value;
     }
 
     private void UpdateMicIcon(bool isOn)
@@ -96,14 +101,6 @@ public class UISetting : UIBase
     public void SetBgmVolume(float value)
     {
         SoundManager.Instance.SetBgmVolume(value);
-    }
-
-    /// <summary>
-    /// 슬라이더 조절 시 SFX 볼륨 조정
-    /// </summary>
-    public void SetSfxVolume(float value)
-    {
-        SoundManager.Instance.SetSfxVolume(value);
     }
 
     /// <summary>
