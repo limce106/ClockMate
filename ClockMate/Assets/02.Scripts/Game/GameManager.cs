@@ -114,8 +114,6 @@ public class GameManager : MonoSingleton<GameManager>
             character.gameObject.name = SelectedCharacter.ToString();
             Debug.Log($"character spawn: {SelectedCharacter}, scene: {SceneManager.GetActiveScene().name}");
 
-            RegisterCharacter(SelectedCharacter, character);
-
             return true;
         }
 
@@ -131,18 +129,6 @@ public class GameManager : MonoSingleton<GameManager>
     public void RegisterCharacter(CharacterName character, CharacterBase characterBase)
     {
         Characters[character] = characterBase;
-        if (NetworkManager.Instance.IsInRoomAndReady())
-        {
-            StartCoroutine(WaitAndRegister(character, characterBase.photonView.ViewID));
-        }
-    }
-
-    private IEnumerator WaitAndRegister(CharacterName character, int viewID)
-    {
-        yield return new WaitForSeconds(0.3f);
-
-        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_RegisterCharacter),
-                RpcTarget.Others, character, viewID);
     }
 
     public void SetAllCharactersActive(bool isActive)

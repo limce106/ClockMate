@@ -29,7 +29,7 @@ public class UIMapDescription : UIBase
         _canvasGroup.alpha = 0f;
     }
 
-    private void OnEnable()
+    public override void Show()
     {
         ShowMapDescription();
     }
@@ -69,6 +69,6 @@ public class UIMapDescription : UIBase
         }
 
         _canvasGroup.alpha = 0f;
-        UIManager.Instance.Close(this);
+        Close();
     }
 }

@@ -49,28 +49,6 @@ public class RPCManager : MonoBehaviourPunCallbacks
     {
         SaveManager.Instance?.DeleteSaveData();
     }
-
-    [PunRPC]
-    public void RPC_RegisterCharacter(CharacterName character, int viewID)
-    {
-        PhotonView pv = PhotonView.Find(viewID);
-        if (pv != null)
-        {
-            CharacterBase characterBase = pv.GetComponent<CharacterBase>();
-            if (characterBase != null)
-            {
-                GameManager.Instance.RegisterCharacter(character, characterBase);
-            }
-            else
-            {
-                Debug.LogError($"[RPC_RegisterCharacter] CharacterBase 컴포넌트를 찾을 수 없음, ViewID: {viewID}");
-            }
-        }
-        else
-        {
-            Debug.LogError($"[RPC_RegisterCharacter] PhotonView를 찾을 수 없음, ViewID: {viewID}");
-        }
-    }
     
     [PunRPC]
     public void RPC_HandleDeath(int viewID)
