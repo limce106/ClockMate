@@ -12,8 +12,13 @@ public class PuzzleClearTrigger : MonoBehaviour
 
             GameManager.Instance.StageComplete();
             
-            PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-            puzzleHUD.ShowQuestForDuration();
+
         }
+    }
+
+    private void ShowQuest()
+    {
+        PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
+        puzzleHUD.ShowQuest();
     }
 }

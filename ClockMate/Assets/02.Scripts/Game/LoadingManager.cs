@@ -215,9 +215,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, true);
         GameManager.Instance.SetLocalCharacterInput(true);
 
+        PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+
         if (currentScene == "ClockTower") return;
 
-        UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+        puzzleHUD.ShowQuest();
         UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 

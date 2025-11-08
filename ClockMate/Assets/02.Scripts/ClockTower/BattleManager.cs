@@ -109,7 +109,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     //{
     //    StartBattle();
     //}
-    //
 
     private void Update()
     {
@@ -512,9 +511,9 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_ShowQuest()
+    public void RPC_ShowQuest()
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        puzzleHUD.ShowQuestForDuration();
+        puzzleHUD.ShowQuest();
     }
 }
