@@ -120,6 +120,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
     /// </summary>
     private void ExitTurret()
     {
+        if (_isOccupied == false) return;
         _isOccupied = false;
         _character.InputHandler.enabled = true;
         _character = null;

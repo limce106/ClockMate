@@ -164,6 +164,7 @@ public class IceBall : MonoBehaviourPun
 
     private void ExitControl()
     {
+        if (!IsControlled) return;
         IsControlled = false;
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;

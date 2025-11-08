@@ -72,6 +72,11 @@ public class UIInteraction : UIBase
 
     public void UpdateUIPosition()
     {
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+            if (_mainCamera == null) Debug.LogWarning("[UIInteraction] No MainCamera");
+        }
         if (_objectToUIImage.Count == 0) return;
         
         _tmpRemove.Clear();
