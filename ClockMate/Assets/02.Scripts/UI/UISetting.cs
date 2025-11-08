@@ -51,21 +51,7 @@ public class UISetting : UIBase
         sfxVolumeSlider.onValueChanged.AddListener(UpdateSettingSfxVolume);
         remoteVoiceVolumeSlider.onValueChanged.AddListener(SetRemoteVoiceVolume);
 
-        if (VoiceManager.Instance != null)
-        {
-            SettingManager.Instance.isMicOn = VoiceManager.Instance.recorder.TransmitEnabled;
-        }
         UpdateMicIcon(SettingManager.Instance.isMicOn);
-
-        if(SettingManager.Instance == null)
-        {
-            Debug.Log("null");
-        }
-        else
-        {
-            Debug.Log("not null");
-
-        }
 
         bgmVolumeSlider.value = SettingManager.Instance.bgmVolume;
         sfxVolumeSlider.value = SettingManager.Instance.sfxVolume;
