@@ -86,9 +86,9 @@ public class ClimbState : IState
     {
         _rb.useGravity = false;
         _rb.velocity = Vector3.zero;
-        _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 
         climbTarget.AttachTo(_character);
+        _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
         climbTarget.playerAttached = true;
     }
 

@@ -1,6 +1,8 @@
 using Photon.Voice.PUN;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Image = UnityEngine.UI.Image;
 
 public class PuzzleHUD : UIBase
 {
@@ -13,7 +15,18 @@ public class PuzzleHUD : UIBase
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
-        _uiQuest.gameObject.SetActive(true);
+    }
+
+    private void OnEnable()
+    {
+        if (SceneManager.GetActiveScene().name == "ClockTower")
+        {
+            HideQuest();
+        }
+        else
+        {
+            ShowAndUpdateQuest();
+        }
     }
 
     void Update()
@@ -60,10 +73,15 @@ public class PuzzleHUD : UIBase
         }
     }
 
-    public void ShowQuestForDuration()
+    public void ShowAndUpdateQuest()
     {
         _uiQuest.gameObject.SetActive(true);
-        _uiQuest.ShowQuestForDuration();
+        _uiQuest.UpdateQuest();
+    }
+
+    public void HideQuest()
+    {
+        _uiQuest.gameObject.SetActive(false);
     }
 
     public void OnClick_Setting()
@@ -74,15 +92,8 @@ public class PuzzleHUD : UIBase
 
     public void OnClick_QuestIcon()
     {
-        if (_uiQuest.showQuestCoroutine != null)
-        {
-            _uiQuest.InactiveQuest();
-        }
-        else
-        {
-            bool active = _uiQuest.gameObject.activeSelf;
-            _uiQuest.gameObject.SetActive(!active);
-        }
+        bool active = _uiQuest.gameObject.activeSelf;
+        _uiQuest.gameObject.SetActive(!active);
 
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }

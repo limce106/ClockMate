@@ -10,38 +10,13 @@ public class UIQuest : UIBase
 {
     public TMP_Text questTxt;
     public Image questName;
-    public Coroutine showQuestCoroutine { get; private set; }
 
-    private const float duration = 5f;
-
-    public void ShowQuestForDuration()
+    private void OnEnable()
     {
-        showQuestCoroutine = StartCoroutine(ShowQuestCoroutine());
+        UpdateQuest();
     }
 
-    /// <summary>
-    /// 퀘스트 UI 비활성화
-    /// </summary>
-    public void InactiveQuest()
-    {
-        if(showQuestCoroutine != null)
-        {
-            StopCoroutine(showQuestCoroutine);
-            showQuestCoroutine = null;
-        }
-
-        gameObject.SetActive(false);
-    }
-
-    private IEnumerator ShowQuestCoroutine()
-    {
-        SetQuest();
-        yield return new WaitForSeconds(duration);
-
-        InactiveQuest();
-    }
-
-    private void SetQuest()
+    public void UpdateQuest()
     {
         // TODO 퀘스트 이름 이미지 애셋 추가 후 주석 풀기
 

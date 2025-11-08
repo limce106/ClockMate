@@ -109,7 +109,6 @@ public class BattleManager : MonoBehaviourPunCallbacks
     //{
     //    StartBattle();
     //}
-    //
 
     private void Update()
     {
@@ -162,7 +161,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
                 _timer = playerAttackTimeLimit[playerAttackType];
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, true);
-                photonView.RPC(nameof(RPC_ShowQuest), RpcTarget.All);
+                photonView.RPC(nameof(RPC_SetQuestActive), RpcTarget.All, true);
             }
 
             BattleLifeManager.Instance.allowRevive = true;
@@ -188,9 +187,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(HandleFailure), RpcTarget.All);
             }
 
-            if (timeLimitUI.activeSelf)
+            if (phaseType == PhaseType.PlayerAttack)
             {
                 photonView.RPC(nameof(RPC_EnableTimeLimit), RpcTarget.All, false);
+                photonView.RPC(nameof(RPC_SetQuestActive), RpcTarget.All, false);
             }
 
             yield return new WaitUntil(() => !isHandling);
@@ -512,9 +512,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_ShowQuest()
+    public void RPC_SetQuestActive(bool active)
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        puzzleHUD.ShowQuestForDuration();
+        
+        if(active)
+        {
+            puzzleHUD.ShowAndUpdateQuest();
+        }
+        else
+        {
+            puzzleHUD.HideQuest();
+        }
     }
 }

@@ -8,7 +8,7 @@ using System;
 using DefineExtension;
 using static Define.Character;
 
-public class RPCManager : MonoBehaviourPunCallbacks
+public class RPCManager : MonoBehaviourPun
 {
     private static RPCManager _instance;
     public static RPCManager Instance
@@ -24,12 +24,6 @@ public class RPCManager : MonoBehaviourPunCallbacks
             return _instance;
         }
     }
-
-    private static Dictionary<int, bool> _playerReadyStatus = new Dictionary<int, bool>();
-    private bool _canAcceptReady = false;
-
-    public static Action OnLocalAllReadyAction;
-    public static Action OnSyncedAllReadyAction;
 
     void Awake()
     {

@@ -71,6 +71,8 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
+        EnableColliders(false);
+
         if (character.photonView.IsMine)
         {
             character.photonView.RPC("RPC_StartClimbing", RpcTarget.All, GetComponent<PhotonView>().ViewID);
@@ -81,15 +83,18 @@ public abstract class ClimbObjectBase : MonoBehaviourPun, IInteractable
         _uiNotice.SetText(_exitString);
 
         ActivateHelpUI();
-        EnableColliders(false);
 
         return true;
     }
 
     public void EnableColliders(bool enable)
     {
-        Collider collider = GetComponent<Collider>();
-        collider.enabled = enable;
+        Collider[] colliders = GetComponents<Collider>();
+
+        foreach(var col in colliders)
+        {
+            col.enabled = enable;
+        }
     }
 
     public abstract void AttachTo(CharacterBase character);
