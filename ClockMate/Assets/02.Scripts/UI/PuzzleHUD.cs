@@ -21,11 +21,11 @@ public class PuzzleHUD : UIBase
     {
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
-            SetQuestActive(false);
+            HideQuest();
         }
         else
         {
-            SetQuestActive(true);
+            ShowAndUpdateQuest();
         }
     }
 
@@ -73,9 +73,15 @@ public class PuzzleHUD : UIBase
         }
     }
 
-    public void SetQuestActive(bool active)
+    public void ShowAndUpdateQuest()
     {
-        _uiQuest.gameObject.SetActive(active);
+        _uiQuest.gameObject.SetActive(true);
+        _uiQuest.UpdateQuest();
+    }
+
+    public void HideQuest()
+    {
+        _uiQuest.gameObject.SetActive(false);
     }
 
     public void OnClick_Setting()

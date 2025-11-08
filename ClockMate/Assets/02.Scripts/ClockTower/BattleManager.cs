@@ -515,6 +515,14 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public void RPC_SetQuestActive(bool active)
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        puzzleHUD.SetQuestActive(active);
+        
+        if(active)
+        {
+            puzzleHUD.ShowAndUpdateQuest();
+        }
+        else
+        {
+            puzzleHUD.HideQuest();
+        }
     }
 }

@@ -13,10 +13,10 @@ public class UIQuest : UIBase
 
     private void OnEnable()
     {
-        SetQuest();
+        UpdateQuest();
     }
 
-    private void SetQuest()
+    public void UpdateQuest()
     {
         // TODO 퀘스트 이름 이미지 애셋 추가 후 주석 풀기
 
