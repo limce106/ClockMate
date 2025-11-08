@@ -48,8 +48,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             AppSettings appSettings = GetAppSettingsFromEnv();
-            appSettings.FixedRegion = "kr";
-            appSettings.AppVersion = "1.0";
 
             if(appSettings != null)
             {
@@ -120,7 +118,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         AppSettings appSettings = new AppSettings
         {
             AppIdRealtime = punAppId,
-            AppIdVoice = voiceAppId
+            AppIdVoice = voiceAppId,
+            FixedRegion = "ap",
+            AppVersion = "1.0"
         };
 
         return appSettings;
