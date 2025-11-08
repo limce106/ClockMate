@@ -217,10 +217,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
 
-        if (currentScene == "ClockTower") return;
-
-        puzzleHUD.ShowQuest();
-        UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+        if (currentScene != "ClockTower")
+            UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
     }
 
     /// <summary>

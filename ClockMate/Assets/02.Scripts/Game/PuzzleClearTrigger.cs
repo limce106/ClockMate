@@ -19,6 +19,6 @@ public class PuzzleClearTrigger : MonoBehaviour
     private void ShowQuest()
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        puzzleHUD.ShowQuest();
+        puzzleHUD.SetQuestActive(true);
     }
 }
