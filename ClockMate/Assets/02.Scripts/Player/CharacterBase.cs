@@ -59,6 +59,7 @@ public abstract class CharacterBase : MonoBehaviourPun
     {
         Init();
         _photonTransformView = GetComponent<PhotonTransformView>();
+        GameManager.Instance.RegisterCharacter(Name, this);
     }
 
     protected void Update()

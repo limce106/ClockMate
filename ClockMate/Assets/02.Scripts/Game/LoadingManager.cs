@@ -36,6 +36,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     new private void OnEnable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -164,11 +165,16 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     IEnumerator EndLoading()
     {
-        yield return new WaitUntil(() => GameManager.Instance.Characters?.Count >= PhotonNetwork.CurrentRoom.PlayerCount);
+        yield return new WaitUntil(() 
+                => GameManager.Instance.Characters?.Count >= PhotonNetwork.CurrentRoom.PlayerCount && 
+                   GameManager.Instance.Characters.Values.All(c => c != null)
+        );
 
-        CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
-        character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, false);
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GameManager.Instance.SetAllCharactersActive(false);
+        }
+        
         yield return new WaitForSeconds(1f);
 
         if (_uiLoading != null)
@@ -182,19 +188,22 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         string currentScene = SceneManager.GetActiveScene().name;
 
-        if (PhotonNetwork.IsMasterClient && GameManager.Instance.CurrentStage.Map.HasCinematicIntro())
+        if (PhotonNetwork.IsMasterClient)
         {
-            CutsceneSyncManager.Instance.PlayCinematicForAll(
-                cutsceneName: currentScene + "_Intro",
-                masterOnlyOnAllFinished:
-                () =>
-                {
-                    photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
-                });
-        }
-        else
-        {
-            photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
+            if (GameManager.Instance.CurrentStage.Map.HasCinematicIntro())
+            {
+                CutsceneSyncManager.Instance.PlayCinematicForAll(
+                    cutsceneName: currentScene + "_Intro",
+                    masterOnlyOnAllFinished:
+                    () =>
+                    {
+                        photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
+                    });
+            }
+            else
+            {
+                photonView.RPC(nameof(RPC_FinishIntroAndActivatePlayerControl), RpcTarget.All, currentScene);
+            }
         }
         GameManager.Instance.PlayMapBgm();
     }
