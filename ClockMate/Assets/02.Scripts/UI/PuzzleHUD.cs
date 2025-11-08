@@ -76,12 +76,14 @@ public class PuzzleHUD : UIBase
     {
         if (_uiQuest.showQuestCoroutine != null)
         {
-            StopCoroutine(_uiQuest.showQuestCoroutine);
+            _uiQuest.InactiveQuest();
         }
         else
         {
             bool active = _uiQuest.gameObject.activeSelf;
             _uiQuest.gameObject.SetActive(!active);
         }
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }

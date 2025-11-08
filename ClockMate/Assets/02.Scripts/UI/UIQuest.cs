@@ -4,11 +4,13 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIQuest : UIBase
 {
-    public TMP_Text quest;
-    public Coroutine showQuestCoroutine;
+    public TMP_Text questTxt;
+    public Image questName;
+    public Coroutine showQuestCoroutine { get; private set; }
 
     private const float duration = 5f;
 
@@ -17,18 +19,34 @@ public class UIQuest : UIBase
         showQuestCoroutine = StartCoroutine(ShowQuestCoroutine());
     }
 
-    private IEnumerator ShowQuestCoroutine()
+    /// <summary>
+    /// 퀘스트 UI 비활성화
+    /// </summary>
+    public void InactiveQuest()
     {
-        SetQuestText();
-        yield return new WaitForSeconds(duration);
+        if(showQuestCoroutine != null)
+        {
+            StopCoroutine(showQuestCoroutine);
+            showQuestCoroutine = null;
+        }
 
         gameObject.SetActive(false);
-        showQuestCoroutine = null;
     }
 
-    private void SetQuestText()
+    private IEnumerator ShowQuestCoroutine()
     {
+        SetQuest();
+        yield return new WaitForSeconds(duration);
+
+        InactiveQuest();
+    }
+
+    private void SetQuest()
+    {
+        // TODO 퀘스트 이름 이미지 애셋 추가 후 주석 풀기
+
         string currentQuest = "";
+        //Sprite questNameAsset = null;
 
         if(SceneManager.GetActiveScene().name == "ClockTower")
         {
@@ -36,6 +54,7 @@ public class UIQuest : UIBase
             Where(data => data.PlayerAttackType == BattleManager.Instance.playerAttackType).First<LDPlayerAttackQuest>();
 
             currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? playerAttackQuest.HourQuest : playerAttackQuest.MilliQuest;
+            //questNameAsset = Resources.Load<Sprite>(playerAttackQuest.QuestNameImgPath);
         }
         else
         {
@@ -43,8 +62,10 @@ public class UIQuest : UIBase
             Where(data => data.ID == GameManager.Instance.CurrentStage.ID).First<LDPuzzleQuest>();
 
             currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? puzzleQuest.HourQuest : puzzleQuest.MilliQuest;
+            //questNameAsset = Resources.Load<Sprite>(puzzleQuest.QuestNameImgPath);
         }
 
-        quest.text = currentQuest;
+        questTxt.text = currentQuest;
+        //questName.sprite = questNameAsset;
     }
 }
