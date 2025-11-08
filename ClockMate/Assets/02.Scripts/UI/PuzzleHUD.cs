@@ -15,8 +15,11 @@ public class PuzzleHUD : UIBase
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
+    }
 
-        if(SceneManager.GetActiveScene().name == "ClockTower")
+    private void OnEnable()
+    {
+        if (SceneManager.GetActiveScene().name == "ClockTower")
         {
             SetQuestActive(false);
         }

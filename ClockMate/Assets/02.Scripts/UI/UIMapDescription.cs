@@ -11,6 +11,7 @@ public class UIMapDescription : UIBase
 
     private CanvasGroup _canvasGroup;
     private Dictionary<string, string> _mapNames;
+    private Coroutine _fadeInOut;
 
     private const float FadeDuration = 1.0f;
     private const float DisplayDuration = 2.0f;
@@ -29,9 +30,15 @@ public class UIMapDescription : UIBase
         _canvasGroup.alpha = 0f;
     }
 
-    public override void Show()
+    private void OnEnable()
     {
         ShowMapDescription();
+    }
+
+    private void OnDisable()
+    {
+        if(_fadeInOut != null)
+            StopCoroutine(_fadeInOut);
     }
 
     private void SetMapNameForScene()
@@ -43,7 +50,7 @@ public class UIMapDescription : UIBase
     private void ShowMapDescription()
     {
         SetMapNameForScene();
-        StartCoroutine(FadeInOut());
+        _fadeInOut = StartCoroutine(FadeInOut());
     }
 
     private IEnumerator FadeInOut()
@@ -69,6 +76,7 @@ public class UIMapDescription : UIBase
         }
 
         _canvasGroup.alpha = 0f;
+        _fadeInOut = null;
         Close();
     }
 }
