@@ -79,7 +79,7 @@ public class CinematicCutscenePlayer : MonoBehaviour
         if (director.playableAsset != null)
         {
             // 끝 프레임까지 이동
-            director.time = director.duration;
+            director.time = director.duration + 0.001f;
             director.Evaluate();
         }
 
