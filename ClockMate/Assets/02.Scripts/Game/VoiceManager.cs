@@ -28,8 +28,6 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
 
         voiceClient = GetComponent<PunVoiceClient>();
         recorder = GetComponent<Recorder>();
-
-        //SetMicActive(false);
     }
 
     private void OnDestroy()
@@ -42,10 +40,10 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
 
     private void Start()
     {
-        foreach (var device in Microphone.devices)
-        {
-            Debug.Log($"감지된 마이크 장치: {device}");
-        }
+        //foreach (var device in Microphone.devices)
+        //{
+        //    Debug.Log($"감지된 마이크 장치: {device}");
+        //}
     }
 
     public void SetMicActive(bool isActive)
@@ -104,11 +102,14 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
         TryJoinVoiceRoom();
     }
 
+    /// <summary>
+    /// 보이스 룸 참가 시도
+    /// </summary>
     private void TryJoinVoiceRoom()
     {
         if (voiceClient.Client.State == ClientState.ConnectedToMasterServer && PN.InRoom)
         {
-            Debug.Log($"Voice 상태({voiceClient.Client.State})와 PUN 상태 확인 완료. OpJoinOrCreateRoom 호출.");
+            Debug.Log($"Voice 상태({voiceClient.Client.State})와 PUN 상태 확인 완료. OpJoinOrCreateRoom 호출");
             voiceClient.Client.OpJoinOrCreateRoom(new EnterRoomParams()
             {
                 RoomName = PN.CurrentRoom.Name,
@@ -129,7 +130,6 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
     public void OnRegionListReceived(RegionHandler regionHandler) { }
     public void OnCustomAuthenticationResponse(Dictionary<string, object> data) { }
     public void OnCustomAuthenticationFailed(string debugMessage) { }
-
     public void OnPlayerEnteredRoom(Player newPlayer) { }
     public void OnPlayerLeftRoom(Player otherPlayer) { }
     public void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps) { }
