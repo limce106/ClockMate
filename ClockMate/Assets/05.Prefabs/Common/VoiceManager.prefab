@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voiceDetection: 1
-  voiceDetectionThreshold: 0.01
+  voiceDetectionThreshold: 0.2
   voiceDetectionDelayMs: 500
   interestGroup: 0
   useTargetPlayers: 0
@@ -98,10 +98,10 @@ MonoBehaviour:
   encrypt: 0
   transmitEnabled: 1
   samplingRate: 48000
-  frameDuration: 2500
+  frameDuration: 20000
   bitrate: 30000
   sourceType: 0
-  microphoneType: 1
+  microphoneType: 0
   audioClip: {fileID: 0}
   loopAudioClip: 1
   recordingEnabled: 1

@@ -48,8 +48,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             AppSettings appSettings = GetAppSettingsFromEnv();
-            appSettings.FixedRegion = "kr";
-            appSettings.AppVersion = "1.0";
 
             if(appSettings != null)
             {
@@ -77,12 +75,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Connected to Master");
     }
 
-    public override void OnJoinedLobby()
+    public override void OnJoinedRoom()
     {
         AppSettings appSettings = GetAppSettingsFromEnv();
-        if (VoiceManager.Instance != null && appSettings != null)
+
+        if (VoiceManager.Instance != null && VoiceManager.Instance.voiceClient != null)
         {
-            VoiceManager.Instance.ConnectVoice(appSettings);
+            if (!VoiceManager.Instance.voiceClient.Client.IsConnected)
+                VoiceManager.Instance.ConnectVoice(appSettings);
         }
     }
 
@@ -105,7 +105,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         TryHandleDisconnect();
     }
 
-    private AppSettings GetAppSettingsFromEnv()
+    public AppSettings GetAppSettingsFromEnv()
     {
         EnvLoader.LoadEnv();
 
@@ -120,7 +120,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         AppSettings appSettings = new AppSettings
         {
             AppIdRealtime = punAppId,
-            AppIdVoice = voiceAppId
+            AppIdVoice = voiceAppId,
+            FixedRegion = "asia",
+            AppVersion = "1.0"
         };
 
         return appSettings;
@@ -148,8 +150,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     IEnumerator ReturnToTitleAfterDisconnect()
     {
         PhotonNetwork.Disconnect();
+        if (VoiceManager.Instance && VoiceManager.Instance.voiceClient.Client.IsConnected)
+        {
+            VoiceManager.Instance.voiceClient.Client.Disconnect();
+        }
 
-        while(PhotonNetwork.IsConnected)
+        while (PhotonNetwork.IsConnected)
             yield return null;
 
         SceneManager.LoadScene(firstSceneName);
