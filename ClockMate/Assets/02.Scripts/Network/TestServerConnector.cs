@@ -36,13 +36,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             statusText.text = "클릭해서 서버 연결하기";
-            PhotonNetwork.AutomaticallySyncScene = false;
-
-            AppSettings appSettings = GetAppSettingsFromEnv();
-            if (appSettings != null)
-            {
-                PhotonNetwork.ConnectUsingSettings(appSettings);
-            }
         }
         else
         {
@@ -74,15 +67,6 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         };
 
         PhotonNetwork.CreateRoom(RoomName, options, TypedLobby.Default);
-    }
-
-    public override void OnJoinedLobby()
-    {
-        AppSettings appSettings = GetAppSettingsFromEnv();
-        if (VoiceManager.Instance != null && appSettings != null)
-        {
-            VoiceManager.Instance.ConnectVoice(appSettings);
-        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)

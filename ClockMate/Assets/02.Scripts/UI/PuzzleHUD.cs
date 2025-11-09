@@ -39,7 +39,7 @@ public class PuzzleHUD : UIBase
         string remotePlayerName = GameManager.Instance?.GetRemotePlayerName();
         if (!string.IsNullOrEmpty(remotePlayerName))
         {
-            _remotePhotonVoiceView = GameObject.FindWithTag(remotePlayerName)?.GetComponent<PhotonVoiceView>();
+            _remotePhotonVoiceView = GameObject.FindWithTag(remotePlayerName)?.GetComponentInParent<PhotonVoiceView>();
         }
 
         Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + remotePlayerName + "Icon");
