@@ -30,9 +30,6 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
         recorder = GetComponent<Recorder>();
 
         //SetMicActive(false);
-
-        //VoiceFollowClient voiceFollowClient = GetComponent<VoiceFollowClient>();
-        //voiceFollowClient.enabled = false;
     }
 
     private void OnDestroy()
@@ -133,22 +130,9 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
     public void OnCustomAuthenticationResponse(Dictionary<string, object> data) { }
     public void OnCustomAuthenticationFailed(string debugMessage) { }
 
-    public void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        Debug.Log($"Voice 룸({voiceClient.Client.CurrentRoom.Name}) 참가 완료! 이제 보이스챗이 가능합니다.");
-        recorder.TransmitEnabled = true;
-
-        if (recorder.TransmitEnabled)
-        {
-            Debug.Log($"✅ Recorder가 활성화되었으며, Voice Client와 연결 상태입니다.");
-        }
-        else
-        {
-            Debug.LogError($"❌ Recorder가 활성화되었지만, Voice 채널에 연결되지 않았거나 문제가 있습니다.");
-        }
-    }
-    public void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) { }
-    public void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps) { }
+    public void OnPlayerEnteredRoom(Player newPlayer) { }
+    public void OnPlayerLeftRoom(Player otherPlayer) { }
+    public void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps) { }
     public void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged) { }
     public void OnMasterClientSwitched(Player newMasterClient) { }
 }
