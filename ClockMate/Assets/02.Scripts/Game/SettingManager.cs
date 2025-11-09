@@ -11,11 +11,11 @@ public class SettingManager : MonoSingleton<SettingManager>
     public float bgmVolume = 0.8f;
     public float sfxVolume = 1f;
 
-    public bool isMicOn = false;
+    public bool isMicOn = true;
     public float remoteVoiceVolume = 1f;
 
     private void Start()
     {
-        isMicOn = VoiceManager.Instance.recorder.TransmitEnabled;
+        VoiceManager.Instance.recorder.TransmitEnabled = isMicOn;
     }
 }
