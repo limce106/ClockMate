@@ -15,15 +15,8 @@ public class PuzzleClearTrigger : MonoBehaviour
             if (!character.photonView.IsMine) return;
 
             GameManager.Instance.StageComplete();
-            ShowQuest();
 
             isTriggered = true;
         }
-    }
-
-    private void ShowQuest()
-    {
-        PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        puzzleHUD.ShowAndUpdateQuest();
     }
 }
