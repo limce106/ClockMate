@@ -117,7 +117,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         while (!_currentLoadOperation.isDone)
         {
             float progress = Mathf.Clamp01(_currentLoadOperation.progress / 0.9f);
-            _uiLoading.UpdateLoadingProgress(progress);
             
             if(progress >= 1f)
             {

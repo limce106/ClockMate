@@ -2,16 +2,13 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using static Define.Loading;
 
 public class UILoading : UIBase
 {
-    [SerializeField] private Slider progressSlider;
-    [SerializeField] private Text climateTip;
+    [SerializeField] private TMP_Text climateTip;
     [SerializeField] private RectTransform characterImgRectTransform;
 
     [SerializeField] private float _characterMoveDuration = 3f;
@@ -25,16 +22,6 @@ public class UILoading : UIBase
     public override void Show()
     {
         base.Show();
-        UpdateLoadingProgress(0f);
-    }
-    
-    /// <summary>
-    /// 로딩 진행도 갱신 (0~1 사이 값)
-    /// </summary>
-    public void UpdateLoadingProgress(float progress)
-    {
-        if (progressSlider != null)
-            progressSlider.value = progress;
     }
 
     /// <summary>
