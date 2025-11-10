@@ -11,11 +11,6 @@ public class UIQuest : UIBase
     public TMP_Text questTxt;
     public Image questName;
 
-    private void OnEnable()
-    {
-        UpdateQuest();
-    }
-
     public void UpdateQuest()
     {
         // TODO 퀘스트 이름 이미지 애셋 추가 후 주석 풀기
@@ -42,5 +37,7 @@ public class UIQuest : UIBase
 
         questTxt.text = currentQuest;
         //questName.sprite = questNameAsset;
+
+        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 1f);
     }
 }
