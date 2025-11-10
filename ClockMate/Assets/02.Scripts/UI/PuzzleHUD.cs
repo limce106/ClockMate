@@ -84,12 +84,6 @@ public class PuzzleHUD : UIBase
         _uiQuest.gameObject.SetActive(false);
     }
 
-    public void OnClick_Setting()
-    {
-        UISetting uiSetting = UIManager.Instance?.Show<UISetting>("UISetting");
-        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
-    }
-
     public void OnClick_QuestIcon()
     {
         bool active = _uiQuest.gameObject.activeSelf;

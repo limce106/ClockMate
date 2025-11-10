@@ -13,6 +13,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private RPCManager _rpcManager;
     private UIStageDebugLoader _uiStageDebugLoader;
+    private UISetting _uiSetting;
 
     protected override void Init()
     {
@@ -22,6 +23,31 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         _rpcManager = RPCManager.Instance;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSetting();
+        }
+    }
+
+    /// <summary>
+    /// 설정창 On/Off
+    /// </summary>
+    private void ToggleSetting()
+    {
+        if(_uiSetting != null && UIManager.Instance.IsOnScreen(_uiSetting))
+        {
+            UIManager.Instance.Close(_uiSetting);
+        }
+        else
+        {
+            _uiSetting = UIManager.Instance.Show<UISetting>("UISetting");
+        }
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     /// <summary>
