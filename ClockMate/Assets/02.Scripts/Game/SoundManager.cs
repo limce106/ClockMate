@@ -62,8 +62,13 @@ public class SoundManager : MonoPunSingleton<SoundManager>
             }
         }
 
-        AudioClip[] loadedClips = Resources.LoadAll<AudioClip>("Sounds/AudioClips");
-        foreach (AudioClip clip in loadedClips)
+        AudioClip[] loadedBGM = Resources.LoadAll<AudioClip>("Sounds/AudioClips/BGM");
+        AudioClip[] loadedSfx = Resources.LoadAll<AudioClip>("Sounds/AudioClips/Sfx");
+        foreach (AudioClip clip in loadedBGM)
+        {
+            _clipMap.TryAdd(clip.name, clip);
+        }
+        foreach (AudioClip clip in loadedSfx)
         {
             _clipMap.TryAdd(clip.name, clip);
         }
@@ -148,12 +153,16 @@ public class SoundManager : MonoPunSingleton<SoundManager>
         AudioClip clip = GetClipOrWarn(key);
         if (!clip) return default;
 
+        float userSfx = SettingManager.Instance.sfxVolume;
+        float perceptual = Slider01ToLinearGain(userSfx);
+        
         SoundPlayer player = RentPlayer();
         player.Configure(
             clip: clip,
             group: GetGroup(SoundType.Effect),
             loop: loop,
-            volume: volume * SettingManager.Instance.sfxVolume,
+            //volume: volume * SettingManager.Instance.sfxVolume,
+            volume: volume * perceptual,
             pitch: pitch,
             spatial: pos.HasValue,
             worldPos: pos);
@@ -379,9 +388,25 @@ public class SoundManager : MonoPunSingleton<SoundManager>
     public void SetBgmVolume(float volume)
     {
         volume = Mathf.Clamp01(volume);
-        float db = volume > 0 ? Mathf.Lerp(-80f, 20f, volume) : -80;
+        //float db = volume > 0 ? Mathf.Lerp(-80f, 20f, volume) : -80;
+        float db = Slider01ToDb(volume);
         audioMixer.SetFloat("BGM_Volume", db);
 
         SettingManager.Instance.bgmVolume = volume;
     }
+    
+    private float Slider01ToDb(float v01)
+    {
+        // 0~1 슬라이더 → -80dB ~ 0dB (상한 0dB, 하한 -80dB)
+        v01 = Mathf.Clamp01(v01);
+        return v01 > 0f ? Mathf.Log10(Mathf.Max(v01, 0.0001f)) * 20f : -80f;
+    }
+
+    private float Slider01ToLinearGain(float v01)
+    {
+        // dB를 선형으로 환산: lin = 10^(dB/20)
+        float db = Mathf.Lerp(-80f, 0f, Mathf.Clamp01(v01));
+        return v01 <= 0f ? 0f : Mathf.Pow(10f, db / 20f);
+    }
+
 }
