@@ -70,7 +70,7 @@ public class UIManager : MonoSingleton<UIManager>
         // 최상단에 있는 UI가 아니라면 닫지 않는다.
         if (targetUi != Peek)
         {
-            Debug.LogError($"잘못된 UI를 닫으려고 함. {targetUi.name}");
+            Debug.LogError($"잘못된 UI {targetUi.name}를 닫으려고 함. 최상단 UI: {Peek.name}");
             return false;
         }
 

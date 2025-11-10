@@ -124,4 +124,11 @@ public class RPCManager : MonoBehaviourPun
     {
         GameManager.Instance.SetSelectedCharacter((CharacterName) characterNum);
     }
+    
+    [PunRPC]
+    public void RPC_ShowSaveUI()
+    {
+        UIManager.Instance.Show<UISaving>("UISaving");
+    }
+    
 }
