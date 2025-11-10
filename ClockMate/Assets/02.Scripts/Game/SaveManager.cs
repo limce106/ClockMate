@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Serialization;
 using static Define.Character;
 
 public class SaveManager : Singleton<SaveManager>
@@ -14,6 +14,8 @@ public class SaveManager : Singleton<SaveManager>
     /// </summary>
     public void SaveStage(int stageId)
     {
+        if(!PhotonNetwork.IsMasterClient) return;
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_ShowSaveUI), RpcTarget.All);
         string json = JsonUtility.ToJson(new SaveData(stageId), true);
         File.WriteAllText(SaveFilePath, json);
         
