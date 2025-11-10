@@ -42,7 +42,7 @@ public class PuzzleHUD : UIBase
             _remotePhotonVoiceView = GameObject.FindWithTag(remotePlayerName)?.GetComponentInParent<PhotonVoiceView>();
         }
 
-        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Character/" + remotePlayerName + "Icon");
+        Sprite characterSprite = Resources.Load<Sprite>("UI/Sprites/Mic/Mic_Using_" + remotePlayerName);
         if (characterSprite == null)
         {
             Debug.LogWarning($"Sprite for {remotePlayerName} not found in Resources.");
