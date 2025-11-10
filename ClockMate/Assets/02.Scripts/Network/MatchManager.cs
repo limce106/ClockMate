@@ -23,7 +23,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public TMP_Text joinCodeText;
     public TMP_Text joinCodeStatusText;
     public TMP_Text connectStatusText;
-    public Image EKey;
 
     [Header("Panel")]
     public GameObject titlePanel;
@@ -306,20 +305,12 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         if (playerCount == MaxPlayer)
         {
-            SetEKeyActive(true);
             UpdateStatusText("E키를 눌러 게임을 시작하세요.");
         }
         else
         {
-            SetEKeyActive(false);
             UpdateStatusText("함께 모험 할 동료를 기다리는 중..");
         }
-    }
-
-    [PunRPC]
-    private void SetEKeyActive(bool isActive)
-    {
-        EKey.gameObject.SetActive(isActive);
     }
 
     [PunRPC]

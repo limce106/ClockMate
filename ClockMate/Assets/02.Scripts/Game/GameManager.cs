@@ -13,6 +13,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private RPCManager _rpcManager;
     private UIStageDebugLoader _uiStageDebugLoader;
+    private UISetting _uiSetting;
 
     protected override void Init()
     {
@@ -22,6 +23,31 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         _rpcManager = RPCManager.Instance;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSetting();
+        }
+    }
+
+    /// <summary>
+    /// 설정창 On/Off
+    /// </summary>
+    private void ToggleSetting()
+    {
+        if(_uiSetting != null && UIManager.Instance.IsOnScreen(_uiSetting))
+        {
+            UIManager.Instance.Close(_uiSetting);
+        }
+        else
+        {
+            _uiSetting = UIManager.Instance.Show<UISetting>("UISetting");
+        }
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     /// <summary>
@@ -68,10 +94,16 @@ public class GameManager : MonoSingleton<GameManager>
         if (nextStage != null)
         {
             // 다음 스테이지 존재하는 경우
-            
+            ShowQuest();
             SaveManager.Instance.SaveStage(nextStage.ID); // 진행 상태 저장
             _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
         }
+    }
+
+    private void ShowQuest()
+    {
+        PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
+        puzzleHUD.ShowAndUpdateQuest();
     }
 
 
