@@ -62,8 +62,13 @@ public class SoundManager : MonoPunSingleton<SoundManager>
             }
         }
 
-        AudioClip[] loadedClips = Resources.LoadAll<AudioClip>("Sounds/AudioClips");
-        foreach (AudioClip clip in loadedClips)
+        AudioClip[] loadedBGM = Resources.LoadAll<AudioClip>("Sounds/AudioClips/BGM");
+        AudioClip[] loadedSfx = Resources.LoadAll<AudioClip>("Sounds/AudioClips/Sfx");
+        foreach (AudioClip clip in loadedBGM)
+        {
+            _clipMap.TryAdd(clip.name, clip);
+        }
+        foreach (AudioClip clip in loadedSfx)
         {
             _clipMap.TryAdd(clip.name, clip);
         }
