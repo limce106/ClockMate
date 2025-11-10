@@ -10,8 +10,8 @@ public class VoiceManager : MonoBehaviour, IConnectionCallbacks, IInRoomCallback
 {
     public static VoiceManager Instance;
 
-    public Recorder recorder;
-    public PunVoiceClient voiceClient;
+    public Recorder recorder { get; private set; }
+    public PunVoiceClient voiceClient { get; private set; }
 
     private void Awake()
     {
