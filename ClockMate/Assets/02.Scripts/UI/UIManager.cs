@@ -100,14 +100,14 @@ public class UIManager : MonoSingleton<UIManager>
     private void Update()
     {
         // Esc 키 입력 시 최상단 UI의 BackKey 호출
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (_uiList.Count == 0) return;
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    if (_uiList.Count == 0) return;
             
-            if (Peek.BackKey())
-            {
-                Peek.Close();
-            }
-        }
+        //    if (Peek.BackKey())
+        //    {
+        //        Peek.Close();
+        //    }
+        //}
     }
 }
