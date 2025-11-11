@@ -32,13 +32,32 @@ public class PlayerCameraController : MonoBehaviour
             return;
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+
+    private void Update()
+    {
+        HandleCursorConfineToggle();
     }
 
     private void LateUpdate()
     {
         HandleRotation();
+    }
+
+    private void HandleCursorConfineToggle()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Cursor.lockState == CursorLockMode.Confined)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+        }
     }
 
     private void HandleRotation()
