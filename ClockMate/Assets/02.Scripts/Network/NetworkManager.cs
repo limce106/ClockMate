@@ -159,7 +159,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             yield return null;
 
         SceneManager.LoadScene(firstSceneName);
-        CleanUpDuplicateManagers();
+        //CleanUpDuplicateManagers();
     }
 
     /// <summary>
