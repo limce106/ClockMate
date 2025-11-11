@@ -31,6 +31,9 @@ public class PlayerCameraController : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = true;
     }
 
     private void LateUpdate()
