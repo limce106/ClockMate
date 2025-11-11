@@ -152,7 +152,7 @@ public class GiantFlower : ResettableBase, IPunObservable
                     loop: true,
                     pos: transform.position,
                     sync: false,
-                    volume: 0.8f);
+                    volume: 0.6f);
             }
         }
         else
