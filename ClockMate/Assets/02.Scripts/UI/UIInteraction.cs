@@ -65,7 +65,9 @@ public class UIInteraction : UIBase
     /// </summary>
     public void DeactivateUI(GameObject detectedObj)
     {
+        if(detectedObj == null) return;
         if (!_objectToUIImage.ContainsKey(detectedObj)) return;
+
         ReturnImageToPool(_objectToUIImage[detectedObj]);
         _objectToUIImage.Remove(detectedObj);        
     }
@@ -195,6 +197,8 @@ public class UIInteraction : UIBase
     }
     private void ReturnImageToPool(Image img)
     {
+        if (img == null) return;
+
         _uiImagePool.Add(img);
         img.gameObject.SetActive(false);
     }
