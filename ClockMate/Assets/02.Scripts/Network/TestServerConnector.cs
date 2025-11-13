@@ -16,6 +16,8 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
     [Header("플레이어 스폰")]
     public bool isSpawnPlayer = false;
+    [Tooltip("마스터를 아워로 설정. 체크 해제 시 밀리로 설정")]
+    public bool masterIsHour = true;
 
     public Vector3 hourSpawnPos = new Vector3(0f, 0f, 0f);
     public Vector3 milliSpawnPos = new Vector3(0f, 0f, 0f);
@@ -90,19 +92,17 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
-            GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
-            GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
-            SaveManager.Instance.SaveNewGame(Character.CharacterName.Hour);
-            SaveManager.Instance.SaveStage(stageId);   
-            GameManager.Instance?.SetStageWithExistingData();
+            if(masterIsHour)
+                SpawnHour();
+            else
+                SpawnMilli();
         }
         else
         {
-            var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
-            GameManager.Instance.RegisterCharacter(Character.CharacterName.Milli, milli.GetComponent<CharacterBase>());
-            GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
-            GameManager.Instance?.SetCurrentStage(stageId);
+            if (masterIsHour)
+                SpawnMilli();
+            else
+                SpawnHour();
         }
 
         PuzzleHUD puzzleHUD = UIManager.Instance?.Show<PuzzleHUD>("PuzzleHUD");
@@ -127,5 +127,23 @@ public class TestServerConnector : MonoBehaviourPunCallbacks
         };
 
         return appSettings;
+    }
+
+    private void SpawnHour()
+    {
+        var hour = PhotonNetwork.Instantiate("Characters/Hour", hourSpawnPos, Quaternion.identity);
+        GameManager.Instance.RegisterCharacter(Character.CharacterName.Hour, hour.GetComponent<CharacterBase>());
+        GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Hour);
+        SaveManager.Instance.SaveNewGame(Character.CharacterName.Hour);
+        SaveManager.Instance.SaveStage(stageId);
+        GameManager.Instance?.SetStageWithExistingData();
+    }
+
+    private void SpawnMilli()
+    {
+        var milli = PhotonNetwork.Instantiate("Characters/Milli", milliSpawnPos, Quaternion.identity);
+        GameManager.Instance.RegisterCharacter(Character.CharacterName.Milli, milli.GetComponent<CharacterBase>());
+        GameManager.Instance?.SetSelectedCharacter(Character.CharacterName.Milli);
+        GameManager.Instance?.SetCurrentStage(stageId);
     }
 }

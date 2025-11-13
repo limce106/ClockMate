@@ -31,6 +31,7 @@ public class PuzzleHUD : UIBase
 
     void Update()
     {
+        ToggleQuest();
         UpdateRemoteSpeaking();
     }
 
@@ -84,11 +85,12 @@ public class PuzzleHUD : UIBase
         _uiQuest.gameObject.SetActive(false);
     }
 
-    public void OnClick_QuestIcon()
+    private void ToggleQuest()
     {
-        bool active = _uiQuest.gameObject.activeSelf;
-        _uiQuest.gameObject.SetActive(!active);
-
-        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+        if(Input.GetKeyDown(KeyCode.Tab))
+        {
+            bool active = _uiQuest.gameObject.activeSelf;
+            _uiQuest.gameObject.SetActive(!active);
+        }
     }
 }
