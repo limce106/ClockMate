@@ -94,5 +94,7 @@ public class FallingAttack : AttackPattern
         {
             BattleManager.Instance.clockhandPool.Return(clockHand);
         }
+
+        cleanUpEnded = true;
     }
 }

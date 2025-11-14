@@ -77,7 +77,7 @@ public class BattleLifeManager : MonoBehaviourPun
     /// </summary>
     private IEnumerator ReviveAfterDelay(CharacterBase character)
     {
-        photonView.RPC(nameof(RPC_ShowAndPlayReviveTimerUI), RpcTarget.All);
+        photonView.RPC(nameof(RPC_ShowAndPlayReviveTimerUI), RpcTarget.All, character.gameObject.tag, ReviveDelay);
         yield return new WaitForSeconds(ReviveDelay);
 
         if(!allowRevive)
@@ -120,10 +120,10 @@ public class BattleLifeManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RPC_ShowAndPlayReviveTimerUI()
+    private void RPC_ShowAndPlayReviveTimerUI(string deadCharacter, float duration)
     {
         _uiBattleRevive = UIManager.Instance.Show<UIBattleRevive>("UIBattleRevive");
-        _uiBattleRevive.PlayReviveTimerUI(ReviveDelay);
+        _uiBattleRevive.Init(deadCharacter, duration);
     }
 
     /// <summary>
