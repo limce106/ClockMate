@@ -225,6 +225,6 @@ public class CogRecovery : AttackPattern
 
     public override void CleanUpAttack()
     {
-        
+        cleanUpEnded = true;
     }
 }

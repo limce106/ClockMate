@@ -43,6 +43,6 @@ public class GiantFlowerManager : MonoBehaviourPun
         nextFlower.sideSteam.SetActive(true);
         nextFlower.steamAnimator.Play("Grow", 0, 0f);
 
-        SoundManager.Instance.PlaySfx(key: "steam_grow", pos: null, volume: 0.7f);
+        SoundManager.Instance.PlaySfx(key: "steam_grow", pos: null, volume: 0.2f);
     }
 }

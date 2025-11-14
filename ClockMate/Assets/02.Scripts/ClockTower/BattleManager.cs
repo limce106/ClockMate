@@ -40,6 +40,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     [Header("전장 바닥")]
     public GameObject[] clockFace;  // 덮개
+    public GameObject[] cogs;   // 톱니바퀴 복구 성공 후 활성화할 기본 배치된 톱니바퀴들
 
     public int round { get; private set; } = 1;
     public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
@@ -87,7 +88,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         playerCutsceneNames = new Dictionary<PlayerAttackType, string>
         {
             { PlayerAttackType.ClockHandRecovery, "ClockHandRecovery_Cutscene" },
-            { PlayerAttackType.CogwheelRecovery, "CogwheelRevery_Cutscene" },
+            { PlayerAttackType.CogwheelRecovery, "CogwheelRecovery_Cutscene" },
             { PlayerAttackType.ClockTowerOperation, "ClockTowerOperation_Cutscene" }
         };
 
@@ -235,28 +236,20 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
                 // 성공 컷씬 재생
-                CutsceneSyncManager.Instance.PlayForAll(
-                        playerCutsceneNames[playerAttackType],
-                        0f,
-                        () =>
-                        {
-                            TryAdvancePlayerAttack();
-                            round++;
-
-                            if ((int)playerAttackType < playerAttackPrefabs.Count)
-                            {
-                                TryAdvanceBossAttack();
-                            }
-                        }
-                    );
+                CutsceneSyncManager.Instance.PlayForAll(playerCutsceneNames[playerAttackType]);
 
                 // 공격 관련 오브젝트 정리
-                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                yield return StartCoroutine(RPC_CleanUpAttack());
 
                 if(phaseType == PhaseType.PlayerAttack)
                 {
                     photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+                    photonView.RPC(nameof(RPC_ActivateCogs), RpcTarget.All);
                 }
+
+                TryAdvanceBossAttack();
+                TryAdvancePlayerAttack();
+                round++;
             }
 
             while (CutsceneSyncManager.Instance.IsBusy)
@@ -292,7 +285,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if(PhotonNetwork.IsMasterClient)
             {
                 // 공격 관련 오브젝트 정리
-                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                yield return StartCoroutine(RPC_CleanUpAttack());
 
                 if (phaseType == PhaseType.PlayerAttack)
                 {
@@ -342,12 +335,20 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_CleanUpAttack()
+    private IEnumerator RPC_CleanUpAttack()
     {
         curAttackPattern?.CleanUpAttack();
 
-        if (_spawnedAttack != null && PhotonNetwork.IsMasterClient)
+        if (curAttackPattern != null)
+        {
+            yield return new WaitUntil(() => curAttackPattern.cleanUpEnded);
+        }
+
+        if (PhotonNetwork.IsMasterClient && _spawnedAttack != null)
+        {
             PhotonNetwork.Destroy(_spawnedAttack);
+            _spawnedAttack = null;
+        }
     }
 
     /// <summary>
@@ -356,9 +357,27 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_PlacePlayerOnClockFace()
     {
-        CharacterBase character = GameManager.Instance.GetLocalCharacter();
-        SetClockFaceActive(true);
-        character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+        if(playerAttackType == PlayerAttackType.CogwheelRecovery)
+        {
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            SetClockFaceActive(true);
+            character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+        }
+    }
+
+    /// <summary>
+    /// 전장 톱니바퀴 활성화
+    /// </summary>
+    [PunRPC]
+    private void RPC_ActivateCogs()
+    {
+        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
+        {
+            foreach (var cog in cogs)
+            {
+                cog.gameObject.SetActive(true);
+            }
+        }
     }
 
     /// <summary>
@@ -406,6 +425,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     void TryAdvanceBossAttack()
     {
+        if ((int)playerAttackType >= playerAttackPrefabs.Count) return;
+
         int index = (int)phaseType;
 
         if (index + 1 < PhaseTypes.Length)

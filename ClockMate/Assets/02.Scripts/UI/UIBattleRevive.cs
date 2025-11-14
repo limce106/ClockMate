@@ -1,33 +1,31 @@
 using Define;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIBattleRevive : UIBase
 {
     [SerializeField] private Image timer;
-    [SerializeField] private Image reviveIcon;
+    [SerializeField] private Image characterIcon;
 
+    private Color _originalColor;
+    private Image characterImg;
     private Coroutine _fillTimerCoroutine;
 
-    private void Start()
+    public void Init(string deadCharacter, float duration)
     {
-        Init();
-    }
+        Sprite character = Resources.Load<Sprite>("UI/Sprites/Character/Revive_" + deadCharacter + "_Face");
+        characterIcon.sprite = character;
+        ApplyQuarterSize();
 
-    private void OnEnable()
-    {
-        Init();
-    }
-
-    private void Init()
-    {
+        _originalColor = characterIcon.color;
         timer.fillAmount = 0f;
-        Sprite reviveBegin = Resources.Load<Sprite>("UI/Sprites/Revive_Icon_Beginning");
-        reviveIcon.sprite = reviveBegin;
+
+        characterImg = characterIcon.GetComponent<Image>();
+        characterImg.color = Color.gray;
+
+        PlayReviveTimerUI(duration);
     }
 
     public void PlayReviveTimerUI(float duration)
@@ -56,14 +54,25 @@ public class UIBattleRevive : UIBase
             yield return null;
         }
 
+        characterImg.color = _originalColor;
         timer.fillAmount = 1f;
 
-        Sprite reviveComplete = Resources.Load<Sprite>("UI/Sprites/Revive_Icon_Complete");
-        reviveIcon.sprite = reviveComplete;
-
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
 
         UIManager.Instance.Close(this);
         _fillTimerCoroutine = null;
+    }
+
+    /// <summary>
+    /// 캐릭터 얼굴 이미지를 원본 크기/4 값으로 설정
+    /// </summary>
+    private void ApplyQuarterSize()
+    {
+        if (characterImg == null) return;
+
+        characterImg.SetNativeSize();
+
+        RectTransform rt = characterImg.rectTransform;
+        rt.sizeDelta = rt.sizeDelta / 4;
     }
 }
