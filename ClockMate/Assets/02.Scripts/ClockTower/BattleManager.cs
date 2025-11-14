@@ -88,7 +88,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         playerCutsceneNames = new Dictionary<PlayerAttackType, string>
         {
             { PlayerAttackType.ClockHandRecovery, "ClockHandRecovery_Cutscene" },
-            { PlayerAttackType.CogwheelRecovery, "CogwheelRevery_Cutscene" },
+            { PlayerAttackType.CogwheelRecovery, "CogwheelRecovery_Cutscene" },
             { PlayerAttackType.ClockTowerOperation, "ClockTowerOperation_Cutscene" }
         };
 
@@ -236,20 +236,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     photonView.RPC(nameof(RPC_UpdateRecovery), RpcTarget.All, recoveryPerSuccess);
 
                 // 성공 컷씬 재생
-                CutsceneSyncManager.Instance.PlayForAll(
-                        playerCutsceneNames[playerAttackType],
-                        0f,
-                        () =>
-                        {
-                            TryAdvancePlayerAttack();
-                            round++;
-
-                            if ((int)playerAttackType < playerAttackPrefabs.Count)
-                            {
-                                TryAdvanceBossAttack();
-                            }
-                        }
-                    );
+                CutsceneSyncManager.Instance.PlayForAll(playerCutsceneNames[playerAttackType]);
 
                 // 공격 관련 오브젝트 정리
                 yield return StartCoroutine(RPC_CleanUpAttack());
@@ -257,7 +244,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
                 if(phaseType == PhaseType.PlayerAttack)
                 {
                     photonView.RPC(nameof(RPC_PlacePlayerOnClockFace), RpcTarget.All);
+                    photonView.RPC(nameof(RPC_ActivateCogs), RpcTarget.All);
                 }
+
+                TryAdvanceBossAttack();
+                TryAdvancePlayerAttack();
+                round++;
             }
 
             while (CutsceneSyncManager.Instance.IsBusy)
@@ -365,13 +357,26 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_PlacePlayerOnClockFace()
     {
-        CharacterBase character = GameManager.Instance.GetLocalCharacter();
-        SetClockFaceActive(true);
-        character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
-
-        foreach (var cog in cogs)
+        if(playerAttackType == PlayerAttackType.CogwheelRecovery)
         {
-            cog.gameObject.SetActive(true);
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            SetClockFaceActive(true);
+            character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+        }
+    }
+
+    /// <summary>
+    /// 전장 톱니바퀴 활성화
+    /// </summary>
+    [PunRPC]
+    private void RPC_ActivateCogs()
+    {
+        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
+        {
+            foreach (var cog in cogs)
+            {
+                cog.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -420,6 +425,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     /// </summary>
     void TryAdvanceBossAttack()
     {
+        if ((int)playerAttackType >= playerAttackPrefabs.Count) return;
+
         int index = (int)phaseType;
 
         if (index + 1 < PhaseTypes.Length)
