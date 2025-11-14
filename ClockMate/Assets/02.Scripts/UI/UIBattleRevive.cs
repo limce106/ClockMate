@@ -54,10 +54,10 @@ public class UIBattleRevive : UIBase
             yield return null;
         }
 
-        timer.fillAmount = 1f;
         characterImg.color = _originalColor;
+        timer.fillAmount = 1f;
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
 
         UIManager.Instance.Close(this);
         _fillTimerCoroutine = null;
