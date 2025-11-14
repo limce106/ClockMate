@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
@@ -141,6 +142,9 @@ public class LocalDataManager : Singleton<LocalDataManager>
                     if (currentType == typeof(string) && data.StartsWith("\"") && data.EndsWith("\"") && data.Length >= 2)
                     {
                         data = data.Trim('"');
+
+                        // string 타입 내 '/n'을 실제 줄 바꿈으로 치환
+                        data = data.Replace("\\n", "\n");
                     }
 
                     parsedValue = Convert.ChangeType(data, currentType);
