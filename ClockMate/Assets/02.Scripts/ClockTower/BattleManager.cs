@@ -252,7 +252,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     );
 
                 // 공격 관련 오브젝트 정리
-                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                yield return StartCoroutine(RPC_CleanUpAttack());
 
                 if(phaseType == PhaseType.PlayerAttack)
                 {
@@ -293,7 +293,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             if(PhotonNetwork.IsMasterClient)
             {
                 // 공격 관련 오브젝트 정리
-                photonView.RPC(nameof(RPC_CleanUpAttack), RpcTarget.All);
+                yield return StartCoroutine(RPC_CleanUpAttack());
 
                 if (phaseType == PhaseType.PlayerAttack)
                 {
@@ -343,12 +343,20 @@ public class BattleManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_CleanUpAttack()
+    private IEnumerator RPC_CleanUpAttack()
     {
         curAttackPattern?.CleanUpAttack();
 
-        if (_spawnedAttack != null && PhotonNetwork.IsMasterClient)
+        if (curAttackPattern != null)
+        {
+            yield return new WaitUntil(() => curAttackPattern.cleanUpEnded);
+        }
+
+        if (PhotonNetwork.IsMasterClient && _spawnedAttack != null)
+        {
             PhotonNetwork.Destroy(_spawnedAttack);
+            _spawnedAttack = null;
+        }
     }
 
     /// <summary>

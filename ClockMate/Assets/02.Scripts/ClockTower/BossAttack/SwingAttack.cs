@@ -140,5 +140,7 @@ public class SwingAttack : AttackPattern
             SwingPendulum pendulum = pendulumGO.GetComponent<SwingPendulum>();
             BattleManager.Instance.pendulumPool.Return(pendulum);
         }
+
+        cleanUpEnded = true;
     }
 }

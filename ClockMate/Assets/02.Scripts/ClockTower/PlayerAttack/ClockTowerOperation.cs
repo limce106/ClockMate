@@ -62,6 +62,8 @@ public class ClockTowerOperation : AttackPattern
             IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
             PhotonNetwork.Destroy(_clockSpring);
         }
+
+        cleanUpEnded = true;
     }
 
     public override void CleanUpAttack()

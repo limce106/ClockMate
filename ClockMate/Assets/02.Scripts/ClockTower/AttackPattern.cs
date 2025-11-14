@@ -11,6 +11,7 @@ using static Define.Battle;
 public abstract class AttackPattern : MonoBehaviourPun
 {
     public AttackCharacter attackCharacter;
+    public bool cleanUpEnded { get; protected set; } = false;
 
     private void Awake()
     {
