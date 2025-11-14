@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System.Collections;
+using System.Linq;
 using System.Net.NetworkInformation;
 using TMPro;
 using UnityEngine;
@@ -256,11 +257,21 @@ public class ClockHandRecovery : AttackPattern
 
     public override void CleanUpAttack()
     {
-        DestroyClockHands();
+        StartCoroutine(DestroyClockHands());
     }
 
-    private void DestroyClockHands()
+    private IEnumerator DestroyClockHands()
     {
+        // 모든 캐릭터들이 부착 해제될 때까지 대기
+        yield return new WaitUntil(() =>
+        {
+            bool allParentsAreNull = GameManager.Instance.Characters.Values.All(
+                character => character.photonView.transform.parent == null
+            );
+
+            return allParentsAreNull;
+        });
+
         if (PhotonNetwork.IsMasterClient)
         {
             if (hourClockHand != null)
@@ -271,5 +282,7 @@ public class ClockHandRecovery : AttackPattern
 
         hourClockHand = null;
         minuteClockHand = null;
+
+        cleanUpEnded = true;
     }
 }
