@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ClockTowerOperation : AttackPattern
@@ -55,8 +56,18 @@ public class ClockTowerOperation : AttackPattern
         BattleManager.Instance.photonView.RPC("ReportAttackResult", RpcTarget.All, isSuccess);
     }
 
-    private void DestroySpring()
+    private IEnumerator DestroySpring()
     {
+        // 모든 캐릭터들이 부착 해제될 때까지 대기
+        yield return new WaitUntil(() =>
+        {
+            bool allParentsAreNull = GameManager.Instance.Characters.Values.All(
+                character => character.photonView.transform.parent == null
+            );
+
+            return allParentsAreNull;
+        });
+
         if (_clockSpring != null && PhotonNetwork.IsMasterClient)
         {
             IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();

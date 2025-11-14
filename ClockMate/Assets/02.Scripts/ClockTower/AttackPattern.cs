@@ -11,7 +11,7 @@ using static Define.Battle;
 public abstract class AttackPattern : MonoBehaviourPun
 {
     public AttackCharacter attackCharacter;
-    public bool cleanUpEnded { get; protected set; } = false;
+    public bool cleanUpEnded { get; protected set; } = false; // 해당 공격이 생성한 오브젝트 제거를 모두 완료했는지 여부
 
     private void Awake()
     {
