@@ -40,6 +40,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     [Header("전장 바닥")]
     public GameObject[] clockFace;  // 덮개
+    public GameObject[] cogs;   // 톱니바퀴 복구 성공 후 활성화할 기본 배치된 톱니바퀴들
 
     public int round { get; private set; } = 1;
     public PhaseType phaseType { get; private set; } = PhaseType.SwingAttack;
@@ -359,6 +360,11 @@ public class BattleManager : MonoBehaviourPunCallbacks
         CharacterBase character = GameManager.Instance.GetLocalCharacter();
         SetClockFaceActive(true);
         character.transform.position = new Vector3(character.transform.position.x, playerBossAttackHeight, character.transform.position.z);
+
+        foreach (var cog in cogs)
+        {
+            cog.gameObject.SetActive(true);
+        }
     }
 
     /// <summary>
