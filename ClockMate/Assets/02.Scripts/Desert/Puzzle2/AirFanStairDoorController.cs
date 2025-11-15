@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using DefineExtension;
 
-public class AirFanDoorController : MonoBehaviourPun
+public class AirFanStairDoorController : MonoBehaviourPun
 {
     [SerializeField] private float _moveDistance = 4f;
     [SerializeField] private float _moveSpeed = 2f;
