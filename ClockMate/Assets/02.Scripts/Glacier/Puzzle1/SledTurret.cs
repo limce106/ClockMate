@@ -33,4 +33,9 @@ public class SledTurret : MonoBehaviour
         _isActive = isActive;
         targetDetector.SetActive(isActive);            
     }
+    
+    public void ResetAim()
+    {
+        targetDetector.ResetAim();
+    }
 }

@@ -65,6 +65,7 @@ public class ChaseControlModule : MonoBehaviourPun
         // UI 표시 - 체력 & 조작 도움
         sled.Hp.Init();
         ActivateHelpUI();
+        GameManager.Instance.PlayMapBgm();
     }
     
     public void StopChase()
@@ -155,6 +156,11 @@ public class ChaseControlModule : MonoBehaviourPun
         
         // 눈덩이 풀 리셋
         SnowballPool.Instance.ReturnAll();
+
+        if (GameManager.Instance.SelectedCharacter is CharacterName.Milli)
+        {
+            sled.Turret.ResetAim();
+        }
     }
     
     /// <summary>
