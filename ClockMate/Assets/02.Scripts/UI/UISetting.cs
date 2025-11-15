@@ -71,8 +71,7 @@ public class UISetting : UIBase
     /// </summary>
     private void InitSetting()
     {
-        soundTab.SetActive(true);
-        controlTab.SetActive(false);
+        OnClick_SoundButton();
 
         bgmVolumeSlider.onValueChanged.AddListener(SetBgmVolume);
         sfxVolumeSlider.onValueChanged.AddListener(UpdateSettingSfxVolume);
