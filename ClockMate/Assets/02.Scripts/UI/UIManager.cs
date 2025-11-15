@@ -97,17 +97,20 @@ public class UIManager : MonoSingleton<UIManager>
         return _uiList.Contains(ui) && ui.gameObject.activeInHierarchy;
     }
 
-    private void Update()
+    /// <summary>
+    /// 현재 화면에 표시된 모든 UI를 최상단부터 순서대로 닫는다.
+    /// </summary>
+    public void CloseAll()
     {
-        // Esc 키 입력 시 최상단 UI의 BackKey 호출
-        //if (Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    if (_uiList.Count == 0) return;
-            
-        //    if (Peek.BackKey())
-        //    {
-        //        Peek.Close();
-        //    }
-        //}
+        while (_uiList.Count > 0)
+        {
+            UIBase topUi = Peek;
+
+            if (!Close(topUi))
+            {
+                Debug.LogError($"UI 닫기 실패: {topUi.name}. 모든 UI 닫기를 중단합니다.");
+                break;
+            }
+        }
     }
 }

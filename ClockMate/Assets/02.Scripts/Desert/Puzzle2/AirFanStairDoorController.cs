@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using DefineExtension;
 
-public class AirFanDoorController : MonoBehaviourPun
+public class AirFanStairDoorController : MonoBehaviourPun
 {
     [SerializeField] private float _moveDistance = 4f;
     [SerializeField] private float _moveSpeed = 2f;
@@ -30,7 +30,7 @@ public class AirFanDoorController : MonoBehaviourPun
 
     void Update()
     {
-        if(_linkedPlate.IsFullyPressed && !_isMoving)
+        if(_linkedPlate != null && _linkedPlate.IsFullyPressed && !_isMoving)
         {
             _linkedPlate.SetLockState(true);
 
