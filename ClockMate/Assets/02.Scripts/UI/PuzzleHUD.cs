@@ -78,6 +78,7 @@ public class PuzzleHUD : UIBase
     {
         _uiQuest.gameObject.SetActive(true);
         _uiQuest.UpdateQuest();
+        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 0.3f);
     }
 
     public void HideQuest()

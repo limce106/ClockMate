@@ -31,7 +31,5 @@ public class UIQuest : UIBase
         }
 
         questTxt.text = currentQuest;
-
-        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 0.3f);
     }
 }

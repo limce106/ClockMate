@@ -215,6 +215,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
 
         PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 0.3f);
 
         if (currentScene != "ClockTower")
             UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
