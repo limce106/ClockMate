@@ -30,7 +30,7 @@ public class AirFanDoorController : MonoBehaviourPun
 
     void Update()
     {
-        if(_linkedPlate.IsFullyPressed && !_isMoving)
+        if(_linkedPlate != null && _linkedPlate.IsFullyPressed && !_isMoving)
         {
             _linkedPlate.SetLockState(true);
 

@@ -137,6 +137,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 photonView.RPC("ForceReturnToTitle", RpcTarget.All);
             }
 
+            PuzzleHUD puzzleHUD = FindAnyObjectByType<PuzzleHUD>();
+            if(puzzleHUD != null && puzzleHUD.gameObject.activeSelf)
+            {
+                UIManager.Instance.Close(puzzleHUD);
+            }
+
             Debug.Log("Disconnected");
         }
     }
