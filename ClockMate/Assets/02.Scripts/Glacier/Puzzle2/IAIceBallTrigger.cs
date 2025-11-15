@@ -39,28 +39,38 @@ public class IAIceBallTrigger : MonoBehaviourPunCallbacks, IInteractable
         if (character is not Hour hour) return false;
 
         // 트리거와 물리 충돌 비활성화
-        IgnoreCollider(true, character);
+        //IgnoreCollider(true, character);
+        TryGetComponent(out Collider triggerCol);
+        triggerCol.enabled = false;
         
         iceBall.StartControl(hour);
-        iceBall.OnControlEnd -= IgnoreCollider;
-        iceBall.OnControlEnd += IgnoreCollider;
+        iceBall.OnControlEnd -= EnableCollider;
+        iceBall.OnControlEnd += EnableCollider;
 
         return true;
     }
 
     private void IgnoreCollider(bool ignore, CharacterBase character)
     {
-        if (iceBall.TryGetComponent(out Collider col))
-        {
-            foreach (var chCol in character.GetComponentsInChildren<Collider>())
-            {
-                Physics.IgnoreCollision(col, chCol, ignore);
-            }
-        }
+        // if (iceBall.TryGetComponent(out Collider col))
+        // {
+        //     foreach (var chCol in character.GetComponentsInChildren<Collider>())
+        //     {
+        //         Physics.IgnoreCollision(col, chCol, ignore);
+        //     }
+        // }
 
         if (TryGetComponent(out Collider triggerCol))
         {
             triggerCol.enabled = !ignore;
+        }
+    }
+
+    private void EnableCollider(bool enable)
+    {
+        if (TryGetComponent(out Collider triggerCol))
+        {
+            triggerCol.enabled = enable;
         }
     }
 }

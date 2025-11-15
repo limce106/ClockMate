@@ -92,7 +92,7 @@ Transform:
   m_GameObject: {fileID: 4712450011645748163}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: -2.15, y: 0, z: -1.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 8404383011899303599}
   - component: {fileID: 2191848776596105947}
   - component: {fileID: 7400314706188248694}
+  - component: {fileID: 226058669470546646}
   m_Layer: 0
   m_Name: IceBall
   m_TagString: Untagged
@@ -127,7 +128,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7.5, y: 7.5, z: 7.5}
+  m_LocalScale: {x: 3.4999998, y: 3.4999998, z: 3.4999998}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1050822971930189685}
@@ -142,9 +143,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8451670410499882844}
   serializedVersion: 4
-  m_Mass: 7
-  m_Drag: 5
-  m_AngularDrag: 4
+  m_Mass: 40
+  m_Drag: 1
+  m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -159,8 +160,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 122
-  m_CollisionDetection: 0
+  m_Constraints: 112
+  m_CollisionDetection: 2
 --- !u!114 &2191848776596105947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,6 +201,27 @@ MonoBehaviour:
   m_SynchronizeRotation: 0
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!135 &226058669470546646
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451670410499882844}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.96
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &681201234286698766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -264,6 +286,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2d51b6202f5d0804fa2399a2914b027c, type: 2}
     - target: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       propertyPath: m_Name
       value: Visual
@@ -280,13 +306,13 @@ PrefabInstance:
       addedObject: {fileID: 3297076616854363627}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6258571609666801020}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1287856902156068757}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5815739134596760776}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8307167595519414195}
   m_SourcePrefab: {fileID: 100100000, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
 --- !u!1 &411363825195572319 stripped
 GameObject:
@@ -309,29 +335,8 @@ MonoBehaviour:
   torqueForce: 40
   iceBallRootGo: {fileID: 8451670410499882844}
   controllerPos: {fileID: 1050822971930189685}
-  radiusOffset: 6
+  radiusOffset: 5
   rollSfxKey: ice_drag
---- !u!135 &6258571609666801020
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411363825195572319}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.009
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1287856902156068757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -371,6 +376,27 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!65 &8307167595519414195
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411363825195572319}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.01940801, y: 0.01973339, z: 0.020033771}
+  m_Center: {x: -0.000040165145, y: -0.000072140705, z: -0.000045758203}
 --- !u!4 &1080483018516858597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4576142ac2b6f8d439a51c4ae738f181, type: 3}
