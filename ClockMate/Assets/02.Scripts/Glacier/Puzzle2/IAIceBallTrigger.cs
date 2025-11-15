@@ -19,10 +19,7 @@ public class IAIceBallTrigger : MonoBehaviourPunCallbacks, IInteractable
         yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom);
         if (GameManager.Instance.SelectedCharacter == CharacterName.Hour) yield break;
 
-        if (TryGetComponent(out Collider triggerCol))
-        {
-            triggerCol.enabled = false;
-        }
+        gameObject.SetActive(false);
     }
     
     public bool CanInteract(CharacterBase character)
@@ -48,22 +45,6 @@ public class IAIceBallTrigger : MonoBehaviourPunCallbacks, IInteractable
         iceBall.OnControlEnd += EnableCollider;
 
         return true;
-    }
-
-    private void IgnoreCollider(bool ignore, CharacterBase character)
-    {
-        // if (iceBall.TryGetComponent(out Collider col))
-        // {
-        //     foreach (var chCol in character.GetComponentsInChildren<Collider>())
-        //     {
-        //         Physics.IgnoreCollision(col, chCol, ignore);
-        //     }
-        // }
-
-        if (TryGetComponent(out Collider triggerCol))
-        {
-            triggerCol.enabled = !ignore;
-        }
     }
 
     private void EnableCollider(bool enable)
