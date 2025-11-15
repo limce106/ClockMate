@@ -137,6 +137,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 photonView.RPC("ForceReturnToTitle", RpcTarget.All);
             }
 
+            UIManager.Instance.CloseAll();
             Debug.Log("Disconnected");
         }
     }
