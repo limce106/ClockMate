@@ -23,6 +23,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         _rpcManager = RPCManager.Instance;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Update()
@@ -217,5 +218,20 @@ public class GameManager : MonoSingleton<GameManager>
     public CharacterBase GetLocalCharacter()
     {
         return Characters[SelectedCharacter];
+    }
+
+    public void HandleCursorConfineToggle()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Cursor.lockState == CursorLockMode.Confined)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+        }
     }
 }
