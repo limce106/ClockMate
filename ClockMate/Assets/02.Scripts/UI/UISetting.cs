@@ -3,8 +3,10 @@ using Photon.Voice.PUN;
 using Photon.Voice.Unity;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 /// <summary>
 /// 설정 기능들을 정의하는 클래스
@@ -13,15 +15,28 @@ using UnityEngine.UI;
 public class UISetting : UIBase
 {
     [Header("UI")]
+    public GameObject soundTab;
+    public GameObject controlTab;
+
+    public Image soundBtnBackground;
+    public Image controlBtnBackground;
+
     public Slider bgmVolumeSlider;
     public Slider sfxVolumeSlider;
     public Button micButton;
     public Slider remoteVoiceVolumeSlider;
 
+    public TMP_Text bgmValue;
+    public TMP_Text sfxValue;
+    public TMP_Text remoteVoiceValue;
+
     public Sprite micOnSprite;
     public Sprite micOffSprite;
 
     private AudioSource _remoteAudio;   // 상대 오디오
+
+    private const string NonSelectImgPath = "UI/Sprites/Setting_Title Section_Non_Select_Btn";
+    private const string SelectImgPath = "UI/Sprites/Setting_Title Section_Select_Btn";
 
     private void Awake()
     {
@@ -40,6 +55,15 @@ public class UISetting : UIBase
     private void OnEnable()
     {
         InitSetting();
+
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    private void OnDisable()
+    {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     /// <summary>
@@ -47,6 +71,8 @@ public class UISetting : UIBase
     /// </summary>
     private void InitSetting()
     {
+        OnClick_SoundButton();
+
         bgmVolumeSlider.onValueChanged.AddListener(SetBgmVolume);
         sfxVolumeSlider.onValueChanged.AddListener(UpdateSettingSfxVolume);
         remoteVoiceVolumeSlider.onValueChanged.AddListener(SetRemoteVoiceVolume);
@@ -61,6 +87,9 @@ public class UISetting : UIBase
     private void UpdateSettingSfxVolume(float value)
     {
         SettingManager.Instance.sfxVolume = value;
+
+        int textValue = (int)(value * 100);
+        sfxValue.text = textValue.ToString();
     }
 
     private void UpdateMicIcon(bool isOn)
@@ -87,6 +116,9 @@ public class UISetting : UIBase
     public void SetBgmVolume(float value)
     {
         SoundManager.Instance.SetBgmVolume(value);
+
+        int textValue = (int)(value * 100);
+        bgmValue.text = textValue.ToString();
     }
 
     /// <summary>
@@ -96,13 +128,44 @@ public class UISetting : UIBase
     {
         SettingManager.Instance.remoteVoiceVolume = value;
 
+        int textValue = (int)(value * 100);
+        remoteVoiceValue.text = textValue.ToString();
+
         if (_remoteAudio != null)
             _remoteAudio.volume = value;
     }
 
-    public void OnClick_Close()
+    public void OnClick_Continue()
     {
-        UIManager.Instance?.Close(this);
+        Cursor.lockState = CursorLockMode.Confined;
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+
+        UIManager.Instance?.Close(this);
+    }
+
+    public void OnClick_Exit()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public void OnClick_SoundButton()
+    {
+        soundTab.SetActive(true);
+        controlTab.SetActive(false);
+
+        soundBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
+        controlBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+    }
+
+    public void OnClick_ControlButton()
+    {
+        soundTab.SetActive(false);
+        controlTab.SetActive(true);
+
+        soundBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+        controlBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
     }
 }

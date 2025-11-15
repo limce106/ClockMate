@@ -23,6 +23,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         _rpcManager = RPCManager.Instance;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Update()
