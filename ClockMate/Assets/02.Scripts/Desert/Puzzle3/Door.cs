@@ -5,6 +5,8 @@ public class Door : MonoBehaviour
 {
     [SerializeField] private Vector3 openAxis; // 회전 목표 EulerAngles 
     [SerializeField] private Vector3 openPos; // 이동 목표 
+    [SerializeField] private Vector3 openScale;
+    [SerializeField] private bool useScale;
     [SerializeField] private float openSpeed; // 열리는 속도 (degrees/sec)
     [SerializeField] private float closeSpeed;
     [SerializeField] private string sfxKey;
@@ -14,6 +16,7 @@ public class Door : MonoBehaviour
     private Coroutine _closeCoroutine;
     private Vector3 _startAxis;
     private Vector3 _startPos;
+    private Vector3 _startScale;
     private SoundHandle _sfxHandle;
 
     [field: SerializeField] public bool IsLocked { get; private set; }
@@ -22,6 +25,11 @@ public class Door : MonoBehaviour
     {
         _startAxis = transform.localRotation.eulerAngles;
         _startPos = transform.localPosition;
+        _startScale = transform.localScale;
+        if (!useScale)
+        {
+            openScale = transform.localScale;
+        }
     }
     
     public void Open()
@@ -63,16 +71,21 @@ public class Door : MonoBehaviour
     {
         float speed = isOpening ? openSpeed : closeSpeed;
         Vector3 targetPos = isOpening ? openPos : _startPos;
+        Vector3 targetScale = isOpening ? openScale : _startScale;
         SoundManager.Instance.Stop(_sfxHandle); // 재생 중이던 효과음이 있다면 중단
 
-        if (transform.localRotation == targetRotation && transform.localPosition == targetPos) yield break;
+        if (transform.localRotation == targetRotation 
+            && transform.localPosition == targetPos
+            && transform.localScale == targetScale) yield break;
         _sfxHandle = SoundManager.Instance.PlaySfx(key: sfxKey, pos: transform.position, volume: sfxVolume);
 
         const float rotEps = 0.1f;
         const float posEps = 0.001f;
+        const float scaleEps = 0.001f;
 
         while (Quaternion.Angle(transform.localRotation, targetRotation) > rotEps
-               || Vector3.Distance(transform.localPosition, targetPos) > posEps)
+               || Vector3.Distance(transform.localPosition, targetPos) > posEps
+               || Vector3.Distance(transform.localScale, targetScale) > scaleEps)
         {
             transform.localRotation = Quaternion.RotateTowards(
                 transform.localRotation, targetRotation, speed * Time.deltaTime);
@@ -80,11 +93,15 @@ public class Door : MonoBehaviour
             transform.localPosition = Vector3.MoveTowards(
                 transform.localPosition, targetPos, speed * Time.deltaTime);
 
+            transform.localScale = Vector3.MoveTowards(
+                transform.localScale, targetScale, speed * Time.deltaTime);
+            
             yield return null;
         }
 
         transform.localRotation = targetRotation;
         transform.localPosition = targetPos;
+        transform.localScale = targetScale;
 
         if (isOpening) _openCoroutine = null;
         else _closeCoroutine = null;

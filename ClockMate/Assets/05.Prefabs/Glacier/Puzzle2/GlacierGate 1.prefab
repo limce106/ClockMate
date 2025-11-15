@@ -31,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 722817043314623052}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000015454413, y: 0.70710367, z: -0.000000015454308, w: 0.7071099}
-  m_LocalPosition: {x: -0.0037133829, y: -0.018091049, z: -0.023972783}
-  m_LocalScale: {x: 4.189755, y: 2.5000002, z: 2.4999998}
+  m_LocalPosition: {x: -0.003497, y: -0.018091, z: -0.016782}
+  m_LocalScale: {x: 3.6338205, y: 2.5000002, z: 2.4999998}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6362910746449927697}
@@ -99,9 +99,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd59b6105cef86447a19f53e29d3cb59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAxis: {x: 0, y: 140.831, z: 0}
-  openPos: {x: 256.91513, y: 26.29332, z: 524.41656}
-  openSpeed: 20
+  openAxis: {x: 0, y: 90, z: 0}
+  openPos: {x: -0.003497, y: -0.018091, z: -0.016782}
+  openScale: {x: 0, y: 2.5, z: 2.5}
+  useScale: 1
+  openSpeed: 1
   closeSpeed: 20
   sfxKey: gate_open
   sfxVolume: 1
@@ -120,6 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 8739187680032163031}
   lockAfterEntry: 0
+  openWithOnePress: 1
 --- !u!114 &7852662937689034018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,9 +188,9 @@ Transform:
   m_GameObject: {fileID: 2255674488743653545}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000015454306, y: -0.7071099, z: 0.000000015454413, w: 0.70710367}
-  m_LocalPosition: {x: 0.000424447, y: -0.016128356, z: 0.082142845}
-  m_LocalScale: {x: 4.1897545, y: 2.5000002, z: 2.5}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: -0.000002, y: -0.016128, z: 0.067987}
+  m_LocalScale: {x: 3.056631, y: 2.5000002, z: 2.5}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6362910746449927697}
   m_LocalEulerAnglesHint: {x: 0, y: 50.831, z: 0}
@@ -253,9 +256,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd59b6105cef86447a19f53e29d3cb59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAxis: {x: 0, y: 140.831, z: 0}
-  openPos: {x: 277.60574, y: 27.38507, z: 495.4336}
-  openSpeed: 20
+  openAxis: {x: 0, y: -90, z: 0}
+  openPos: {x: -0.000002, y: -0.016128, z: 0.067987}
+  openScale: {x: 0, y: 2.5, z: 2.5}
+  useScale: 1
+  openSpeed: 1
   closeSpeed: 20
   sfxKey: gate_open
   sfxVolume: 1
@@ -274,6 +279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 8301595311069894962}
   lockAfterEntry: 0
+  openWithOnePress: 1
 --- !u!114 &7816058260917236775
 MonoBehaviour:
   m_ObjectHideFlags: 0
