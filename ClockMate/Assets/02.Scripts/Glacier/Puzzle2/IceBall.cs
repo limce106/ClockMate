@@ -26,14 +26,13 @@ public class IceBall : MonoBehaviourPun
     public bool IsControlled { get; private set; }
     private CharacterBase _controller;
     private Vector3 _characterLocalOffset;
-    private SphereCollider _sphereCollider;
     private Transform _camTransform;
 
-    private float _controllerRadius; // 빙벽 반지름 + 여유 거리
-    public Action<bool, CharacterBase> OnControlEnd;
-    
+    public Action<bool> OnControlEnd;
     private SoundHandle _soundHandle;
     private bool _sfxPlayed;
+    
+    private Vector3 _originalPosition;
     private void Awake()
     {
         Init();
@@ -47,11 +46,8 @@ public class IceBall : MonoBehaviourPun
         _exitSprite = Key.Q.LoadSprite(Style.Outline);;
         _exitString = "나가기";
 
-        // 반지름 + 여유거리 계산
-        _sphereCollider = GetComponent<SphereCollider>();
-        float rawRadius = _sphereCollider.radius * transform.localScale.x;
-        _controllerRadius = rawRadius + radiusOffset;
         _camTransform = Camera.main.transform;
+        _originalPosition = iceBallRootGo.transform.position;
     }
     
     private void FixedUpdate()
@@ -74,13 +70,6 @@ public class IceBall : MonoBehaviourPun
             dir.Normalize();
 
             photonView.RPC(nameof(RPC_MoveBall), RpcTarget.All, dir);
-            // // 이동
-            // iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
-            //
-            // // 모델 회전 처리
-            // Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
-            // transform.Rotate(torqueAxis, torqueForce * Time.fixedDeltaTime, Space.World);
-
             if (_controller != null) MoveController();
         }
 
@@ -90,7 +79,8 @@ public class IceBall : MonoBehaviourPun
     private void RPC_MoveBall(Vector3 dir)
     {
         // 이동
-        iceBallRootGo.transform.position += dir * (moveForce * Time.fixedDeltaTime);
+        Vector3 position = iceBallRootGo.transform.position + dir * (moveForce * Time.fixedDeltaTime);
+        iceBallRootGo.GetComponent<Rigidbody>().MovePosition(position);
 
         // 모델 회전 처리
         Vector3 torqueAxis = Vector3.Cross(Vector3.up, dir);
@@ -109,7 +99,7 @@ public class IceBall : MonoBehaviourPun
 
     private void MoveController()
     {
-        Vector3 target = controllerPos.position;
+        Vector3 target = new Vector3(controllerPos.position.x, _controller.transform.position.y, controllerPos.position.z);
         target.y = _controller.transform.position.y;
 
         _controller.transform.position = target;
@@ -147,7 +137,7 @@ public class IceBall : MonoBehaviourPun
     /// </summary>
     private void SetControllerPos()
     {
-        Vector3 dir = (iceBallRootGo.transform.position - _controller.transform.position);
+        Vector3 dir = _controller.transform.position - iceBallRootGo.transform.position;
         dir.y = 0f;
 
         if (dir.sqrMagnitude > 0.001f)
@@ -155,10 +145,10 @@ public class IceBall : MonoBehaviourPun
             dir.Normalize();
 
             // 빙벽 중심 기준 offset 방향으로 controllerPos 위치 이동
-            controllerPos.position = iceBallRootGo.transform.position - dir * _controllerRadius;
-
+            controllerPos.position = iceBallRootGo.transform.position + dir * 5f;
+                        
             // 빙벽을 바라보도록 회전
-            controllerPos.rotation = Quaternion.LookRotation(dir);
+            controllerPos.rotation = Quaternion.LookRotation(-dir);
         }
     }
 
@@ -169,12 +159,21 @@ public class IceBall : MonoBehaviourPun
         _controller.ChangeState<IdleState>();
         _controller.InputHandler.enabled = true;
         _controller.Anim.SetPush(false);
-        OnControlEnd(false, _controller); // 충돌 다시 활성화
+        OnControlEnd(true); // 충돌 다시 활성화
         _controller = null;
 
         _uiHelp.Close();
         _uiHelp = null;
         _uiNotice.Close();
         _uiNotice = null;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("Water"))
+        {
+            ExitControl();
+            iceBallRootGo.transform.position = _originalPosition;
+        }
     }
 }

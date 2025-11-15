@@ -4,6 +4,7 @@ public class DoorConditionController : MonoBehaviour
 {
     [SerializeField] private Door door;
     [SerializeField] private bool lockAfterEntry;
+    [SerializeField] private bool openWithOnePress;
 
     private IDoorCondition _openCondition;
 
@@ -16,13 +17,16 @@ public class DoorConditionController : MonoBehaviour
     {
         if (door.IsLocked) return;
 
-        if (!_openCondition.IsConditionMet())
+        if (!_openCondition.IsConditionMet() && !openWithOnePress)
         {
             door.Close();
             return;
         }
 
-        door.Open();
+        if (_openCondition.IsConditionMet())
+        {
+            door.Open();
+        }
     }
 
     public void EnterDoor()

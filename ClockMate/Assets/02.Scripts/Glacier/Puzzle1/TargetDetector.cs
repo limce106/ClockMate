@@ -93,6 +93,11 @@ public class TargetDetector : MonoBehaviour
     {
         _activeTargets.Remove(target);
     }
+    
+    public void ResetAim()
+    {
+        _uiAim.Reset();
+    }
 
     private void OnDestroy()
     {

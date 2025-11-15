@@ -64,6 +64,7 @@ public class GameManager : MonoSingleton<GameManager>
         // 저장 데이터가 존재하면 불러오기
         SaveData saveData = SaveManager.Instance.Load();
         SetSelectedCharacter(saveData.character);
+        Debug.Log($"저장된 캐릭터 불러와짐: {SelectedCharacter}");
         CharacterName otherCh = saveData.character == CharacterName.Hour ? CharacterName.Milli : CharacterName.Hour;
         _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SetSelectedCharacter), RpcTarget.Others, (int) otherCh);
         _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, saveData.stageId);

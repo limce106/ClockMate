@@ -4,7 +4,7 @@
     {
         public enum CharacterName
         {
-            Hour,
+            Hour = 0,
             Milli
         }
         

@@ -44,4 +44,9 @@ public class UIAim : UIBase
     {
         aimImg.sprite = isTargetDetected ? _imgDetected : _imgDefault;
     }
+
+    public void Reset()
+    {
+        AimTransform.anchoredPosition = Vector2.zero;
+    }
 }
