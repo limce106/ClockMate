@@ -100,9 +100,15 @@ public class UISetting : UIBase
             _remoteAudio.volume = value;
     }
 
-    public void OnClick_Close()
+    public void OnClick_Continue()
     {
         UIManager.Instance?.Close(this);
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
+    }
+
+    public void OnClick_Exit()
+    {
+        PhotonNetwork.LeaveRoom();
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
