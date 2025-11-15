@@ -219,19 +219,4 @@ public class GameManager : MonoSingleton<GameManager>
     {
         return Characters[SelectedCharacter];
     }
-
-    public void HandleCursorConfineToggle()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (Cursor.lockState == CursorLockMode.Confined)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Confined;
-            }
-        }
-    }
 }
