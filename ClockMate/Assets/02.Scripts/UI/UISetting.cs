@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 /// <summary>
 /// 설정 기능들을 정의하는 클래스
@@ -14,6 +15,12 @@ using UnityEngine.UI;
 public class UISetting : UIBase
 {
     [Header("UI")]
+    public GameObject soundTab;
+    public GameObject controlTab;
+
+    public Image soundBtnBackground;
+    public Image controlBtnBackground;
+
     public Slider bgmVolumeSlider;
     public Slider sfxVolumeSlider;
     public Button micButton;
@@ -27,6 +34,9 @@ public class UISetting : UIBase
     public Sprite micOffSprite;
 
     private AudioSource _remoteAudio;   // 상대 오디오
+
+    private const string NonSelectImgPath = "UI/Sprites/Setting_Title Section_Non_Select_Btn";
+    private const string SelectImgPath = "UI/Sprites/Setting_Title Section_Select_Btn";
 
     private void Awake()
     {
@@ -61,6 +71,9 @@ public class UISetting : UIBase
     /// </summary>
     private void InitSetting()
     {
+        soundTab.SetActive(true);
+        controlTab.SetActive(false);
+
         bgmVolumeSlider.onValueChanged.AddListener(SetBgmVolume);
         sfxVolumeSlider.onValueChanged.AddListener(UpdateSettingSfxVolume);
         remoteVoiceVolumeSlider.onValueChanged.AddListener(SetRemoteVoiceVolume);
@@ -137,5 +150,23 @@ public class UISetting : UIBase
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
 
         PhotonNetwork.LeaveRoom();
+    }
+
+    public void OnClick_SoundButton()
+    {
+        soundTab.SetActive(true);
+        controlTab.SetActive(false);
+
+        soundBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
+        controlBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+    }
+
+    public void OnClick_ControlButton()
+    {
+        soundTab.SetActive(false);
+        controlTab.SetActive(true);
+
+        soundBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+        controlBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
     }
 }
