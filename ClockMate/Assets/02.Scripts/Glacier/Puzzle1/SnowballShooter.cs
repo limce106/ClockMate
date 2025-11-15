@@ -15,12 +15,12 @@ public class SnowballShooter : MonoBehaviourPun
     private float _fireTimer;
     private static readonly bool[,] PATTERNS = new bool[,]
     {
-        {false,false,false, true, true, true, false,false,false},
-        {false, true,false, false, true, false, false, true,false},
-        { true,false,false, false, true, false, false,false, true},
-        {false,false, true, false, true, false,  true,false,false},
-        { true,false, true, false, true, false,  true,false, true},
-        { true,false, true, false,false,false,   true,false, true},
+        {false, false, false, true, false, false, false, false, false},
+        {false, false, false, false, true, false, false, false, false},
+        {true, false, false, false, false, false, false,false, false},
+        {false, false, true, false, false, false, false, false, false},
+        {false, false, false, false, false, false, true, false, false},
+        {false, false, false, false, false, false, false, false, true},
     };
 
     private void Update()
