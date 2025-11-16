@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 상호작용 가능한 오브젝트 감지 및 처리
@@ -33,6 +35,16 @@ public class InteractionDetector : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        CleanupInvalidInteractables();
+    }
+
+    private void OnDisable()
+    {
+        CleanupInvalidInteractables();
+    }
+    
     private void Update()
     {
         if (_detectedObjects.Count > 0) CleanupInvalidInteractables();
@@ -45,6 +57,8 @@ public class InteractionDetector : MonoBehaviour
             _updateTimer -= UpdateInterval;
         }
         activeInteractObj = _activeInteractObj;
+        GameManager.Instance.CurrentStage.CbExit -= CleanupInvalidInteractables;
+        GameManager.Instance.CurrentStage.CbExit += CleanupInvalidInteractables;
     }
     
     private void Init()
