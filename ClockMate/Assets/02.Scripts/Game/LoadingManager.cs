@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +93,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             currentMap = SceneManager.GetActiveScene().name;
         }
 
-        // TODO Å¸ÀÌÆ²·Î ÀÌµ¿ ½Ã ·ÎµùÃ¢¿¡¼­ ¾î¶»°Ô º¸¿©ÁÙÁö
+        // TODO íƒ€ì´í‹€ë¡œ ì´ë™ ì‹œ ë¡œë”©ì°½ì—ì„œ ì–´ë–»ê²Œ ë³´ì—¬ì¤„ì§€
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
@@ -214,28 +214,38 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         character.photonView.RPC(nameof(character.SetCharacterActive), RpcTarget.All, true);
         GameManager.Instance.SetLocalCharacterInput(true);
 
-        PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
-
-        if (currentScene != "ClockTower")
+        if (currentScene == "ClockTower")
         {
-            if(currentScene == "Desert")
-            {
-                Action onMapDescriptionFinished = () =>
-                {
-                    UIManager.Instance.Show<UITutorial>("UITutorial", true);
-                };
+            PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+            puzzleHUD.HideQuest();
+        }
+        else
+        {
+            StartCoroutine(HandleMapDescriptionAndTutorial(currentScene));
+        }
+    }
 
-                UIManager.Instance.Show<UIMapDescription>("UIMapDescription", onMapDescriptionFinished);
-            }
-            else
-            {
-                UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
-            }
+    private IEnumerator HandleMapDescriptionAndTutorial(string currentScene)
+    {
+        if (currentScene == "Desert")
+        {
+            UITutorial tutorialUI = UIManager.Instance.Show<UITutorial>("UITutorial", true);
+            yield return new WaitUntil(() => !UIManager.Instance.IsOnScreen(tutorialUI));
+
+            PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+            puzzleHUD.ShowMapDescription();
+            puzzleHUD.ShowAndUpdateQuest();
+        }
+        else
+        {
+            PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
+            puzzleHUD.ShowMapDescription();
+            puzzleHUD.ShowAndUpdateQuest();
         }
     }
 
     /// <summary>
-    /// ·£´ıÀ¸·Î ±âÈÄÀ§±â Á¤º¸¸¦ °¡Á®¿Â´Ù.
+    /// ëœë¤ìœ¼ë¡œ ê¸°í›„ìœ„ê¸° ì •ë³´ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
     /// </summary>
     private string GetRandomTip()
     {
@@ -248,7 +258,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.LogWarning("±âÈÄ À§±â ÆÁ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ê¸°í›„ ìœ„ê¸° íŒ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return "";
         }
     }

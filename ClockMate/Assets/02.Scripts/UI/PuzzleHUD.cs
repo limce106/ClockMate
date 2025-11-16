@@ -1,32 +1,21 @@
 using Photon.Voice.PUN;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Image = UnityEngine.UI.Image;
 
 public class PuzzleHUD : UIBase
 {
     public GameObject remoteSpeakerUI;   // 상대가 말하는 중 아이콘
     public Image remoteCharacterImg;
-    [SerializeField] private UIQuest _uiQuest; 
+    [SerializeField] private UIQuest _uiQuest;
+    [field: SerializeField] public UIMapDescription uiMapDescription { get; private set; }
 
     private PhotonVoiceView _remotePhotonVoiceView;  // 상대 스피커
 
     void Start()
     {
         remoteSpeakerUI.SetActive(false);
-    }
-
-    public override void Show()
-    {
-        if (SceneManager.GetActiveScene().name == "ClockTower")
-        {
-            HideQuest();
-        }
-        else
-        {
-            ShowAndUpdateQuest();
-        }
     }
 
     void Update()
@@ -92,5 +81,10 @@ public class PuzzleHUD : UIBase
             bool active = _uiQuest.gameObject.activeSelf;
             _uiQuest.gameObject.SetActive(!active);
         }
+    }
+
+    public void ShowMapDescription()
+    {
+        uiMapDescription.gameObject.SetActive(true);
     }
 }
