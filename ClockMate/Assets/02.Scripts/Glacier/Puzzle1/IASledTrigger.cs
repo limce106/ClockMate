@@ -29,9 +29,10 @@ public class IASledTrigger : MonoBehaviourPun, IInteractable
         {
             col.enabled = false;
         }
+        SoundManager.Instance.StopAll(SoundType.BGM);
         if (!PhotonNetwork.IsMasterClient) return;
-        CutsceneSyncManager.Instance.PlayForAll(
-            "PolarBearAwake",
+        CutsceneSyncManager.Instance.PlayCinematicForAll(
+            "Glacier_Chase_Start",
             0f,
             () =>
             {

@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class ChaseEndTrigger : MonoBehaviour
@@ -6,6 +7,7 @@ public class ChaseEndTrigger : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         if (other.CompareTag("Sled"))
         {
             controlModule.FinishChase();
