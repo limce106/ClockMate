@@ -12,13 +12,7 @@ public class UITutorial : UIBase
     [SerializeField] private Sprite _control2Img;
     [SerializeField] private Sprite _buttonImg;
 
-    private Sprite _tutorialSprite;
     private bool _isControlTutorial = true;
-
-    private void Awake()
-    {
-        _tutorialSprite = GetComponent<Image>().sprite;
-    }
 
     public override void Initialize(object data)
     {
@@ -30,32 +24,33 @@ public class UITutorial : UIBase
 
     public override void Show()
     {
-        GameManager.Instance.GetLocalCharacter().enabled = false;
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
 
         if( _isControlTutorial)
         {
-            _tutorialSprite = _control1Img;
+            _tutorial.sprite = _control1Img;
         }
         else
         {
-            _tutorialSprite = _buttonImg;
+            _tutorial.sprite = _buttonImg;
         }
     }
 
     private void OnDisable()
     {
-        GameManager.Instance.GetLocalCharacter().enabled = true;
+        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
     }
 
     public void OnClick_Ok()
     {
-        if(_tutorialSprite == _control2Img || _tutorialSprite == _buttonImg)
+        if(_tutorial.sprite == _control2Img || _tutorial.sprite == _buttonImg)
         {
+            Debug.Log(_tutorial.sprite);
             UIManager.Instance.Close(this);
         }
         else
         {
-            _tutorialSprite = _control2Img;
+            _tutorial.sprite = _control2Img;
         }
     }
 }
