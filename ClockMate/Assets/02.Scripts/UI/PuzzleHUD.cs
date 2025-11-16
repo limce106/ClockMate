@@ -17,7 +17,7 @@ public class PuzzleHUD : UIBase
         remoteSpeakerUI.SetActive(false);
     }
 
-    private void OnEnable()
+    public override void Show()
     {
         if (SceneManager.GetActiveScene().name == "ClockTower")
         {
@@ -78,7 +78,6 @@ public class PuzzleHUD : UIBase
     {
         _uiQuest.gameObject.SetActive(true);
         _uiQuest.UpdateQuest();
-        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 0.3f);
     }
 
     public void HideQuest()

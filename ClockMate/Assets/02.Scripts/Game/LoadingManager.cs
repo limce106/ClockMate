@@ -215,10 +215,23 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         GameManager.Instance.SetLocalCharacterInput(true);
 
         PuzzleHUD puzzleHUD = UIManager.Instance.Show<PuzzleHUD>("PuzzleHUD");
-        SoundManager.Instance.PlaySfx(key: "quest", pos: null, volume: 0.3f);
 
         if (currentScene != "ClockTower")
-            UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+        {
+            if(currentScene == "Desert")
+            {
+                Action onMapDescriptionFinished = () =>
+                {
+                    UIManager.Instance.Show<UITutorial>("UITutorial", true);
+                };
+
+                UIManager.Instance.Show<UIMapDescription>("UIMapDescription", onMapDescriptionFinished);
+            }
+            else
+            {
+                UIManager.Instance.Show<UIMapDescription>("UIMapDescription");
+            }
+        }
     }
 
     /// <summary>
