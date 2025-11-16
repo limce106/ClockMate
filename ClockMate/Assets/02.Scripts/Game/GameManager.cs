@@ -41,6 +41,9 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void ToggleSetting()
     {
+        // 전투 진행 중이면 설정창 열기 불가
+        if (SceneManager.GetActiveScene().name == "ClockTower" && BattleManager.Instance._isInBattle) return;
+
         if(_uiSetting != null && UIManager.Instance.IsOnScreen(_uiSetting))
         {
             UIManager.Instance.Close(_uiSetting);
