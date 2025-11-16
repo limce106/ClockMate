@@ -78,6 +78,6 @@ public class UIMapDescription : UIBase
 
         _canvasGroup.alpha = 0f;
         _fadeInOut = null;
-        Close();
+        gameObject.SetActive(false);
     }
 }
