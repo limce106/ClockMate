@@ -169,8 +169,8 @@ public class ChaseControlModule : MonoBehaviourPun
     /// </summary>
     public void FinishChase()
     {
-        CutsceneSyncManager.Instance.PlayForAll(
-            "SledChaseFinish",
+        CutsceneSyncManager.Instance.PlayCinematicForAll(
+            "Glacier_Chase_Finish",
             0f,
             () =>
             {

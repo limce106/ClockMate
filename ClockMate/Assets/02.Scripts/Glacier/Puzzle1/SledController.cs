@@ -164,7 +164,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
         if (IsMoving)
         {
             SoundManager.Instance.PlaySfx(
-                key: movingSfxKey, volume: 0.1f, loop: true);
+                key: movingSfxKey, volume: 0.5f, loop: true);
         }
     }
 

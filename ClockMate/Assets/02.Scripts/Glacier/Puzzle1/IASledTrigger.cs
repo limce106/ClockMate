@@ -16,7 +16,8 @@ public class IASledTrigger : MonoBehaviourPun, IInteractable
     public bool Interact(CharacterBase character)
     {
         photonView.RPC(nameof(RPC_OnSledTriggerInteract), RpcTarget.All);
-        
+        photonView.RPC(nameof(RPC_DisableTriggerGo), RpcTarget.All);
+
         return false;
     }
 
@@ -29,15 +30,15 @@ public class IASledTrigger : MonoBehaviourPun, IInteractable
         {
             col.enabled = false;
         }
+        SoundManager.Instance.StopAll(SoundType.BGM);
         if (!PhotonNetwork.IsMasterClient) return;
-        CutsceneSyncManager.Instance.PlayForAll(
-            "PolarBearAwake",
+        GameManager.Instance.SetAllCharactersActive(false);
+        CutsceneSyncManager.Instance.PlayCinematicForAll(
+            "Glacier_Chase_Start",
             0f,
             () =>
             {
                 chaseControl.StartChase();
-                GameManager.Instance.SetAllCharactersActive(false); // 캐릭터 모두 비활성화
-                photonView.RPC(nameof(RPC_DisableTriggerGo), RpcTarget.All);
             }
         );
     }
