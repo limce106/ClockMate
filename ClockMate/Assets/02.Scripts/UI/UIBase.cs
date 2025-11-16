@@ -16,6 +16,14 @@ public abstract class UIBase : MonoBehaviour
     protected Action cbClose; // UI 닫힐 때 호출할 콜백
 
     /// <summary>
+    /// 데이터를 전달받아 UI 초기화 작업 수행 (생성자 대체)
+    /// </summary>
+    public virtual void Initialize(object data = null)
+    {
+        
+    }
+
+    /// <summary>
     /// UI가 켜지는 시점에 호출되는 메소드.
     /// </summary>
     public virtual void Show()

@@ -63,6 +63,42 @@ public class UIManager : MonoSingleton<UIManager>
     }
 
     /// <summary>
+    /// UI를 표시하고 데이터를 함께 전달
+    /// </summary>
+    public T Show<T>(string address, object data) where T : UIBase
+    {
+        T uiBase;
+
+        if (_cachedDict.TryGetValue(address, out UIBase value))
+        {
+            uiBase = value as T;
+            uiBase.transform.SetParent(rtSafeArea, true);
+            uiBase.gameObject.SetActive(true);
+        }
+        else
+        {
+            var prefab = Resources.Load<GameObject>("UI/" + address);
+            uiBase = Instantiate(prefab, rtSafeArea).GetComponent<T>();
+            _cachedDict[address] = uiBase;
+        }
+
+        uiBase.Initialize(data);
+
+        // 공통코드: FullScreen UI라면 아래 UI는 비활성화
+        if (_uiList.Count > 0 && uiBase.UIType == UI.UIType.FullScreen)
+        {
+            foreach (UIBase ui in _uiList)
+            {
+                ui.gameObject.SetActive(false);
+            }
+        }
+
+        uiBase.Show();
+        _uiList.Add(uiBase);
+        return uiBase;
+    }
+
+    /// <summary>
     /// UI를 닫는다. (스택 최상단 UI만 닫을 수 있음)
     /// </summary>
     public bool Close(UIBase targetUi)
