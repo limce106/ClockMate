@@ -106,9 +106,19 @@ public class RPCManager : MonoBehaviourPun
         if (targetStage.Map.GetMapSceneName() != SceneManager.GetActiveScene().name)
         {
             // 이동하려고 하는 스테이지와 현재 씬이 일치하지 않으면 씬 이동
+            PuzzleHUD puzzleHUD = FindAnyObjectByType<PuzzleHUD>();
+            if (puzzleHUD != null)
+                UIManager.Instance.Close(puzzleHUD);
+
             ResetTestManager.Instance.RemoveAllResettable();
             LoadingManager.Instance.ShowLoadingUI();
             LoadingManager.Instance.LoadScene(targetStage.Map.GetMapSceneName());
+        }
+        else
+        {
+            PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
+            if (puzzleHUD != null)
+                puzzleHUD.ShowAndUpdateQuest();
         }
     }
     

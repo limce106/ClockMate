@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -56,14 +57,26 @@ public class UISetting : UIBase
     {
         InitSetting();
 
-        Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
+        PauseAndResume(true);
     }
 
     private void OnDisable()
     {
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Confined;
+        PauseAndResume(false);
+    }
+
+    private void PauseAndResume(bool paused)
+    {
+        if (paused)
+        {
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 
     /// <summary>
