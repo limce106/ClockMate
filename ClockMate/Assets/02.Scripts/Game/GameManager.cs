@@ -100,9 +100,6 @@ public class GameManager : MonoSingleton<GameManager>
             // 다음 스테이지 존재하는 경우
             SaveManager.Instance.SaveStage(nextStage.ID); // 진행 상태 저장
             _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
-
-            PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-            puzzleHUD.ShowAndUpdateQuest();
         }
     }
 
