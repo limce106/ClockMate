@@ -229,6 +229,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     {
         if (currentScene == "Desert")
         {
+            // 카메라 전환 기다리는 시간
+            yield return new WaitForSeconds(1.5f);
+
             UITutorial tutorialUI = UIManager.Instance.Show<UITutorial>("UITutorial", true);
             yield return new WaitUntil(() => !UIManager.Instance.IsOnScreen(tutorialUI));
 
