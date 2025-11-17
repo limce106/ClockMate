@@ -171,6 +171,8 @@ public class UISetting : UIBase
 
         soundBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
         controlBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     public void OnClick_ControlButton()
@@ -180,5 +182,7 @@ public class UISetting : UIBase
 
         soundBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
         controlBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
