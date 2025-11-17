@@ -235,16 +235,11 @@ public class ClockHandRecovery : AttackPattern
     [PunRPC]
     private void RPC_ForceExitControls()
     {
-        if(PhotonNetwork.IsMasterClient)
-        {
-            IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
-            hour?.ExitControl();
-        }
-        else
-        {
-            IAClockHand minute = minuteClockHand?.GetComponentInChildren<IAClockHand>();
-            minute?.ExitControl();
-        }
+        IAClockHand hour = hourClockHand?.GetComponentInChildren<IAClockHand>();
+        hour?.ExitControl();
+
+        IAClockHand minute = minuteClockHand?.GetComponentInChildren<IAClockHand>();
+        minute?.ExitControl();
     }
 
     void EndRecovery(bool isSuccess)
@@ -262,6 +257,9 @@ public class ClockHandRecovery : AttackPattern
 
     private IEnumerator DestroyClockHands()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            yield break;
+
         // 모든 캐릭터들이 부착 해제될 때까지 대기
         yield return new WaitUntil(() =>
         {
@@ -272,13 +270,10 @@ public class ClockHandRecovery : AttackPattern
             return allParentsAreNull;
         });
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            if (hourClockHand != null)
-                PhotonNetwork.Destroy(hourClockHand);
-            if (minuteClockHand != null)
-                PhotonNetwork.Destroy(minuteClockHand);
-        }
+        if (hourClockHand != null)
+            PhotonNetwork.Destroy(hourClockHand);
+        if (minuteClockHand != null)
+            PhotonNetwork.Destroy(minuteClockHand);
 
         hourClockHand = null;
         minuteClockHand = null;
