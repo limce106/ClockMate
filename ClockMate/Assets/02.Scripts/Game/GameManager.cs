@@ -32,6 +32,12 @@ public class GameManager : MonoSingleton<GameManager>
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
+            // 전투 진행 중이면 설정창 열기 불가
+            if (SceneManager.GetActiveScene().name == "ClockTower" && BattleManager.Instance.isInBattle) return;
+
+            // 컷씬 영상 재생 중이면 설정창 열기 불가
+            if (CutsceneSyncManager.Instance.IsBusy) return;
+
             ToggleSetting();
         }
     }
@@ -41,9 +47,6 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void ToggleSetting()
     {
-        // 전투 진행 중이면 설정창 열기 불가
-        if (SceneManager.GetActiveScene().name == "ClockTower" && BattleManager.Instance.isInBattle) return;
-
         if(_uiSetting != null && UIManager.Instance.IsOnScreen(_uiSetting))
         {
             UIManager.Instance.Close(_uiSetting);
