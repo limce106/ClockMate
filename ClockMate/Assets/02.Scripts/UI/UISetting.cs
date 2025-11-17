@@ -67,14 +67,18 @@ public class UISetting : UIBase
 
     private void PauseAndResume(bool paused)
     {
+        CharacterBase character = GameManager.Instance.GetLocalCharacter();
+
         if (paused)
         {
-            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
+            if(character != null)
+                character.InputHandler.enabled = false;
             Cursor.lockState = CursorLockMode.None;
         }
         else
         {
-            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
+            if (character != null)
+                character.InputHandler.enabled = true;
             Cursor.lockState = CursorLockMode.Confined;
         }
     }
@@ -161,7 +165,8 @@ public class UISetting : UIBase
         Cursor.lockState = CursorLockMode.Confined;
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
 
-        PhotonNetwork.LeaveRoom();
+        if(PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
     }
 
     public void OnClick_SoundButton()

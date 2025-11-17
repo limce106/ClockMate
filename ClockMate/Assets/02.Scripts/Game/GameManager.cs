@@ -220,6 +220,11 @@ public class GameManager : MonoSingleton<GameManager>
 
     public CharacterBase GetLocalCharacter()
     {
-        return Characters[SelectedCharacter];
+        if (Characters == null) return null;
+
+        if (Characters.Count == 2)
+            return Characters[SelectedCharacter];
+        else
+            return null;
     }
 }
