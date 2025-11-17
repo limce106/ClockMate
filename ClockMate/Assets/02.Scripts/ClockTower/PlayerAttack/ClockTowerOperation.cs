@@ -58,6 +58,9 @@ public class ClockTowerOperation : AttackPattern
 
     private IEnumerator DestroySpring()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            yield break;
+
         // 모든 캐릭터들이 부착 해제될 때까지 대기
         yield return new WaitUntil(() =>
         {
@@ -68,7 +71,7 @@ public class ClockTowerOperation : AttackPattern
             return allParentsAreNull;
         });
 
-        if (_clockSpring != null && PhotonNetwork.IsMasterClient)
+        if (_clockSpring != null)
         {
             IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
             PhotonNetwork.Destroy(_clockSpring);
