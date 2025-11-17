@@ -404,9 +404,15 @@ public class SoundManager : MonoPunSingleton<SoundManager>
 
     private float Slider01ToLinearGain(float v01)
     {
-        // dB를 선형으로 환산: lin = 10^(dB/20)
-        float db = Mathf.Lerp(-80f, 0f, Mathf.Clamp01(v01));
-        return v01 <= 0f ? 0f : Mathf.Pow(10f, db / 20f);
-    }
+        float db = Slider01ToDb(v01);
 
+        // db가 -80f 이하인 경우 음소거 처리
+        if (db <= -80f)
+        {
+            return 0f;
+        }
+
+        // dB 값을 다시 선형 이득으로 변환: lin = 10^(dB/20)
+        return Mathf.Pow(10f, db / 20f);
+    }
 }

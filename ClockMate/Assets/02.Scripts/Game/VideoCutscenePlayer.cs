@@ -35,6 +35,7 @@ public class VideoCutscenePlayer : MonoBehaviour
         videoPlayer.prepareCompleted += OnPrepared;
         videoPlayer.loopPointReached += OnLoopPointReached;
 
+        if (audioSource) SetVolume();
         if (targetImage) targetImage.enabled = false; // 시작 전에는 화면에 보이지 않게
         if (renderTexture) renderTexture.Release(); // 이전 프레임 흔적 초기화
     }
@@ -58,6 +59,11 @@ public class VideoCutscenePlayer : MonoBehaviour
         if (!_playing) return;
         videoPlayer.Stop();
         SafeFinish();
+    }
+
+    private void SetVolume()
+    {
+        audioSource.volume = SettingManager.Instance.bgmVolume;
     }
 
     private void OnPrepared(VideoPlayer vp)
