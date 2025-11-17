@@ -136,9 +136,9 @@ public class RPCManager : MonoBehaviourPun
     }
     
     [PunRPC]
-    public void RPC_ShowSaveUI()
+    public void RPC_OnMasterSaveToAll()
     {
-        UIManager.Instance.Show<UISaving>("UISaving");
+        SaveManager.Instance.OnMasterSave?.Invoke();
     }
     
 }
