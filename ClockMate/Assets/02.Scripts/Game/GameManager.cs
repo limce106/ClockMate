@@ -23,7 +23,9 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         _rpcManager = RPCManager.Instance;
-        Cursor.lockState = CursorLockMode.Confined;
+
+        if(!Application.isEditor)
+            Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Update()
@@ -39,6 +41,9 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void ToggleSetting()
     {
+        // 전투 진행 중이면 설정창 열기 불가
+        if (SceneManager.GetActiveScene().name == "ClockTower" && BattleManager.Instance.isInBattle) return;
+
         if(_uiSetting != null && UIManager.Instance.IsOnScreen(_uiSetting))
         {
             UIManager.Instance.Close(_uiSetting);
@@ -98,9 +103,6 @@ public class GameManager : MonoSingleton<GameManager>
             // 다음 스테이지 존재하는 경우
             SaveManager.Instance.SaveStage(nextStage.ID); // 진행 상태 저장
             _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
-
-            PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-            puzzleHUD.ShowAndUpdateQuest();
         }
     }
 

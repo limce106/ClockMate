@@ -12,14 +12,12 @@ public class CharacterSelectManager : MonoBehaviourPun
     [System.Serializable]
     public class CharacterSlot
     {
-        public Image pageImg;
         public Image controlImg;
         public TMP_Text controller;
         public Button characterButton;
         public Image cancelImg;
         public GameObject ready;
         public int selectedByActorNumber = -1;
-        public string pageLR;
     }
 
     public static CharacterSelectManager Instance;
@@ -122,10 +120,6 @@ public class CharacterSelectManager : MonoBehaviourPun
     {
         string owner = (_localActorNumber == actorNumber) ? "Local" : "Remote";
 
-        Sprite pageSprite = Resources.Load<Sprite>("UI/Sprites/" + owner + "_Select_" + characters[slotIndex].pageLR);
-        characters[slotIndex].pageImg.GetComponent<Image>().sprite = pageSprite;
-        characters[slotIndex].pageImg.gameObject.SetActive(true);
-
         characters[slotIndex].controller.text = (owner == "Local") ? "³ª" : "»ó´ë";
 
         Sprite controlSprite = Resources.Load<Sprite>("UI/Sprites/" + owner + "_Control");
@@ -143,7 +137,6 @@ public class CharacterSelectManager : MonoBehaviourPun
     [PunRPC]
     void DeselectCharacter(int slotIndex, int actorNumber)
     {
-        characters[slotIndex].pageImg.gameObject.SetActive(false);
         characters[slotIndex].controlImg.gameObject.SetActive(false);
         characters[slotIndex].selectedByActorNumber = -1;
 

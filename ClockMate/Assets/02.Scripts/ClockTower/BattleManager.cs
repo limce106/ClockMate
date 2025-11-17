@@ -32,6 +32,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     private bool isHandling = false; // 연출 실행 중
     private bool attackEnded = false; // 현재 공격 종료 여부
     public bool successBattle = false; // 전투 성공 여부
+    public bool isInBattle { get; private set; } = false; // 전투 진행 중 여부
 
     // 보스 공격 오브젝트 풀
     [Header("오브젝트 풀")]
@@ -106,10 +107,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
     //    StartCoroutine(StartBattleCoroutine());
     //}
 
-    //public override void OnPlayerEnteredRoom(Player newPlayer)
-    //{
-    //    StartBattle();
-    //}
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        StartBattle();
+    }
 
     private void Update()
     {
@@ -119,6 +120,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
     public void StartBattle()
     {
+        isInBattle = true;
+
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(StartBattleCoroutine());
     }

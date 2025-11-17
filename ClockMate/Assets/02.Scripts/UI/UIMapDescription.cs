@@ -13,7 +13,6 @@ public class UIMapDescription : UIBase
     private CanvasGroup _canvasGroup;
     private Dictionary<string, string> _mapNames;
     private Coroutine _fadeInOut;
-    private Action _onFinishedCallback;
 
     private const float FadeDuration = 1.0f;
     private const float DisplayDuration = 2.0f;
@@ -41,14 +40,6 @@ public class UIMapDescription : UIBase
     {
         if(_fadeInOut != null)
             StopCoroutine(_fadeInOut);
-    }
-
-    public override void Initialize(object data)
-    {
-        if (data is Action callback)
-        {
-            _onFinishedCallback = callback;
-        }
     }
 
     private void SetMapNameForScene()
@@ -87,7 +78,6 @@ public class UIMapDescription : UIBase
 
         _canvasGroup.alpha = 0f;
         _fadeInOut = null;
-        _onFinishedCallback?.Invoke();
-        Close();
+        gameObject.SetActive(false);
     }
 }

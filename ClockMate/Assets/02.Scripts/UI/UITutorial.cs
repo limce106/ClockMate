@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -16,7 +17,7 @@ public class UITutorial : UIBase
 
     public override void Initialize(object data)
     {
-        if(data is bool isControlTutorial)
+        if (data is bool isControlTutorial)
         {
             _isControlTutorial = isControlTutorial;
         }
@@ -45,7 +46,6 @@ public class UITutorial : UIBase
     {
         if(_tutorial.sprite == _control2Img || _tutorial.sprite == _buttonImg)
         {
-            Debug.Log(_tutorial.sprite);
             UIManager.Instance.Close(this);
         }
         else
