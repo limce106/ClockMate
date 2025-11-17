@@ -8,6 +8,7 @@ public class SaveManager : Singleton<SaveManager>
 {
     private const string SaveFileName = "save.json";
     private string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveFileName);
+    public Action OnMasterSave;
 
     /// <summary>
     /// 게임 저장.
@@ -15,10 +16,9 @@ public class SaveManager : Singleton<SaveManager>
     public void SaveStage(int stageId)
     {
         if(!PhotonNetwork.IsMasterClient) return;
-        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_ShowSaveUI), RpcTarget.All);
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_OnMasterSaveToAll), RpcTarget.All);
         string json = JsonUtility.ToJson(new SaveData(stageId), true);
         File.WriteAllText(SaveFilePath, json);
-        
         Debug.Log($"[SaveManager] 저장 완료: {SaveFilePath}\n" +
                   $"stageId = {stageId}");
     }
