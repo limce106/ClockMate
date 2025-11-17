@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,14 +12,29 @@ public class UISaving : MonoBehaviour
     
     private void Start()
     {
+    }
+
+    private void OnEnable()
+    {
         uiRoot.SetActive(false);
-        SaveManager.Instance.OnMasterSave -= ShowUI; 
-        SaveManager.Instance.OnMasterSave += ShowUI;
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.OnMasterSave -= ShowUI;
+            SaveManager.Instance.OnMasterSave += ShowUI;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.OnMasterSave -= ShowUI;
+        }
     }
 
     private void ShowUI()
     {
-        uiRoot.SetActive(true);
+        uiRoot?.SetActive(true);
         StartCoroutine(EllipsisLoop());
         StartCoroutine(CloseAfterDelay());
     }
@@ -26,7 +42,7 @@ public class UISaving : MonoBehaviour
     private void HideUI()
     {
         StopAllCoroutines();
-        uiRoot.SetActive(false);
+        uiRoot?.SetActive(false);
     }
 
     private IEnumerator CloseAfterDelay()
