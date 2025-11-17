@@ -18,7 +18,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private string landSfxKey = "sled_ground_hit";
     [SerializeField] private string splashSfxKey = "water_splash";
     [SerializeField] private float sfxVolume = 1.0f;
-    [SerializeField] private GameObject landVfxGo;
+    [SerializeField] private ParticleSystem landVfx;
     [SerializeField] private ParticleSystem splashVfx;
     
     private Rigidbody _rb;
@@ -33,7 +33,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (value)
             {
-                landVfxGo.SetActive(true);
+                landVfx.gameObject.SetActive(true);
                 SoundManager.Instance.PlaySfx(key: landSfxKey, pos: transform.position, volume: sfxVolume, sync: true);
             }
             _isGrounded = value;

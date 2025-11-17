@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 using static Define.Map;
 
 public class CinematicCutscenePlayer : MonoBehaviour
@@ -9,6 +10,8 @@ public class CinematicCutscenePlayer : MonoBehaviour
     public PlayableDirector director;
     public float maxExtraTimeout = 1f;
 
+    [SerializeField] private AudioSource audioSource;
+    private string _audioTrackName = "Audio Track";
     public event Action OnFinished;
     private bool _prepared = false;
 
@@ -49,6 +52,19 @@ public class CinematicCutscenePlayer : MonoBehaviour
             _prepared = false;
             return;
         }
+        
+        // audio source 바인딩
+        var timelineAsset = timeline as TimelineAsset;
+        if (timelineAsset != null)
+        {
+            foreach (var track in timelineAsset.GetOutputTracks())
+            {
+                if (track is not AudioTrack) continue;
+                
+                director.SetGenericBinding(track, audioSource);
+            }
+        }
+
         director.playableAsset = timeline;
         director.initialTime = 0;
         director.stopped -= DirectorOnStopped;
