@@ -67,14 +67,18 @@ public class UISetting : UIBase
 
     private void PauseAndResume(bool paused)
     {
+        CharacterBase character = GameManager.Instance.GetLocalCharacter();
+
         if (paused)
         {
-            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
+            if(character != null)
+                character.InputHandler.enabled = false;
             Cursor.lockState = CursorLockMode.None;
         }
         else
         {
-            GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
+            if (character != null)
+                character.InputHandler.enabled = true;
             Cursor.lockState = CursorLockMode.Confined;
         }
     }
@@ -161,7 +165,8 @@ public class UISetting : UIBase
         Cursor.lockState = CursorLockMode.Confined;
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
 
-        PhotonNetwork.LeaveRoom();
+        if(PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
     }
 
     public void OnClick_SoundButton()
@@ -171,6 +176,8 @@ public class UISetting : UIBase
 
         soundBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
         controlBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 
     public void OnClick_ControlButton()
@@ -180,5 +187,7 @@ public class UISetting : UIBase
 
         soundBtnBackground.sprite = Resources.Load<Sprite>(NonSelectImgPath);
         controlBtnBackground.sprite = Resources.Load<Sprite>(SelectImgPath);
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }

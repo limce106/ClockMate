@@ -52,5 +52,7 @@ public class UITutorial : UIBase
         {
             _tutorial.sprite = _control2Img;
         }
+
+        SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
     }
 }
