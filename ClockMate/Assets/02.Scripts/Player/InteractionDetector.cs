@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 상호작용 가능한 오브젝트 감지 및 처리
@@ -67,6 +65,7 @@ public class InteractionDetector : MonoBehaviour
         _detectedObjects = new Dictionary<GameObject, IInteractable>();
         _interactDistSqr = interactDistance * interactDistance;
         _cosAngle = Mathf.Cos(interactAngle * Mathf.Deg2Rad);
+        _uiInteraction = GetComponentInChildren<UIInteraction>();
     }
     
     private void OnTriggerEnter(Collider other)
@@ -76,10 +75,6 @@ public class InteractionDetector : MonoBehaviour
         // 상호작용 가능한 Interactable이 감지되었다면
 
         _detectedObjects.TryAdd(other.gameObject, interactable);
-        if (_uiInteraction == null)
-        {
-            _uiInteraction = UIManager.Instance.Show<UIInteraction>("UIInteractionRoot");
-        }
         _uiInteraction.ActivateUI(other.gameObject);
     }
 
