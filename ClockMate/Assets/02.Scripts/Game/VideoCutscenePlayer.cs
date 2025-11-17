@@ -35,7 +35,6 @@ public class VideoCutscenePlayer : MonoBehaviour
         videoPlayer.prepareCompleted += OnPrepared;
         videoPlayer.loopPointReached += OnLoopPointReached;
 
-        if (audioSource) SetVolume();
         if (targetImage) targetImage.enabled = false; // 시작 전에는 화면에 보이지 않게
         if (renderTexture) renderTexture.Release(); // 이전 프레임 흔적 초기화
     }
@@ -45,6 +44,7 @@ public class VideoCutscenePlayer : MonoBehaviour
         VideoClip clip = Resources.Load<VideoClip>($"Cutscenes/{clipName}");
         if (!clip) { Debug.LogError("[CutscenePlayer] clip null"); onFinished?.Invoke(); return; }
         if (_playing) { Debug.LogWarning("[CutscenePlayer] already playing"); onFinished?.Invoke(); return; }
+        if (audioSource) SetVolume();
 
         _onFinished = onFinished;
         _playing = true;
