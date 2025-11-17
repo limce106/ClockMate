@@ -227,7 +227,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
     private IEnumerator HandleMapDescriptionAndTutorial(string currentScene)
     {
-        if (currentScene == "Desert")
+        if (currentScene == "Desert" && GameManager.Instance.CurrentStage.ID == 1)
         {
             // 카메라 전환 기다리는 시간
             yield return new WaitForSeconds(1.5f);

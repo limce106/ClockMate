@@ -10,6 +10,7 @@ public class ButtonTutorialTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (isTriggered) return;
+        if (GameManager.Instance.CurrentStage.ID != 1) return;
 
         if (other.IsPlayerCollider())
         {
