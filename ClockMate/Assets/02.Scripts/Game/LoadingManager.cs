@@ -93,7 +93,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             currentMap = SceneManager.GetActiveScene().name;
         }
 
-        // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
+        if(nextSceneName == "TitleMatch")
+        {
+            nextSceneName = "Village";
+        }
+
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
