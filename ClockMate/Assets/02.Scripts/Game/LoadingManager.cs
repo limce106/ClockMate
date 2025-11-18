@@ -93,11 +93,16 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             currentMap = SceneManager.GetActiveScene().name;
         }
 
+        if(nextSceneName == "TitleMatch")
+        {
+            nextSceneName = "Village";
+        }
+
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
         LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
-            Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
+            Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
 
 
         Vector2 moveStartPos = new Vector2(currentLoadingPos.PosX, currentLoadingPos.PosY);
