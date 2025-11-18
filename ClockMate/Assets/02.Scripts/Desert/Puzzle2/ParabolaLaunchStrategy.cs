@@ -20,7 +20,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         this._coroutineRunner = coroutineRunner;
     }
 
-    public bool CanLaunch(Milli milli, AirFan airFan)
+    public bool CanLaunch(Milli milli, AirFan airFan, GameObject airFanObj = null)
     {
         if (_target == null)
             return false;
