@@ -232,6 +232,10 @@ public class IATurret : MonoBehaviourPun, IInteractable
                 if (_currentTarget is not null)
                 {
                     _currentTarget = null;
+                    if (NetworkManager.Instance.IsInRoomAndReady())
+                    {
+                        photonView.RPC(nameof(RPC_RemoveTurretTarget), RpcTarget.Others);
+                    }
                     _indicator.SetActive(false);
                     _indicator.transform.SetParent(transform, false);
                 }
@@ -256,6 +260,12 @@ public class IATurret : MonoBehaviourPun, IInteractable
         if (monster == null) return;
         
         _currentTarget = monster;
+    }
+    
+    [PunRPC]
+    private void RPC_RemoveTurretTarget()
+    {
+        _currentTarget = null;
     }
     
     /// <summary>
