@@ -60,6 +60,10 @@ public abstract class CharacterBase : MonoBehaviourPun
         Init();
         _photonTransformView = GetComponent<PhotonTransformView>();
         GameManager.Instance.RegisterCharacter(Name, this);
+        if (!photonView.IsMine)
+        {
+            GetComponent<AudioListener>().enabled = false;
+        }
     }
 
     protected void Update()

@@ -179,7 +179,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     {
         var splashPos = new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z);
         Instantiate(splashVfx, splashPos, Quaternion.identity);
-        SoundManager.Instance.PlaySfx(key: splashSfxKey, pos: transform.position, volume: sfxVolume, sync: true);
+        SoundManager.Instance.PlaySfx(key: splashSfxKey, pos: transform.position, volume: 0.5f, sync: true);
         Hp.TakeDamage(100);
     }
 
