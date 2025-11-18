@@ -272,7 +272,10 @@ public abstract class CharacterBase : MonoBehaviourPun
 
     private void SetDizzy(bool isDizzy)
     {
-        InputHandler.enabled = !isDizzy;
+        if (photonView.IsMine)
+        {
+            InputHandler.enabled = !isDizzy;
+        }
         Anim.SetDizzy(isDizzy);
         IsDizzy = isDizzy;
     }
