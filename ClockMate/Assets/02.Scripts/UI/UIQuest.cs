@@ -20,14 +20,22 @@ public class UIQuest : UIBase
             LDPlayerAttackQuest playerAttackQuest = LocalDataManager.Instance.PlayerAttackQuest.DataList.
             Where(data => data.PlayerAttackType == BattleManager.Instance.playerAttackType).First<LDPlayerAttackQuest>();
 
-            currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? playerAttackQuest.HourQuest : playerAttackQuest.MilliQuest;
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            if(character != null )
+            {
+                currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? playerAttackQuest.HourQuest : playerAttackQuest.MilliQuest;
+            }
         }
         else
         {
             LDPuzzleQuest puzzleQuest = LocalDataManager.Instance.PuzzleQuest.DataList.
             Where(data => data.ID == GameManager.Instance.CurrentStage.ID).First<LDPuzzleQuest>();
 
-            currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? puzzleQuest.HourQuest : puzzleQuest.MilliQuest;
+            CharacterBase character = GameManager.Instance.GetLocalCharacter();
+            if (character != null)
+            {
+                currentQuest = GameManager.Instance.GetLocalCharacter().CompareTag("Hour") ? puzzleQuest.HourQuest : puzzleQuest.MilliQuest;
+            }
         }
 
         questTxt.text = currentQuest;
