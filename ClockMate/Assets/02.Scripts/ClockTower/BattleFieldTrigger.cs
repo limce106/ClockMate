@@ -66,7 +66,6 @@ public class BattleFieldTrigger : MonoBehaviourPun
                     0f,
                     () =>
                     {
-                        GameManager.Instance.PlayMapBgm();
                         BattleManager.Instance.StartBattle();
                         photonView.RPC(nameof(RPC_ShowBattleUI), RpcTarget.All);
                     }
