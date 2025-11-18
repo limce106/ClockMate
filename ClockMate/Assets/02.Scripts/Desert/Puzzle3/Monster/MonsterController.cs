@@ -158,7 +158,7 @@ public class MonsterController : MonoBehaviourPun
    {
       if (!other.gameObject.CompareTag("Hour")) return;
 
-      StartCoroutine(hour.ApplyDizzy(3f));
+      hour.StartCoroutine(hour.ApplyDizzy(3f));
       ChangeStateTo<MStateReturn>();
    }
    
@@ -185,6 +185,8 @@ public class MonsterController : MonoBehaviourPun
          yield return new WaitForSeconds(interval);
       }
    }
+   
+   
    #region Test
    
    [SerializeField] private SkinnedMeshRenderer meshRenderer;

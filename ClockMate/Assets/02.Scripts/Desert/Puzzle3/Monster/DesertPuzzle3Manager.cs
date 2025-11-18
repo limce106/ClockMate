@@ -48,7 +48,7 @@ public class DesertPuzzle3Manager: MonoBehaviour
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                Vector3 spawnPos = monster.transform.position;       
+                Vector3 spawnPos = monster.transform.position;
                 PhotonNetwork.Instantiate("Items/ClockworkGear", spawnPos + Vector3.up, Quaternion.identity);
             }
             foreach (IABattery battery in batteries)

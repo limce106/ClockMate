@@ -43,7 +43,12 @@ public class IABattery : ResettableBase, IInteractable
         _dropSprite = Icon.Key.Q.LoadSprite(Icon.Style.Outline);;
         _dropString = "내려놓기";
     }
-    
+
+    private void OnDisable()
+    {
+        ForceRemoveFromHolder();
+    }
+
     public bool CanInteract(CharacterBase character)
     {
         Holder holder = character.GetComponentInChildren<Holder>();
@@ -99,8 +104,13 @@ public class IABattery : ResettableBase, IInteractable
     
     private void ForceRemoveFromHolder()
     {
-        _currentHolder?.TryDropHoldingObj();
-        _uiNotice?.Close();
+//        _currentHolder?.TryDropHoldingObj();
+        _currentHolder?.RemoveHoldingObj(true);
+        if (_uiNotice is not null)
+        {
+            _uiNotice.Close();
+            _uiNotice = null;
+        }
     }
 
     public void UseToCharge()
@@ -115,7 +125,8 @@ public class IABattery : ResettableBase, IInteractable
     {
         if (_uiNotice is not null)
         {
-            _uiManager.Close(_uiNotice);
+            _uiNotice.Close();
+            _uiNotice = null;
         }
         ResetObject();
         gameObject.SetActive(false);
