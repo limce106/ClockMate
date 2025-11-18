@@ -93,12 +93,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             currentMap = SceneManager.GetActiveScene().name;
         }
 
-        // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
         LDLoadingPosition nextLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
-            Where(data => data.Map.ToString() == nextSceneName).First<LDLoadingPosition>();
+            Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
 
         Vector2 moveStartPos = new Vector2(currentLoadingPos.PosX, currentLoadingPos.PosY);

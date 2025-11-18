@@ -38,7 +38,7 @@ public class ClockTowerOperation : AttackPattern
                 yield break;
             }
 
-            if (BattleManager.Instance.GetCurrentRecovery() >= 1f)
+            if (BattleManager.Instance.GetCurrentRecovery() >= 1f || Input.GetKeyDown(KeyCode.T))
             {
                 EndOperation(true);
                 BattleManager.Instance.successBattle = true;
@@ -61,19 +61,8 @@ public class ClockTowerOperation : AttackPattern
         if (!PhotonNetwork.IsMasterClient)
             yield break;
 
-        // 모든 캐릭터들이 부착 해제될 때까지 대기
-        yield return new WaitUntil(() =>
-        {
-            bool allParentsAreNull = GameManager.Instance.Characters.Values.All(
-                character => character.photonView.transform.parent == null
-            );
-
-            return allParentsAreNull;
-        });
-
         if (_clockSpring != null)
         {
-            IAClockSpring clockSpringComp = _clockSpring.GetComponent<IAClockSpring>();
             PhotonNetwork.Destroy(_clockSpring);
         }
 
@@ -82,6 +71,6 @@ public class ClockTowerOperation : AttackPattern
 
     public override void CleanUpAttack()
     {
-        DestroySpring();
+        StartCoroutine(DestroySpring());
     }
 }
