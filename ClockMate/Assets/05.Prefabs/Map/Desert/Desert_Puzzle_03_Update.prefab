@@ -842,6 +842,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 1761318248890240657}
   lockAfterEntry: 1
+  openWithOnePress: 0
 --- !u!114 &8843980827105816666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2393,6 +2394,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openAxis: {x: 0, y: 0, z: 0}
   openPos: {x: 15.578053, y: 8.68, z: -27.248203}
+  openScale: {x: 0, y: 0, z: 0}
+  useScale: 0
   openSpeed: 5
   closeSpeed: 10
   sfxKey: gate_open
@@ -4361,7 +4364,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1795678706248022974, guid: fdff655aa03d2ff438150e0fb04d7dc7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.921
+      value: -13.37
       objectReference: {fileID: 0}
     - target: {fileID: 1795678706248022974, guid: fdff655aa03d2ff438150e0fb04d7dc7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4369,7 +4372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1795678706248022974, guid: fdff655aa03d2ff438150e0fb04d7dc7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.504
+      value: 13.49
       objectReference: {fileID: 0}
     - target: {fileID: 1795678706248022974, guid: fdff655aa03d2ff438150e0fb04d7dc7, type: 3}
       propertyPath: m_LocalRotation.w
