@@ -25,7 +25,7 @@ public class UITutorial : UIBase
 
     public override void Show()
     {
-        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = false;
+        Time.timeScale = 0f;
 
         if( _isControlTutorial)
         {
@@ -39,7 +39,7 @@ public class UITutorial : UIBase
 
     private void OnDisable()
     {
-        GameManager.Instance.GetLocalCharacter().InputHandler.enabled = true;
+        Time.timeScale = 1f;
     }
 
     public void OnClick_Ok()

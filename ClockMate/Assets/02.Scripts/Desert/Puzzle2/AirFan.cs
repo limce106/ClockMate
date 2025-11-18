@@ -8,8 +8,8 @@ public class AirFan : MonoBehaviourPun, IPunObservable
     private static Milli _milli;
     private static Rigidbody _milliRb;
 
-    [SerializeField]
-    private AirFanBlade _fanBlades;
+    [SerializeField] private AirFanBlade _fanBlades;
+    [SerializeField] private GameObject _airFanObj;
 
     [Header("공통")]
     public float windHeight;    // 바람이 적용되는 최대 높이(절대적 높이)
@@ -98,7 +98,7 @@ public class AirFan : MonoBehaviourPun, IPunObservable
 
         InitMilli();
 
-        if (_launchStrategy.CanLaunch(_milli, this))
+        if (_launchStrategy.CanLaunch(_milli, this, _airFanObj))
         {
             isFlying = true;
             _launchStrategy.Launch(_milli, _milliRb, this);

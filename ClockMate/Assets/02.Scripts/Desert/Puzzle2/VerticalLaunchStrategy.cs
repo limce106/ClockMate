@@ -18,7 +18,7 @@ public class VerticalLaunchStrategy : ILaunchStrategy
         this._coroutineRunner = coroutineRunner;
     }
 
-    public bool CanLaunch(Milli milli, AirFan airFan)
+    public bool CanLaunch(Milli milli, AirFan airFan, GameObject airFanObj)
     {
         if(milli == null)
         {
@@ -32,7 +32,7 @@ public class VerticalLaunchStrategy : ILaunchStrategy
         bool inXZRange = IsPlayerInXZRange(milli.transform.position, airFan);
 
 
-        return inXZRange && milli.transform.position.y <= airFan.transform.position.y + _setting.launchDistanceThreshold;
+        return inXZRange && milli.transform.position.y <= airFanObj.transform.position.y + _setting.launchDistanceThreshold;
     }
 
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)

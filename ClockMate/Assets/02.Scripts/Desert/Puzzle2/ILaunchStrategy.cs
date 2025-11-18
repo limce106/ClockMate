@@ -6,7 +6,7 @@ public interface ILaunchStrategy
     /// <summary>
     /// 비행 가능 여부
     /// </summary>
-    bool CanLaunch(Milli milli, AirFan airFan);
+    bool CanLaunch(Milli milli, AirFan airFan, GameObject airFanObj = null);
     /// <summary>
     /// 비행 중단 조건 달성 여부
     /// </summary>

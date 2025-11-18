@@ -167,6 +167,8 @@ public class UISetting : UIBase
 
         if(PhotonNetwork.InRoom)
             PhotonNetwork.LeaveRoom();
+
+        Application.Quit();
     }
 
     public void OnClick_SoundButton()

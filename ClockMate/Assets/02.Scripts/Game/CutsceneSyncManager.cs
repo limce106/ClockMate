@@ -233,7 +233,7 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         if (_currentType == CutsceneType.Video)
         {
             cutscenePlayer.Skip();
-            if (SceneManager.GetActiveScene().ToString().IsPuzzleMap())
+            if (SceneManager.GetActiveScene().name.IsPuzzleMap() || SceneManager.GetActiveScene().name == "ClockTower")
             {
                 GameManager.Instance.PlayMapBgm();
             }
