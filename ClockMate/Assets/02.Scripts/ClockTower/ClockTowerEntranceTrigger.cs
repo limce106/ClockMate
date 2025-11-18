@@ -42,7 +42,7 @@ public class ClockTowerEntranceTrigger : MonoBehaviourPun
     [PunRPC]
     private void RPC_PlayBGMAndShowMapDescription()
     {
-        GameManager.Instance.PlayMapBgm();
+        //GameManager.Instance.PlayMapBgm();
         
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
         puzzleHUD?.ShowMapDescription();

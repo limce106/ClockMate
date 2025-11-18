@@ -8,8 +8,9 @@ public class UIControlHelp : UIBase
     [SerializeField] private Text txt1;
     [SerializeField] private Text txt2;
 
-    private void OnEnable()
+    public override void Show()
     {
+        base.Show();
         img1.enabled = true;
         img2.enabled = true;
         txt1.enabled = true;

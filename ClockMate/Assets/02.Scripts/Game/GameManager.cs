@@ -200,6 +200,8 @@ public class GameManager : MonoSingleton<GameManager>
     {
         switch (sceneName)
         {
+            case "TitleMatch":
+                return "title_bgm";
             case "Desert":
                 return "desert_bgm";
             case "Glacier":

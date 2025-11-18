@@ -93,7 +93,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             currentMap = SceneManager.GetActiveScene().name;
         }
 
-        // TODO 타이틀로 이동 시 로딩창에서 어떻게 보여줄지
+        if(nextSceneName == "TitleMatch")
+        {
+            nextSceneName = "Village";
+        }
+
         LDLoadingPosition currentLoadingPos = LocalDataManager.Instance.LoadingPosition.DataList.
             Where(data => data.Map.ToString() == currentMap).First<LDLoadingPosition>();
 
@@ -230,7 +234,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         if (currentScene == "Desert" && GameManager.Instance.CurrentStage.ID == 1)
         {
             // 카메라 전환 기다리는 시간
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2f);
 
             UITutorial tutorialUI = UIManager.Instance.Show<UITutorial>("UITutorial", true);
             yield return new WaitUntil(() => !UIManager.Instance.IsOnScreen(tutorialUI));
