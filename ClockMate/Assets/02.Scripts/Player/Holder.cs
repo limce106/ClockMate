@@ -65,7 +65,10 @@ public class Holder : MonoBehaviourPun
     {
         yield return new WaitForSeconds(1.0f);
         // 들어올리는 애니메이션 재생 기다린 뒤 물건 위치 이동, 움직임 재활성화
-        _character.InputHandler.enabled = true;
+        if (!_character.IsDizzy)
+        {
+            _character.InputHandler.enabled = true;
+        }
         NetworkExtension.RunNetworkOrLocal(
             () => LocalSetHoldingObj(obj.gameObject),
             () => photonView.RPC(nameof(RPC_SetHoldingObj), RpcTarget.All, obj.photonView.ViewID)
