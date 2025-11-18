@@ -120,7 +120,7 @@ MonoBehaviour:
   hourWeight: 20
   milliWeight: 10
   sideSteam: {fileID: 4539073874026141270}
-  steamAnimator: {fileID: 0}
+  steamAnimator: {fileID: 2307506722039246109}
   _rb: {fileID: 9056145110563742762}
 --- !u!114 &3626708002921695564
 MonoBehaviour:
@@ -608,6 +608,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9776587bc8bb4fd4d9fef9d870201887, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2307506722039246109}
     - targetCorrespondingSourceObject: {fileID: 4607909576101725960, guid: 9776587bc8bb4fd4d9fef9d870201887, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5970003477662990332}
@@ -656,6 +659,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 8769435366124157866}
   meshCollider: {fileID: 5970003477662990332}
+--- !u!1 &2570085939511289187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9776587bc8bb4fd4d9fef9d870201887, type: 3}
+  m_PrefabInstance: {fileID: 3417016445719468082}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2307506722039246109
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570085939511289187}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7388cbeb87e480342a23b302d7332458, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &2945661087824723929 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9776587bc8bb4fd4d9fef9d870201887, type: 3}
