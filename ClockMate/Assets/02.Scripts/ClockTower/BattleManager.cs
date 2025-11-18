@@ -107,10 +107,10 @@ public class BattleManager : MonoBehaviourPunCallbacks
     //    StartCoroutine(StartBattleCoroutine());
     //}
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        StartBattle();
-    }
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    StartBattle();
+    //}
 
     private void Update()
     {
@@ -452,7 +452,18 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if (index + 1 < PlayerAttackTypes.Length)
         {
             playerAttackType = PlayerAttackTypes[index + 1];
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC(nameof(RPC_SetPlayerAttackType), RpcTarget.Others, (int)playerAttackType);
+            }
         }
+    }
+
+    [PunRPC]
+    private void RPC_SetPlayerAttackType(int newType)
+    {
+        playerAttackType = (PlayerAttackType)newType;
     }
 
     /// <summary>
@@ -539,8 +550,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public void RPC_SetQuestActive(bool active)
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
-        if (puzzleHUD == null)
-            return;
+        if (puzzleHUD == null) return;
         
         if(active)
         {
