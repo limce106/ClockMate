@@ -360,7 +360,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_PlacePlayerOnClockFace()
     {
-        if(playerAttackType == PlayerAttackType.CogwheelRecovery)
+        if(!clockFace[0].gameObject.activeSelf)
         {
             CharacterBase character = GameManager.Instance.GetLocalCharacter();
             SetClockFaceActive(true);
@@ -374,7 +374,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_ActivateCogs()
     {
-        if (playerAttackType == PlayerAttackType.CogwheelRecovery)
+        if (!clockFace[0].gameObject.activeSelf)
         {
             foreach (var cog in cogs)
             {
@@ -539,6 +539,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
     public void RPC_SetQuestActive(bool active)
     {
         PuzzleHUD puzzleHUD = GameObject.FindAnyObjectByType<PuzzleHUD>();
+        if (puzzleHUD == null)
+            return;
         
         if(active)
         {
