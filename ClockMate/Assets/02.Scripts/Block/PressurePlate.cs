@@ -3,7 +3,7 @@ using Photon.Pun;
 using UnityEngine;
 using static Define.Character;
 
-public class PressurePlate : ResettableBase, IPunObservable
+public class PressurePlate : ResettableBase
 {
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
@@ -168,32 +168,8 @@ public class PressurePlate : ResettableBase, IPunObservable
     }
     
     [PunRPC]
-    private void RPC_SetPressed(bool pressed)
+    public void RPC_SetPressed(bool pressed)
     {
         SetPressed(pressed);
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if(stream.IsWriting)
-        {
-            stream.SendNext(transform.position);
-
-            Color color = _materialInstance.color;
-            stream.SendNext(color.r);
-            stream.SendNext(color.g);
-            stream.SendNext(color.b);
-            stream.SendNext(color.a);
-        }
-        else
-        {
-            transform.position = (Vector3)stream.ReceiveNext();
-
-            float r = (float)stream.ReceiveNext();
-            float g = (float)stream.ReceiveNext();
-            float b = (float)stream.ReceiveNext();
-            float a = (float)stream.ReceiveNext();
-            _materialInstance.color = new Color(r, g, b, a);
-        }
     }
 }
