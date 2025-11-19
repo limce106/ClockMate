@@ -129,6 +129,8 @@ public class PlayerInputHandler : MonoBehaviour
         if (!_actionsAvailable[CharacterAction.Interact]) return;
         //_character.ChangeState<InteractState>();
         _character.InteractionDetector.TryInteract();
+        _inputActions.Player.Move.Reset();
+        _isMoving = false;
     }
 
     private void OnAbilityPressed(InputAction.CallbackContext context)
