@@ -32,7 +32,8 @@ public class VerticalLaunchStrategy : ILaunchStrategy
         bool inXZRange = IsPlayerInXZRange(milli.transform.position, airFan);
 
 
-        return inXZRange && milli.transform.position.y <= airFanObj.transform.position.y + _setting.launchDistanceThreshold;
+        return inXZRange && milli.transform.position.y <= airFanObj.transform.position.y + _setting.launchDistanceThreshold 
+            && milli.transform.position.y > airFanObj.transform.position.y;
     }
 
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)

@@ -12,9 +12,9 @@ public class AirFan : MonoBehaviourPun, IPunObservable
     [SerializeField] private GameObject _airFanObj;
 
     [Header("공통")]
-    public float windHeight;    // 바람이 적용되는 최대 높이(절대적 높이)
+    public float windHeight;    // 바람이 적용되는 최대 높이(상대적 높이)
 
-    public static bool isFlying = false;   // 추후 플레이어 날기 구현 완료 시, 밀리의 날기 여부로 변경하기
+    public static bool isFlying = false;
     public bool isUpwardFly = false;
 
     public ParticleSystem windEffect;
