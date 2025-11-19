@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class SledCollisionChecker : MonoBehaviour
@@ -22,7 +21,6 @@ public class SledCollisionChecker : MonoBehaviour
         else if (other.CompareTag("Ground") && sledController.photonView.IsMine)
         {
             sledController.IsGrounded = true;
-            Debug.Log($"[Sled Collision Checker] Trigger Enter {other.name}]");
         }
     }
 
@@ -32,7 +30,6 @@ public class SledCollisionChecker : MonoBehaviour
         if (other.CompareTag("Ground") && !sledController.IsGrounded)
         {
             sledController.IsGrounded = true;
-            Debug.Log($"[Sled Collision Checker] Trigger Stay {other.name}]");
         }
     }
 
@@ -43,7 +40,6 @@ public class SledCollisionChecker : MonoBehaviour
         if (!other.CompareTag("Ground")) return;
         
         sledController.IsGrounded = false;
-        Debug.Log($"[Sled Collision Checker] Trigger Exit {other.name}]");
 
     }
 }
