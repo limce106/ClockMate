@@ -46,7 +46,7 @@ public class PressurePlate : ResettableBase, IPunObservable
         if (!IsValidCharacter(other) || !IsValidDirection(other)) return;
         var otherCh = other.GetComponentInParent<CharacterBase>();
         if (!otherCh.photonView.IsMine) return;
-        Debug.Log("위에서 발판 밟음");
+//        Debug.Log("위에서 발판 밟음");
         // 캐릭터가 발판 따라가게
         _attachedTransform = otherCh.transform;
         _lastPlatePosition = transform.position;
@@ -64,7 +64,7 @@ public class PressurePlate : ResettableBase, IPunObservable
             _attachedTransform = null;
         }
         
-        Debug.Log("발판에서 내려옴");
+  //      Debug.Log("발판에서 내려옴");
         if (IsFullyPressed)
         {
             IsFullyPressed = false;
