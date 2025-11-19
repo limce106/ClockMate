@@ -29,7 +29,7 @@ public class SledHitZone : MonoBehaviourPun
 
         snow.HitSled(sledHP);
         photonView.RPC(nameof(RPC_HitSledEffect), RpcTarget.All);
-        SoundManager.Instance.PlaySfx(key: hitSfxKey, volume: 0.08f, sync: true);
+        SoundManager.Instance.PlaySfx(key: hitSfxKey, volume: 1f, pos:transform.position, sync: true);
     }
     
     [PunRPC]
