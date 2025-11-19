@@ -85,6 +85,12 @@ public class IAClockHand : MonoBehaviour, IInteractable
         _controller.ChangeState<PushState>(meshRenderer.transform);
         _controller.InputHandler.enabled = false;
 
+        if (Input.GetKey(KeyCode.W))
+        {
+            _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_PlayPushClockHandSfx), RpcTarget.All);
+            _controller.Anim.SetPush(true);
+        }
+
         _fixedRotationDirection = GetDirectionFromView(character);
 
         _clockHandController.photonView.RPC(nameof(_clockHandController.RPC_AttachController), RpcTarget.All, _controller.photonView.ViewID);
