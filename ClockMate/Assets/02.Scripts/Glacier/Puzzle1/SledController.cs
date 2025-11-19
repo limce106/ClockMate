@@ -130,7 +130,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     
     private void Jump()
     {
-        Debug.Log("Jump pressed");
+//        Debug.Log("Jump pressed");
         _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         if (NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
         {
@@ -173,13 +173,16 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
         if (NetworkManager.Instance.IsInRoomAndReady() && !photonView.IsMine) return;
         transform.position = _initPos;
         transform.rotation = _initRot;
+        SoundManager.Instance.PlaySfx(
+            key: movingSfxKey, volume: 0.5f, loop: true);
     }
     
     public void Drown()
     {
         var splashPos = new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z);
         Instantiate(splashVfx, splashPos, Quaternion.identity);
-        SoundManager.Instance.PlaySfx(key: splashSfxKey, pos: transform.position, volume: 0.5f, sync: true);
+        SoundManager.Instance.PlaySfx(key: splashSfxKey, volume: 0.4f, sync: true);
+        SoundManager.Instance.StopByKey(movingSfxKey);
         Hp.TakeDamage(100);
     }
 
