@@ -10,7 +10,6 @@ public class ClockHandRecovery : AttackPattern
 {
     [SerializeField] private Image hourClockHandUI;
     [SerializeField] private Image minuteClockHandUI;
-    [SerializeField] private TMP_Text answerTimeTxt;
 
     // 맞춰야 할 목표 시간
     private int targetHour;
@@ -63,7 +62,6 @@ public class ClockHandRecovery : AttackPattern
         hourClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetHourAngle());
         minuteClockHandUI.transform.localEulerAngles = new Vector3(0, 0, -GetTargetMinuteAngle());
 
-        answerTimeTxt.text = targetHour + "시 " + targetMinute + "분";
         Debug.Log("정답 시간: " + targetHour + "시 " + targetMinute + "분");
     }
 
