@@ -14,6 +14,8 @@ public class UITutorial : UIBase
     [SerializeField] private Sprite _buttonImg;
 
     private bool _isControlTutorial = true;
+    private CharacterBase character;
+    private PlayerCameraController playerCameraController;
 
     public override void Initialize(object data)
     {
@@ -25,7 +27,16 @@ public class UITutorial : UIBase
 
     public override void Show()
     {
-        Time.timeScale = 0f;
+        character = GameManager.Instance.GetLocalCharacter();
+        if(character != null)
+        {
+            playerCameraController = character.GetComponentInChildren<PlayerCameraController>();
+            character.InputHandler.enabled = false;
+        }
+        if (playerCameraController != null)
+        {
+            playerCameraController.canRotate = false;
+        }
 
         if( _isControlTutorial)
         {
@@ -39,7 +50,14 @@ public class UITutorial : UIBase
 
     private void OnDisable()
     {
-        Time.timeScale = 1f;
+        if(character != null)
+        {
+            character.InputHandler.enabled = true;
+        }
+        if (playerCameraController != null)
+        {
+            playerCameraController.canRotate = true;
+        }
     }
 
     public void OnClick_Ok()
