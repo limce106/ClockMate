@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour
@@ -14,6 +15,8 @@ public class PlayerCameraController : MonoBehaviour
 
     [Tooltip("카메라 회전이 따라오는 속도")]
     public float rotationSmoothTime = 0.05f;
+
+    public bool canRotate = true;
 
     private float yaw;
     private float pitch;
@@ -40,6 +43,16 @@ public class PlayerCameraController : MonoBehaviour
 
     private void HandleRotation()
     {
+        if(!canRotate)
+        {
+            smoothYaw = yaw;
+            smoothPitch = pitch;
+            yawVelocity = 0f;
+            pitchVelocity = 0f;
+
+            return;
+        }
+
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
