@@ -1,5 +1,7 @@
+using System.Collections;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static Define.Character;
 using Random = UnityEngine.Random;
 
@@ -8,6 +10,11 @@ public class SnowballShooter : MonoBehaviourPun
     [SerializeField] private Transform sledTargetPos;
     [SerializeField] private TargetDetector targetDetector;
     [SerializeField] private Transform[] snowballGenPositions;
+
+    [SerializeField] private ParticleSystem breathEffect;
+    [SerializeField] private ParticleSystem roarEffect;
+    [SerializeField] private string attackSfx;
+    [SerializeField] private float attackSfxVolume;
 
     [SerializeField] private float fireInterval;
 
@@ -32,25 +39,47 @@ public class SnowballShooter : MonoBehaviourPun
         if (_fireTimer >= fireInterval)
         {
             _fireTimer -= fireInterval;
-            FireSnowball();
+            StartCoroutine(PrepareThenFire(1.2f));
         }
     }
 
-    private void FireSnowball()
+    private void FireSnowball(int index)
     {
-        int pattern = Random.Range(0, PATTERNS.GetLength(0));
-
-        for (int i = 0; i < snowballGenPositions.Length; i++)
+        // int pattern = Random.Range(0, PATTERNS.GetLength(0));
+        //
+        // for (int i = 0; i < snowballGenPositions.Length; i++)
+        // {
+        //     if (!PATTERNS[pattern, i]) continue;
+        //
+        //     Transform spawn = snowballGenPositions[i];
+        //     Snowball snowball = SnowballPool.Instance.Get(
+        //         spawn.position,
+        //         Quaternion.identity
+        //     );
+        //     
+        //     photonView.RPC(nameof(RPC_InitForAll), RpcTarget.All, snowball.photonView.ViewID);
+        // }
+        Transform spawn = snowballGenPositions[index];
+        Snowball snowball = SnowballPool.Instance.Get(
+            spawn.position,
+            Quaternion.identity
+        );
+        
+        photonView.RPC(nameof(RPC_InitForAll), RpcTarget.All, snowball.photonView.ViewID);
+    }
+    
+    private IEnumerator PrepareThenFire(float prepareTime)
+    {
+        SoundManager.Instance.PlaySfx(key: attackSfx, volume: attackSfxVolume, sync: true);
+        breathEffect.Play();
+        yield return new WaitForSeconds(prepareTime);
+        roarEffect.Play();
+        int count = Random.Range(1, 4);
+        for (int i = 0; i < count; i++)
         {
-            if (!PATTERNS[pattern, i]) continue;
-
-            Transform spawn = snowballGenPositions[i];
-            Snowball snowball = SnowballPool.Instance.Get(
-                spawn.position,
-                Quaternion.identity
-            );
-            
-            photonView.RPC(nameof(RPC_InitForAll), RpcTarget.All, snowball.photonView.ViewID);
+            int index = Random.Range(0, snowballGenPositions.Length);
+            FireSnowball(index);
+            yield return new WaitForSeconds(0.3f);
         }
     }
     

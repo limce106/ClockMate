@@ -8,8 +8,10 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     [field: SerializeField] public SledTurret Turret { get; private set; }
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
-    [SerializeField] private float maxYawAngle; // 좌우 최대 회전 각도
+    [SerializeField] private Transform[] pathPoints;   // 길 웨이포인트들 (순서대로)
+    [SerializeField] private float maxPathYawAngle = 45f;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float gravityMultiplier;
     [field: SerializeField] public bool IsMoving {get; private set;}
  
     [Header("효과음 & 이펙트")] 
@@ -22,7 +24,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private ParticleSystem splashVfx;
     
     private Rigidbody _rb;
-//    private float _currentYaw;
+    private int _currentPathIndex;
     private bool _isGrounded;
     private bool _jumpPressed;
 
@@ -92,8 +94,16 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
             Jump();
         }
         _jumpPressed = false;
+        ApplyCustomGravity();
     }
 
+    private void ApplyCustomGravity()
+    {
+        if (IsGrounded) return;
+        
+        Vector3 extraGravity = Physics.gravity * (gravityMultiplier - 1f);
+        _rb.AddForce(extraGravity, ForceMode.Acceleration);
+    }
 
     /// <summary>
     /// 썰매가 바라보는 정면 방향으로 이동
@@ -111,22 +121,55 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
         float turn = 0f;
         if (Input.GetKey(KeyCode.A)) turn = -1f; // 왼쪽
         if (Input.GetKey(KeyCode.D)) turn = 1f; // 오른쪽
-
         if (turn == 0f) return;
-        // 회전 입력이 존재할 경우 회전 처리
-        
-        // float deltaYaw = turn * rotationSpeed * Time.fixedDeltaTime; // 한 프레임마다 회전할 양
-        // float nextYaw = Mathf.Clamp(_currentYaw + deltaYaw, -maxYawAngle, maxYawAngle); // 회전 누적 제한
-        // float clampedDelta = nextYaw - _currentYaw; // 제한 반영된 실제 회전량
-        // _currentYaw = nextYaw; // _currentYaw 갱신
-        //
-        // // 회전 적용
-        // Quaternion deltaRotation = Quaternion.Euler(Vector3.up * clampedDelta); // y축 기준
-        
-        float deltaYaw = turn * rotationSpeed * Time.fixedDeltaTime;
-        _rb.MoveRotation(_rb.rotation * Quaternion.Euler(0f, deltaYaw, 0f));
-    }
 
+        // 길 방향
+        Vector3 pathDir = GetPathDirection();
+        Vector3 sledDir = transform.forward;
+        pathDir.y = 0;
+        sledDir.y = 0;
+
+        if (pathDir.sqrMagnitude < 0.001f) return;
+
+        
+        float currentAngle = Vector3.SignedAngle(pathDir, sledDir, Vector3.up); // 길 기준 현재 각도
+        float deltaYaw = turn * rotationSpeed * Time.fixedDeltaTime; // 입력에 따른 회전량
+        float newAngle = Mathf.Clamp(currentAngle + deltaYaw, -maxPathYawAngle, maxPathYawAngle); // 최종 각도 클램프
+
+        // 실제로 적용할 회전량
+        float appliedDelta = newAngle - currentAngle;
+        if (Mathf.Abs(appliedDelta) < 0.0001f)
+            return;
+
+        _rb.MoveRotation(_rb.rotation * Quaternion.Euler(0f, appliedDelta, 0f));
+    }
+    
+    private Vector3 GetPathDirection()
+    {
+        if (pathPoints == null || pathPoints.Length < 2)
+            return transform.forward; // 안전장치
+
+        // 현재 인덱스 보정
+        _currentPathIndex = Mathf.Clamp(_currentPathIndex, 0, pathPoints.Length - 2);
+
+        // 다음 포인트까지의 방향
+        Vector3 from = pathPoints[_currentPathIndex].position;
+        Vector3 to   = pathPoints[_currentPathIndex + 1].position;
+
+        // 썰매가 현재 포인트보다 많이 지나갔으면 다음 세그먼트로
+        Vector3 toSled = transform.position - from;
+        Vector3 seg    = to - from;
+        if (Vector3.Dot(toSled, seg) > seg.sqrMagnitude)
+        {
+            // 다음 세그먼트로 진행
+            if (_currentPathIndex < pathPoints.Length - 2)
+                _currentPathIndex++;
+        }
+
+        Vector3 dir = (pathPoints[_currentPathIndex + 1].position - pathPoints[_currentPathIndex].position);
+        dir.y = 0;
+        return dir.sqrMagnitude > 0.001f ? dir.normalized : transform.forward;
+    }
     
     private void Jump()
     {
@@ -181,7 +224,7 @@ public class SledController : MonoBehaviourPunCallbacks, IPunObservable
     {
         var splashPos = new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z);
         Instantiate(splashVfx, splashPos, Quaternion.identity);
-        SoundManager.Instance.PlaySfx(key: splashSfxKey, volume: 0.4f, sync: true);
+        SoundManager.Instance.PlaySfx(key: splashSfxKey, volume: 0.4f, sync: false);
         SoundManager.Instance.StopByKey(movingSfxKey);
         Hp.TakeDamage(100);
     }
