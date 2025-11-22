@@ -126,4 +126,14 @@
             Filled
         }
     }
+
+    public static class Cutscene
+    {
+        public enum SkipState
+        {
+            Default = 0,
+            InProgress,
+            Waiting
+        }
+    }
 }
