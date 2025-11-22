@@ -231,7 +231,9 @@ public class IAClockSpring : MonoBehaviourPun, IInteractable
 
     public bool Interact(CharacterBase character)
     {
-        character.ChangeState<PushState>(transform);
+        Vector3 lookDirection = transform.forward;
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        character.ChangeState<PushState>(targetRotation);
         character.InputHandler.enabled = false;
 
         _rb.isKinematic = false;

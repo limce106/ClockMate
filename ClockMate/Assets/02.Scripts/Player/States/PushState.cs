@@ -6,16 +6,16 @@ using UnityEngine.SceneManagement;
 public class PushState : IState
 {
     private readonly CharacterBase _character;
-    private Transform _followTransform;
+    private Quaternion _followRotation;
     
-    public PushState(CharacterBase character, Transform followTransform)
+    public PushState(CharacterBase character, Quaternion followRotation)
     {
         _character = character;
-        _followTransform = followTransform;
+        _followRotation = followRotation;
     } 
     public void Enter()
     {
-        _character.transform.rotation = Quaternion.LookRotation(_followTransform.forward);
+        _character.transform.rotation = _followRotation;
 
     }
 
