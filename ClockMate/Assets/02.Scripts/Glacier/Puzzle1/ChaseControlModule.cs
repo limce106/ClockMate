@@ -128,7 +128,16 @@ public class ChaseControlModule : MonoBehaviourPun
         // 썰매와 북극곰 비활성화
         sled.gameObject.SetActive(false);
         bear.gameObject.SetActive(false);
-
+        
+        CharacterName character = GameManager.Instance.SelectedCharacter;
+        if (character is CharacterName.Hour)
+        {
+            VcamHour.gameObject.SetActive(false);
+        }
+        else
+        {
+            VcamMilli.gameObject.SetActive(false);
+        }
         StartCoroutine(WaitAndReset(restartWaitTime));
     }
 
@@ -136,6 +145,16 @@ public class ChaseControlModule : MonoBehaviourPun
     {
         yield return new WaitForSeconds(waitTime);
         Reset();
+        CharacterName character = GameManager.Instance.SelectedCharacter;
+        if (character is CharacterName.Hour)
+        {
+            VcamHour.gameObject.SetActive(true);
+        }
+        else
+        {
+            VcamMilli.gameObject.SetActive(true);
+        }
+        
     } 
     
     /// <summary>
