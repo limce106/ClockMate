@@ -13,6 +13,7 @@ public class Snowball : MonoBehaviourPun, ITurretTarget
     [SerializeField] private float speed;
     [SerializeField] private float damage;
     [SerializeField] private Transform target;
+    [SerializeField] private string destroySfx = "snowball_pop";
     
     private ParticleSystem _destroyEffect;
 
@@ -88,6 +89,7 @@ public class Snowball : MonoBehaviourPun, ITurretTarget
         if (_destroyEffect != null)
         {
             Instantiate(_destroyEffect, transform.position, Quaternion.identity);
+            SoundManager.Instance.PlaySfx(key: destroySfx, volume: 0.5f);
         }
         SnowballPool.Instance.Return(this);
 
