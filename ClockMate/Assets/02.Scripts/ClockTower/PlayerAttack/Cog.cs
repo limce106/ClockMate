@@ -22,7 +22,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
     private HashSet<int> _finishedPlayers; // 완료 인원
 
     private Rigidbody _rb;
-    
+    private Collider[] _cogColliders;
 
     // 위치 동기화용
     private Vector3 _netPos;
@@ -40,6 +40,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
     {
         _rb = GetComponent<Rigidbody>();
         _finishedPlayers = new HashSet<int>();
+        _cogColliders = GetComponentsInChildren<Collider>();
     }
 
     private void OnEnable()
@@ -49,6 +50,23 @@ public class Cog : MonoBehaviourPun, IPunObservable
         gripA.gameObject.SetActive(true);
         gripB.gameObject.SetActive(true);
         _rb.isKinematic = false;
+        _rb.useGravity = false;
+    }
+    
+    /// <summary>
+    /// 특정 캐릭터의 콜라이더와 이 톱니바퀴의 모든 콜라이더 간 충돌 무시 설정
+    /// </summary>
+    public void SetIgnoreCollision(Collider charCollider, bool ignore)
+    {
+        if (charCollider == null || _cogColliders == null) return;
+
+        foreach (var col in _cogColliders)
+        {
+            if (col != null && col.enabled)
+            {
+                Physics.IgnoreCollision(charCollider, col, ignore);
+            }
+        }
     }
 
     private void Update()
@@ -82,7 +100,8 @@ public class Cog : MonoBehaviourPun, IPunObservable
         Vector3 sum = _worldMoveA + _worldMoveB;
         if (sum.sqrMagnitude > 0.0001f)
         {
-            transform.position += sum.normalized * (moveSpeed * Time.fixedDeltaTime);
+            Vector3 nextPos = _rb.position + sum.normalized * (moveSpeed * Time.fixedDeltaTime);
+            _rb.MovePosition(nextPos);
         }
     }
     
@@ -114,24 +133,12 @@ public class Cog : MonoBehaviourPun, IPunObservable
         CharacterBase character = GameManager.Instance.Characters[GameManager.Instance.SelectedCharacter];
         if (gripA.IsOccupied || gripB.IsOccupied)
         {
-            // _rb.velocity = Vector3.zero;
-            // _rb.angularVelocity = Vector3.zero;
-            _rb.isKinematic = true;
             Vector3 pos = transform.position;
             transform.position = new Vector3(pos.x, -1.4f, pos.z);
-            transform.rotation = new Quaternion(0, 0, 0, 0);
-//            GetComponent<Collider>().enabled = false;
-        }
-        else if(!Fitted)
-        {
-            _rb.isKinematic = false;
-  //          GetComponent<Collider>().enabled = true;
         }
         if (!gripA.IsOccupied || !gripB.IsOccupied)
         {
             Carried = false;
-//            _rb.velocity = Vector3.zero;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
             character.Anim.SetCarry(false);
             _finishedPlayers.Clear(); // 내려놓았으면 끼우기 완료 취소
             Slot.ActivateTrigger(false);
@@ -148,9 +155,6 @@ public class Cog : MonoBehaviourPun, IPunObservable
     {
         yield return new WaitForSeconds(1.0f);
         // 들어올리는 애니메이션 재생 기다린 뒤 물건 위치 이동
-        
-        // 기울기 제거
-        transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
         
         // 들어올림
         Vector3 pos = transform.position;
@@ -175,9 +179,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         gripA.Release();
         gripB.gameObject.SetActive(false);
         gripB.Release();
-        
         _rb.isKinematic = true;
-//        GetComponent<Collider>().enabled = true;
         
         // 톱니바퀴 슬롯에 끼워져야하는 위치/회전값으로 fix, 키네틱 전환
         gameObject.transform.position = Slot.transform.position;

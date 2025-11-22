@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Define;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
-using static Define.Character;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(PhotonView))]
 public class IACogGrip : MonoBehaviourPun, IInteractable
@@ -15,22 +16,22 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     public Cog cog;
     public GripSide side;
 
-    private Collider _col;
+    private Collider _gripCol;
     public bool IsOccupied { get; private set; }
     public int HolderViewId { get; private set; }
+    
     private CharacterBase _holder;
     private Rigidbody _holderRb;
+    private Collider _holderCol;
+    
     private UINotice _uiNotice;
     private Sprite _dropSprite;
     private string _dropString;
 
-    // 동기화용
-    private Vector3 _targetPos;
-    private int _anchorSeq = 0;
-    private int _lastSeq = -1;
-    
-    private static readonly HashSet<int> HeldCharacterIds = new HashSet<int>();
+    private static readonly HashSet<int> HeldCharacterIds = new ();
     public Action<bool> OnGripStateChanged;
+    
+    private bool _isApproaching;
     
     private void Awake()
     {
@@ -39,12 +40,12 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
 
     private void Init()
     {
-        _col = GetComponent<Collider>();
-        if (_col == null)
+        _gripCol = GetComponent<Collider>();
+        if (_gripCol == null)
         {
-            _col = gameObject.AddComponent<SphereCollider>();
-            ((SphereCollider)_col).radius = 0.3f;
-            _col.isTrigger = true;
+            _gripCol = gameObject.AddComponent<SphereCollider>();
+            ((SphereCollider)_gripCol).radius = 0.3f;
+            _gripCol.isTrigger = true;
         }
 
         IsOccupied = false;
@@ -55,11 +56,11 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
 
     private void Update()
     {
-        if (!IsOccupied) return;
-
-        if (_holder.photonView.IsMine && Input.GetKeyDown(KeyCode.Q))
+        // 점유 상태이고, 내 캐릭터가 잡고 있다면 입력 체크
+        if (!IsOccupied || _holder == null || !_holder.photonView.IsMine) return;
+        
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            // 내려놓기 
             Release();
         }
     }
@@ -68,30 +69,98 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     {
         if (!IsOccupied) return;
 
-        if (PhotonNetwork.IsMasterClient)
+        // 내 캐릭터가 잡고 있다면 로컬에서 위치 고정 수행
+        if (_holder != null && _holder.photonView.IsMine)
         {
-            _anchorSeq++;
-            photonView.RPC(nameof(RPC_GripAnchorTarget), RpcTarget.All, _anchorSeq, transform.position);
+            UpdateAttachedPoseLocal();
         }
-        if (_holder == null || !_holder.photonView.IsMine) return;
-        UpdateAttachedPoseLocal();
     }
 
     public bool CanInteract(CharacterBase character)
     {
         if (!cog || !character) return false;
+        if (_isApproaching) return false; // 이미 접근 중이면 중복 실행 방지
         // 플레이어가 다른 grip을 잡고있지 않고 해당 grip을 상대가 차지하지 않아야 true
         return !HeldCharacterIds.Contains(character.photonView.ViewID) && !IsOccupied;
     }
 
     public bool Interact(CharacterBase character)
     {
-        photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, true, character.photonView.ViewID);
-        // LockLocalCharacter(_holder, true);
-        // EnableUI(true);
+        //로컬에서 먼저 Approach 시퀀스 시작
+        if (character.photonView.IsMine)
+        {
+            StartCoroutine(MoveToGripRoutine(character));
+        }
         return true;
     }
 
+    /// <summary>
+    /// 캐릭터가 그립 위치로 걸어가 회전한 뒤 잡도록 하는 코루틴
+    /// </summary>
+    private IEnumerator MoveToGripRoutine(CharacterBase character)
+    {
+        _isApproaching = true;
+        character.InputHandler.enabled = false;
+        
+        // 충돌 무시
+        Collider charCol = character.GetComponent<Collider>();
+        if(charCol != null) cog.SetIgnoreCollision(charCol, true);
+
+        Rigidbody rb = character.GetComponent<Rigidbody>();
+        
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z); 
+
+        NavMeshPath path = new NavMeshPath();
+        // y값은 캐릭터 발바닥 높이(현재 높이)로 보정하여 계산
+        Vector3 targetPos = new Vector3(transform.position.x, character.transform.position.y, transform.position.z);
+        
+        if (NavMesh.CalculatePath(character.transform.position, targetPos, NavMesh.AllAreas, path))
+        {
+            for (int i = 1; i < path.corners.Length; i++)
+            {
+                Vector3 nextCorner = path.corners[i];
+                while (true)
+                {
+                    Vector3 dir = nextCorner - character.transform.position;
+                    dir.y = 0; // 수평 이동 강제
+                    float dist = dir.magnitude;
+                    float stopDist = (i == path.corners.Length - 1) ? 0.1f : 0.5f;
+
+                    if (dist <= stopDist) break;
+
+                    character.Move(dir.normalized);
+
+                    // 이동 중에 톱니바퀴를 밟고 붕 뜨는 현상을 막기 위해 하단으로 약간의 힘을 지속적으로 줌 (중력 보조)
+                    if (!character.IsGrounded) // CharacterBase에 IsGrounded가 있다고 가정
+                    {
+                        rb.AddForce(Vector3.down * 10f, ForceMode.Acceleration);
+                    }
+
+                    yield return new WaitForFixedUpdate();
+                }
+            }
+            // 도착 성공 처리
+            rb.velocity = Vector3.zero;
+            character.transform.position = new Vector3(transform.position.x, character.transform.position.y, transform.position.z);
+            
+            Vector3 toCog = cog.transform.position - character.transform.position;
+            toCog.y = 0;
+            if (toCog.sqrMagnitude > 0.001f)
+                character.transform.rotation = Quaternion.LookRotation(toCog);
+
+            photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, true, character.photonView.ViewID);
+        }
+        else
+        {
+            // 실패 처리
+            Debug.LogWarning("[IACogGrip] 경로 계산 실패, 플레이어 움직임 재활성");
+            character.InputHandler.enabled = true;
+            cog.SetIgnoreCollision(charCol, false);
+        }
+        
+        _isApproaching = false;
+    }
+    
     private void EnableUI(bool enable)
     {
         if (enable)
@@ -102,76 +171,36 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
             _uiNotice.SetVerticalPos(false);
         } else if (_uiNotice != null)
         {
-            UIManager.Instance.Close(_uiNotice);
+            _uiNotice.Close();
             _uiNotice = null;
         }
         
     }
 
-    private void LockLocalCharacter(CharacterBase character, bool lockOn)
-    {
-        if (!character.photonView.IsMine) return;
-        character.InputHandler.enabled = !lockOn;
-        if (lockOn)
-        {
-            // 바라보는 방향: 톱니 중심 향하도록 스냅
-            Vector3 toCog = cog.transform.position - character.transform.position;
-            toCog.y = 0f;
-            if (toCog.sqrMagnitude > 0.01f)
-            {
-                character.transform.rotation = Quaternion.LookRotation(toCog.normalized, Vector3.up);        
-            }
-            UpdateAttachedPoseLocal();
-        }
-    }
-
-    /// <summary>
-    /// 톱니바퀴의 kinematic 여부와 물리 충돌 여부를 설정한다.
-    /// </summary>
-    private void SetIgnoreCollisionOfCog(bool ignore)
-    {
-
-    }
-
     private void UpdateAttachedPoseLocal()
     {
-        // XZ만 스냅, Y는 현재 높이 유지
-        Vector3 curr = _holderRb.position;
-        Vector3 targetPos = new Vector3(_targetPos.x, curr.y, _targetPos.z);
+        Vector3 gripPos = transform.position; // 그립의 월드 위치
+        Vector3 currPos = _holderRb.position; // 캐릭터의 현재 위치
 
+        Vector3 targetPos = new Vector3(gripPos.x, currPos.y, gripPos.z); 
 
-        //_holder.transform.position = targetPos;
+        // 물리 이동
         _holderRb.MovePosition(targetPos);
-        _holderRb.velocity = new Vector3(0f, _holderRb.velocity.y, 0f);
+        _holderRb.velocity = Vector3.zero;
 
-        // Yaw만 정렬
+        // 회전 처리
         Vector3 toCog = cog.transform.position - targetPos;
         toCog.y = 0f;
         if (toCog.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(toCog.normalized, Vector3.up);
             _holderRb.MoveRotation(Quaternion.RotateTowards(_holderRb.rotation, targetRot, 720f * Time.fixedDeltaTime));
-            _holderRb.angularVelocity = Vector3.zero; // 불필요한 회전 누름
         }
     }
     
-    [PunRPC]
-    private void RPC_GripAnchorTarget(int seq, Vector3 anchorPos)
-    {
-        if (seq <= _lastSeq) return; // 지연 패킷 무시
-        _lastSeq = seq;
-
-        _targetPos = anchorPos;
-    }
-
-    private void GripAnchorClear(int seq)
-    {
-        if (seq <= _lastSeq) return;
-        _lastSeq = seq;
-    }
-
     public void Release()
     {
+        if (_isApproaching) return; // 접근 중 취소 방지
         photonView.RPC(nameof(RPC_SetGrabState), RpcTarget.All, false, -1);
     }
 
@@ -180,65 +209,65 @@ public class IACogGrip : MonoBehaviourPun, IInteractable
     {
         SetGrabState(value, characterViewId);
         cog.OnGripStateChange();
-        if (!value)
-        {
-            GripAnchorClear(++_anchorSeq);
-        }
     }
 
     private void SetGrabState(bool value, int characterViewId)
     {
         IsOccupied = value;
         HolderViewId = characterViewId;
-        if (value)
+        if (value) // 잡았을 때
         {
             HeldCharacterIds.Add(characterViewId);
             _holder = PhotonView.Find(characterViewId)?.GetComponent<CharacterBase>();
-            SetIgnoreCollisionOfCog(true);
             _holderRb = _holder?.GetComponent<Rigidbody>();
-            //if (_col != null) _col.enabled = false;
+            _holderCol = _holder?.GetComponent<Collider>();
+
+            // 잡은 상태에서는 충돌 무시 유지
+            if(_holderCol != null) cog.SetIgnoreCollision(_holderCol, true);
+
             if (_holder != null && _holder.photonView.IsMine)
             {
-                // 상호작용 주체라면 전체 grip 상호작용 비활성화
                 OnGripStateChanged?.Invoke(false);
-                LockLocalCharacter(_holder, true);
                 EnableUI(true);
             }
             else
             {
-                // 상호작용 주체가 아니라면 해당 grip만 상호작용 비활성화
                 EnableInteraction(false);
             }
+            
+            // 애니메이션 리셋
             _holder?.Anim.ResetDelta();
-            _lastSeq = -1;
         }
-        else
+        else // 놓았을 때
         {
             if (_holder == null) return;
+            
+            // 충돌 무시 해제
+            if(_holderCol != null) cog.SetIgnoreCollision(_holderCol, false);
+
             HeldCharacterIds.Remove(_holder.photonView.ViewID);
-            SetIgnoreCollisionOfCog(false);
+
             if (_holder != null && _holder.photonView.IsMine)
             {
-                // 상호작용 주체라면
-                OnGripStateChanged?.Invoke(true); // 전체 grip 상호작용 활성화
-                LockLocalCharacter(_holder, false);
+                OnGripStateChanged?.Invoke(true);
+                _holder.InputHandler.enabled = true; // 입력 잠금 해제
                 EnableUI(false);
             }
             else
             {
-                // 상호작용 주체가 아니라면
-                EnableInteraction(true); // 해당 grip만 상호작용 활성화
+                EnableInteraction(true);
             }
+            
             _holder = null;
             _holderRb = null;
-            //if (_col != null) _col.enabled = true;
+            _holderCol = null;
         }
     }
 
     public void EnableInteraction(bool enable)
     {
-        if (_col == null) return;
-        _col.enabled = enable;
+        if (_gripCol == null) return;
+        _gripCol.enabled = enable;
     }
 
     public void OnInteractAvailable() { }
