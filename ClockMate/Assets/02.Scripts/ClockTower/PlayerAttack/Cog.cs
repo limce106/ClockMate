@@ -120,17 +120,18 @@ public class Cog : MonoBehaviourPun, IPunObservable
             Vector3 pos = transform.position;
             transform.position = new Vector3(pos.x, -1.4f, pos.z);
             transform.rotation = new Quaternion(0, 0, 0, 0);
-            GetComponent<MeshCollider>().enabled = false;
+//            GetComponent<Collider>().enabled = false;
         }
         else if(!Fitted)
         {
             _rb.isKinematic = false;
-            GetComponent<MeshCollider>().enabled = true;
+  //          GetComponent<Collider>().enabled = true;
         }
         if (!gripA.IsOccupied || !gripB.IsOccupied)
         {
             Carried = false;
-            _rb.velocity = Vector3.zero;
+//            _rb.velocity = Vector3.zero;
+            transform.rotation = new Quaternion(0, 0, 0, 0);
             character.Anim.SetCarry(false);
             _finishedPlayers.Clear(); // 내려놓았으면 끼우기 완료 취소
             Slot.ActivateTrigger(false);
@@ -176,7 +177,7 @@ public class Cog : MonoBehaviourPun, IPunObservable
         gripB.Release();
         
         _rb.isKinematic = true;
-        GetComponent<MeshCollider>().enabled = true;
+//        GetComponent<Collider>().enabled = true;
         
         // 톱니바퀴 슬롯에 끼워져야하는 위치/회전값으로 fix, 키네틱 전환
         gameObject.transform.position = Slot.transform.position;

@@ -5,6 +5,7 @@ public class SledTurret : MonoBehaviour
 {
     [SerializeField] private TargetDetector targetDetector;
     [SerializeField] private string fireSfxKey;
+    [SerializeField] private ParticleSystem fireEffect;
     
     private bool _isActive;
 
@@ -16,6 +17,7 @@ public class SledTurret : MonoBehaviour
         {
             Fire();
             SoundManager.Instance.PlaySfx(key: fireSfxKey, pos: transform.position, volume: 1f);
+            fireEffect.Play();
         }
     }
 
