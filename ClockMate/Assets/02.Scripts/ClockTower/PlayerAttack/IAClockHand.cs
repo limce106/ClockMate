@@ -82,7 +82,10 @@ public class IAClockHand : MonoBehaviour, IInteractable
 
         _isControlled = true;
         _controller = character;
-        _controller.ChangeState<PushState>(meshRenderer.transform);
+
+        Vector3 lookDirection = meshRenderer.transform.forward;
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        _controller.ChangeState<PushState>(targetRotation);
         _controller.InputHandler.enabled = false;
 
         if (Input.GetKey(KeyCode.W))
