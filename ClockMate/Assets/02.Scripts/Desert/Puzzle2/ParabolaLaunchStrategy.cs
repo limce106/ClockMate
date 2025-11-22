@@ -45,7 +45,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
         // 환풍기가 꺼지거나 플레이어가 움직이면 비행 중단
-        return !airFan.isFanOn || milliRb.velocity.magnitude > VelocityThreshold;
+        return !airFan.isFanOn;
     }
 
     public void Launch(Milli milli, Rigidbody milliRb, AirFan airFan)
@@ -65,6 +65,8 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
 
     public IEnumerator LaunchCoroutine(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
+        milli.InputHandler.enabled = false;
+
         milliRb.velocity = Vector3.zero;
         Vector3 start = milli.transform.position;
         float gravity = Mathf.Abs(Physics.gravity.y);
@@ -107,5 +109,6 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         milli.transform.position = _target.position;
         airFan.EndFlying();
         _runningCoroutine = null;
+        milli.InputHandler.enabled = true;
     }
 }

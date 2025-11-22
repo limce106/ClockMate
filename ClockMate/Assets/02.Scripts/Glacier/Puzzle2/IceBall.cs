@@ -111,7 +111,10 @@ public class IceBall : MonoBehaviourPun
         _controller = controller;
         SetControllerPos();
         MoveController();
-        _controller.ChangeState<PushState>(controllerPos.transform);
+
+        Vector3 lookDirection = controllerPos.transform.forward;
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        _controller.ChangeState<PushState>(targetRotation);
 
         _controller.InputHandler.enabled = false;
         StartCoroutine(WaitForAnimTransition());

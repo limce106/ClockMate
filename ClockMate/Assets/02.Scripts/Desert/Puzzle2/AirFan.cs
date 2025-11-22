@@ -67,17 +67,17 @@ public class AirFan : MonoBehaviourPun, IPunObservable
     void Update()
     {
         // 테스트용
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
-            {
-                photonView.RPC("RPC_SwitchFan", RpcTarget.All);
-            }
-            else
-            {
-                SwitchFan();
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.K))
+        //{
+        //    if (NetworkManager.Instance != null && NetworkManager.Instance.IsInRoomAndReady() && photonView.IsMine)
+        //    {
+        //        photonView.RPC("RPC_SwitchFan", RpcTarget.All);
+        //    }
+        //    else
+        //    {
+        //        SwitchFan();
+        //    }
+        //}
         //
 
         switch (fanState)
