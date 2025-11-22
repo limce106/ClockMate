@@ -62,9 +62,6 @@ public class RollingStoneSpawner : MonoBehaviourPunCallbacks
         {
             SpawnStone(info.spwanPoint, info.spwanRot, info.torqueForce, info.returnTime);
             yield return new WaitForSeconds(info.spawnInterval);
-
-            if (CutsceneSyncManager.Instance.IsBusy)
-                yield break;
         }
     }
 
