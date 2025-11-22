@@ -6,6 +6,8 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static Define.Character;
+using static Define.Cutscene;
 
 /// <summary>
 /// 컷신 동기화 유틸
@@ -19,11 +21,16 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
     [SerializeField] private float holdSeconds = 1f;
     [SerializeField] private KeyCode key = KeyCode.Space;
     [SerializeField] private GameObject skipPanel;
+    [SerializeField] private Image imgSkipNotice;
+    [SerializeField] private Image imgSkipProgressBar;
     [SerializeField] private Image imgSkipProgress;
+    [SerializeField] private Image[] imgCharacters;
     [SerializeField] private Text txtSkipState;
     
     private float _holdTime;
     private bool _isSkipped;
+    private Color _defaultColor = new Color(0.2169811f, 0.2169811f, 0.2169811f);
+    private Color _skippedColor = Color.white;
     
     // 컷신 타입
     private enum CutsceneType { Video = 0, Cinematic = 1 }
@@ -63,31 +70,70 @@ public class CutsceneSyncManager : MonoPunSingleton<CutsceneSyncManager>
         {
             _holdTime = 0f;
             _isSkipped = false;
-            txtSkipState.text = "Hold Space To Skip";
-            imgSkipProgress.fillAmount = 0f;
+            SetSkipUI(SkipState.Default);
             skipPanel.SetActive(false);
             return;
         }
 
+        skipPanel.SetActive(true);
         if (_isSkipped) return;
         
         if (Input.GetKey(key))
         {
-            if (!skipPanel.activeSelf) skipPanel.SetActive(true);
+            if (!imgSkipProgressBar.IsActive()) SetSkipUI(SkipState.InProgress);
             _holdTime += Time.unscaledDeltaTime;
             imgSkipProgress.fillAmount = _holdTime / holdSeconds;
             if (_holdTime >= holdSeconds)
             {
                 _holdTime = 0f;
-                imgSkipProgress.fillAmount = 1f;
-                txtSkipState.text = "Waiting For Other Player";
                 _isSkipped = true;
+                SetSkipUI(SkipState.Waiting);
                 Skip();
             }
             return;
         }
         if (Input.GetKeyUp(key)) _holdTime = 0f;
-        skipPanel.SetActive(false);
+        SetSkipUI(SkipState.Default);
+    }
+
+    private void SetSkipUI(SkipState state)
+    {
+        switch (state)
+        {
+            case SkipState.Default:
+                txtSkipState.text = "스페이스바를 누르고 있으면 영상이 스킵됩니다.";
+                imgSkipProgress.fillAmount = 0f;
+                imgSkipProgressBar.gameObject.SetActive(false);
+                imgSkipNotice.enabled = true;
+                foreach (var image in imgCharacters)
+                {
+                    image.color = _defaultColor;
+                    image.gameObject.SetActive(false);
+                }
+                break;
+            case SkipState.InProgress:
+                imgSkipNotice.enabled = false;
+                imgSkipProgressBar.gameObject.SetActive(true);
+                txtSkipState.text = "스페이스바를 끝까지 누르면 영상이 스킵됩니다.";
+                break;
+            case SkipState.Waiting:
+                imgSkipProgressBar.gameObject.SetActive(false);
+                txtSkipState.text = "다른 동료의 스킵을 기다리고 있어요.";
+                foreach (Image image in imgCharacters)
+                {
+                    image.gameObject.SetActive(true);
+                }
+
+                if (GameManager.Instance.SelectedCharacter == CharacterName.Hour)
+                {
+                    imgCharacters[0].color = _skippedColor;
+                }
+                else
+                {
+                    imgCharacters[1].color = _skippedColor;
+                }
+                break;
+        }
     }
 
     /// <summary>
