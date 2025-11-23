@@ -45,6 +45,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fde0d25a170598d46a0b9dc16b4527a5, type: 3}
   m_Name: ActivationPlayableAsset
   m_EditorClassIdentifier: 
+--- !u!114 &-4532393582052519065
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac2b477647425342b2c51c3ed912f38, type: 3}
+  m_Name: UIChangeClip(Clone)
+  m_EditorClassIdentifier: 
+  spriteA: {fileID: 21300000, guid: 813b6d7ecbaf0c14fa80bdc0d7e08bc0, type: 3}
+  spriteB: {fileID: 0}
+  overridePosA: 0
+  overridePosB: 0
+  posA: {x: 0, y: 0}
+  posB: {x: 0, y: 0}
+  text: "\uBD81\uADF9\uACF0\uC774\uB2E4! \uC5BC\uB978 \uB3C4\uB9DD\uAC00\uC790!!"
 --- !u!114 &-3209942702621196056
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -368,6 +387,7 @@ MonoBehaviour:
   - {fileID: -1471022730992359322}
   - {fileID: 9016897902148239050}
   - {fileID: 5745843955057989192}
+  - {fileID: 6426101266272239436}
   m_FixedDuration: 0
   m_EditorSettings:
     m_Framerate: 60
@@ -403,6 +423,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fde0d25a170598d46a0b9dc16b4527a5, type: 3}
   m_Name: ActivationPlayableAsset
   m_EditorClassIdentifier: 
+--- !u!114 &3040968878432040591
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac2b477647425342b2c51c3ed912f38, type: 3}
+  m_Name: UIChangeClip
+  m_EditorClassIdentifier: 
+  spriteA: {fileID: 21300000, guid: 9650cf774aabbf94fa1f7a5120d756a3, type: 3}
+  spriteB: {fileID: 0}
+  overridePosA: 0
+  overridePosB: 0
+  posA: {x: 0, y: 0}
+  posB: {x: 0, y: 0}
+  text: "\uD06C\uC544\uC544\uC544\uC559\n"
+--- !u!114 &4642522877358127887
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac2b477647425342b2c51c3ed912f38, type: 3}
+  m_Name: UIChangeClip
+  m_EditorClassIdentifier: 
+  spriteA: {fileID: 21300000, guid: 42c59ef10e2a130418cdc148b5f36c05, type: 3}
+  spriteB: {fileID: 0}
+  overridePosA: 0
+  overridePosB: 0
+  posA: {x: 0, y: 0}
+  posB: {x: 0, y: 0}
+  text: "\uC544\uC6CC! \uC800\uAE30 \uC880 \uBD10!!"
 --- !u!114 &5452438984514874097
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -445,7 +503,7 @@ MonoBehaviour:
     m_Start: 7.45
     m_ClipIn: 0
     m_Asset: {fileID: 1549505654310894714}
-    m_Duration: 0.8833333333333346
+    m_Duration: 1.1333333333333337
     m_TimeScale: 1
     m_ParentTrack: {fileID: 5745843955057989192}
     m_EaseInDuration: 0
@@ -513,6 +571,239 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   m_PostPlaybackState: 3
+--- !u!114 &6426101266272239436
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79fabee4b6c232a47b548ac67bdac9a7, type: 3}
+  m_Name: UI Change Track
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_AnimClip: {fileID: 0}
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_Curves: {fileID: 0}
+  m_Parent: {fileID: 11400000}
+  m_Children: []
+  m_Clips:
+  - m_Version: 1
+    m_Start: 0
+    m_ClipIn: 0
+    m_Asset: {fileID: 4642522877358127887}
+    m_Duration: 2.507755102040816
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: 6426101266272239436}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: 0
+    m_BlendOutDuration: 0
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: UIChangeClip
+  - m_Version: 1
+    m_Start: 2.8469387755102042
+    m_ClipIn: 0
+    m_Asset: {fileID: -4532393582052519065}
+    m_Duration: 2.656122448979592
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: 6426101266272239436}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: 0
+    m_BlendOutDuration: 0
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: UIChangeClip
+  - m_Version: 1
+    m_Start: 5.9
+    m_ClipIn: 0
+    m_Asset: {fileID: 3040968878432040591}
+    m_Duration: 2.4333333333333336
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: 6426101266272239436}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: 0
+    m_BlendOutDuration: 0
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: UIChangeClip
+  m_Markers:
+    m_Objects: []
+  singlePosA: {x: 0, y: 68}
+  doublePosA: {x: -30, y: 68}
+  doublePosB: {x: 30, y: 68}
 --- !u!114 &6658684635129656988
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -545,6 +836,22 @@ MonoBehaviour:
   VirtualCamera:
     exposedName: 3792a37d883ab4140a1dac637cc404b6
     defaultValue: {fileID: 0}
+--- !u!114 &8240078387487057837
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
+  m_Name: Signal Emitter
+  m_EditorClassIdentifier: 
+  m_Time: 0
+  m_Retroactive: 0
+  m_EmitOnce: 0
+  m_Asset: {fileID: 0}
 --- !u!114 &9016897902148239050
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -634,7 +941,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: CS_Glacier_Chase_Start_1
+    m_DisplayName: "\uC544\uC6CC! \uC800\uAE30 \uC880 \uBD10!!"
   - m_Version: 1
     m_Start: 5.633333333333334
     m_ClipIn: 0
@@ -685,7 +992,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: CS_Glacier_Chase_Start_3
+    m_DisplayName: "\uD06C\uC544\uC544\uC559"
   - m_Version: 1
     m_Start: 2.716666666666667
     m_ClipIn: 0
@@ -754,7 +1061,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: CS_Glacier_Chase_Start_2
+    m_DisplayName: "\uBD81\uADF9\uACF0\uC774\uB2E4! \uC5BC\uB978 \uB3C4\uB9DD\uAC00\uC790!!"
   m_Markers:
     m_Objects: []
   m_TrackProperties:

@@ -11,7 +11,9 @@ public class CinematicCutscenePlayer : MonoBehaviour
     public float maxExtraTimeout = 1f;
 
     [SerializeField] private AudioSource audioSource;
-    private string _audioTrackName = "Audio Track";
+    [SerializeField] private TimelineUIBinder subtitleSource;
+    //private string _audioTrackName = "Audio Track";
+    //private string _subtitleTrackName = "Subtitle Track";
     public event Action OnFinished;
     private bool _prepared = false;
 
@@ -53,15 +55,20 @@ public class CinematicCutscenePlayer : MonoBehaviour
             return;
         }
         
-        // audio source 바인딩
+        // audio source, subtitle source 바인딩
         var timelineAsset = timeline as TimelineAsset;
         if (timelineAsset != null)
         {
             foreach (var track in timelineAsset.GetOutputTracks())
             {
-                if (track is not AudioTrack) continue;
+                if (track is AudioTrack)
+                {
+                    director.SetGenericBinding(track, audioSource);
+                } else if (track is UIChangeTrack)
+                {
+                    director.SetGenericBinding(track, subtitleSource);
+                }
                 
-                director.SetGenericBinding(track, audioSource);
             }
         }
 
