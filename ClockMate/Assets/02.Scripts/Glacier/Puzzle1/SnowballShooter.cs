@@ -39,26 +39,12 @@ public class SnowballShooter : MonoBehaviourPun
         if (_fireTimer >= fireInterval)
         {
             _fireTimer -= fireInterval;
-            StartCoroutine(PrepareThenFire(1.2f));
+            photonView.RPC(nameof(RPC_PrepareThenFire), RpcTarget.All);
         }
     }
 
     private void FireSnowball(int index)
     {
-        // int pattern = Random.Range(0, PATTERNS.GetLength(0));
-        //
-        // for (int i = 0; i < snowballGenPositions.Length; i++)
-        // {
-        //     if (!PATTERNS[pattern, i]) continue;
-        //
-        //     Transform spawn = snowballGenPositions[i];
-        //     Snowball snowball = SnowballPool.Instance.Get(
-        //         spawn.position,
-        //         Quaternion.identity
-        //     );
-        //     
-        //     photonView.RPC(nameof(RPC_InitForAll), RpcTarget.All, snowball.photonView.ViewID);
-        // }
         Transform spawn = snowballGenPositions[index];
         Snowball snowball = SnowballPool.Instance.Get(
             spawn.position,
@@ -70,10 +56,11 @@ public class SnowballShooter : MonoBehaviourPun
     
     private IEnumerator PrepareThenFire(float prepareTime)
     {
-        SoundManager.Instance.PlaySfx(key: attackSfx, volume: attackSfxVolume, sync: true);
+        SoundManager.Instance.PlaySfx(key: attackSfx, volume: attackSfxVolume);
         breathEffect.Play();
         yield return new WaitForSeconds(prepareTime);
         roarEffect.Play();
+        if (!PhotonNetwork.IsMasterClient) yield break;
         int count = Random.Range(1, 4);
         for (int i = 0; i < count; i++)
         {
@@ -83,6 +70,11 @@ public class SnowballShooter : MonoBehaviourPun
         }
     }
     
+    [PunRPC]
+    private void RPC_PrepareThenFire()
+    {
+        StartCoroutine(PrepareThenFire(1.2f));
+    }
     public void SetActive(bool active)
     {
         _active = active;
