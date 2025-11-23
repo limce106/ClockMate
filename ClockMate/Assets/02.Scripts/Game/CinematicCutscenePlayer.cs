@@ -12,6 +12,7 @@ public class CinematicCutscenePlayer : MonoBehaviour
 
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private TimelineUIBinder subtitleSource;
+    [SerializeField] private GameObject subtitleRoot;
     //private string _audioTrackName = "Audio Track";
     //private string _subtitleTrackName = "Subtitle Track";
     public event Action OnFinished;
@@ -67,6 +68,7 @@ public class CinematicCutscenePlayer : MonoBehaviour
                 } else if (track is UIChangeTrack)
                 {
                     director.SetGenericBinding(track, subtitleSource);
+                    subtitleRoot.SetActive(true);
                 }
                 
             }
@@ -109,6 +111,11 @@ public class CinematicCutscenePlayer : MonoBehaviour
         if (director.state == PlayState.Playing)
         {
             director.Stop();
+        }
+
+        if (subtitleRoot.activeSelf)
+        {
+            subtitleRoot.SetActive(false);
         }
 
         CancelInvoke(nameof(ForceStop));
