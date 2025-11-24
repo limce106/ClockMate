@@ -16,7 +16,7 @@ public class PlayerCameraController : MonoBehaviour
     [Tooltip("카메라 회전이 따라오는 속도")]
     public float rotationSmoothTime = 0.05f;
 
-    public bool canRotate = true;
+    [HideInInspector] public bool canRotate = true;
 
     private float yaw;
     private float pitch;
