@@ -44,7 +44,7 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
 
     public bool ShouldStopFlying(Milli milli, Rigidbody milliRb, AirFan airFan)
     {
-        // 환풍기가 꺼지거나 플레이어가 움직이면 비행 중단
+        // 환풍기가 꺼지면 비행 중단
         return !airFan.isFanOn;
     }
 
@@ -106,7 +106,6 @@ public class ParabolaLaunchStrategy : ILaunchStrategy
         }
 
         milliRb.velocity = Vector3.zero;
-        milli.transform.position = _target.position;
         airFan.EndFlying();
         _runningCoroutine = null;
         milli.InputHandler.enabled = true;
