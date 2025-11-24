@@ -25,10 +25,12 @@ public class IATurret : MonoBehaviourPun, IInteractable
     [SerializeField] private LineRenderer attackLineRenderer;
     [SerializeField] private float attackRange = 100f;
     [SerializeField] private LayerMask hitMask; // 대상 레이어
-    
+
+    [SerializeField] private ParticleSystem fireEffect;
     [SerializeField] private string chargeSfxKey;
     [SerializeField] private float chargeSfxVolume;
     [SerializeField] private string fireSfxKey;
+    [SerializeField] private string failSfxKey;
     [SerializeField] private float fireSfxVolume;
     
     private GameObject _indicator; // 타겟 표시
@@ -74,6 +76,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
             ExitTurret();
         }
 
+        attackLineRenderer.enabled = ChargeLevel > 0;
     }
 
     public bool CanInteract(CharacterBase character)
@@ -104,7 +107,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         }
         
         camera.Priority = 100;
-        attackLineRenderer.enabled = true;
+        //attackLineRenderer.enabled = true;
 
         _uiTurretActive = UIManager.Instance.Show<UITurretActive>("UITurretActive");
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
@@ -244,6 +247,16 @@ public class IATurret : MonoBehaviourPun, IInteractable
         else
         {
             endPoint = startPoint + direction * attackRange;
+            if (_currentTarget != null)
+            {
+                _currentTarget = null;
+                if (NetworkManager.Instance.IsInRoomAndReady())
+                {
+                    photonView.RPC(nameof(RPC_RemoveTurretTarget), RpcTarget.Others);
+                }
+                _indicator.SetActive(false);
+                _indicator.transform.SetParent(transform, false);
+            }
         }
 
         attackLineRenderer.SetPosition(0, startPoint);
@@ -276,6 +289,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         if (ChargeLevel <= 0)
         {
             Debug.Log("Charge가 부족하여 발사할 수 없습니다.");
+            SoundManager.Instance.PlaySfx(key: failSfxKey, pos: transform.position, volume: fireSfxVolume);
             // 필요시 UI 피드백 처리
             return;
         }
@@ -294,6 +308,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         ChargeLevel--; // ChargeLevel 1 감소
         _uiTurretActive?.UpdateChargeImg(ChargeLevel);
         SoundManager.Instance.PlaySfx(key: fireSfxKey, pos: transform.position, volume: fireSfxVolume);
+        fireEffect.Play();
 
         if (_currentTarget is not null)
         {
