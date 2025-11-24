@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
@@ -9,6 +7,7 @@ public class DesertPuzzle3Manager: MonoBehaviour
     [SerializeField] private MonsterController[] monsters;
     [SerializeField] private IABattery[] batteries;
     [SerializeField] private float batteryRegenTime;
+    [SerializeField] private IATurret turret;
     
     private int _monsterCount;
 
@@ -55,6 +54,7 @@ public class DesertPuzzle3Manager: MonoBehaviour
             {
                 battery.gameObject.SetActive(false);
             }
+            turret.DeactivateTurret();
             StopAllCoroutines();
         }
     }
