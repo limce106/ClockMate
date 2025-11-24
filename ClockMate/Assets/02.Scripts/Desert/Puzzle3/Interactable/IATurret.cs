@@ -142,6 +142,16 @@ public class IATurret : MonoBehaviourPun, IInteractable
             collider.enabled = true;
         }
     }
+    
+    public void DeactivateTurret()
+    {
+        ExitTurret();
+        // collider 비활성
+        if (TryGetComponent(out Collider col))
+        {
+            col.enabled = false;
+        }
+    }
 
     /// <summary>
     /// 터렛 head 회전 처리 (키보드 입력)
