@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(PhotonView)), RequireComponent(typeof(Rigidbody))]
 public class Cog : MonoBehaviourPun, IPunObservable
@@ -18,6 +19,10 @@ public class Cog : MonoBehaviourPun, IPunObservable
     [SerializeField] private IACogGrip gripB;
 
     [field: SerializeField] public Slot Slot {get; private set; }
+
+    [SerializeField] private ParticleSystem fitEffect;
+    [SerializeField] private string fitSfxKey = "cogwheel_fit";
+    
     // 마스터만 사용(집계)
     private HashSet<int> _finishedPlayers; // 완료 인원
 
@@ -185,7 +190,9 @@ public class Cog : MonoBehaviourPun, IPunObservable
         gameObject.transform.position = Slot.transform.position;
         gameObject.transform.rotation = Slot.transform.rotation;
         
-        // todo 톱니바퀴 끼워지는 이펙트와 사운드 추가
+        // 톱니바퀴 끼워지는 이펙트와 사운드
+        SoundManager.Instance.PlaySfx(key: fitSfxKey, pos: transform.position, volume: 1f);
+        fitEffect.Play();
     }
     
     [PunRPC]
