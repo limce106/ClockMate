@@ -103,6 +103,7 @@ public class ChaseControlModule : MonoBehaviourPun
         sled?.gameObject.SetActive(false);
         bear?.SetChaseState(false);
         bear?.gameObject.SetActive(false);
+        StopAllCoroutines();
     }
     
     /// <summary>
