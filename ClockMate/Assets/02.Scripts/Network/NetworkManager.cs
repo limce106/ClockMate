@@ -41,6 +41,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
+    private void Start()
+    {
+        ConnectServer();
+    }
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -53,7 +58,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void ConnectServer()
     {
         if (SceneManager.GetActiveScene().name != firstSceneName) return;
 
@@ -80,6 +85,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 60;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ConnectServer();
     }
 
     public override void OnConnectedToMaster()
