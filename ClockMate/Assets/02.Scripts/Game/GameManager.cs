@@ -11,7 +11,6 @@ public class GameManager : MonoSingleton<GameManager>
     public Dictionary<CharacterName, CharacterBase> Characters { get; private set; }
     public BoStage CurrentStage { get; private set; }
 
-    private RPCManager _rpcManager;
     private UIStageDebugLoader _uiStageDebugLoader;
     private UISetting _uiSetting;
 
@@ -22,8 +21,6 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Start()
     {
-        _rpcManager = RPCManager.Instance;
-
         if(!Application.isEditor)
             Cursor.lockState = CursorLockMode.Confined;
     }
@@ -74,8 +71,8 @@ public class GameManager : MonoSingleton<GameManager>
         SetSelectedCharacter(saveData.character);
         Debug.Log($"저장된 캐릭터 불러와짐: {SelectedCharacter}");
         CharacterName otherCh = saveData.character == CharacterName.Hour ? CharacterName.Milli : CharacterName.Hour;
-        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SetSelectedCharacter), RpcTarget.Others, (int) otherCh);
-        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, saveData.stageId);
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_SetSelectedCharacter), RpcTarget.Others, (int) otherCh);
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_MoveToStage), RpcTarget.All, saveData.stageId);
     }
     
     /// <summary>
@@ -89,7 +86,7 @@ public class GameManager : MonoSingleton<GameManager>
         
         // 저장된 데이터가 없으면 (새 게임이면)
         SaveManager.Instance.SaveNewGame(SelectedCharacter); // 사막 맵 stage 1으로 저장
-        _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, 1);
+        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_MoveToStage), RpcTarget.All, 1);
     }
 
     /// <summary>
@@ -105,7 +102,7 @@ public class GameManager : MonoSingleton<GameManager>
         {
             // 다음 스테이지 존재하는 경우
             SaveManager.Instance.SaveStage(nextStage.ID); // 진행 상태 저장
-            _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
+            RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_MoveToStage), RpcTarget.All, nextStage.ID);
         }
     }
 
@@ -126,12 +123,12 @@ public class GameManager : MonoSingleton<GameManager>
     {
         if (!NetworkManager.Instance.IsInRoomAndReady())
         {
-            _rpcManager.RPC_SyncReset();
+            RPCManager.Instance.RPC_SyncReset();
         }
         else
         {
             if (!PhotonNetwork.IsMasterClient) return;
-            _rpcManager.photonView.RPC(nameof(_rpcManager.RPC_SyncReset), RpcTarget.All);
+            RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_SyncReset), RpcTarget.All);
         }
 
     }
