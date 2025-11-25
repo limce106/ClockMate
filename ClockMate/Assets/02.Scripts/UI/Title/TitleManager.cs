@@ -83,7 +83,7 @@ public class TitleManager : MonoBehaviour
     public void OnClick_Exit()
     {
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
-        Application.Quit();
+        NetworkManager.Instance.QuitGameSafely();
     }
     public void OnClick_MakeRoom()
     {

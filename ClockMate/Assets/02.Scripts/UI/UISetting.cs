@@ -164,11 +164,7 @@ public class UISetting : UIBase
     {
         Cursor.lockState = CursorLockMode.Confined;
         SoundManager.Instance.PlaySfx(key: "ui_click", pos: null, volume: 0.7f);
-
-        if(PhotonNetwork.InRoom)
-            PhotonNetwork.LeaveRoom();
-
-        Application.Quit();
+        NetworkManager.Instance.QuitGameSafely();
     }
 
     public void OnClick_SoundButton()

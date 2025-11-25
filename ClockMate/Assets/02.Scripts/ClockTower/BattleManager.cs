@@ -136,7 +136,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         yield return StartCoroutine(RunBattle());
 
-        RPCManager.Instance.photonView.RPC(nameof(RPCManager.Instance.RPC_MoveToMap), RpcTarget.All, "TitleMatch");
+        if(PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
     }
 
     /// <summary>
