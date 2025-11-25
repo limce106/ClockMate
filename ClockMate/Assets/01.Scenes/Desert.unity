@@ -5224,6 +5224,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 59
       objectReference: {fileID: 0}
+    - target: {fileID: 2178444687537036017, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
+      propertyPath: turretCam
+      value: 
+      objectReference: {fileID: 782118242}
     - target: {fileID: 2468491837409665179, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
       propertyPath: sceneViewId
       value: 54
@@ -5267,6 +5271,10 @@ PrefabInstance:
     - target: {fileID: 3625172984197616089, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
       propertyPath: m_Center.y
       value: 0.19074039
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791111277388954256, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4092776859916428003, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
       propertyPath: m_LocalScale.x
@@ -5401,6 +5409,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6130626310167287081, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
   m_PrefabInstance: {fileID: 782118238}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &782118242 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7908190829294791936, guid: dad7f8a4581b1794abce8c00ce943641, type: 3}
+  m_PrefabInstance: {fileID: 782118238}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &795570652
 GameObject:
   m_ObjectHideFlags: 0

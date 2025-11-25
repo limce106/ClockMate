@@ -3,6 +3,7 @@ using Define;
 using DefineExtension;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// 터렛 상호작용.
@@ -12,7 +13,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
 {
     [SerializeField] private GameObject turretHead;
     [SerializeField] private Transform attackStartPos;
-    [SerializeField] private CinemachineVirtualCamera camera;
+    [SerializeField] private CinemachineVirtualCamera turretCam;
     [SerializeField] private int maxChargeLevel;
     [field: SerializeField] public int ChargeLevel { get; private set; }
     
@@ -58,6 +59,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         _indicator = Instantiate(Resources.Load<GameObject>("UI/Indicator"), this.transform);
         _indicator.transform.localPosition = new Vector3(0, 0.2f, 0);
         _indicator.SetActive(false);
+        turretCam.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -105,8 +107,12 @@ public class IATurret : MonoBehaviourPun, IInteractable
         {
             collider.enabled = false;
         }
-        
-        camera.Priority = 100;
+
+        if (!turretCam.gameObject.activeSelf)
+        {
+            turretCam.gameObject.SetActive(true);   
+        }
+        turretCam.Priority = 100;
         //attackLineRenderer.enabled = true;
 
         _uiTurretActive = UIManager.Instance.Show<UITurretActive>("UITurretActive");
@@ -127,7 +133,7 @@ public class IATurret : MonoBehaviourPun, IInteractable
         _isOccupied = false;
         _character.InputHandler.enabled = true;
         _character = null;
-        camera.Priority = 0;
+        turretCam.Priority = 0;
         attackLineRenderer.enabled = false;
 
         // 터렛 UI 닫기
