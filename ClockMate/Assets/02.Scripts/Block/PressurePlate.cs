@@ -46,33 +46,24 @@ public class PressurePlate : ResettableBase
         if (!IsValidCharacter(other) || !IsValidDirection(other)) return;
         var otherCh = other.GetComponentInParent<CharacterBase>();
         if (!otherCh.photonView.IsMine) return;
-//        Debug.Log("위에서 발판 밟음");
         // 캐릭터가 발판 따라가게
         _attachedTransform = otherCh.transform;
         _lastPlatePosition = transform.position;
         
         photonView.RPC(nameof(RPC_SetPressed), RpcTarget.All, true);
-        //SetPressed(true); // 발판 내려가게
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!IsValidCharacter(other) || _isLocked) return;
 
+        var otherCh = other.GetComponentInParent<CharacterBase>();
+        if (!otherCh.photonView.IsMine) return;
         if (_attachedTransform != null && other.transform.root == _attachedTransform)
         {
             _attachedTransform = null;
         }
-        
-  //      Debug.Log("발판에서 내려옴");
-        if (IsFullyPressed)
-        {
-            IsFullyPressed = false;
-            _materialInstance.color = _initialColor;
-        }
         photonView.RPC(nameof(RPC_SetPressed), RpcTarget.All, false);
-
-//        SetPressed(false); // 발판 올라가게
     }
     private void FixedUpdate()
     {
@@ -170,6 +161,14 @@ public class PressurePlate : ResettableBase
     [PunRPC]
     public void RPC_SetPressed(bool pressed)
     {
+        if (!pressed)
+        {
+            if (IsFullyPressed)
+            {
+                IsFullyPressed = false;
+                _materialInstance.color = _initialColor;
+            }
+        }
         SetPressed(pressed);
     }
 }
