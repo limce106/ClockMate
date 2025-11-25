@@ -422,7 +422,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void ForceLeaveRoom()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LeaveRoom();
         }

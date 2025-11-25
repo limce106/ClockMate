@@ -5,13 +5,13 @@ using Photon.Pun;
 using Photon.Realtime;
 using PN = Photon.Pun.PhotonNetwork;
 using UnityEngine.SceneManagement;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 using ExitGames.Client.Photon;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     private const string firstSceneName = "TitleMatch";
     private const string BestRegionKey = "PUNCloudBestRegion";
+    private bool isExiting = false;
 
     private static NetworkManager _instance;
     public static NetworkManager Instance
@@ -39,17 +39,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
-
-        PhotonNetwork.AutomaticallySyncScene = false;
     }
 
-    void Start()
+    public override void OnEnable()
     {
+        base.OnEnable();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (SceneManager.GetActiveScene().name != firstSceneName) return;
+
         if (!PhotonNetwork.IsConnected)
         {
+            PhotonNetwork.AutomaticallySyncScene = false;
             AppSettings appSettings = GetAppSettingsFromEnv();
 
-            if(appSettings != null)
+            if (appSettings != null)
             {
                 if (PlayerPrefs.HasKey(BestRegionKey))
                 {
@@ -91,18 +104,35 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         return Instance && PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom;
     }
 
+    public override void OnLeftRoom()
+    {
+        if (SceneManager.GetActiveScene().name == "TitleMatch") return;
+        if (isExiting) return;
+
+        isExiting = true;
+
+        ResetGameAndLoadTitle();
+    }
+
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (SceneManager.GetActiveScene().name == "TitleMatch") return;
+        if (isExiting) return;
 
-        TryHandleDisconnect();
+        isExiting = true;
+
+        ResetGameAndLoadTitle();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         if (SceneManager.GetActiveScene().name == "TitleMatch") return;
+        if (isExiting) return;
 
-        TryHandleDisconnect();
+        isExiting = true;
+
+        ResetGameAndLoadTitle();
+        Debug.Log("Disconnected");
     }
 
     public AppSettings GetAppSettingsFromEnv()
@@ -128,39 +158,38 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         return appSettings;
     }
 
-    void TryHandleDisconnect()
-    {
-        if (SceneManager.GetActiveScene().name != firstSceneName)
-        {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                photonView.RPC("ForceReturnToTitle", RpcTarget.All);
-            }
-
-            UIManager.Instance.CloseAll();
-            Debug.Log("Disconnected");
-        }
-    }
-
+    /// <summary>
+    /// 보이스 연결을 끊고 중복되어 충돌할 수 있는 매니저들 정리
+    /// </summary>
     [PunRPC]
-    void ForceReturnToTitle()
+    private void ReturnToTitle()
     {
-        StartCoroutine(ReturnToTitleAfterDisconnect());
-    }
+        if (UIManager.Instance)
+            UIManager.Instance.CloseAll();
 
-    IEnumerator ReturnToTitleAfterDisconnect()
-    {
-        PhotonNetwork.Disconnect();
         if (VoiceManager.Instance && VoiceManager.Instance.voiceClient.Client.IsConnected)
         {
             VoiceManager.Instance.voiceClient.Client.Disconnect();
         }
 
-        while (PhotonNetwork.IsConnected)
-            yield return null;
-
         SceneManager.LoadScene(firstSceneName);
-        //CleanUpDuplicateManagers();
+        CleanUpDuplicateManagers();
+    }
+
+    void ResetGameAndLoadTitle()
+    {
+        if (SceneManager.GetActiveScene().name != firstSceneName)
+        {
+            if (PhotonNetwork.InRoom)
+            {
+                photonView.RPC(nameof(ReturnToTitle), RpcTarget.All);
+                PhotonNetwork.LeaveRoom();
+            }
+            else
+            {
+                ReturnToTitle();
+            }
+        }
     }
 
     /// <summary>
@@ -223,5 +252,31 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(RPCManager.Instance.gameObject);
         if (NetworkManager.Instance)
             Destroy(NetworkManager.Instance.gameObject);
+    }
+
+    /// <summary>
+    /// 네트워크 정리 완료 후 게임 종료
+    /// </summary>
+    public void QuitGameSafely()
+    {
+        StartCoroutine(QuitGameCoroutine());
+    }
+
+    /// <summary>
+    /// 안전한 게임 종료
+    /// </summary>
+    private IEnumerator QuitGameCoroutine()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+
+            yield return new WaitUntil(() => !PhotonNetwork.InRoom);
+        }
+
+        PhotonNetwork.Disconnect();
+        yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
+
+        Application.Quit();
     }
 }
