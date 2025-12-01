@@ -95,8 +95,8 @@ public class BattleManager : MonoBehaviourPunCallbacks
 
         playerAttackTimeLimit = new Dictionary<PlayerAttackType, float>
         {
-            { PlayerAttackType.ClockHandRecovery, 100f },
-            { PlayerAttackType.CogwheelRecovery, 200f },
+            { PlayerAttackType.ClockHandRecovery, 60f },
+            { PlayerAttackType.CogwheelRecovery, 100f },
             { PlayerAttackType.ClockTowerOperation, 60f }
         };
     }
